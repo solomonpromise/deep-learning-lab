@@ -101,6 +101,13 @@ inserts:                         # things placed inside sections
     intro: "Shown above the widget (markdown)."
     caption: "Shown below the widget (markdown)."
 
+  - section: 1
+    after: "Suppose every input feature"   # a worked question written as prose …
+    type: questions              # … becomes a question card with a hidden explanation
+    replace: 2                   # remove the anchor block and the one before it (e.g. its heading)
+    items:
+      - { q: "Question text?", a: "Explanation (markdown)" }
+
   - type: predict                # "commit to a guess, then reveal"
     mode: choice                 # or: number (slider with min/max/step/answer/tolerance)
     prompt: "What accuracy do you expect?"
