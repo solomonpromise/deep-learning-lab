@@ -1,0 +1,341 @@
+# Teaching layer for Lesson 2.1 — Tensors and the Shape Contract
+
+summary: |
+  Every tensor carries a three-part contract: **shape**, **dtype** and **device**. Nearly every PyTorch error you will ever
+  see breaks one of those three clauses. This lesson teaches you to read shapes like sentences, reshape without lying,
+  broadcast on purpose, see a layer as a matrix multiply, and above all to fear the bugs that *don't* raise errors.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    after: "Learning to interrogate a tensor is therefore not housekeeping"
+    type: compare
+    title: "The contract, and what breaks it"
+    items:
+      - { title: "shape", tone: blue, icon: blocks, md: "How the numbers are arranged into axes. Broken → `mat1 and mat2 shapes cannot be multiplied`, or, worse, a silent broadcast." }
+      - { title: "dtype", tone: orange, icon: database, md: "What kind of number each element is. Broken → `expected scalar type Long but found Float`." }
+      - { title: "device", tone: violet, icon: gear, md: "Whose memory holds it: CPU, CUDA or MPS. Broken → `Expected all tensors to be on the same device`." }
+
+  - section: 1
+    after: "# A float32 layer refuses a float64 input."
+    type: explainer
+    style: warning
+    title: "Why no error appears below"
+    md: |
+      By this point `converted` has already been re-created **as float32** (two cells above: `torch.tensor(np_default, dtype=torch.float32)`),
+      so `layer(converted)` simply works and the `except` branch never runs. To see the error the comment promises, pass the float64 tensor:
+
+      ```python
+      layer(torch.from_numpy(np_default))
+      # RuntimeError: mat1 and mat2 must have the same dtype, but got Double and Float
+      ```
+
+  - section: 1
+    after: "Cast to `float32` at the boundary where NumPy becomes PyTorch"
+    type: explainer
+    style: plain
+    title: "`from_numpy` shares, `torch.tensor` copies"
+    md: |
+      `torch.from_numpy(arr)` wraps the **same memory**: change the array and the tensor changes too (zero-copy, fast, and occasionally surprising).
+      `torch.tensor(arr)` makes an **independent copy**. Both keep NumPy's dtype unless you pass `dtype=`. Going back, `.numpy()` also shares memory
+      and refuses tensors that require gradients: call `.detach().numpy()` (plus `.cpu()` first if the tensor is on a GPU).
+
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "ca5da93d"
+    type: widget
+    name: tensor-shapes
+    title: "What each rank means"
+    props: { tabs: [rank], start: rank }
+    intro: "Step through ranks 0–4. **Axis 0 is always the batch**; the other axes are features, tokens, channels or pixels depending on the data type."
+
+  - section: 2
+    after: "When you deploy a model and pass it one customer record"
+    type: compare
+    title: "Index or slice? Watch the axis"
+    items:
+      - { title: "`batch[0]` → (5,)", tone: orange, icon: alert, md: "An **integer index removes** axis 0. Feed this to a model and there is no batch axis any more." }
+      - { title: "`batch[0:1]` → (1, 5)", tone: green, icon: check, md: "A **slice keeps** the axis (length 1): a correct batch of one. Or use `x.unsqueeze(0)`." }
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "That is why it is nearly free"
+    type: widget
+    name: tensor-shapes
+    title: "Reshape: same numbers, new shape"
+    props: { tabs: [reshape], start: reshape }
+
+  - section: 3
+    after: "reshape` will silently copy if it"
+    type: widget
+    name: contiguity-viz
+    title: "Why `view` fails after a transpose"
+    intro: |
+      A tensor is a flat strip of memory plus **strides** that say how far to jump for each axis. Press *Walk in reading order* for each of the three versions
+      and watch which memory slots are visited.
+
+  - section: 3
+    after: "Always name the axis: `squeeze(1)`, never bare `squeeze()`"
+    type: explainer
+    style: warning
+    title: "The batch-of-one trap"
+    md: |
+      `squeeze()` removes **every** axis of length 1, and a batch size of 1 is exactly that. It happens on the last, incomplete batch of an epoch and
+      on every single request in production. The same code that works on `(32, 1, 5)` turns `(1, 1, 5)` into `(5,)`, and a model trained on batches
+      now sees a vector. Name the axis you mean: `squeeze(1)`.
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "bd83e46a"
+    type: widget
+    name: tensor-shapes
+    title: "Broadcasting rules, visualised"
+    props: { tabs: [broadcast], start: broadcast }
+    intro: "Pick shapes for A and B. Dashed ghost cells are the *virtual* copies broadcasting creates (no memory is copied). Try `(4,)` with `(4,1)`."
+
+  - section: 4
+    after: "The predictions sit within about 0.05 of the targets"
+    type: widget
+    name: broadcast-bug
+    title: "The silent broadcast, made visible"
+    intro: |
+      Each square compares **one prediction with one target**. The green diagonal is what you meant to measure; everything else is noise the broadcast added.
+      Slide the model quality from *nearly perfect* to *mediocre* and compare the two losses.
+
+  - section: 4
+    after: "The regression losses run. The binary loss refuses"
+    type: explainer
+    style: tip
+    title: "One assertion, every loss, every version"
+    md: |
+      Put `check_loss_shapes(preds, targets)` (or simply `assert preds.shape == targets.shape`) directly before the loss in your training loop.
+      It costs nothing, it fails on **step 1** instead of after an afternoon of confusing curves, and it behaves identically for regression and
+      classification losses on every PyTorch version.
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    after: "(N, in) @ (in, out) -> (N, out)"
+    type: widget
+    name: tensor-shapes
+    title: "Matrix multiply: inner dimensions meet, outer ones survive"
+    props: { tabs: [matmul], start: matmul }
+    intro: "A is the batch of inputs `(N, in)`, B is the weight matrix `(in, out)`. Hover a result cell to see which row and column produced it."
+
+  - section: 5
+    after: "Parameter count is the first number anyone asks about a model"
+    type: widget
+    name: param-counter
+    title: "Parameter & memory calculator"
+    props: { widths: "50, 64, 32, 1" }
+    intro: "Type any stack of layer widths, or pick a preset. Use it to answer this section's first question."
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "The two conventions pull in opposite directions"
+    type: widget
+    name: loss-contract
+    title: "Loss-function contract checker"
+    intro: "Choose a loss, an output shape, a target shape and a target dtype. The verdicts were checked against current PyTorch, and the orange ones are the dangerous kind: they run and are wrong."
+
+  - section: 6
+    after: "This asymmetry is a genuine wart in the API"
+    type: compare
+    title: "`.to()` on a module vs a tensor"
+    items:
+      - { title: "`model.to(DEVICE)`", tone: green, icon: check, md: "Moves the parameters **in place** and returns the model. A bare call on its own line works." }
+      - { title: "`tensor.to(DEVICE)`", tone: red, icon: alert, md: "Returns a **new** tensor and leaves the original where it was. A bare call does nothing: write `x = x.to(DEVICE)`." }
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    before: "# --- CASE 1 ----"
+    type: explainer
+    style: warning
+    title: "Case 1 as written doesn't fail, and why"
+    md: |
+      The comment says *"a model expecting 10 features"*, but the code builds `nn.Linear(20, 4)`, which matches the 20-feature batch, so the cell
+      below runs fine. The error printed further down came from an earlier run with `nn.Linear(10, 4)`. To reproduce it, change the model to
+      `nn.Linear(10, 4)`, and you get `mat1 and mat2 shapes cannot be multiplied (32x20 and 10x4)`.
+
+  - section: 7
+    before: "# --- CASE 2 ----"
+    type: predict
+    mode: choice
+    prompt: "**Case 2.** `nn.Linear(5, 1)` receives `torch.randn(5)`, a single row with no batch axis. What happens?"
+    options: ["RuntimeError: shape mismatch", "It runs and returns shape (1,)", "It runs and returns shape (1, 1)", "It runs and returns shape (5,)"]
+    answer: 1
+    reveal: "It **runs** and returns `(1,)`. A linear layer transforms the last axis and doesn't care that there's nothing in front of it, so the batch axis is simply missing from the output. Harmless until it meets a loss or code that indexes per example. Fix: `one_row.unsqueeze(0)`."
+
+  - section: 7
+    before: "# --- CASE 3 ----"
+    type: predict
+    mode: choice
+    prompt: "**Case 3.** `nn.Conv2d(in_channels=3, …)` receives images shaped `(4, 32, 32, 3)`. What happens?"
+    options: ["It runs, with garbage output", "RuntimeError: expected 3 channels but got 32", "RuntimeError: expected 4 dimensions", "It runs correctly"]
+    answer: 1
+    reveal: "PyTorch reads axis 1 as the channel axis, finds **32** where the layer wants **3**, and raises. The lucky outcome. Fix: `images.permute(0, 3, 1, 2)` to get `(N, C, H, W)`."
+
+  - section: 7
+    before: "# --- CASE 4 ----"
+    type: predict
+    mode: choice
+    prompt: "**Case 4.** `CrossEntropyLoss` receives logits `(16, 3)` and labels `(16,)` holding 0.0/1.0/2.0 as **floats**. What happens?"
+    options: ["It works: the values are whole numbers", "RuntimeError: expected target dtype Long", "It silently treats the labels as probabilities", "ValueError: shape mismatch"]
+    answer: 1
+    reveal: "`expected target dtype to be Long or Byte, but got Float`. Class indices must be integers. Fix: `labels.long()`, ideally once where the labels are created."
+
+  - section: 7
+    before: "# --- CASE 5 ----"
+    type: predict
+    mode: choice
+    prompt: "**Case 5.** `MSELoss` receives predictions `(64, 1)` and targets `(64,)`. What shape does `preds - targets` have?"
+    options: ["(64,)", "(64, 1)", "(64, 64)", "It raises an error"]
+    answer: 2
+    reveal: "**(64, 64)**: 4,096 comparisons instead of 64, with only a warning. (The note says the two losses agree 'within about half a percent'; in the recorded output they are 1.3608 vs 1.4558, about 7% apart. The exact gap depends on the random numbers, and a small gap is exactly what makes this bug invisible.)"
+
+answers:
+  "1-1":
+    - |
+      In current PyTorch **both** work: calling `.backward()` with no argument needs a tensor with exactly **one element** (`numel() == 1`), so shape `()` or `(1,)` is fine.
+      The rule exists because the gradient of a many-element output isn't one set of numbers: it's a whole Jacobian. PyTorch computes *vector*-Jacobian products, and it will
+      only assume the vector is `1` when there is a single output number. For anything bigger you must pass `gradient=` yourself, and you get
+      `grad can be implicitly created only for scalar outputs`. Losses reduce to a 0-D tensor (mean or sum) precisely so that `backward()` has one number to start from.
+    - |
+      **Feature:** a huge array, such as a memory-mapped dataset or a preprocessed feature matrix, can be exposed to PyTorch with **zero copying**: no extra memory and no conversion time.
+      **Bug waiting to happen:** the NumPy array is modified afterwards (an in-place normalisation, an augmentation step, a buffer reused for the next batch), and the tensor you
+      already stored for training silently changes too. If you don't own the array's lifetime, copy.
+  "2-1":
+    - "`images[1, 0]` selects the **second image** and its **first channel**, removing both axes: a single `32 × 32` greyscale plane, shape `(32, 32)`."
+    - |
+      Pick **one convention** and make them identical. Either unsqueeze the labels to `(32, 1)` (what Lesson 2.3 does) or squeeze the predictions to `(32,)`.
+      It matters which loss you use only in *how you find out*: `BCEWithLogitsLoss` raises a `ValueError` on the mismatch, while `MSELoss` silently broadcasts to `(32, 32)`.
+      (For `CrossEntropyLoss` the rule is different again: outputs `(N, C)`, targets `(N,)`.)
+  "3-1":
+    - |
+      They differ when the tensor is **non-contiguous** (after `.t()`, `.permute()`, some slicing). `view` then **raises**, while `reshape` quietly **copies** the data:
+      extra memory and an O(n) pass, sometimes inside a hot training loop. To detect it, check `x.is_contiguous()` before reshaping, or compare storage pointers:
+      `y = x.reshape(4, -1); same = (y.data_ptr() == x.data_ptr())`. If they differ, a copy happened.
+    - |
+      `images = images.permute(0, 3, 1, 2)` (then `.contiguous()` if something later needs it).
+      Unfixed, if nothing had raised, the model would treat the **32 image rows as 32 channels** and slide its filters over a (width × colour) plane,
+      mixing spatial position with colour. It would still produce numbers and even train, but it would be learning from a scrambled image. That is the danger of a shape bug that runs.
+  "4-1":
+    - "It averages a **(256, 256)** matrix: **65,536** entries. Only the diagonal, 256 of them, compares a prediction with its own target: **1/256 ≈ 0.4%**. The other 99.6% compare each prediction with some other customer's target, so the model is effectively trained to predict the batch average."
+    - |
+      Each row is now centred on **its own average across features**, so the model sees how each feature deviates from that row's mean of age, income, balance and so on,
+      numbers in unrelated units. Two customers whose features are proportionally similar become indistinguishable, and the absolute information (who is older, who is richer)
+      is destroyed. The model is asked to learn from a within-row pattern of incomparable quantities. No error, plausible shapes, meaningless inputs.
+  "5-1":
+    - |
+      `nn.Linear(1000, 1000)` has $1000 \times 1000 + 1000 = 1{,}001{,}000$ parameters. Ten of them: **10,010,000** parameters. At 4 bytes each (float32),
+      that is about **40 MB** (38.2 MiB) for the weights alone, and training with Adam roughly quadruples it (gradients + two optimiser buffers).
+      Check it in the parameter calculator's *10 × Linear(1000,1000)* preset.
+    - |
+      Only the **last axis** (64 → 16); the leading `(2, 3, 5)` axes are all treated as batch. To transform a different axis, move it to the end,
+      apply the layer, and move it back: `proj(x.transpose(axis, -1)).transpose(axis, -1)`, or write the contraction explicitly with `torch.einsum`.
+  "6-1":
+    - |
+      `BCEWithLogitsLoss` needs **float32** targets with the **same shape** as the output, so `(N, 1)`. Cast once, where the data first becomes a tensor
+      (in the `Dataset` or when building the tensors): `y = torch.tensor(df["y"].to_numpy(), dtype=torch.float32).unsqueeze(1)`. Never cast inside the training loop,
+      where the fix gets repeated, forgotten or duplicated.
+    - |
+      A tensor may be **shared**: other tensors can be views of the same memory, other variables can point to it, NumPy arrays may share its buffer, autograd may have saved it.
+      Silently relocating it would pull memory out from under all of them, so `.to()` returns a new tensor and leaves the original intact.
+      A module is different: it **owns** its parameters and is the natural unit of placement, so moving it in place is safe. PyTorch even keeps the same `Parameter`
+      objects, which is why optimiser references stay valid.
+  "7-1":
+    - |
+      From most to least expensive to discover:
+
+      1. **Case 5** (silent broadcast in MSE): no error and a plausible loss. The model optimises the wrong objective, and you may *never* find out; you conclude "the model doesn't work".
+      2. **Case 2** (missing batch axis): no error at the source; it surfaces later as a broadcast or an indexing oddity far from the cause.
+      3. **Case 3** (NHWC images): errors on the first batch, unless the image size happens to equal the channel count, in which case it becomes silent garbage.
+      4. **Case 1** (wrong feature count): errors immediately, and the message names both shapes.
+      5. **Case 4** (float labels): errors immediately with a message that says exactly what to do.
+
+      The rule: **cost grows with the distance between where the bug is and where it shows up.** Errors at the source are cheap; silence is expensive.
+    - |
+      Check against the image size you *know* from configuration, not against a guess:
+
+      ```python
+      N, C, H, W = x.shape
+      assert (C, H, W) == (3, cfg.img_h, cfg.img_w), f"expected (N, 3, {cfg.img_h}, {cfg.img_w}), got {tuple(x.shape)}"
+      ```
+
+      Because it compares every axis with the expected layout, it catches NHWC even when the images are tiny. Put it where the data leaves the loader, before the model.
+
+explain:
+  - cell: "def describe(name: str, t: torch.Tensor)"
+    summary: "A one-line inspector for the three-part contract. Call it whenever you are unsure what a tensor is: it's faster than reasoning."
+    lines:
+      - match: "shape={tuple(t.shape)!s:<16}"
+        note: "`!s:<16` formats the shape as a string, left-aligned in 16 characters, so rows line up."
+      - match: "ndim={t.ndim}  numel={t.numel()}"
+        note: "`ndim` = number of axes (rank); `numel` = total number of elements (the product of the shape)."
+
+  - cell: "mu = X.mean(dim=0)"
+    title: "Standardisation with broadcasting"
+    summary: "Compute one mean and one standard deviation *per feature*, then use broadcasting to apply them to every row at once."
+    lines:
+      - match: "mu = X.mean(dim=0)"
+        note: "`dim=0` collapses the **batch** axis, leaving one number per feature: shape `(4,)`."
+      - match: "X_std = (X - mu) / sd"
+        note: "`(200, 4) - (4,)`: the per-feature vector is stretched across all 200 rows."
+
+  - cell: "def check_loss_shapes(preds"
+    summary: "A guard that fails loudly on the first training step instead of letting a broadcast corrupt the loss for fifty epochs."
+    lines:
+      - match: "if preds.shape != targets.shape:"
+        note: "Compare shapes exactly; don't rely on each loss function's own checks."
+      - match: "torch.broadcast_shapes"
+        note: "Reports what the mismatch *would* have become, e.g. `(6, 6)`, which makes the error message self-explanatory."
+
+  - cell: "manual = x @ layer.weight.T + layer.bias"
+    title: "nn.Linear, rebuilt by hand"
+    summary: "Proof that a dense layer is exactly `x @ W.T + b`."
+    lines:
+      - match: "layer = nn.Linear(in_features=5, out_features=3)"
+        note: "The weight is stored as `(out, in) = (3, 5)`, which is why the formula transposes it."
+      - match: "manual = x @ layer.weight.T + layer.bias"
+        note: "`(8, 5) @ (5, 3) → (8, 3)`, then the bias `(3,)` broadcasts across the 8 rows."
+
+takeaways:
+  - "Every tensor has a **shape**, a **dtype** and a **device**; almost every error violates one of them. Inspect all three whenever you're unsure."
+  - "**Axis 0 is the batch.** Tabular `(N, F)`, images `(N, C, H, W)` (channels first in PyTorch), tokens `(N, L)`, embeddings `(N, L, E)`."
+  - "An integer index **drops** an axis; a slice **keeps** it. A single example must still be a batch of one: `(1, F)`."
+  - "Reshape conserves the number of elements and never moves data. `view` needs contiguous memory; `reshape` copies when it must. Never use bare `squeeze()`."
+  - "Broadcasting aligns shapes **from the right**; a size-1 axis stretches. It powers `(X - mu) / sd`, and it turns `(N, 1)` vs `(N,)` into a silent `(N, N)` bug."
+  - "**Assert** `preds.shape == targets.shape` before every loss: loss functions don't guard you consistently."
+  - "A dense layer is `x @ W.T + b`, applied to the **last axis** only. Parameters = in × out + out."
+  - "`CrossEntropyLoss`: logits `(N, C)` + `long` targets `(N,)`. `BCEWithLogitsLoss`: logits + **float** targets of **identical shape**."
+  - "Move the model once (in place); move every tensor by reassigning (`x = x.to(DEVICE)`)."
+  - "**The dangerous bugs are the ones that run.** A traceback is a gift."
+
+quiz:
+  - q: "`batch` has shape `(8, 5)`. What is the shape of `batch[:, 2:3]`?"
+    options: ["(8,)", "(8, 1)", "(1, 5)", "(2, 3)"]
+    answer: 1
+    why: "The slice `2:3` keeps the feature axis with length 1: one feature, as a column."
+  - q: "Which pair of shapes is **not** broadcastable?"
+    options: ["(8, 5) and (5,)", "(8, 5) and (8, 1)", "(8, 5) and (8,)", "(3, 1) and (1, 4)"]
+    answer: 2
+    why: "Aligned from the right, 5 vs 8: neither is 1, so it fails. The others give (8, 5), (8, 5) and (3, 4)."
+  - q: "`x.t().view(-1)` raises an error. Why?"
+    options: ["Transposed tensors can't be flattened", "The transpose is non-contiguous, and view can only reinterpret contiguous memory", "view needs a positive size", "x must be float"]
+    answer: 1
+    why: "`.t()` only swaps strides; the memory order no longer matches reading order. `reshape(-1)` works by copying."
+  - q: "Predictions `(256, 1)` and targets `(256,)` go into `MSELoss`. What does the loss average over?"
+    options: ["256 values", "A (256, 256) matrix of 65,536 values", "It raises an error", "A (256, 1) matrix"]
+    answer: 1
+    why: "Silent broadcasting: only 1 in 256 comparisons is a prediction against its own target."
+  - q: "How many parameters does `nn.Linear(64, 16)` have?"
+    options: ["1,024", "1,040", "80", "1,088"]
+    answer: 1
+    why: "64 × 16 weights + 16 biases = 1,040."
+  - q: "Labels for `CrossEntropyLoss` should be…"
+    options: ["float32, shape (N, C) one-hot", "int64 (long) class indices, shape (N,)", "float32, shape (N, 1)", "Probabilities after softmax"]
+    answer: 1
+    why: "Class indices as `long`; the loss applies log-softmax to the logits itself."
+  - q: "What does `t.to(DEVICE)` on a line by itself do when `t` is a tensor?"
+    options: ["Moves t in place", "Nothing to t: the moved copy is discarded", "Raises an error", "Moves t and all its views"]
+    answer: 1
+    why: "Tensors aren't moved in place; reassign: `t = t.to(DEVICE)`. Modules *are* moved in place."
