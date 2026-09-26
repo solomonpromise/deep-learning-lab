@@ -44,14 +44,14 @@
     "ignored_variants": [
       "note_3_1_optimizers_and_learning_rate.ipynb"
     ],
-    "sha": "42687bc7891e49da",
+    "sha": "55d3253bdf1cd7a9",
     "source": "deep_learning-platform/../Day 3/note_3_1_optimizers_and_learning_rate_self_sufficient.ipynb"
   },
   "3.2": {
     "ignored_variants": [
       "note_3_2_overfitting_and_regularisation.ipynb"
     ],
-    "sha": "b86f5b34e21dc643",
+    "sha": "c57b46b512b9f14b",
     "source": "deep_learning-platform/../Day 3/note_3_2_overfitting_and_regularisation_self_sufficient.ipynb"
   },
   "3.3": {

@@ -69,8 +69,11 @@ sources:
   # one of these words (first match wins); otherwise the newest file is used.
   prefer: [self_sufficient, updated]
   # Lessons whose notebook in notes/ has been hand-curated and must not be
-  # overwritten by `make sync`.
-  locked: []
+  # overwritten by `make sync`. Remove an entry to go back to the Day-folder version.
+  #   2.3: code/text mismatches fixed (BankMLP hidden_sizes back to (64, 32), EPOCHS=30,
+  #        LEARNING_RATE=1e-3 as the text describes; pos_weight tensor made float32 so
+  #        it runs on Apple MPS), then re-executed so every output matches its text.
+  locked: ["2.3"]
 
 modules:
   - number: 1

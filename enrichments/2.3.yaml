@@ -1,0 +1,685 @@
+# Teaching layer for Lesson 2.3 — Building and Training an MLP You Can Defend
+# Note: this lesson uses a curated notebook (see course.yaml → sources.locked) whose code matches its text
+# (BankMLP (64, 32), 30 epochs, lr 1e-3) and whose outputs were re-generated end to end.
+
+summary: |
+  You build a real MLP for the Bank Marketing data and defend every choice: how `nn.Module` **registers** parameters (and the silent bug when
+  it doesn't), how to compose blocks, how to **trace shapes** with hooks, why the loss takes **logits**, a training loop with correct bookkeeping,
+  a validation loop protected by `eval()` + `no_grad()`, an honest comparison with logistic regression, **checkpoints** you can resume,
+  and three modifications you write yourself: class weighting, an extra metric and early stopping.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    after: "The registry is what makes the optimizer possible"
+    type: widget
+    name: module-registry
+    title: "What the optimizer can see"
+    intro: "Switch between `BrokenNet` (layers in a plain list) and `FixedNet` (`nn.ModuleList`), then take a training step and see which layers actually change."
+
+  - section: 1
+    after: "Why you call the module, not `forward`"
+    type: compare
+    title: "`model(x)` vs `model.forward(x)`"
+    items:
+      - { title: "`model(x)`", tone: green, icon: check, md: "Goes through `nn.Module.__call__`: runs registered **hooks** before and after `forward` and other bookkeeping. Always use this." }
+      - { title: "`model.forward(x)`", tone: red, icon: alert, md: "Same numbers today, but skips the hooks. Tools that rely on them (shape tracing, profilers, some libraries) silently stop working." }
+
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "Those paths become keys in `state_dict()`"
+    type: widget
+    name: param-counter
+    title: "Parameter calculator"
+    props: { widths: "50, 256, 128, 64, 1" }
+    intro: "Preset to `hidden_sizes=(256, 128, 64)`, this section's first question. Predict the total before you look, then compare with the `(64, 32)` model: `50, 64, 32, 1`."
+
+  - section: 2
+    after: "`nn.Sequential` cannot express a residual connection"
+    type: explainer
+    style: plain
+    title: "When to reach for each style"
+    md: |
+      - **`nn.Sequential`**: data flows straight through a fixed chain of layers. Short and readable.
+      - **A reusable block** (like `DenseBlock`): the same small pattern repeats. Define it once and stack it.
+      - **A custom `nn.Module` with its own `forward`**: anything that isn't a straight chain, such as a skip connection `x + f(x)` (you must keep the original `x`),
+        two inputs, a branch, or a loop whose length depends on the data. Transformers are built from such blocks (Module 6).
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "The trace shows exactly where the chain breaks"
+    type: explainer
+    style: warning
+    title: "Why the broken trace printed no rows"
+    md: |
+      `trace_shapes` collects rows inside the hooks but only **prints them after** the forward pass finishes. When the pass crashes at the third layer,
+      the function exits before printing, so you see no trace at all, only the error. To see the partial trace up to the failure, print inside the hook:
+
+      ```python
+      def hook(module, inputs, output):
+          print(f"{name:<22} {tuple(inputs[0].shape)} -> {tuple(output.shape)}")
+      ```
+
+      Then the last row printed is the last layer that succeeded, and its output shape is exactly what the failing layer received.
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "confident = torch.tensor([[-30.0]"
+    type: widget
+    name: logit-stability
+    title: "Stable loss vs sigmoid-then-BCE"
+    intro: "Set the true label and drag the logit. Find where float32's sigmoid saturates and the naive loss flattens into a clamped line with no slope. Then show the double-sigmoid bug."
+
+  - section: 4
+    after: "That comparison is a useful sanity check on a new classification problem"
+    type: explainer
+    style: math
+    title: "Where 0.3609 comes from"
+    md: |
+      A model that predicts the base rate $p = 0.117$ for everyone has loss
+      $$-[p\log p + (1-p)\log(1-p)] = -[0.117\log 0.117 + 0.883\log 0.883] = 0.3609.$$
+      That is the **entropy** of the labels: the best loss achievable *without looking at the features*. A trained model must get clearly below it to have learned
+      anything from the customer data; 0.2846 (the best validation loss later) is the model's real gain.
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    after: "The three bookkeeping mistakes"
+    type: compare
+    title: "Three bookkeeping mistakes"
+    items:
+      - { title: "No `zero_grad()`", tone: red, icon: alert, md: "Gradients from every batch pile up in `.grad`, so each update follows a stale sum." }
+      - { title: "`running += loss`", tone: orange, icon: alert, md: "Keeps every batch's computation graph alive through the tensor. Memory grows all epoch. Use `loss.item()`." }
+      - { title: "Mean of batch means", tone: yellow, icon: alert, md: "The short last batch (159 rows) counts as much as a full one. Weight each batch by its size." }
+
+  - section: 5
+    after: "Adam's first step is close to the learning rate"
+    type: explainer
+    style: why
+    title: "Why Adam's first step ≈ the learning rate"
+    md: |
+      Adam divides each parameter's (smoothed) gradient by the square root of its (smoothed) squared gradient. On the very first step both averages
+      contain just one gradient $g$, so the update is $\text{lr}\cdot g/\sqrt{g^2} = \text{lr}\cdot\text{sign}(g)$: every weight moves by about **lr**
+      whatever the size of its gradient. SGD instead moves each weight by $\text{lr}\times g$. Lesson 3.1 unpacks what this means.
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "So remember the distinction"
+    type: compare
+    title: "Two switches that do different things"
+    items:
+      - { title: "`model.eval()`", tone: blue, icon: tune, md: "Changes **layer behaviour**: dropout off, batch-norm uses its running statistics. Forget it → wrong, noisy validation numbers." }
+      - { title: "`torch.no_grad()`", tone: violet, icon: layers, md: "Stops **building the graph**: less memory, faster. Forget it → wasted memory and time (and outputs you must `.detach()`)." }
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "What the model is worth in operational terms"
+    type: widget
+    name: threshold-explorer
+    title: "Threshold vs call budget"
+    intro: |
+      Scores simulated to behave like this MLP on the validation set (6,782 customers, 794 subscribers, ROC-AUC ≈ 0.80). **Classify at a threshold** shows the
+      precision/recall trade-off; **Rank and call the top k%** reproduces the lift calculation below. Set k = 20% and compare with the notebook.
+
+  - section: 7
+    after: "The verdict"
+    type: explainer
+    style: result
+    title: "The numbers behind the verdict"
+    md: |
+      | | ROC-AUC | Avg precision | Train time | Parameters |
+      |---|---|---|---|---|
+      | Majority class | 0.500 | 0.117 | 0 s | 0 |
+      | Logistic regression | 0.770 | 0.420 | 0.03 s | 51 |
+      | MLP, 30 epochs | 0.797 | 0.434 | 6.2 s | 5,377 |
+      | MLP, early-stopped (epoch 11) | 0.798 | 0.452 | ~3 s | 5,377 |
+
+      With a 20% call budget the MLP reaches 481 of 794 subscribers (**3.03× lift**). The network wins, but by a few points, at 200× the training cost.
+      That is a *business* trade-off, not a foregone conclusion.
+
+  # ------------------------------------------------------------------ §8
+  - section: 8
+    after: "A resumable checkpoint here stores four essential pieces"
+    type: compare
+    title: "What goes in a resumable checkpoint"
+    items:
+      - { title: "model_state_dict", tone: blue, icon: layers, md: "What the network has learned: every weight and bias, keyed by module-tree path." }
+      - { title: "optimizer_state_dict", tone: violet, icon: tune, md: "What Adam remembers: two running averages per parameter plus the step count." }
+      - { title: "epoch (+ history)", tone: aqua, icon: clock, md: "Where training stopped, and the curves so far." }
+      - { title: "config", tone: orange, icon: gear, md: "How to rebuild the architecture and training setup: `in_features`, `hidden_sizes`, lr, batch size, seed." }
+
+  - section: 8
+    after: "`weights_only=False` above is required"
+    type: explainer
+    style: warning
+    title: "Why `weights_only=False` is a security decision"
+    md: |
+      A `.pt` file is a Python **pickle**. With `weights_only=False`, loading it can run arbitrary code embedded in the file, so a checkpoint downloaded from
+      the internet could execute anything on your machine. PyTorch's default (`weights_only=True`) only allows tensors and simple containers. Use `False`
+      only for files you created yourself; for anything you share, save tensors in a safe format (e.g. `safetensors`) and the config as JSON (Lesson 2.4).
+
+  # ------------------------------------------------------------------ §9
+  - section: 9
+    after: "Where the weighting actually changes behaviour"
+    type: widget
+    name: threshold-explorer
+    title: "Class weighting moves probabilities, not the ranking"
+    intro: "Toggle **pos_weight** and watch the probability histogram shift right while precision/recall at the 0.5 threshold swing. Then switch to *Rank and call the top k%*: the numbers don't change at all."
+
+  - section: 9
+    after: "Modification 3: early stopping, written by hand"
+    type: widget
+    name: early-stopping
+    title: "Patience and min_delta, visualised"
+    intro: "A validation curve like this lesson's: best around epoch 11, then creeping up. Change `patience`, `min_delta` and the noise, and re-roll the run."
+
+answers:
+  "1-1":
+    - |
+      **Yes, the loss still goes down, just less.** The registry holds `fc1` (56 parameters) and `out` (9 parameters), so the optimizer adapts the first and last layers
+      around two hidden layers frozen at their random initial weights. That's a bit like learning on top of random features: it can fit something, but far worse than
+      a network whose middle layers learn too. The danger is exactly that it *looks* like training works.
+    - |
+      `nn.Module.__init__` creates the internal registries (`_parameters`, `_modules`, `_buffers`). `nn.Module.__setattr__` intercepts `self.fc1 = …` and tries to put the
+      layer in `_modules`, which doesn't exist yet, so PyTorch raises `AttributeError: cannot assign module before Module.__init__() call`.
+  "2-1":
+    - |
+      Each layer is `in × out + out`:
+      $50\times256+256 = 13{,}056$; $256\times128+128 = 32{,}896$; $128\times64+64 = 8{,}256$; head $64\times1+1 = 65$ → **54,273 parameters**, about 10× the `(64, 32)` model.
+      Most of it sits in the 256→128 layer. Check it in the calculator above.
+    - |
+      A residual block computes `out = x + f(x)`: the *input* must still be available after `f` has run, so the forward pass has two paths (skip and transform)
+      that meet again. `nn.Sequential` only passes each layer's output to the next, forgetting everything earlier. Whenever the data flow isn't a single straight chain
+      (skips, branches, multiple inputs, conditional logic), write a custom `nn.Module` with an explicit `forward`.
+  "3-1":
+    - |
+      You'd also get rows for the containers: the whole model (`""`, input (4, 50) → output (4, 1)) and each `DenseBlock` (e.g. `blocks.0`: (4, 50) → (4, 64)),
+      which duplicate the information of their children. The `ModuleList` itself never runs `forward`, so its hook would never fire. The leaf rows are where shapes actually change,
+      so they pinpoint a mismatch; the container rows just repeat it at a coarser level.
+    - |
+      ```python
+      def make_hook(name):
+          def hook(module, inputs, output):
+              records.append((name, output.detach().float().mean().item()))
+          return hook
+      ```
+
+      A mean of **exactly zero** after a ReLU means every unit output 0 for every example in the batch: the whole layer is switched off (**dead ReLUs**).
+      Nothing flows forward and no gradient flows back, so that part of the network can't learn. Lesson 3.3 builds a layer-health probe on this idea.
+  "4-1":
+    - |
+      Once the sigmoid rounds to exactly 1 (or 0), the clamped loss is the same constant for every larger logit, so its gradient is **zero**: the optimiser receives no information that
+      the prediction is wrong or which way to move. A confidently wrong model then has no signal to escape its mistake.
+    - |
+      The loss receives $\sigma(z)$, a number squeezed into (0, 1), but treats it as a *logit* and applies a sigmoid again. So the effective probability is $\sigma(\sigma(z))$, confined to
+      **(0.5, 0.731)**: the model can never predict below 0.5, the loss can never go below 0.31 (positives) or 0.69 (negatives), and the gradient gets an extra factor
+      $\sigma'(z) \le 0.25$ that vanishes for large $|z|$. Learning is weak and distorted, and nothing raises an error. Use the widget's *double-sigmoid* view to see it.
+  "5-1":
+    - |
+      The last batch holds **159** examples, not 256. Multiplying its mean loss by 256 would over-count it, and the denominator (124 × 256 = 31,744) would not equal the true
+      number of examples (31,647), so the epoch loss would be slightly wrong, and badly wrong when the last batch is tiny. Using `xb.size(0)` weights every batch by the
+      rows it actually contains, which gives the exact mean per example.
+    - |
+      That Adam **normalises each parameter's step** by (a running estimate of) its own gradient scale, so step sizes are set mostly by the learning rate, not by the raw gradient magnitude
+      (exactly lr × sign(g) on the first step). SGD moves each weight by lr × gradient, so large-gradient weights move a lot and small-gradient ones barely move. Adam is
+      *adaptive per parameter*. Lesson 3.1 shows why that makes its good learning rate (~1e-3) so different from SGD's.
+  "6-1":
+    - |
+      Dropout stays **on** during validation: a random half of the units is zeroed (and the rest scaled up) on every forward pass. Predictions become noisy and degraded,
+      the validation loss is higher and **changes from run to run** even with identical weights, and decisions based on it (best epoch, early stopping, model comparison) are made on noise.
+      `no_grad()` doesn't help, because it only controls the graph, not layer behaviour.
+    - |
+      ROC-AUC is a property of the **whole ranking**: the fraction of *all* positive–negative pairs ordered correctly. A batch AUC only compares pairs inside that batch; with ~12% positives,
+      some batches have very few positives (their AUC is extremely noisy) and a batch with none makes AUC undefined. A plain average also weights every batch equally, regardless of how many pairs it contains,
+      and ignores all cross-batch pairs. Concatenating all predictions and computing AUC once gives the actual dataset-level number.
+  "7-1":
+    - |
+      In the re-run, AP was **0.453 at epoch 10** but **0.434 at epoch 30**, while ROC-AUC stayed ~**0.797–0.798**. ROC-AUC averages over *all* positive–negative pairs, dominated by the thousands of
+      ordinary negatives; AP is driven by precision **at the top of the list**. So overfitting first damaged the ordering among the **highest-scored** customers (the model became overconfident about
+      some of them), which is exactly the part of the ranking a call budget uses.
+    - |
+      Because the business decision is *"whom do we call first, given we can only call k people?"*. That is a ranking question. A threshold is an arbitrary line on probabilities that may not even be
+      calibrated (class weighting shifts them, as Section 9 shows), and `predict()` hides the ordering. Sorting by score and taking the top k maps directly onto capacity, and recall@k or lift
+      are numbers a manager can act on.
+    - |
+      Ship logistic regression if the **extra lift isn't worth the extra cost and risk**. The MLP adds ~0.03 AUC and ~0.01–0.03 AP, perhaps a dozen more subscribers per 1,356 calls. LR trains in 0.03 s vs ~6 s,
+      has **interpretable coefficients** (often required in banking: you must explain why a customer was or wasn't contacted), gives well-calibrated probabilities, and has fewer failure modes to monitor and retrain.
+      It's the right call when explainability or regulation matters, when the value per extra subscriber is small, or when the team can't support a neural pipeline. Measure in money: extra subscribers × value per subscriber vs engineering cost.
+  "8-1":
+    - |
+      `load_checkpoint` rebuilds the model from the config. Without `hidden_sizes` it would fall back on the class default, now `(128, 64)`, while the saved tensors are shaped for `(64, 32)`, so `load_state_dict`
+      fails with *size mismatch* errors (e.g. `blocks.0.linear.weight: copying (64, 50) … current model (128, 50)`). Every old checkpoint becomes unloadable unless someone remembers the original architecture.
+      The weights are meaningless without the recipe that built them.
+    - |
+      $7\times10^9$ parameters × 2 moments × 4 bytes = **56 GB** of Adam state. Add the float32 weights (28 GB) and gradients (28 GB) and you need about **112 GB before activations**, more than one 80 GB GPU.
+      Hence the tools of Modules 4 and 8: mixed precision / bf16 weights, 8-bit optimizers, sharding the state across GPUs (ZeRO/FSDP), and above all **parameter-efficient fine-tuning** (LoRA/QLoRA), where only a
+      few million adapter parameters need optimizer state.
+
+explain:
+  - cell: "def train_one_epoch(model, loader, loss_fn, optimizer, device)"
+    title: "One epoch of training, with honest bookkeeping"
+    summary: "Six familiar lines inside a loop over batches, plus the bookkeeping that makes the reported loss correct and memory-safe."
+    lines:
+      - match: "model.train()"
+        note: "Set training mode at the start, so the function never inherits `eval()` from an earlier call (the *mode leak*)."
+      - match: "xb, yb = xb.to(device), yb.to(device)"
+        note: "Move each batch to the model's device as it arrives."
+      - match: "running_loss += loss.item() * xb.size(0)"
+        note: "`.item()` returns a plain float, so no graph is kept alive. Multiplying by the real batch size turns the batch mean back into a batch sum."
+      - match: "return running_loss / n_seen"
+        note: "Total loss ÷ total examples = the true mean loss per example for the epoch."
+
+  - cell: "def evaluate(model, loader, loss_fn, device):"
+    title: "The validation loop"
+    summary: "The training loop minus `zero_grad`, `backward` and `step`, plus collecting every prediction so metrics are computed once over the whole set."
+    lines:
+      - match: "@torch.no_grad()"
+        note: "Decorator form of `with torch.no_grad():`: no graph for anything inside the function."
+      - match: "model.eval()"
+        note: "Inference behaviour for dropout and batch norm, set explicitly every time."
+      - match: "all_probs.append(torch.sigmoid(logits).cpu().numpy().ravel())"
+        note: "Convert logits to probabilities only for reporting, and bring them to the CPU as NumPy."
+      - match: "\"roc_auc\": roc_auc_score(labels, probs)"
+        note: "Ranking metrics are computed **once** on the concatenated predictions, never averaged over batches."
+
+  - cell: "def trace_shapes(model: nn.Module"
+    title: "Tracing shapes with forward hooks"
+    summary: "Attach a small recording function to every leaf layer, push one fake batch through, then remove the hooks and print what each layer received and produced."
+    lines:
+      - match: "def make_hook(name):"
+        note: "A *closure*: each hook remembers the name of the layer it was attached to."
+      - match: "if len(list(module.children())) == 0:"
+        note: "Only leaf modules (Linear, ReLU) do actual computation, so hook only those."
+      - match: "handles.append(module.register_forward_hook(make_hook(name)))"
+        note: "Registering returns a handle, kept so the hook can be removed later."
+      - match: "h.remove()"
+        note: "Always remove debugging hooks; otherwise they run (and grow `records`) on every future forward pass."
+
+  - cell: "def train_with_early_stopping("
+    title: "Early stopping by hand"
+    summary: "Track the best validation loss, count epochs without real improvement, stop when patience runs out, and restore the best weights."
+    lines:
+      - match: "if res[\"loss\"] < best_loss - min_delta:"
+        note: "Only an improvement larger than `min_delta` counts, so floating-point jitter can't reset the counter."
+      - match: "best_weights = copy.deepcopy(m.state_dict())"
+        note: "`state_dict()` returns references to the live tensors, so without `deepcopy` your 'best' snapshot would keep changing."
+      - match: "if epochs_without_improvement >= patience:"
+        note: "Patience exhausted: stop paying for epochs that make things worse."
+      - match: "m.load_state_dict(best_weights)"
+        note: "Restore the best weights, not the last ones."
+
+takeaways:
+  - "`nn.Module` **registers** layers assigned as attributes (and inside `nn.ModuleList`/`ModuleDict`). Layers in plain lists are invisible to `parameters()`, so they're silently never trained. Assert the parameter count."
+  - "Call `model(x)`, never `model.forward(x)`: hooks run only through `__call__`."
+  - "Compose models from blocks; use a custom `forward` whenever data flow isn't a straight chain."
+  - "Dry-run a fake batch and trace shapes with forward hooks before using real data. Remove hooks afterwards."
+  - "Output **logits**; let `BCEWithLogitsLoss`/`CrossEntropyLoss` apply sigmoid/softmax stably. Never add a sigmoid in `forward` as well."
+  - "Bookkeeping: `zero_grad()` every step, accumulate `loss.item() × batch size`, divide by examples seen."
+  - "Validation needs **both** `model.eval()` (layer behaviour) and `torch.no_grad()` (no graph); compute metrics once over all predictions."
+  - "Judge a model against **baselines**. Here the MLP beats logistic regression by ~0.03 AUC at 200× the cost; ranking metrics and recall@budget match the business question."
+  - "Checkpoints hold model state, optimizer state, epoch and **config**; load untrusted files only with `weights_only=True`."
+  - "Class weighting changes probabilities and the operating point, not the ranking. Early stopping keeps the best weights (use `deepcopy`)."
+
+quiz:
+  - q: "You store three layers in `self.layers = [nn.Linear(8, 8), ...]` (a plain list). What happens when you train?"
+    options: ["An error at construction", "An error at `backward()`", "Training runs, but those layers are never updated", "They are updated but not saved"]
+    answer: 2
+    why: "Plain lists aren't registered, so `model.parameters()` never yields them and the optimizer can't update them. No error is raised."
+  - q: "`BankMLP(50, hidden_sizes=(64, 32))` has how many parameters?"
+    options: ["5,248", "5,377", "3,265", "17,409"]
+    answer: 1
+    why: "(50×64+64) + (64×32+32) + (32×1+1) = 3,264 + 2,080 + 33 = 5,377."
+  - q: "Why does `BCEWithLogitsLoss` take logits rather than probabilities?"
+    options: ["It's faster to type", "It avoids log(0) when the sigmoid saturates, keeping gradients informative", "Probabilities can't be batched", "Logits are always smaller"]
+    answer: 1
+    why: "Sigmoid-then-log breaks in floating point for confident predictions; the fused form stays proportional to the error."
+  - q: "What does `model.eval()` change?"
+    options: ["It turns off gradient tracking", "It changes the behaviour of layers such as dropout and batch norm", "It freezes the weights", "It moves the model to the CPU"]
+    answer: 1
+    why: "`eval()` is about layer behaviour; `no_grad()` is about the graph. You need both for validation."
+  - q: "A call centre can phone 20% of customers. Which evaluation fits best?"
+    options: ["Accuracy at threshold 0.5", "Recall (or lift) in the top 20% of the ranking", "Training loss", "Number of parameters"]
+    answer: 1
+    why: "The decision is whom to call first. Rank by score and measure what the top 20% captures."
+  - q: "Why `copy.deepcopy(model.state_dict())` when saving the best weights during early stopping?"
+    options: ["To save disk space", "Because `state_dict()` references the live tensors, which keep changing as training continues", "To move the weights to the CPU", "Deepcopy makes loading faster"]
+    answer: 1
+    why: "Without a real copy, your 'best' snapshot silently becomes the latest weights."
+
+docstrings:
+  get_device: |
+    Return the best available device: CUDA, then Apple MPS, then CPU.
+
+    Returns:
+        A ``torch.device`` for the fastest backend on this machine.
+  seed_everything: |
+    Seed every random-number generator that affects training.
+
+    Sets Python's hash seed, NumPy and PyTorch (plus all CUDA devices when present), so
+    data shuffling, weight initialisation and dropout repeat exactly for the same seed.
+
+    Args:
+        seed: The seed value to use everywhere.
+  rebuild_from_raw: |
+    Rebuild Lesson 2.2's processed dataset from the raw CSV (used only if the .npz is missing).
+
+    Downloads UCI Bank Marketing if needed, drops the leaky ``duration`` column, makes the
+    same stratified 70/15/15 split with the same seed, one-hot encodes the categoricals and
+    standardises the numerics with statistics from the training split only.
+
+    Returns:
+        A dict with ``X_train``, ``y_train``, ``X_val``, ``y_val``, ``X_test``, ``y_test``
+        (float32 feature matrices and int64 label vectors) and ``feature_names``.
+  rebuild_from_raw.finish: |
+    Encode one split exactly like the training split.
+
+    Args:
+        frame: A split of the original DataFrame (features only).
+
+    Returns:
+        A float32 array with the training feature columns: one-hot categoricals aligned to
+        the training columns and numerics transformed by the training scaler.
+  to_loader: |
+    Wrap feature and label arrays in a DataLoader that yields ``(x, y)`` batches.
+
+    Labels are converted to float and reshaped to ``(N, 1)`` so they match a one-logit
+    output and ``BCEWithLogitsLoss``.
+
+    Args:
+        X: Float32 feature matrix of shape ``(N, F)``.
+        y: Integer label vector of shape ``(N,)``.
+        batch_size: Examples per batch.
+        shuffle: ``True`` for training, ``False`` for validation and test.
+
+    Returns:
+        A ``DataLoader`` over a ``TensorDataset``.
+  TinyNet: |
+    A minimal two-layer network used to show what ``nn.Module`` registers.
+
+    Its two ``nn.Linear`` layers are registered as child modules (their weights appear in
+    ``named_parameters()``); the plain float attribute ``dropout_rate`` is not.
+  TinyNet.__init__: |
+    Create and register the layers.
+
+    Args:
+        in_features: Number of input features.
+        hidden: Width of the hidden layer.
+  TinyNet.forward: |
+    Linear → ReLU → Linear.
+
+    Args:
+        x: Input of shape ``(N, in_features)``.
+
+    Returns:
+        Logits of shape ``(N, 1)``.
+  BrokenNet: |
+    A deliberately buggy network: two hidden layers kept in a plain Python list.
+
+    The list's layers run in ``forward`` but are *not registered*, so they are missing
+    from ``model.parameters()``, never updated by the optimizer, not moved by ``.to()``
+    and not saved in ``state_dict()``. Only 65 of its 209 weights can learn.
+  BrokenNet.__init__: |
+    Create the layers, two of them in an unregistered Python list (the bug).
+
+    Args:
+        in_features: Number of input features.
+  BrokenNet.forward: |
+    Input layer, the two hidden layers from the list, then the output layer.
+
+    Args:
+        x: Input of shape ``(N, in_features)``.
+
+    Returns:
+        Logits of shape ``(N, 1)``.
+  FixedNet: |
+    The corrected ``BrokenNet``: the hidden layers live in an ``nn.ModuleList``.
+
+    ``nn.ModuleList`` registers every module it holds, so all 209 parameters are visible
+    to the optimizer, the device, and the saved state.
+  FixedNet.__init__: |
+    Create the layers, holding the hidden ones in an ``nn.ModuleList``.
+
+    Args:
+        in_features: Number of input features.
+  FixedNet.forward: |
+    Input layer, each registered hidden layer with ReLU, then the output layer.
+
+    Args:
+        x: Input of shape ``(N, in_features)``.
+
+    Returns:
+        Logits of shape ``(N, 1)``.
+  count_params: |
+    Count the trainable numbers the optimizer can see in a model.
+
+    Args:
+        model: Any ``nn.Module``.
+
+    Returns:
+        The total number of elements across ``model.parameters()``: only registered
+        parameters are counted.
+  ExplicitMLP: |
+    The 50-64-32-1 MLP written as an explicit subclass (style B).
+
+    Same architecture and parameter count as the ``nn.Sequential`` version, but the
+    ``forward`` method is ordinary Python, so it could contain branches or skips.
+  ExplicitMLP.__init__: |
+    Create the two hidden layers, the output layer and the activation.
+
+    Args:
+        in_features: Number of input features.
+        h1: Width of the first hidden layer.
+        h2: Width of the second hidden layer.
+  ExplicitMLP.forward: |
+    Two Linear+ReLU layers, then the output layer.
+
+    Args:
+        x: Input of shape ``(N, in_features)``.
+
+    Returns:
+        Logits of shape ``(N, 1)``.
+  DenseBlock: |
+    A reusable ``Linear → ReLU`` building block.
+
+    Packaging the repeated motif once lets a larger model be described as a stack of
+    blocks, which is the same idea that Transformers use at a larger scale.
+  DenseBlock.__init__: |
+    Create the linear layer and its activation.
+
+    Args:
+        in_features: Width of the block's input.
+        out_features: Width of the block's output.
+  DenseBlock.forward: |
+    Apply the linear layer, then ReLU.
+
+    Args:
+        x: Input of shape ``(N, in_features)``.
+
+    Returns:
+        Activations of shape ``(N, out_features)``.
+  BankMLP: |
+    The multilayer perceptron trained on Bank Marketing in this lesson.
+
+    A stack of ``DenseBlock`` layers whose widths come from ``hidden_sizes``, followed by
+    a linear head that outputs raw logits. Making the widths a constructor argument turns
+    depth and width into configuration choices that can be stored in a checkpoint.
+
+    Attributes:
+        blocks: ``nn.ModuleList`` of ``DenseBlock`` layers.
+        head: Final ``nn.Linear`` producing one logit per example (by default).
+  BankMLP.__init__: |
+    Build the blocks and the output head.
+
+    Args:
+        in_features: Number of input features (50 after encoding).
+        hidden_sizes: Width of each hidden layer, in order, e.g. ``(64, 32)``.
+        out_features: Number of outputs; 1 for a single binary logit.
+  BankMLP.forward: |
+    Run the input through every block, then the head.
+
+    Args:
+        x: Input of shape ``(N, in_features)``.
+
+    Returns:
+        Raw logits of shape ``(N, out_features)``, with no sigmoid applied.
+  dry_run: |
+    Push one fake batch through a model to check its wiring, not its predictions.
+
+    Runs in evaluation mode without gradients and prints the input and output shapes. A
+    wrong input width fails immediately with a readable shape error.
+
+    Args:
+        model: The model to test.
+        in_features: Number of features in the fake input.
+        batch_size: Rows in the fake batch.
+
+    Returns:
+        The model's output for the fake batch.
+
+    Raises:
+        RuntimeError: If any layer receives a shape it can't handle.
+  trace_shapes: |
+    Print every leaf layer's input and output shape for one fake batch.
+
+    Attaches a forward hook to each leaf module (a module without children), runs one
+    batch, removes the hooks and prints a table in execution order.
+
+    Args:
+        model: The model to trace.
+        in_features: Number of features in the fake input.
+        batch_size: Rows in the fake batch.
+
+    Returns:
+        A list of ``(layer_name, layer_type, input_shape, output_shape)`` tuples.
+  trace_shapes.make_hook: |
+    Create a forward hook that records shapes under the given layer name.
+
+    Args:
+        name: The layer's dotted name in the module tree.
+
+    Returns:
+        A hook function suitable for ``register_forward_hook``.
+  trace_shapes.make_hook.hook: |
+    Record the layer's input and output shapes (called by PyTorch after the layer runs).
+
+    Args:
+        module: The layer that just ran.
+        inputs: Tuple of the positional inputs it received.
+        output: The tensor it produced.
+  train_one_epoch: |
+    Train for one pass over the loader and return the mean loss per example.
+
+    For every batch: move it to the device, clear gradients, forward, compute the loss,
+    backpropagate and step the optimizer. The returned loss weights each batch by its real
+    size, so a short last batch doesn't distort it.
+
+    Args:
+        model: The model to train (set to training mode inside).
+        loader: DataLoader yielding ``(x, y)`` training batches.
+        loss_fn: Loss taking ``(logits, targets)``.
+        optimizer: Optimizer built from ``model.parameters()``.
+        device: Device the model lives on; batches are moved there.
+
+    Returns:
+        Mean training loss per example over the epoch.
+  evaluate: |
+    Measure a model on a loader without training it.
+
+    Runs under ``torch.no_grad()`` in evaluation mode, collects every prediction, then
+    computes the loss per example, ROC-AUC and average precision **once** over the
+    whole dataset.
+
+    Args:
+        model: The model to evaluate.
+        loader: DataLoader yielding ``(x, y)`` batches (not shuffled).
+        loss_fn: Loss taking ``(logits, targets)``.
+        device: Device the model lives on.
+
+    Returns:
+        A dict with ``"loss"``, ``"roc_auc"``, ``"avg_precision"``, and the NumPy arrays
+        ``"probs"`` (predicted probabilities) and ``"labels"``.
+  save_checkpoint: |
+    Save everything needed to resume training into one file.
+
+    Stores the model and optimizer state dicts, the epoch, the metric history, the
+    configuration needed to rebuild the model, the PyTorch version and any extra values.
+
+    Args:
+        path: Destination file (e.g. ``checkpoints/bank_mlp.pt``).
+        model: The model whose ``state_dict`` is saved.
+        optimizer: The optimizer whose state (e.g. Adam's moment estimates) is saved.
+        epoch: Number of epochs completed.
+        history: Dict of per-epoch metrics.
+        config: Dict with the architecture and training settings.
+        extra: Optional dict of additional values to store, such as a validation score.
+
+    Returns:
+        The size of the saved file in bytes.
+  load_checkpoint: |
+    Rebuild the model and optimizer from a checkpoint saved by ``save_checkpoint``.
+
+    Reads the config to reconstruct ``BankMLP`` with the right widths, loads its weights,
+    creates a fresh Adam optimizer and loads its saved state.
+
+    Args:
+        path: Checkpoint file to load. Only load files you trust: this uses
+            ``weights_only=False``, which can execute pickled code.
+        device: Device to place the restored model and optimizer state on.
+
+    Returns:
+        A tuple ``(model, optimizer, checkpoint_dict)``.
+  resume_and_train: |
+    Continue training from saved weights, with or without the saved optimizer state.
+
+    Used to measure how much restoring Adam's state matters: the same weights are resumed
+    twice, once with the checkpointed optimizer state and once with a fresh optimizer.
+
+    Args:
+        model_src: Model whose weights are copied into a fresh ``BankMLP``.
+        opt_state: An optimizer ``state_dict`` to load, or ``None`` for a fresh optimizer.
+        n_epochs: Number of epochs to continue for.
+
+    Returns:
+        A list with the training loss of each resumed epoch.
+  run_experiment: |
+    Train a fresh ``BankMLP`` with an optionally class-weighted loss, then evaluate it.
+
+    The training loss can up-weight positive examples via ``pos_weight``; evaluation
+    always uses the *unweighted* loss so the two runs are compared on the same scale.
+
+    Args:
+        pos_weight: Multiplier for positive examples' loss (e.g. negatives ÷ positives),
+            or ``None`` for an unweighted loss.
+        epochs: Number of training epochs.
+        label: Name for the run (for your own bookkeeping).
+
+    Returns:
+        A tuple ``(model, results)`` where ``results`` is the dict from ``evaluate``.
+  train_with_extra_metric: |
+    The training loop plus two extra measurements recorded every epoch.
+
+    Logs the total gradient norm on each epoch's first batch (a view of how training is
+    converging) and recall when only the top 20% of validation customers can be called
+    (a metric the business recognises), alongside average precision.
+
+    Args:
+        model: The model to train.
+        epochs: Number of epochs.
+
+    Returns:
+        A dict of per-epoch lists: ``"val_ap"``, ``"recall_at_20pct"`` and ``"grad_norm"``.
+  train_with_early_stopping: |
+    Train until validation loss stops improving, then restore the best weights.
+
+    After each epoch the validation loss is compared with the best so far; only an
+    improvement larger than ``min_delta`` resets the patience counter. Training stops
+    after ``patience`` epochs without improvement.
+
+    Args:
+        max_epochs: Upper limit on training epochs.
+        patience: Epochs without meaningful improvement before stopping.
+        min_delta: Smallest decrease in validation loss that counts as improvement.
+
+    Returns:
+        A tuple ``(model, best_epoch, best_loss, curve)``: the model with its best weights
+        restored, the epoch they came from, that epoch's validation loss, and the list of
+        validation losses for every epoch that ran.
