@@ -73,7 +73,10 @@ sources:
   #   2.3: code/text mismatches fixed (BankMLP hidden_sizes back to (64, 32), EPOCHS=30,
   #        LEARNING_RATE=1e-3 as the text describes; pos_weight tensor made float32 so
   #        it runs on Apple MPS), then re-executed so every output matches its text.
-  locked: ["2.3"]
+  #   2.4: the Updated notebook interleaved two versions (walkthroughs several cells before
+  #        their code, sections 4–7 each headed twice); merged into one ordered notebook,
+  #        duplicate outputs removed, config diff made to ignore comments.
+  locked: ["2.3", "2.4"]
 
 modules:
   - number: 1

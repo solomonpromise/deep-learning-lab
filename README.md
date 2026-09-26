@@ -70,6 +70,7 @@ templates/ + static/  (design, behaviour, widgets)               ─┘
 | `> **🖼️ IMAGE 1.1.2 — Title**` followed by an image | A numbered figure with that caption |
 | Math `$…$` / `$$…$$` | Typeset with KaTeX |
 | Code cells + outputs | Highlighted code with copy button, text / table / plot / error outputs (long ones fold) |
+| `%%writefile path/to/file.yaml` cells | Labelled "Writes path/to/file.yaml" and highlighted by file type (Python files also get docstrings) |
 
 ---
 

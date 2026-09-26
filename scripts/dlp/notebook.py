@@ -16,6 +16,10 @@ LESSON_HEADING = re.compile(r"^(?:Note|Lesson)\s+(\d+)\.(\d+)\s*[—–:-]\s*(.+
 NUMBERED = re.compile(r"^(\d+)\.\s+(.+)$")
 IMAGE_LABEL = re.compile(r"^\s*>\s*\*\*\s*🖼️?\s*IMAGE\s+([\d.]+)\s*[—–-]\s*(.+?)\s*\*\*\s*(?:\n\s*>\s*)*$", re.S)
 NEXT_FILE = re.compile(r"^\s*\*\*Next:?\*\*.*?\.ipynb.*$", re.M | re.I)
+WRITEFILE = re.compile(r"^\s*%%writefile\s+(?:-a\s+)?(\S+)")
+# Syntax highlighting for files written with %%writefile, by extension (anything else: plain text)
+FILE_LANGS = {".py": "python", ".yaml": "yaml", ".yml": "yaml", ".md": "markdown", ".toml": "toml",
+              ".json": "json", ".cfg": "ini", ".ini": "ini", ".sh": "bash"}
 
 Q_KINDS = {
     "check": ["question", "questions", "questions to sit with", "check your understanding", "check yourself",
@@ -338,12 +342,14 @@ class LessonParser:
 
     def _code_block(self, src: str, outputs: list, idx: int, assets: AssetStore, root: str,
                     role: str | None) -> dict:
-        shell = is_shell_cell(src)
-        lang = "bash" if shell else "python"
+        wf = WRITEFILE.match(src)
+        file = wf.group(1) if wf else None
+        shell = file is None and is_shell_cell(src)
+        lang = "bash" if shell else FILE_LANGS.get(Path(file).suffix.lower(), "text") if file else "python"
         code = src.rstrip()
         if shell:
             code = re.sub(r"^[!%]", "", code, flags=re.M)
-        else:
+        elif lang == "python":
             res = inject_docstrings(code, getattr(self, "docmap", {}))
             code = res.code
             self._defs.extend((idx, d) for d in res.defs)
@@ -363,7 +369,7 @@ class LessonParser:
         for o in outs:
             o["collapsed"] = (o["type"] in ("text", "error") and o["lines"] > 28) or \
                              (shell and o["type"] == "text")
-        return {"kind": "code", "lang": lang, "lines": lines, "source": shown, "outputs": outs,
+        return {"kind": "code", "lang": lang, "file": file, "lines": lines, "source": shown, "outputs": outs,
                 "role": role, "cell": idx, "src": code, "n_lines": len(lines)}
 
     # -------------------------------------------------------------- preamble

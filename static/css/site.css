@@ -295,7 +295,7 @@ button.side-module-head:hover { background: var(--surface-2); }
 /* ------------------------------------------------------------------ before you start */
 .lesson-start { padding-top: 26px; }
 .goal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.goal-card { padding: 18px 20px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--mc); }
+.goal-card { min-width: 0; padding: 18px 20px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--mc); }
 .goal-card.outcome { border-top-color: var(--aqua); }
 .goal-card.wide { margin-bottom: 14px; }
 .goal-head, .info-head, .objectives-head { display: flex; align-items: center; gap: 8px; font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); margin-bottom: 6px; }
@@ -346,7 +346,7 @@ h4.subhead { font-size: 1.05rem; }
 .prose h3 { font-size: 1.15rem; margin: 1.6em 0 .4em; }
 .prose h4 { font-size: 1.02rem; margin: 1.4em 0 .3em; }
 .prose code, .qtext code, .obj-list code, .lesson-title code, .sec-head code, .toc code, .compare code, .quiz code, .term-pop code, .gloss-list code {
-  font-family: var(--mono); font-size: .86em; padding: .12em .38em; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink); white-space: break-spaces;
+  font-family: var(--mono); font-size: .86em; padding: .12em .38em; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink); white-space: break-spaces; overflow-wrap: anywhere;
 }
 .prose hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
 .prose blockquote.keyidea {

@@ -1,0 +1,716 @@
+# Teaching layer for Lesson 2.4 — From Notebook to Project
+# Note: this lesson uses a curated notebook (see course.yaml → sources.locked). The Updated notebook interleaved
+# two versions; the curated copy puts every walkthrough after the code it explains and merges the duplicated
+# section headings. Outputs are from the author's run (Apple MPS), except the config diff, which now ignores comments.
+
+summary: |
+  You turn Lessons 2.1–2.3 into a small repository someone else can clone, install, test and run without opening a notebook:
+  code extracted into **importable modules** under `src/`, every experiment described by a **YAML config**, **seeds** (and what they
+  cannot promise), six **tests** that train nothing, training started from a terminal with
+  `python -m src.training.train --config configs/baseline.yaml`, and **git** that a reviewer can read: a `.gitignore` that does not
+  eat your source code, one change per commit, and a README.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    before: "# A concrete demonstration of hidden state"
+    type: predict
+    mode: choice
+    prompt: "`threshold` is set to 0.5 and `classify(0.6)` is called. Then `threshold` becomes 0.9 and the *same* call runs again. What do the two calls return?"
+    options: ["yes, then yes", "yes, then no", "no, then no", "An error: `classify` cannot see `threshold`"]
+    answer: 1
+    reveal: |
+      **yes, then no.** A function body looks up global names when it *runs*, not when it is defined. `classify` never captured 0.5;
+      it reads whatever `threshold` holds at call time. The function did not change, the notebook's state did.
+
+  - section: 1
+    after: "a function is easier to trust when its important inputs are explicit"
+    type: widget
+    name: notebook-state
+    title: "Hidden state, in four cells"
+    intro: |
+      The same four cells, runnable in any order. Run **A, B, C**, then **D, C**, and look at what the notebook would save:
+      an output and a count, but not the order that produced them. Then try **Restart & run all**.
+
+  - section: 1
+    after: "The exact percentages depend on the notebook file being inspected"
+    type: explainer
+    style: tip
+    title: "The fix for the diff problem, if you keep notebooks in git"
+    md: |
+      Strip outputs before committing: `nbstripout --install` (Section 6) adds a git filter that removes outputs and execution counts from
+      every `.ipynb` you commit. For reviewing notebooks you cannot strip, `nbdime` shows cell-by-cell diffs instead of raw JSON.
+      Neither turns a notebook into an importable module, which is why the reusable code still moves to `src/`.
+
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "These checks prevent a particularly frustrating situation"
+    type: compare
+    title: "Three ways to install the same PyTorch version"
+    items:
+      - { title: "`pip install torch==2.14.0`", tone: blue, icon: layers, md: "Default index. A CUDA build on Linux, CPU-only on Windows, the MPS-capable build on Apple silicon." }
+      - { title: "`--index-url …/whl/cu124`", tone: green, icon: gauge, md: "A CUDA 12.4 build for NVIDIA GPUs, reported as `2.14.0+cu124`." }
+      - { title: "`--index-url …/whl/cpu`", tone: orange, icon: alert, md: "CPU only, `2.14.0+cpu`: smaller download, and silently slow on a GPU machine. The check cell catches it." }
+
+  - section: 2
+    after: "update the pin only after that"
+    type: explainer
+    style: deep
+    title: "Reading a version specifier, and where lock files fit"
+    md: |
+      | Specifier | Means |
+      |---|---|
+      | `torch==2.14.0` | exactly 2.14.0 (any build: `+cpu`, `+cu124` also match) |
+      | `torch==2.14.0+cpu` | exactly the CPU build; PyPI never hosts `+…` builds, so this only installs from PyTorch's own index |
+      | `numpy>=2.3,<3` | any 2.x from 2.3 on |
+      | `pandas~=2.3.3` | "compatible release": ≥2.3.3 and <2.4 |
+
+      The `+cpu` part is a *local version label*: it names a build of the same release. Pinning the six direct dependencies, as this
+      lesson does, tells a reader what the project needs. A **lock file** (`pip-compile` from pip-tools, or `uv lock`) goes further and records
+      every transitive package with hashes, so two installs are byte-for-byte the same. Real projects often keep both: ranges for the direct
+      dependencies in `pyproject.toml`, exact versions in the lock file.
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "`%%writefile` does not create parent directories"
+    type: explainer
+    style: warning
+    title: "`%%writefile` writes a file. It does not run the code."
+    md: |
+      The magic saves everything below its first line to the path given, relative to the notebook's working folder (`-a` appends instead of
+      overwriting). The code in that cell is **not executed in the notebook's kernel**, so after writing `mlp.py`, the notebook still has no
+      `BankMLP`. That is deliberate here: the notebook never imports `src`. It runs the project the way anyone else would, in a separate
+      process (`python -m pytest`, `python -m src.training.train`), so nothing in the kernel can leak into the result.
+
+  - section: 3
+    after: "attachment:40d0a0ee"
+    type: widget
+    name: project-map
+    title: "The repository, file by file"
+    intro: |
+      Every file this lesson writes, read in the order the lesson recommends: what it is responsible for, what goes in, what comes out,
+      what must stay true, and what protects it. Start with `train.py`, then follow the import chips.
+
+  - section: 3
+    after: "This separation matters in deployment"
+    type: compare
+    title: "Library modules vs the entry point"
+    items:
+      - { title: "Library modules", tone: blue, icon: blocks, md: "`dataset.py`, `mlp.py`, `metrics.py`, `predict.py`: functions and classes, no side effects on import. Tests, notebooks and apps import them." }
+      - { title: "Entry point", tone: green, icon: play, md: "`train.py`: a program. It does its work only under `if __name__ == \"__main__\":`, so importing it runs nothing." }
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "what changes when model capacity is increased while the rest of the setup is held constant"
+    type: widget
+    name: param-counter
+    title: "What the one changed setting costs"
+    props: { widths: "50, 256, 128, 64, 1" }
+    intro: "The wide experiment's layer widths. Compare with the baseline, `50, 64, 32, 1` (5,377 parameters): same data, same seed, ten times the parameters."
+
+  - section: 4
+    after: "Turn it on when you are chasing a bug that only appears sometimes"
+    type: explainer
+    style: deep
+    title: "The one line in `seed_everything` that does less than it looks"
+    md: |
+      `os.environ["PYTHONHASHSEED"] = str(seed)` sets a variable Python reads **only at start-up**. By the time `train.py` runs it, the
+      interpreter's string hashing is already randomised, so the line does not affect the current process; it only reaches processes started
+      afterwards, such as `DataLoader` workers. Nothing in this project depends on set or dict-of-strings ordering, so it is harmless here.
+      When hash order does matter, set it where Python starts:
+
+      ```bash
+      PYTHONHASHSEED=42 python -m src.training.train --config configs/baseline.yaml
+      ```
+
+  - section: 4
+    after: "Six tests, none of which trains anything"
+    type: compare
+    title: "What tests can and cannot tell you"
+    items:
+      - { title: "Contract tests (this file)", tone: green, icon: check, md: "Shapes, logits, registered parameters, single-row inference. Deterministic, under a second, run on every change." }
+      - { title: "Model-quality checks", tone: orange, icon: gauge, md: "\"Validation ROC-AUC ≥ 0.78\". Need data and a trained model: slower, run on a schedule or before a release." }
+      - { title: "Not testable by code", tone: red, icon: alert, md: "\"Good enough for the business\", \"fair to every customer group\", \"will hold next year\". Need judgement and data you do not have yet." }
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    after: "Everything is in place. Before training, run the tests"
+    type: explainer
+    style: why
+    title: "Why `python -m src.training.train` and not `python src/training/train.py`"
+    md: |
+      Running a file by path puts **that file's folder** (`src/training/`) at the front of `sys.path`, so `from src.data.dataset import …`
+      fails with `ModuleNotFoundError: No module named 'src'`. `python -m` runs the file as a module *of the package* and puts the
+      **current directory** (the project root) on `sys.path` instead, so every `from src…` import resolves. That is why the README says to
+      run commands from the project root. `run_in_project` also sets `PYTHONPATH`, which is belt and braces for the same thing.
+
+  - section: 5
+    after: "There is no notebook execution order involved; the configuration and the imported modules define what happens"
+    type: steps
+    title: "What that one command does"
+    steps:
+      - { title: "Find the module", md: "`-m` puts the project root on `sys.path`, finds `src/training/train.py` through the `src` and `training` packages, and runs it with `__name__ == \"__main__\"`." }
+      - { title: "Read the config", md: "`argparse` takes `--config`; `main()` loads the YAML into a dict. From here on, every number comes from that dict." }
+      - { title: "Make it repeatable", md: "`seed_everything(42)` seeds Python, NumPy and PyTorch; `get_device(\"auto\")` picks CUDA, then MPS, then CPU." }
+      - { title: "Build the pieces", md: "`load_splits` downloads the CSV if needed and returns encoded arrays; `make_loaders` wraps them; `BankMLP(50, (64, 32))`, Adam and `BCEWithLogitsLoss`." }
+      - { title: "Train with early stopping", md: "One epoch, one validation pass, compare with the best loss so far (`min_delta`), keep a `deepcopy` of the best weights, stop after `patience` epochs without improvement." }
+      - { title: "Score once, save twice", md: "Restore the best weights, evaluate validation and **then** test, write `baseline.pt` (weights + config) and `baseline_results.json` (the record)." }
+
+  - section: 5
+    before: "# Reuse the already-downloaded CSV"
+    type: predict
+    mode: choice
+    prompt: "Early stopping will pick the epoch with the best **validation** loss. When the untouched **test** split is scored afterwards, where do you expect its ROC-AUC?"
+    options: ["Clearly above validation", "About the same, probably slightly below", "Far below, by 0.05 or more"]
+    answer: 1
+    reveal: |
+      **Slightly below:** validation 0.7982, test 0.7872. Choosing the best of 16 epochs *by* validation makes the validation number a little
+      optimistic, and the two splits are different samples of about 6,800 customers each, so a gap of about 0.01 is expected. A gap ten times
+      larger would mean something is wrong (question 1 below).
+
+  - section: 5
+    after: "Validation can be slightly better than test because validation performance influenced the choice of the best epoch"
+    type: explainer
+    style: result
+    title: "The command-line run against Lesson 2.3"
+    md: |
+      | | Best epoch | Val loss | Val ROC-AUC | Val AP | Test ROC-AUC | Test AP | Recall @ 20% |
+      |---|---|---|---|---|---|---|---|
+      | Lesson 2.3, early stopping written by hand | 11 of 16 | 0.2846 | 0.7982 | 0.4515 | — | — | — |
+      | `python -m src.training.train` (MPS) | 11 of 16 | 0.2846 | 0.7982 | 0.4515 | 0.7872 | 0.4355 | 0.594 |
+      | same command, CPU | 11 of 16 | 0.2846 | 0.7981 | 0.4521 | 0.7874 | 0.4360 | 0.594 |
+
+      Same seed, same split, same code path: the project reproduces the notebook's result to four decimals. The CPU row comes from an
+      earlier run of this notebook and shows Section 4's warning in practice: the same seed on a different backend moves the fourth decimal.
+      The test split is scored here for the first time, after every choice was made.
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "# Prove the one-character difference"
+    type: widget
+    name: gitignore-lab
+    title: ".gitignore lab"
+    intro: |
+      Edit the rules and watch what git would keep. Each file shows the rule that decided it, as `git check-ignore -v` would. Start with
+      the trap, fix it with one character, then try the two **re-include** presets.
+
+  - section: 6
+    after: "The habit that matters most for this course"
+    type: explainer
+    style: warning
+    title: "Committing the results JSON past `checkpoints/`"
+    md: |
+      With this lesson's `.gitignore`, `git add checkpoints/wide_results.json` refuses: *"The following paths are ignored by one of your
+      .gitignore files"*. Three ways out:
+
+      - `git add -f checkpoints/wide_results.json` forces one file in; later edits to it are tracked normally.
+      - Ignore the folder's **contents** and re-include the records: `checkpoints/*` then `!checkpoints/*_results.json`.
+        `checkpoints/` followed by the `!` rule does **not** work: git never looks inside an excluded directory.
+      - Write results to their own tracked folder (for example `results/`) and keep `checkpoints/` for weights only.
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "Make important assumptions explicit"
+    type: compare
+    title: "Where each assumption now lives"
+    items:
+      - { title: "Package versions", tone: blue, icon: layers, md: "`requirements.txt`, checked by the dependency cell" }
+      - { title: "Run settings", tone: violet, icon: tune, md: "`configs/*.yaml`, copied into every checkpoint and results JSON" }
+      - { title: "Shapes and outputs", tone: green, icon: check, md: "`tests/test_shapes.py`, run before every training run" }
+      - { title: "What is (not) versioned", tone: orange, icon: flag, md: "`.gitignore`, verified by `git ls-files`" }
+
+answers:
+  "2-1":
+    - |
+      `+cpu` is a *local version label* that names the CPU-only build. PyPI never hosts builds with a label, so on the default index pip
+      stops with *"No matching distribution found for torch==2.14.0+cpu"*. If your colleague does install it (from PyTorch's CPU index), they
+      get a CPU-only PyTorch on a CUDA machine: `torch.cuda.is_available()` is `False`, nothing errors, and training silently runs on the CPU,
+      many times slower. Either way the file has hard-coded *your* hardware into *their* install. Pin `torch==2.14.0` and choose the build
+      with the platform's install command, as this lesson's `requirements.txt` does.
+    - |
+      Separate the two jobs. Keep **exact** versions in a lock file for reproducibility, and keep **ranges** for the direct dependencies
+      (in `pyproject.toml` or `requirements.in`) to describe what the code actually needs. Then move the pins deliberately rather than by
+      accident: on a schedule, or when there is a reason (a security advisory from `pip-audit` or Dependabot, a bug fix or feature you need,
+      new hardware or CUDA, a Python version reaching end of life). Upgrade on a branch, run the tests and the baseline training, compare the
+      new results JSON with the last one, and commit the new pins together with the evidence that nothing changed.
+  "3-1":
+    - |
+      Importing `train.py` runs its top-level imports, so the serving process would load `yaml`, `argparse`, the data module (pandas,
+      scikit-learn, the download code) and the metrics, and needs every training dependency installed. In practice: a bigger container,
+      slower cold starts when the service scales up, more memory per replica, and a larger attack surface. Worse, every change to training
+      code becomes a change to serving, so a refactor of the training loop can break production. The only reason importing it would not
+      also *start training* is the `if __name__ == "__main__":` guard; without it, `argparse` would read the server's own command line and
+      exit with *"the following arguments are required: --config"*.
+    - |
+      Lesson 2.1's rule is about silent fixes that **change the meaning** of the data or hide a bug, such as `(N,)` against `(N, 1)`
+      broadcasting into an `(N, N)` loss with no error. Here nothing is guessed: a 1-D array of length `in_features` can only mean *one row*,
+      the fix happens once at the public boundary of the module rather than deep inside the maths, the contract is written down
+      ("one row or many") and tested by `test_single_row_inference`, and the output shape `(1,)` makes it visible. A wrong-length row still
+      fails loudly in the first `Linear` layer. Normalising an unambiguous input format at an interface is convenience; reshaping ambiguous
+      data in the middle of a computation is the dangerous kind.
+  "4-1":
+    - |
+      The test passes if any logit falls outside `[0, 1]`. A freshly initialised network fed standard-normal inputs often produces small
+      logits clustered near its output bias, for example all between 0.1 and 0.4, so a model with **no** sigmoid could fail the test by
+      chance, and whether it fails would depend on the random initialisation. Multiplying the input by 10 spreads the logits about ten times
+      wider (a ReLU network without biases scales exactly with its input), so raw logits almost certainly leave `[0, 1]`, while a sigmoid
+      still traps every output inside it at any scale. The scaling turns "happens to be small" into a reliable signal of "bounded by construction".
+    - |
+      **Testable:** anything with a clear pass/fail rule you can check with data you have. For example, the saved checkpoint reloads and
+      reproduces the recorded validation ROC-AUC, it scores at least 0.78 on validation (above logistic regression's 0.770), predictions
+      are identical for identical inputs, or shuffling the rows does not change any row's score. **Not testable:** "the model is good enough
+      for the call centre", "it is fair to every age group", "it will still work on next year's campaign". What distinguishes them is an
+      **oracle**: a testable property has an objective expected value available when the test runs; the others depend on judgement, on
+      context, or on data that does not exist yet.
+  "5-1":
+    - |
+      Early stopping picked the best of 16 epochs **by looking at validation**, so the chosen validation score includes a little luck
+      (selection bias). The test split was never used for a decision, and it is a different random sample: with about 6,800 customers and
+      800 subscribers, each ROC-AUC has a standard error near 0.01, so 0.7982 against 0.7872 is well within noise plus mild optimism.
+      A gap ten times larger (about 0.11) is not noise. Suspect the validation set was used too much (heavy tuning), leakage into
+      validation (preprocessing fitted on it, duplicate rows across splits), validation and test drawn from different distributions (a
+      non-random or time-based split), or a bug that evaluates test differently (preprocessing, `eval()` mode). Investigate before quoting
+      either number.
+    - |
+      Make the project an installable package: add a `pyproject.toml` that names the package and its dependencies, then run
+      `pip install -e .` (an **editable install**) inside the virtual environment. The package becomes importable from any folder
+      (`notebooks/`, `tests/`, `app/`), pytest and your editor find it, and the dependencies are declared in the same file. `PYTHONPATH`
+      is hidden state again: it lives in one shell or one function, not in the repository, so forgetting it gives `ModuleNotFoundError`,
+      and it can shadow other packages. (Real projects also give the package a proper name, such as `src/bank_mlp/`, rather than importing
+      `src` itself.)
+  "6-1":
+    - |
+      Keep the weights out of git history and publish them somewhere made for files: attach `baseline.pt` to a **GitHub Release** of a tagged
+      commit, push it to a **Hugging Face Hub** model repository (with a model card), or use **Git LFS** or **DVC** with cloud storage so git
+      stores only a pointer. Then add a small download function, like `download()` for the data, that fetches the file and checks its
+      SHA-256, and point the README's inference section at it. Prefer `safetensors` weights plus a JSON config over a pickled `.pt`, so users
+      can load it with `weights_only=True` (Lesson 2.3). Retraining from the committed config also works here, but a demo should not
+      require training.
+    - |
+      One logical change per commit, each leaving the project working, tests travelling with the code they test:
+
+      1. `Add project skeleton, pinned requirements and .gitignore`: folders, `__init__.py` files, `requirements.txt`, `.gitignore`
+      2. `Add data module: download, drop duration leak, train-only scaling`: `src/data/dataset.py`
+      3. `Add configurable BankMLP with shape and contract tests`: `src/models/mlp.py`, `tests/test_shapes.py` (without the single-row test)
+      4. `Add config-driven training entry point with early stopping`: `src/evaluation/metrics.py`, `src/training/train.py`, `configs/baseline.yaml`
+      5. `Add inference module and README`: `src/inference/predict.py`, `test_single_row_inference`, `README.md`
+
+      A sixth, `Add wide config to test more capacity`, would carry `configs/wide.yaml`, ideally with its results JSON.
+
+explain:
+  - cell: "%%writefile bank_marketing_project/src/data/dataset.py"
+    title: "The data module, line by line"
+    summary: "Everything from raw CSV to model-ready arrays, in one importable file. Every learned statistic comes from the training split."
+    lines:
+      - match: "LEAKY_COLUMNS = [\"duration\"]"
+        note: "Call length is only known after the call, when the outcome is already known. Keeping it would leak the answer."
+      - match: "if csv_path.exists():"
+        note: "Download only once; later runs reuse the cached CSV."
+      - match: "df, y, test_size=0.30, stratify=y, random_state=seed)"
+        note: "70% train, 30% held back, with the 11.7% positive rate kept in both parts. The seed makes the split repeatable."
+      - match: "X_tmp, y_tmp, test_size=0.50, stratify=y_tmp, random_state=seed)"
+        note: "Half of the 30% becomes validation, half test: 70/15/15 overall."
+      - match: "scaler = StandardScaler().fit(train_ohe[numeric])"
+        note: "Means and standard deviations come from training rows only; validation and test are transformed with them."
+      - match: ".reindex(columns=names, fill_value=0)"
+        note: "Forces every split onto the training columns: a category missing from a split becomes a column of zeros, an unseen one is dropped."
+      - match: "torch.from_numpy(y).float().unsqueeze(1),"
+        note: "Labels become float and `(N, 1)`, matching the model's `(N, 1)` logits for `BCEWithLogitsLoss`."
+
+  - cell: "%%writefile bank_marketing_project/src/training/train.py"
+    title: "The training entry point"
+    summary: "The notebook's training, as a program: every number comes from the config, and the run ends with two files on disk."
+    lines:
+      - match: "cfg = yaml.safe_load(Path(config_path).read_text())"
+        note: "`safe_load` builds plain dicts and lists only; it never runs code hidden in a YAML file."
+      - match: "hidden_sizes=tuple(cfg[\"hidden_sizes\"]),"
+        note: "YAML gives a list; the model expects a tuple of widths."
+      - match: "if val[\"loss\"] < best_loss - cfg[\"min_delta\"]:"
+        note: "Early stopping from Lesson 2.3, with `patience` and `min_delta` read from the config."
+      - match: "best_weights = copy.deepcopy(model.state_dict())"
+        note: "A real copy: `state_dict()` returns references to tensors that keep changing."
+      - match: "test_final = evaluate(model, test_loader, loss_fn, device)"
+        note: "The test split is scored once, after the best epoch has been chosen and restored."
+      - match: "\"config\": cfg,"
+        note: "The config travels inside the checkpoint, so the architecture can be rebuilt from the file alone."
+      - match: "if __name__ == \"__main__\":"
+        note: "Parse arguments and train only when run as a program. Importing this module runs nothing."
+
+  - cell: "%%writefile bank_marketing_project/src/inference/predict.py"
+    title: "Inference without training"
+    summary: "Load, rebuild, score. No optimizer, no loss, no data download."
+    lines:
+      - match: "ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)"
+        note: "`map_location` loads a GPU-trained checkpoint onto any device. `weights_only=False` is needed for the config dict; use it only on files you trust."
+      - match: "hidden_sizes=tuple(ckpt[\"config\"][\"hidden_sizes\"]),"
+        note: "The architecture comes from the checkpoint's own config, not from a default that may have changed since."
+      - match: "if tensor.ndim == 1:"
+        note: "One row arrives as shape `(50,)`; `unsqueeze(0)` makes it a batch of one, `(1, 50)`."
+      - match: "return np.argsort(probs)[::-1][:top_k]"
+        note: "Sort ascending, reverse, take the first k: the customers to call first."
+
+  - cell: "def run_in_project(command: list[str], timeout: int = 900)"
+    title: "Running the project as a separate process"
+    summary: "The notebook runs the project the way anyone else would: a fresh Python process started in the project folder."
+    lines:
+      - match: "env = dict(os.environ, PYTHONPATH=str(PROJECT.resolve()))"
+        note: "A copy of the environment plus `PYTHONPATH`, so `from src…` resolves however the command is started."
+      - match: "command, cwd=PROJECT, env=env,"
+        note: "Run from the project root, exactly as the README tells a user to."
+      - match: "for extra in ([], [\"--break-system-packages\"]):"
+        note: "Some managed Pythons (PEP 668) refuse plain `pip install`; the second attempt overrides that. Prefer a virtual environment."
+      - match: "test_run = run_in_project([sys.executable, \"-m\", \"pytest\""
+        note: "`sys.executable` is the notebook's own Python, so the tests use the same packages the notebook has."
+
+  - cell: "# Initialise the repository and make a first commit."
+    title: "A first commit, from Python"
+    summary: "Five git commands, and two checks that `.gitignore` did its job."
+    lines:
+      - match: "[\"git\", \"-c\", \"user.email=learner@example.com\", \"-c\", \"user.name=Learner\", *args],"
+        note: "`-c` sets an identity for this one command, so the commit works on a machine where git was never configured."
+      - match: "git(\"add\", \"-A\")"
+        note: "Stage everything that `.gitignore` does not exclude."
+      - match: "status = git(\"status\", \"--porcelain\").stdout"
+        note: "Machine-readable status: an empty result means nothing was left untracked or modified."
+      - match: "tracked = git(\"ls-files\").stdout.strip().splitlines()"
+        note: "The files git actually holds: the list a person who clones the repository will get."
+
+takeaways:
+  - "A notebook saves outputs but not the order its cells ran (**hidden state**). Use notebooks to explore and explain; put reusable logic in modules that notebooks and scripts import."
+  - "Record the direct dependencies, pinned to versions you actually tested. Install PyTorch with the command for your hardware, then check it (`torch.cuda.is_available()`, MPS)."
+  - "One job per module: data, model, evaluation, inference and a training **entry point**. Inference imports the model, never the training code."
+  - "Anything you would change to run a new experiment belongs in a YAML **config**; copying it into the checkpoint and results JSON makes every result carry its recipe."
+  - "Seeds make random choices repeatable on the same setup; they do not make results bit-identical across CPU, CUDA and MPS."
+  - "Contract tests (shapes, logits, registered parameters, single-row inference) catch plumbing bugs in a second, before a long run. They say nothing about model quality."
+  - "`python -m src.training.train --config configs/baseline.yaml` from the project root: no hidden state. Quote the **test** number; validation is mildly optimistic after early stopping."
+  - "Do not commit what you can regenerate (data, checkpoints, environments, caches) or any secret. Anchor patterns (`/data/`) and verify with `git ls-files` and `git check-ignore -v`."
+  - "One logical change per commit, with a message that says why. Start the twelve-section README now."
+
+quiz:
+  - q: "A cell starts with `%%writefile bank_marketing_project/src/models/mlp.py` and defines `BankMLP`. After running it, what is true?"
+    options: ["`BankMLP` is defined in the notebook and saved to the file", "The file is written; `BankMLP` is not defined in the notebook until something imports it", "The file is executed with Python", "Nothing happens until the notebook is saved"]
+    answer: 1
+    why: "`%%writefile` only writes the cell's text to disk. The kernel never executes it."
+  - q: "Why does the lesson's `.gitignore` say `/data/` rather than `data/`?"
+    options: ["`/data/` is faster to match", "Without the leading slash the pattern also matches `src/data/`, silently dropping source code", "`data/` only matches files, not folders", "Git requires a leading slash on every pattern"]
+    answer: 1
+    why: "A pattern with no leading or middle slash matches at every level of the tree. The slash anchors it to the root."
+  - q: "`python src/training/train.py` fails with `No module named 'src'`, but `python -m src.training.train` works. Why?"
+    options: ["`-m` installs the package first", "`-m` puts the current directory (the project root) on `sys.path` and runs the file as part of the package", "`-m` ignores import errors", "Running by path only works on Windows"]
+    answer: 1
+    why: "Running a file by path puts that file's own folder on `sys.path`, so the top-level `src` package cannot be found."
+  - q: "What does `seed_everything(42)` guarantee?"
+    options: ["Identical results on every computer", "Repeatable random choices (initialisation, shuffling, dropout) on the same software and hardware", "That the model generalises", "Nothing at all"]
+    answer: 1
+    why: "Different backends and kernels can still change the last decimals: the CPU and MPS runs differ in the fourth."
+  - q: "Validation ROC-AUC is 0.798 and test is 0.787. Which number belongs in the README?"
+    options: ["Validation: it is higher", "Test: validation was used to choose the epoch, so it is mildly optimistic", "Their average", "Neither: quote training ROC-AUC"]
+    answer: 1
+    why: "The test split was never used for a decision, which is what makes it an honest estimate."
+  - q: "Which of these belongs in git?"
+    options: ["`data/bank-full.csv`", "`checkpoints/baseline.pt`", "`configs/wide.yaml`", "`.venv/`"]
+    answer: 2
+    why: "The config cannot be regenerated from anything else; the other three can (download, training, `pip install`)."
+
+docstrings:
+  classify: |
+    Label a probability "yes" or "no" by comparing it with the global ``threshold``.
+
+    Deliberately written to read a global variable: its answer depends on whatever
+    ``threshold`` holds when it is *called*, which is the hidden-state problem this
+    section demonstrates.
+
+    Args:
+        p: A predicted probability between 0 and 1.
+
+    Returns:
+        ``"yes"`` if ``p >= threshold``, otherwise ``"no"``.
+
+    Raises:
+        NameError: If no global ``threshold`` has been defined yet.
+  download: |
+    Fetch ``bank-full.csv`` into ``data_dir`` unless it is already there.
+
+    The UCI archive nests a second zip, so both are downloaded and unpacked, the CSV is
+    kept, and the two archives are deleted. Later calls return the cached file at once.
+
+    Args:
+        data_dir: Folder to cache the dataset in; created if it does not exist.
+
+    Returns:
+        Path to ``bank-full.csv``.
+
+    Raises:
+        urllib.error.URLError: If the file is missing and UCI cannot be reached.
+        KeyError: If the archive no longer contains the expected files.
+  load_splits: |
+    Load Bank Marketing and return encoded, scaled train/validation/test arrays.
+
+    Drops the leaky ``duration`` column, makes a stratified 70/15/15 split with the
+    given seed, one-hot encodes the categorical columns and standardises the numeric
+    ones. Encoding columns and scaling statistics come from the training split only,
+    and validation and test are forced onto the same columns.
+
+    Args:
+        data_dir: Folder holding (or to receive) ``bank-full.csv``.
+        seed: Random seed for both splits, so the same seed gives the same rows.
+
+    Returns:
+        A dict with float32 feature matrices ``X_train``, ``X_val``, ``X_test``, int64
+        label vectors ``y_train``, ``y_val``, ``y_test`` (1 = subscribed) and the list of
+        encoded column names ``feature_names``.
+  load_splits.encode: |
+    Encode one split exactly like the training split.
+
+    Args:
+        frame: Feature rows from one split of the original DataFrame.
+
+    Returns:
+        A float32 array whose columns match the training one-hot columns (missing
+        categories filled with 0), with numeric columns standardised by the training
+        scaler.
+  make_loaders: |
+    Wrap encoded arrays in DataLoaders for training, validation and test.
+
+    Labels are converted to float and reshaped to ``(N, 1)`` so they match the model's
+    one-logit output and ``BCEWithLogitsLoss``. Only the training loader shuffles.
+
+    Args:
+        splits: The dict returned by ``load_splits``.
+        batch_size: Rows per training batch.
+        eval_batch_size: Rows per validation/test batch (larger: no gradients are kept).
+
+    Returns:
+        A tuple ``(train_loader, val_loader, test_loader)``.
+  make_loaders.build: |
+    Build one DataLoader over a ``TensorDataset``.
+
+    Args:
+        X: Float32 feature matrix of shape ``(N, F)``.
+        y: Integer label vector of shape ``(N,)``.
+        bs: Batch size.
+        shuffle: Whether to reshuffle the rows every epoch.
+
+    Returns:
+        A ``DataLoader`` yielding ``(x, y)`` with ``y`` shaped ``(batch, 1)``.
+  DenseBlock: |
+    A reusable ``Linear → ReLU`` building block (unchanged from Lesson 2.3).
+
+    Packaging the repeated motif once lets ``BankMLP`` describe any depth as a stack of
+    blocks.
+  DenseBlock.__init__: |
+    Create the linear layer and its activation.
+
+    Args:
+        in_features: Width of the block's input.
+        out_features: Width of the block's output.
+  DenseBlock.forward: |
+    Apply the linear layer, then ReLU.
+
+    Args:
+        x: Input of shape ``(N, in_features)``.
+
+    Returns:
+        Activations of shape ``(N, out_features)``.
+  BankMLP: |
+    Configurable-depth MLP for binary classification on tabular data.
+
+    A stack of ``DenseBlock`` layers whose widths come from ``hidden_sizes``, then a
+    linear head that returns raw logits. Because the widths are an argument, depth and
+    width are set by the config file rather than by editing code.
+
+    Attributes:
+        blocks: ``nn.ModuleList`` of ``DenseBlock`` layers (registered, so the optimizer
+            sees them).
+        head: Final ``nn.Linear`` producing ``out_features`` logits per row.
+  BankMLP.__init__: |
+    Build the blocks and the output head.
+
+    Args:
+        in_features: Number of input features (50 after encoding).
+        hidden_sizes: Width of each hidden layer, in order, e.g. ``(64, 32)``.
+        out_features: Number of outputs; 1 for a single binary logit.
+  BankMLP.forward: |
+    Run the input through every block, then the head.
+
+    Args:
+        x: Input of shape ``(N, in_features)``.
+
+    Returns:
+        Raw logits of shape ``(N, out_features)``. No sigmoid: ``BCEWithLogitsLoss``
+        applies it internally, and ``predict_proba`` applies it for scoring.
+  count_parameters: |
+    Count every parameter element in a model.
+
+    Args:
+        model: Any ``nn.Module``.
+
+    Returns:
+        The total number of elements across ``model.parameters()`` (trainable or not).
+        Layers that were never registered are not counted, which is what the
+        parameter-count test relies on.
+  evaluate: |
+    Measure a model on a loader without training it.
+
+    Runs in evaluation mode under ``torch.no_grad()``, collects every prediction, then
+    computes the mean loss per example, ROC-AUC and average precision once over the
+    whole split. Accuracy is deliberately not reported: about 88% of rows are negative.
+
+    Args:
+        model: The model to evaluate.
+        loader: DataLoader yielding ``(x, y)`` batches, labels shaped ``(batch, 1)``.
+        loss_fn: Loss taking ``(logits, targets)``, e.g. ``BCEWithLogitsLoss()``.
+        device: Device the model lives on; batches are moved there.
+
+    Returns:
+        A dict with ``"loss"``, ``"roc_auc"``, ``"avg_precision"`` and the NumPy arrays
+        ``"probs"`` (predicted probabilities) and ``"labels"``.
+  recall_at_budget: |
+    Share of all positives found by contacting only the top-scored fraction of rows.
+
+    Answers the call-centre question: if we can phone the top 20% of the ranked list,
+    what fraction of all subscribers do we reach?
+
+    Args:
+        probs: Predicted scores, one per row (higher = more likely).
+        labels: True labels (1 = positive), aligned with ``probs``.
+        fraction: Share of rows that can be contacted, between 0 and 1.
+
+    Returns:
+        Recall among the top ``fraction`` of rows (``nan`` if ``labels`` has no positives).
+  seed_everything: |
+    Seed every random-number generator that affects a run.
+
+    Seeds Python's ``random``, NumPy and PyTorch (all CUDA devices too when present), so
+    the split, weight initialisation and shuffling repeat for the same seed on the same
+    setup. Results can still differ slightly across CPU, CUDA and MPS. Setting
+    ``PYTHONHASHSEED`` here only affects processes started afterwards: Python reads it
+    at start-up.
+
+    Args:
+        seed: The seed value, normally ``cfg["seed"]``.
+  get_device: |
+    Choose the device to train on.
+
+    Args:
+        preference: ``"auto"`` to pick CUDA, then Apple MPS, then CPU; or an explicit
+            device string such as ``"cpu"``, ``"cuda"`` or ``"mps"``.
+
+    Returns:
+        A ``torch.device``.
+  train_one_epoch: |
+    Train for one pass over the loader and return the mean loss per example.
+
+    For every batch: move it to the device, clear gradients, forward, compute the loss,
+    backpropagate and step. Each batch's loss is weighted by its real size, so a short
+    last batch does not distort the average.
+
+    Args:
+        model: The model to train (switched to training mode inside).
+        loader: DataLoader yielding ``(x, y)`` training batches.
+        loss_fn: Loss taking ``(logits, targets)``.
+        optimizer: Optimizer built from ``model.parameters()``.
+        device: Device the model lives on.
+
+    Returns:
+        Mean training loss per example over the epoch.
+  main: |
+    Run one complete experiment described by a YAML config file.
+
+    Seeds everything, picks a device, loads and encodes the data, builds ``BankMLP``,
+    Adam and ``BCEWithLogitsLoss``, trains with early stopping on validation loss,
+    restores the best weights, evaluates validation and then test, and saves a
+    checkpoint plus a JSON record of the run in ``checkpoint_dir``.
+
+    Args:
+        config_path: Path to a YAML file with ``run_name``, ``seed``, ``device``,
+            ``data_dir``, ``batch_size``, ``eval_batch_size``, ``hidden_sizes``,
+            ``learning_rate``, ``max_epochs``, ``patience``, ``min_delta`` and
+            ``checkpoint_dir``.
+
+    Returns:
+        The run record also written to ``<run_name>_results.json``: config, best epoch,
+        elapsed seconds, per-epoch history, validation and test metrics, torch version.
+
+    Raises:
+        KeyError: If the config is missing a required setting.
+  load_model: |
+    Rebuild a trained ``BankMLP`` from a checkpoint and switch it to evaluation mode.
+
+    The architecture comes from the checkpoint's own ``config`` and ``in_features``, so
+    the weights always load into the shape they were trained with.
+
+    Args:
+        checkpoint_path: A ``.pt`` file written by ``train.py``. Only load files you
+            trust: ``weights_only=False`` can execute pickled code.
+        device: Device to place the model on.
+
+    Returns:
+        The model, with weights loaded, in ``eval()`` mode.
+  predict_proba: |
+    Return P(subscribe) for each row of already-encoded features.
+
+    Accepts a single row or a batch: a 1-D input is treated as one row. Runs without
+    gradients and applies the sigmoid to the model's logits.
+
+    Args:
+        model: A trained model, e.g. from ``load_model``.
+        X: Features encoded exactly as ``load_splits`` encodes them, shape
+            ``(in_features,)`` or ``(N, in_features)``. A raw CSV row will not work.
+        device: Device the model lives on.
+
+    Returns:
+        A 1-D NumPy array of probabilities, one per row.
+  rank_by_score: |
+    Return the indices of the highest-scoring rows, best first.
+
+    Args:
+        probs: Scores, one per row.
+        top_k: How many rows to return (e.g. how many customers can be called).
+
+    Returns:
+        A NumPy array of up to ``top_k`` row indices, sorted by descending score.
+  run_in_project: |
+    Run a command from the project root, with the project importable.
+
+    Starts a separate process in ``PROJECT`` with ``PYTHONPATH`` pointing at it, prints
+    its standard output, and prints the end of standard error if the command fails.
+
+    Args:
+        command: The command and its arguments, e.g.
+            ``[sys.executable, "-m", "pytest", "tests/"]``.
+        timeout: Seconds to wait before giving up.
+
+    Returns:
+        The ``subprocess.CompletedProcess``; check ``returncode`` (0 means success).
+
+    Raises:
+        subprocess.TimeoutExpired: If the command runs longer than ``timeout``.
+  ensure_pytest: |
+    Make sure pytest can be imported, installing it if necessary.
+
+    Tries a normal ``pip install`` first and then, for externally managed Pythons
+    (PEP 668), the same install with ``--break-system-packages``.
+
+    Returns:
+        ``True`` if pytest is available afterwards, ``False`` if both installs failed.
+  git: |
+    Run a git command inside the project and return its result.
+
+    A throwaway identity is passed with ``-c`` so commits work on machines where git
+    was never configured.
+
+    Args:
+        *args: The git subcommand and its arguments, e.g. ``"log", "--oneline"``.
+        check: Accepted but not used: failures do not raise; inspect ``returncode``.
+
+    Returns:
+        The ``subprocess.CompletedProcess`` with captured ``stdout`` and ``stderr``.
+  dir_size: |
+    Total size of a file, or of every file under a directory.
+
+    Args:
+        p: A file or directory path.
+
+    Returns:
+        Size in bytes.
