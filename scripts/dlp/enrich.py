@@ -109,6 +109,9 @@ class Enricher:
         s, idx = where
         block["_ins"] = True
         s.blocks.insert(idx, block)
+        if item.get("replace") and item.get("after") and idx > 0 and not s.blocks[idx - 1].get("_ins"):
+            # the enrichment supersedes the anchor block (e.g. an un-answerable question list)
+            s.blocks.pop(idx - 1)
 
     def _insert_block(self, item: dict) -> dict:
         t = item.get("type", "explainer")
@@ -147,7 +150,7 @@ class Enricher:
             return self._quiz_block(item)
         if t == "questions":
             # a question card that is not in the notebook (e.g. restored from another version)
-            items = [{"html": inline_md(q["q"]) if "\n" not in q["q"] else self.md(q["q"]), "text": q["q"],
+            items = [{"html": self.inline(q["q"]), "text": q["q"],
                       "answer_html": self.md(q.get("a"))} for q in item.get("items", [])]
             return {"kind": "questions", "qtype": item.get("qtype", "check"),
                     "label": item.get("label", "Check your understanding"), "intro_html": self.md(item.get("intro")) if item.get("intro") else "",

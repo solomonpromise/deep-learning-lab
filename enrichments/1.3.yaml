@@ -1,0 +1,396 @@
+# Teaching layer for Lesson 1.3 — Your First PyTorch Network
+
+summary: |
+  Everything you did by hand in Lesson 1.2, now in idiomatic PyTorch: **tensors** (shape, dtype, device),
+  a model as an **`nn.Module`**, a numerically stable **loss on logits**, an **optimizer**, and the **six-line training loop**.
+  You train it on the spirals, read its loss curve, save and reload it, and then break it three quiet ways.
+  None of them raises an error; learning to spot them is the real skill.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    after: "6ef75600"
+    type: widget
+    name: tensor-shapes
+    title: "Tensor ranks, reshapes and broadcasting: see them"
+    props: { start: rank }
+    intro: "Start on **Ranks** to connect each shape to what it means in deep learning. The other tabs are used in Section 3."
+
+  - section: 1
+    after: "c = torch.tensor(np.array([1.0, 2.0]))"
+    type: explainer
+    style: warning
+    title: "The float64 trap, and why it matters"
+    md: |
+      NumPy defaults to **float64**, and `torch.tensor(numpy_array)` keeps that dtype. Your model's weights are **float32**, so the first
+      matrix multiply fails with a dtype-mismatch error, or everything silently runs at half speed and double memory.
+      **Habit:** convert with `dtype=torch.float32` at the moment data enters PyTorch (as Section 4 does), and use `torch.long` for class labels.
+
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "Write the detection once, at the top of every notebook"
+    type: compare
+    title: "Three places a tensor can live"
+    items:
+      - { title: "cuda", tone: green, icon: rocket, md: "NVIDIA GPUs: Colab, Kaggle, most servers. Everything runs here, including CUDA-only libraries (bitsandbytes, vLLM, flash-attn)." }
+      - { title: "mps", tone: violet, icon: spark, md: "Apple Silicon GPU via Metal. Fast for a laptop and fine for most of the course; the CUDA-only libraries won't install." }
+      - { title: "cpu", tone: blue, icon: gear, md: "Always available. Slower for big models, but perfectly adequate for Module 1's tiny networks." }
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "Here is the habit that saves the most debugging time"
+    type: widget
+    name: tensor-shapes
+    title: "Shape playground: reshape, broadcast, multiply"
+    props: { tabs: [reshape, broadcast, matmul], start: matmul }
+    intro: |
+      **Matrix multiply:** set the sizes so the inner dimensions disagree and read the error, then hover a result cell.
+      **Broadcasting:** try A `(4,)` with B `(4,1)`, the silent bug behind many wrong losses. **Reshape:** the same numbers in a new shape.
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "unsqueeze(1): (N,) -> (N, 1)"
+    type: explainer
+    style: plain
+    title: "Why the labels get an extra axis"
+    md: |
+      The network has **one output neuron**, so for 750 examples it returns shape `(750, 1)`: a column. The labels arrive as `(750,)`: a flat vector.
+      `unsqueeze(1)` inserts an axis at position 1, turning `(750,)` into `(750, 1)`, so predictions and labels line up element by element.
+      (`BCEWithLogitsLoss` refuses mismatched shapes with a `ValueError`; some other losses silently *broadcast* them into a 750×750 matrix instead, which is worse.)
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    after: "Note the pattern: scale FIRST, then request gradients"
+    type: explainer
+    style: warning
+    title: "Leaf tensors: why the order matters"
+    md: |
+      Autograd only fills `.grad` for **leaf tensors**: tensors you created directly with `requires_grad=True`.
+      `torch.randn(2, 16, requires_grad=True) * 0.5` creates a leaf and then multiplies it, so the variable you keep is the *result* of an operation
+      (a non-leaf), and its `.grad` stays `None`. Creating the tensor, scaling it, *then* calling `.requires_grad_(True)` makes the scaled tensor the leaf.
+      `nn.Module` layers handle all of this for you, which is one more reason to use them.
+
+  - section: 5
+    after: "Three things `nn.Module` did without being asked"
+    type: compare
+    title: "Version A vs Version B"
+    items:
+      - title: "Raw tensors"
+        tone: orange
+        icon: alert
+        md: "You create, initialise, move, pass to the optimiser and save **every** parameter by hand. Fine for 4 tensors; unmanageable for 400."
+      - title: "nn.Module"
+        tone: green
+        icon: check
+        md: "Declare layers as attributes. `model.parameters()`, `.to(device)`, `.state_dict()`, `.train()`/`.eval()` all work on the whole tree automatically."
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "That last line is a real diagnostic"
+    type: explainer
+    style: tip
+    title: "The initial-loss sanity check, in numbers"
+    md: |
+      An untrained classifier should be about as unsure as random guessing, so its loss should start near $-\log(1/K)$ for $K$ classes:
+
+      | Classes | Expected starting loss |
+      |---|---|
+      | 2 (binary) | $\ln 2 = 0.693$ |
+      | 10 | $\ln 10 = 2.303$ |
+      | 1000 | $\ln 1000 = 6.908$ |
+
+      Starting far above this means the model is *confidently wrong* from the first step, which almost always indicates a bug.
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "Proof that this is Note 1.2"
+    type: explainer
+    style: plain
+    title: "What the optimizer holds on to"
+    md: |
+      `torch.optim.Adam(model.parameters(), lr=0.01)` receives **references** to the model's actual parameter tensors, not copies.
+      `optimizer.step()` updates those tensors *in place*, so the model changes. Adam also keeps two extra numbers per parameter (running averages of the gradient and of its square),
+      which is why an Adam optimizer has **state** worth saving in a checkpoint (Section 12).
+
+  # ------------------------------------------------------------------ §8
+  - section: 8
+    after: "8668abc4"
+    type: widget
+    name: training-loop
+    title: "Run the six lines one at a time"
+    intro: |
+      A tiny model, $\hat y = w x + b$, trained with exactly these six lines. Step through them and watch each one act on the parameters and their `.grad`.
+      Then switch to **Bug: delete zero_grad()** and auto-play: gradients pile up in `.grad` and the fit swings back and forth, never settling.
+
+  # ------------------------------------------------------------------ §9
+  - section: 9
+    after: "Nothing was told to this model about radius or angle"
+    type: widget
+    name: spiral-lab
+    title: "Train the same network in your browser"
+    props: { model: network }
+    intro: "The PyTorch model above, reproduced in your browser. Use **Hidden units per layer** and **Noise** to answer this section's questions yourself."
+
+  # ------------------------------------------------------------------ §10
+  - section: 10
+    after: "Three shapes to commit to memory now"
+    type: widget
+    name: curve-doctor
+    title: "Curve doctor: diagnose the run"
+    props: { patterns: [healthy, overfit, underfit, lrhigh] }
+    intro: "Each patient is a pair of loss curves. Name the pattern before reading the explanation. Module 3 adds more patterns to this clinic."
+
+  # ------------------------------------------------------------------ §11
+  - section: 11
+    after: "Models are frequently more confident than they have earned"
+    type: explainer
+    style: why
+    title: "Why the network is over-confident far from the data"
+    md: |
+      A ReLU network is **piecewise linear**: far from the training data its logit keeps growing (or shrinking) along whatever straight-line
+      trend the last region had, so the sigmoid of that logit is pushed towards 0 or 1. Nothing in training ever told it to be *unsure* where there was no data.
+      Good probability estimates (**calibration**) must be checked on held-out data and sometimes corrected. Module 9 covers how.
+
+  # ------------------------------------------------------------------ §12
+  - section: 12
+    after: "Save the **state dict**"
+    type: compare
+    title: "Two ways to save, one right answer"
+    items:
+      - title: "torch.save(model)"
+        tone: red
+        icon: x
+        md: "Pickles the whole object, including a reference to your class's code location. Rename a file or refactor a class and loading breaks."
+      - title: "torch.save(model.state_dict())"
+        tone: green
+        icon: check
+        md: "Saves just `{parameter name → tensor}`. Rebuild the architecture from code, then `load_state_dict`. Robust, portable, the industry standard."
+
+  # ------------------------------------------------------------------ §13
+  - section: 13
+    after: "Try to predict the symptom before running each cell"
+    type: widget
+    name: bug-lab
+    title: "Bug lab: three silent failures, live"
+    intro: "Run the working model and the three bugs with the same data and settings. Predict each curve's shape first. Notice what is missing: **not one error message.**"
+
+  - section: 13
+    after: "Read the four curves side by side"
+    type: explainer
+    style: deep
+    title: "Why bug 1 misbehaves even with Adam"
+    md: |
+      Without `zero_grad()`, `.grad` after step $t$ holds $g_1 + g_2 + \dots + g_t$, the sum of **every gradient so far**.
+      Early gradients (computed for weights that no longer exist) keep steering every later update, like momentum that never decays.
+      Adam divides by a running scale, so the steps don't simply explode, but their *direction* is dominated by stale history: the model circles and
+      oscillates instead of settling. The training-loop widget in Section 8 shows the same effect with plain SGD.
+
+  - section: 13
+    after: "Introduce a fourth bug on your own"
+    type: explainer
+    style: warning
+    title: "Two of the suggested bugs actually raise errors"
+    md: |
+      Checked in current PyTorch: passing labels of shape `(N,)` to `BCEWithLogitsLoss` with predictions `(N, 1)` raises
+      `ValueError: Target size … must be the same as input size`, and `BCELoss` on raw logits raises `RuntimeError: all elements of input should be between 0 and 1`.
+      Those are the **lucky** bugs: they fail loudly. (With `MSELoss`, the same shape mistake broadcasts silently to an `(N, N)` matrix, with only a warning.)
+
+  # ------------------------------------------------------------------ §14
+  - section: 14
+    after: "Work through these without scrolling back"
+    replace: true
+    type: questions
+    id: "14-1"
+    qtype: check
+    label: "End-of-module competency check"
+    intro: "Work through these without scrolling back. If any is shaky, revisit that section; Module 2 builds directly on all of it."
+    items:
+      - q: "**Conceptual.** Why did logistic regression fail on the spirals, and why was that not a bug?"
+        a: "Its decision boundary is a single straight line ($w_1x_1+w_2x_2+b=0$), and no straight line separates two interleaved spirals. The code, data and optimiser all worked; the task was outside what the **model class** can express."
+      - q: "**Conceptual.** What is the difference between a learned parameter and an engineered feature?"
+        a: "A **learned parameter** is a number inside the model set by training (a weight or bias). An **engineered feature** is an input description whose formula a person wrote (like radius or angle). In a network, the early layers' parameters effectively *become* learned features."
+      - q: "**Conceptual.** Explain backpropagation in one sentence, using the word \"credit\"."
+        a: "*Backpropagation is credit assignment through the computational graph: it walks backwards from the loss using the chain rule to work out how much each parameter contributed to the error.*"
+      - q: "**Conceptual.** Why does stacking linear layers without activations gain you nothing?"
+        a: "Because a composition of linear maps is itself linear: $(XW_1+b_1)W_2+b_2 = X(W_1W_2)+(b_1W_2+b_2)$. Any depth collapses to one linear layer, which is logistic regression in an expensive costume (Bug 2 scored 61%, like logistic regression's 59%)."
+      - q: "**Conceptual.** Name one situation in 2026 where gradient boosting is the better choice than a neural network."
+        a: "A medium-sized, curated **tabular** problem such as churn or credit risk with thousands to hundreds of thousands of rows, meaningful columns, a deadline and a need for explanations. Boosting is usually as accurate or better, faster, needs no scaling and has fewer knobs."
+      - q: "**Mechanical.** Write the six lines of the training loop from memory, in order."
+        a: |
+          ```python
+          model.train()
+          optimizer.zero_grad()
+          logits = model(X)
+          loss = loss_fn(logits, y)
+          loss.backward()
+          optimizer.step()
+          ```
+      - q: "**Mechanical.** What does `optimizer.zero_grad()` do, and what happens without it?"
+        a: "It resets every parameter's `.grad` to zero (or `None`). Without it, PyTorch **adds** each new gradient to the old ones, so updates follow the sum of all past gradients: training becomes erratic and underperforms without ever raising an error (Bug 1)."
+      - q: "**Mechanical.** Why do we output logits rather than probabilities from `forward`?"
+        a: "Because `BCEWithLogitsLoss` / `CrossEntropyLoss` combine the sigmoid/softmax with the log in one **numerically stable** operation that never computes $\\log(0)$. Apply `torch.sigmoid` only when you want to *read* probabilities (inference, metrics)."
+      - q: "**Mechanical.** What are the three properties of a tensor you should always be able to state?"
+        a: "**Shape** (its dimensions, and which axis is the batch), **dtype** (e.g. `float32` for data and weights, `int64`/`long` for class labels), and **device** (`cpu`, `cuda` or `mps`)."
+      - q: "**Mechanical.** A binary classifier starts training at loss 4.2. What does that tell you before you look at anything else?"
+        a: "Something is wrong. A random binary guess scores $\\ln 2 \\approx 0.69$, so 4.2 means the model is **confidently wrong** from the start. Check label encoding (e.g. labels 0/255, or ±1), shapes (broadcasting), the loss function (probabilities vs logits), and the input scaling."
+      - q: "**Practical.** Retrain `SpiralNet` with `hidden=4`. What is the highest validation accuracy you can reach, and what does that tell you about capacity?"
+        a: "In our tests, around **68–77%** depending on the seed (vs ~97% with 64 units). It fails first in the tightly wound **centre** (about 54% there) while the outer arm stays fairly accurate. With 4 units per layer the network can only make a few straight-edged bends, too few for 2.5 turns: that is **under-capacity** (underfitting), and no amount of training fixes it."
+      - q: "**Practical.** Take the model to 5,000 epochs. Does validation loss start rising? What would you do about it?"
+        a: "Typically yes, eventually. Training loss keeps shrinking while validation loss bottoms out and slowly climbs as the model grows over-confident and fits the noise. Keep the checkpoint with the **lowest validation loss** (early stopping), and/or add regularisation (weight decay, dropout, a smaller model), as covered in Lesson 3.2."
+      - q: "**Practical.** Regenerate the spirals with `noise=0.20` and retrain. How does the boundary change, and does the loss curve tell you the data got harder?"
+        a: "The arms blur into each other, so the boundary becomes rougher and the best possible accuracy drops (some points genuinely sit on the wrong arm). The curves show it: both losses flatten at a **higher** value and the train/validation gap widens as the network tries to fit the noise. A higher loss floor with healthy-looking curves is the signature of a harder (noisier) task, not a bug."
+
+answers:
+  "1-1":
+    - "`(16, 3, 64, 64)`: batch of 16, 3 colour channels (RGB), 64 × 64 pixels, the (batch, channels, height, width) layout PyTorch uses for images."
+    - "It **doubles memory and bandwidth** for no benefit, and GPUs are built for fast float32/16 arithmetic: many consumer and datacentre GPUs run float64 at 1/2 to 1/64 of their float32 speed. Neural networks don't need 15 significant digits; the noise of training swamps them."
+    - "`t[0]` is the **first row**: the two features of the first example, a tensor of shape `(2,)`. Indexing one position of an axis removes that axis."
+  "2-1":
+    - |
+      Moving data to another device means **copying** it to different memory, so `.to()` returns a new tensor (or the same object if it's already there) and leaves the original alone.
+      A bare `x.to(DEVICE)` on its own line therefore **does nothing useful**: the moved copy is thrown away. Write `x = x.to(DEVICE)`.
+      (Careful: for an `nn.Module`, `model.to(DEVICE)` *does* move the model in place and returns it, so both styles work for models. It's tensors that bite.)
+    - "**The data.** You move the model once, at the top. Data arrives fresh every batch (and labels, masks and new inference inputs too), so every new tensor must be moved. Forgetting just one gives the `Expected all tensors to be on the same device` error."
+    - "The models and data are **tiny**: 4,417 parameters and 750 two-feature examples need only millions of arithmetic operations per epoch, which a CPU does in milliseconds. It stops being true with images, text and large models: millions or billions of parameters and big batches, where a GPU's parallel matrix multiplications are tens to hundreds of times faster (Modules 4 onward)."
+  "3-1":
+    - "Matrix multiplication needs the **inner** dimensions to match: `(4, [3]) @ ([4], 3)` pairs a length-3 row with a length-4 column, which is impossible. Transpose one side: `A @ B.T` gives `(4, 4)` (every row of A dotted with every row of B), or `A.T @ B` gives `(3, 3)`. Which one is right depends on what the rows mean."
+    - "`(5,)` is a 1-D vector; `(5, 1)` is a 2-D column (5 rows, 1 column). Same five numbers, different rank. It matters whenever two tensors meet: `(5,) + (5, 1)` **broadcasts to `(5, 5)`**, and loss functions compare predictions and labels element-wise and expect identical shapes. Try it in the Broadcasting tab."
+    - "`(3, 1)` and `(1, 4)` broadcast to **`(3, 4)`**: the column is stretched across 4 columns and the row down 3 rows, so entry $(i, j) = a_i + b_j$. It's an outer sum, a common trick for computing all pairwise combinations."
+  "4-1":
+    - "The generator appends all class-0 points, then all class-1 points. Unshuffled, the first 750 rows (training) would be 500 class-0 + 250 class-1, and the **validation set would be 250 class-1 points only**. The model would train on a skewed mix and be evaluated on one class, so validation accuracy would measure almost nothing useful."
+    - "Both spiral features are already **on the same small scale** (roughly −1 to 1, centred near 0), so no feature dominates the gradient. The churn features ranged from 0–72 (tenure) to 0–8,672 (TotalCharges), wildly different scales, which distorts gradient descent (Lesson 1.1's scaling demo)."
+    - "So both sets represent **the same problem**. If validation were 90% one class, a model that always predicts that class would score 90% and look excellent while learning nothing, and metrics couldn't be compared with training. Stratified splitting (Module 2) keeps the proportions equal automatically."
+  "5-1":
+    - "$2 \\times 64 = 128$ weights plus 64 biases = **192**. The printout agrees: `layer1.weight (64, 2)` has 128 entries and `layer1.bias (64,)` has 64. (PyTorch stores the weight as (out, in).)"
+    - "The parent's `__init__` creates the internal registries (`_parameters`, `_modules`, …) that track layers. Without it, the very first `self.layer1 = nn.Linear(...)` fails with `AttributeError: cannot assign module before Module.__init__() call`. Parameters couldn't be registered, so `.parameters()`, `.to()` and saving wouldn't work."
+    - "The boundary must wind through 2.5 turns. Each extra layer **composes** the previous layer's features, so bends can be built on top of bends; depth multiplies the number of straight pieces available far more efficiently than width alone. Lesson 1.2's network (2 hidden units, 4 points) only needed one simple split; the spirals need a much more intricate function."
+  "6-1":
+    - "$-\\log(1/10) = \\ln 10 \\approx$ **2.303**. A model that spreads probability evenly over 10 classes assigns 0.1 to the correct one."
+    - "It tells autograd **not to build the computational graph** for these operations: no saved intermediate activations and no gradient bookkeeping. That saves memory and time, and prevents accidental gradient computation when you only want to measure. For inference on large data it's essential."
+    - "`BCELoss` expects **probabilities in [0, 1]**. Logits can be any real number, and current PyTorch raises `RuntimeError: all elements of input should be between 0 and 1` as soon as one is outside that range. If all your logits happened to fall inside [0, 1], it would silently compute a **meaningless** loss (treating a logit of 0.3 as a probability of 30%)."
+  "7-1":
+    - "**Gradient accumulation.** If a batch of 256 doesn't fit in memory, run 8 micro-batches of 32, call `backward()` after each *without* zeroing so the gradients add up, then call `step()` once and zero. The result approximates a 256-batch update. Lesson 4.3 does exactly this, on purpose."
+    - "**References** to the model's actual parameter tensors. That's how `optimizer.step()` can modify the model: it updates those same tensors in place. If it held copies, stepping would change nothing."
+    - "In current PyTorch, `model.to(device)` moves parameters **in place**, so an optimizer built beforehand usually still points at the right tensors. But any optimizer **state** created or loaded before the move (e.g. Adam's buffers from a checkpoint) stays on the old device, and code that replaces parameter tensors breaks the link. PyTorch's documentation recommends moving the model first; that order is never wrong."
+  "8-1":
+    - "You would **erase the gradients you just computed**: `backward()` fills `.grad`, then `zero_grad()` wipes it, then `step()` sees zero gradients. Nothing learns (Adam may drift a little on its momentum, then stall). Order matters: clear, compute, use."
+    - "`step()` uses whatever is in `.grad` right now. Called before `backward()`, it would apply **last iteration's** gradients (or nothing on the first iteration), so every update is one step stale and computed for different parameter values. The gradient must be computed for the current parameters before you step."
+    - "Evaluating means a full forward pass over the validation set. With millions of examples that can cost as much as a chunk of training, every single epoch. Real pipelines evaluate every *N* steps, on a fixed validation subset, or once per (long) epoch, and log metrics to a tracker (Lesson 4.2)."
+  "9-1":
+    - "**No.** There is no data there, so nothing constrained the model. The network (piecewise linear) simply extends its last trends, making confident predictions from pure extrapolation. Those regions are **out of distribution**; high confidence there is unearned, which is the calibration problem the lesson mentions."
+    - "Accuracy falls to roughly **70–77%**. With 4 units per layer the boundary can only make a few straight-edged bends, so it first loses the **tightly wound centre**, where the arms alternate fastest (in our runs the centre was only ~54% correct while the outer arm stayed ~80–90%). Try it in the Spiral Lab above."
+    - "The arms overlap, so the ideal boundary becomes fuzzy: some points genuinely lie in the other class's territory. The learned boundary gets **rougher** as it chases noisy points, validation accuracy drops (the best achievable accuracy is lower), and the gap between training and validation loss grows: the first sign of overfitting."
+  "10-1":
+    - "The data is **clean and dense**: 1,000 points with little noise (0.04) tracing a smooth, learnable pattern, and validation comes from exactly the same distribution. There's little noise to memorise, so fitting the training set well mostly means learning the true spiral. (The question says 4,600 parameters; the model has 4,417.)"
+    - "The weights from **epoch 400**, the validation minimum. Save a checkpoint whenever validation loss improves and restore the best one at the end: that's **early stopping** (Lesson 3.2)."
+    - "Because they measure different things. Accuracy only counts which side of 0.5 each prediction is on; loss also measures **confidence**. Validation loss can rise (a few confident mistakes getting more confident) while accuracy holds steady or even improves. Watching both tells you whether the model is becoming right or just becoming sure."
+  "11-1":
+    - "**Habit and safety.** Today it changes nothing, but the moment someone adds dropout or batch normalisation, inference without `eval()` becomes random (dropout) or statistically wrong (batch norm). Calling it always costs nothing and makes the code correct for any architecture. It also documents intent."
+    - "Autograd would record every operation and **keep all intermediate activations** in memory for a backward pass that never comes. On a large run, memory climbs until you hit an out-of-memory error, and everything is slower. Also, outputs would carry `requires_grad=True`, so `.numpy()` fails until you `.detach()`."
+    - "Whenever the two kinds of mistake have **different costs** or classes are imbalanced: medical screening or fraud detection (lower threshold, catch more positives at the price of false alarms), or a call centre that can only phone the top 5% (pick the threshold that selects that many). The threshold is a business decision, made on validation data, not a law (Lesson 4.1 §10)."
+  "12-1":
+    - "Adam's state holds each parameter's running averages (first and second moments) and the step count. Resuming without it restarts the optimizer **cold**: the moments reset, bias correction starts over, the effective step sizes change, and the loss often jumps. The resumed run is no longer a faithful continuation of the original."
+    - "You need the **architecture**: the model class code and the hyperparameters that determine its shapes (e.g. `hidden=64`). The state dict holds only names and tensors; the names and shapes must match the model you build exactly, or loading fails with missing or unexpected keys or size mismatches."
+    - "Not in git history. Checkpoints are large binary files that change on every run, so they bloat the repository forever. Keep them in a `checkpoints/` folder listed in `.gitignore`, and store the important ones in artifact storage (a model registry, Git LFS/DVC, a cloud bucket or the Hugging Face Hub). **Commit** the code, the config and a small results file instead (Lesson 2.4)."
+  "13-1":
+    - |
+      Predicted signatures, as checked in current PyTorch:
+
+      - **Labels without `unsqueeze(1)`:** `BCEWithLogitsLoss` raises `ValueError` (sizes must match), a loud, lucky bug. With `MSELoss` it would silently broadcast to `(750, 750)`.
+      - **`BCELoss` on raw logits:** `RuntimeError` for inputs outside [0, 1], also loud.
+      - **`lr=1e-6`:** a flat line near 0.69 that looks like underfitting; accuracy stays near 50%. *Signature: nothing happens, and nothing is flagged.*
+      - **`sigmoid` in `forward` + `BCEWithLogitsLoss`:** a *double sigmoid*. The effective probability is squeezed into (0.5, 0.73), so the loss can never fall below ~0.31 (positives) / 0.69 (negatives). Worse, validation thresholds `sigmoid(output) > 0.5`, which is always true, so **every point is predicted class 1**. *Signature: loss stuck around 0.5, accuracy frozen at the class-1 rate.*
+
+explain:
+  - cell: "class SpiralNet(nn.Module):"
+    title: "Anatomy of an nn.Module"
+    summary: "Two methods: `__init__` declares the layers (and so the parameters), `forward` says how data flows through them."
+    lines:
+      - match: "super().__init__()"
+        note: "Sets up PyTorch's bookkeeping. Must come before any layer is assigned."
+      - match: "self.layer1 = nn.Linear(in_features, hidden)"
+        note: "Assigning a layer as an attribute **registers** it: its weight and bias become part of `model.parameters()`."
+      - match: "self.act = nn.ReLU()"
+        note: "ReLU has no parameters; registering it is just tidy. `torch.relu(x)` in `forward` would work too."
+      - match: "x = self.act(self.layer1(x))"
+        note: "Linear → ReLU: one hidden layer."
+      - match: "return self.layer3(x)"
+        note: "No sigmoid: return **logits** and let `BCEWithLogitsLoss` handle it stably."
+      - match: "model = SpiralNet().to(DEVICE)"
+        note: "Moves every registered parameter to the device in one call."
+
+  - cell: "def train_model(model, optimizer, loss_fn"
+    title: "The training loop with validation"
+    summary: "Six training lines, then an evaluation block that measures without learning. The history dictionary is what you plot."
+    lines:
+      - match: "model.train()"
+        note: "Training mode (matters for dropout / batch norm)."
+      - match: "optimizer.zero_grad()"
+        note: "Clear the gradients from the previous epoch."
+      - match: "loss.backward()"
+        note: "Backprop: fill `.grad` for every parameter."
+      - match: "optimizer.step()"
+        note: "Update every parameter using its `.grad`."
+      - match: "model.eval()"
+        note: "Evaluation mode, then measure on data the model never trains on."
+      - match: "with torch.no_grad():"
+        note: "No graph, no gradients: cheaper, and guarantees validation can't affect the weights."
+      - match: "history[\"train_loss\"].append(loss.item())"
+        note: "`.item()` turns a one-element tensor into a plain Python float, which keeps no graph and uses no GPU memory."
+
+  - cell: "def predict(model, X_numpy, threshold=0.5):"
+    title: "Correct inference in four moves"
+    summary: "Evaluation mode → tensor on the right device → no-grad forward → logits to probabilities → back to NumPy."
+    lines:
+      - match: "probs = torch.sigmoid(model(x))"
+        note: "Convert logits to probabilities only now, at read-out time."
+      - match: "probs = probs.cpu().numpy().ravel()"
+        note: "NumPy can't read GPU memory, so move to the CPU first; `.ravel()` flattens `(N, 1)` to `(N,)`."
+
+  - cell: "checkpoint = {"
+    title: "A checkpoint you can resume from"
+    summary: "Everything needed to continue training exactly where you stopped, and to know later what produced these weights."
+    lines:
+      - match: "\"optimizer_state_dict\": optimizer.state_dict()"
+        note: "Adam's moment estimates and step count. Without them a resumed run restarts the optimizer cold."
+      - match: "\"config\":"
+        note: "Hyperparameters travel with the weights, so the file describes itself."
+
+takeaways:
+  - "A tensor has three properties you must always know: **shape**, **dtype** (`float32` data, `long` class labels) and **device** (cpu / cuda / mps). Everything that meets must be on the same device."
+  - "Detect the device once (`get_device()`), move the model once and move every data tensor you create."
+  - "Write models as **`nn.Module`**: layers declared in `__init__` are registered automatically; call `model(x)`, never `model.forward(x)`."
+  - "Return **logits** and use `BCEWithLogitsLoss` / `CrossEntropyLoss`. Check the **initial loss** against $\\ln K$ before training."
+  - "The loop: `train()` → `zero_grad()` → forward → loss → `backward()` → `step()`. Evaluate with `eval()` + `no_grad()` on held-out data."
+  - "Save **state dicts** (plus optimizer state and config) and load with `map_location`."
+  - "**Running is not learning.** A missing `zero_grad()`, a missing activation or a wild learning rate raise no errors; only the curves and held-out accuracy reveal them."
+
+quiz:
+  - q: "`torch.tensor(np.array([1.0, 2.0]))` has which dtype?"
+    options: ["float32", "float64", "int64", "float16"]
+    answer: 1
+    why: "It inherits NumPy's float64. Specify `dtype=torch.float32` or call `.float()`."
+  - q: "What does `x.to(DEVICE)` on a line by itself do to the tensor `x`?"
+    options: ["Moves it in place", "Nothing to x: it returns a moved copy that is discarded", "Raises an error", "Moves it only if it's on the CPU"]
+    answer: 1
+    why: "For tensors, `.to()` returns a new tensor; write `x = x.to(DEVICE)`."
+  - q: "Your binary classifier's `forward` returns raw scores. Which loss should you use?"
+    options: ["nn.BCELoss", "nn.BCEWithLogitsLoss", "nn.MSELoss", "nn.CrossEntropyLoss with softmax applied first"]
+    answer: 1
+    why: "It fuses sigmoid + BCE in one numerically stable step and expects logits."
+  - q: "You forget `optimizer.zero_grad()`. What happens?"
+    options: ["PyTorch raises an error", "Gradients accumulate across steps and training becomes erratic", "The learning rate resets", "Nothing: PyTorch clears them automatically"]
+    answer: 1
+    why: "PyTorch adds new gradients to `.grad`. No error, just quietly broken training."
+  - q: "A 3-layer network with no activation functions will perform about as well as…"
+    options: ["a 3-layer network with ReLU", "logistic regression", "gradient boosting", "a random guess"]
+    answer: 1
+    why: "Stacked linear layers collapse into one linear layer. Bug 2 scored ~61%, like logistic regression's ~59%."
+  - q: "Why wrap validation in `torch.no_grad()`?"
+    options: ["It makes predictions more accurate", "It skips graph construction, saving memory and time", "It freezes the learning rate", "It shuffles the data"]
+    answer: 1
+    why: "Measuring doesn't need gradients, so don't pay for the graph."
+  - q: "Which should you save to disk for a model you'll reload later?"
+    options: ["The whole model object", "`model.state_dict()` (plus optimizer state and config)", "Only the loss history", "The training data"]
+    answer: 1
+    why: "State dicts are robust to refactoring; rebuild the architecture in code and load the weights into it."

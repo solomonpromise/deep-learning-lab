@@ -53,7 +53,7 @@
   function MLP(sizes, opts) {
     opts = opts || {};
     this.sizes = sizes; this.act = opts.activation || 'relu';
-    this.lr = opts.lr || 0.01; this.t = 0;
+    this.lr = opts.lr || 0.01; this.t = 0; this.noZeroGrad = !!opts.noZeroGrad;
     var r = L.rng(opts.seed || 1);
     this.W = []; this.b = []; this.mW = []; this.vW = []; this.mb = []; this.vb = [];
     for (var l = 0; l < sizes.length - 1; l++) {
@@ -103,7 +103,8 @@
   MLP.prototype._batch = function (X, y, idx, from, to) {
     this._buffers();
     var S = this.sizes, nl = this.W.length, code = this.code, loss = 0, n = to - from, l, i, j;
-    for (l = 0; l < nl; l++) { this.gW[l].fill(0); this.gb[l].fill(0); }
+    // bug simulation: with opts.noZeroGrad the accumulators are never cleared (a missing optimizer.zero_grad())
+    if (!this.noZeroGrad) for (l = 0; l < nl; l++) { this.gW[l].fill(0); this.gb[l].fill(0); }
     for (var k = from; k < to; k++) {
       var id = idx[k];
       this.forward(X[id]);
