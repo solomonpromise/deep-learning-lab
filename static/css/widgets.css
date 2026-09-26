@@ -140,4 +140,65 @@
   .sl-models { grid-template-columns: 1fr; }
   .rb-row { grid-template-columns: 100px 1fr 58px; }
   .px-vector { grid-template-columns: repeat(8, 1fr); }
+  .gi-text { min-height: 190px; }
+  .nbs-cell { grid-template-columns: 64px minmax(0, 1fr); }
+  .nbs-out { margin-left: 64px; }
 }
+
+/* ------------------------------------------------------------------ notebook-state */
+.nbs-cells { display: grid; gap: 6px; }
+.nbs-cell { display: grid; grid-template-columns: 74px minmax(0, 1fr); align-items: stretch; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); overflow: hidden; }
+.nbs-cell.ran { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.nbs-gutter { display: flex; align-items: center; gap: 4px; padding: 0 6px; border-right: 1px solid var(--line); background: var(--surface); }
+.nbs-run { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--surface); color: var(--accent); cursor: pointer; }
+.nbs-run:hover { border-color: var(--accent); }
+.nbs-run .ic { width: 12px; height: 12px; }
+.nbs-count { font-family: var(--mono); font-size: .74rem; color: var(--ink-3); white-space: pre; }
+.nbs-code, .nbs-out, .nbs-vars { margin: 0; padding: 8px 10px; font-family: var(--mono); font-size: .8rem; line-height: 1.45; white-space: pre-wrap; overflow-x: auto; color: var(--ink); }
+.nbs-out { margin-left: 74px; padding: 4px 10px; border-left: 3px solid var(--line-2); color: var(--ink-2); }
+.nbs-out.err { color: var(--red); border-left-color: var(--red); }
+.nbs-vars { padding: 0; background: none; }
+
+/* ------------------------------------------------------------------ project-map */
+.pm-tree { display: grid; gap: 2px; max-height: 470px; overflow-y: auto; padding-right: 2px; }
+.pm-file { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; text-align: left; padding: 6px 10px; border-radius: 8px; border: 1px solid transparent; background: transparent; cursor: pointer; color: var(--ink); font: inherit; }
+.pm-file:hover { background: var(--surface-2); }
+.pm-file.is-on { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+.pm-file.ignored .pm-name { color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--line-2); }
+.pm-name { font-family: var(--mono); font-size: .78rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pm-dir { color: var(--ink-3); }
+.pm-detail { display: grid; gap: 10px; align-content: start; }
+.pm-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.pm-title code { font-size: .86rem; font-weight: 650; word-break: break-all; }
+.pm-row { display: grid; gap: 2px; }
+.pm-k { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.pm-v { font-size: .88rem; line-height: 1.5; color: var(--ink); }
+.pm-links { display: grid; gap: 4px; padding-top: 8px; border-top: 1px solid var(--line); }
+.pm-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.pm-chip { font-family: var(--mono); font-size: .74rem; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); cursor: pointer; }
+.pm-chip:hover { border-color: var(--accent); color: var(--accent-ink); }
+
+/* ------------------------------------------------------------------ gitignore-lab */
+.gi-presets .w-btn code { font-size: .78rem; }
+.gi-text { width: 100%; min-height: 300px; resize: vertical; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface-2); color: var(--ink); font-family: var(--mono); font-size: .8rem; line-height: 1.5; }
+.gi-text:focus { outline: 2px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 1px; }
+.gi-list { display: grid; gap: 2px; max-height: 300px; overflow-y: auto; align-content: start; }
+.gi-file { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; column-gap: 8px; padding: 3px 8px; border-radius: 8px; border: 1px solid transparent; }
+.gi-file .w-tag { justify-content: center; }
+.gi-file.bad { background: var(--red-soft); border-color: color-mix(in srgb, var(--red) 30%, transparent); }
+.gi-file.warn { background: var(--yellow-soft); border-color: color-mix(in srgb, var(--yellow) 35%, transparent); }
+.gi-path { font-size: .77rem; overflow-wrap: anywhere; }
+.gi-path.off { color: var(--ink-3); }
+.gi-why { grid-column: 2; font-family: var(--mono); font-size: .68rem; color: var(--ink-3); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ------------------------------------------------------------------ lr-schedules */
+.lrs-code { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; font-size: .74rem; }
+
+/* ------------------------------------------------------------------ dropout-lab */
+.do-outs { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: .8rem; }
+.do-outs code { font-family: var(--mono); }
+
+/* ------------------------------------------------------------------ memory-planner */
+.mp-field { display: grid; gap: 6px; min-width: 0; }
+.mp-line { font-size: .85rem; color: var(--ink-2); line-height: 1.5; }
+.mp-line strong { color: var(--ink); }

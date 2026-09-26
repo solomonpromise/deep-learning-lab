@@ -36,7 +36,7 @@ class Handler(BaseHTTPRequestHandler):
         msgs = [m for m in msgs if m.get("role") in ("user", "assistant")][-12:]
         payload = {"model": CFG.get("model", "qwen/qwen3.8-27b"), "stream": True, "temperature": 0.4,
                    "max_completion_tokens": 1400,
-                   "messages": [{"role": "system", "content": RULES + "\n\n" + context[:16000]}] + msgs}
+                   "messages": [{"role": "system", "content": RULES + "\n\n" + context[:24000]}] + msgs}
         if CFG.get("reasoning_effort"):
             payload.update(reasoning_effort=CFG["reasoning_effort"], reasoning_format="hidden")
         req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions",

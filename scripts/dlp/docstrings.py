@@ -20,6 +20,9 @@ import re
 from dataclasses import dataclass, field
 
 MAGIC = re.compile(r"^\s*[!%]")
+# A docstring starting with "Placeholder" marks a stub the notebook replaces further down
+# (e.g. a helper defined early so a function can refer to it). It is left exactly as written.
+PLACEHOLDER = re.compile(r"^\s*placeholder\b", re.I)
 
 
 @dataclass
@@ -133,6 +136,8 @@ def inject(code: str, docmap: dict[str, str] | None) -> InjectResult:
         first = body[0]
         has_doc = (isinstance(first, ast.Expr) and isinstance(getattr(first, "value", None), ast.Constant)
                    and isinstance(first.value.value, str))
+        if has_doc and PLACEHOLDER.match(first.value.value):
+            continue
         if first.lineno == node.lineno:
             # one-line definition: "def f(x): return x"  ->  split header and body
             line = lines[node.lineno - 1]
@@ -156,7 +161,7 @@ def inject(code: str, docmap: dict[str, str] | None) -> InjectResult:
                                    node.lineno, ds, sig))
         if not ds:
             result.missing.append(qualname)
-        elif is_thin(node, ds):
+        elif is_thin(node, ds) and not PLACEHOLDER.match(ds):
             result.thin.append(qualname)
     return result
 

@@ -16,6 +16,17 @@ LESSON_HEADING = re.compile(r"^(?:Note|Lesson)\s+(\d+)\.(\d+)\s*[—–:-]\s*(.+
 NUMBERED = re.compile(r"^(\d+)\.\s+(.+)$")
 IMAGE_LABEL = re.compile(r"^\s*>\s*\*\*\s*🖼️?\s*IMAGE\s+([\d.]+)\s*[—–-]\s*(.+?)\s*\*\*\s*(?:\n\s*>\s*)*$", re.S)
 NEXT_FILE = re.compile(r"^\s*\*\*Next:?\*\*.*?\.ipynb.*$", re.M | re.I)
+# Author's notes describing an image still to be made, hidden on the site:
+#   "> **🖼 Image prompt** — description …"
+#   "> **🖼 IMAGE 4.1.1 — title**" followed, in the same quote, by a description (a bare label line is a caption)
+IMAGE_PROMPT = re.compile(
+    r"^[ \t]*>[ \t]*\*\*[ \t]*🖼️?[ \t]*Image prompt[ \t]*\*\*.*(?:\n[ \t]*>.*)*\n?"
+    r"|^[ \t]*>[ \t]*\*\*[ \t]*🖼️?[ \t]*IMAGE\s+[\d.]+[^\n]*\*\*[ \t]*\n(?:[ \t]*>[ \t]*\n)*[ \t]*>[ \t]*\S.*(?:\n[ \t]*>.*)*\n?",
+    re.M | re.I)
+WRITEFILE = re.compile(r"^\s*%%writefile\s+(?:-a\s+)?(\S+)")
+# Syntax highlighting for files written with %%writefile, by extension (anything else: plain text)
+FILE_LANGS = {".py": "python", ".yaml": "yaml", ".yml": "yaml", ".md": "markdown", ".toml": "toml",
+              ".json": "json", ".cfg": "ini", ".ini": "ini", ".sh": "bash"}
 
 Q_KINDS = {
     "check": ["question", "questions", "questions to sit with", "check your understanding", "check yourself",
@@ -68,6 +79,7 @@ class Lesson:
     defs: list = field(default_factory=list)          # every (cell, DefInfo) shown to learners
     doc_missing: list = field(default_factory=list)   # (cell, qualname) still without a docstring
     doc_thin: list = field(default_factory=list)      # (cell, qualname) with a one-line docstring despite arguments
+    image_prompts: list = field(default_factory=list) # cells whose image-prompt placeholder was hidden
 
     @property
     def slug(self) -> str:
@@ -229,7 +241,7 @@ class LessonParser:
             docstrings: ``{qualified_name: docstring}`` inserted into the displayed code.
         """
         self.docmap = docstrings or {}
-        self._defs, self._missing, self._thin = [], [], []
+        self._defs, self._missing, self._thin, self._prompts = [], [], [], []
         nb = json.loads(path.read_text(encoding="utf-8"))
         items = flatten(nb)
         module_n, lesson_n = (int(x) for x in lesson_id.split("."))
@@ -290,6 +302,7 @@ class LessonParser:
                         module_title=module_title, source=path, preamble=preamble, sections=sections)
         self._finalise(lesson)
         lesson.defs, lesson.doc_missing, lesson.doc_thin = self._defs, self._missing, self._thin
+        lesson.image_prompts = self._prompts
         return lesson
 
     @staticmethod
@@ -308,6 +321,9 @@ class LessonParser:
             return [self._code_block(it[1], it[2], it[3], assets, root, role)]
         _, text, attachments, idx = it
         text = NEXT_FILE.sub("", text)
+        if IMAGE_PROMPT.search(text):
+            self._prompts.append(idx)
+            text = IMAGE_PROMPT.sub("", text)
         if not text.strip():
             return []
         lab = IMAGE_LABEL.match(text)
@@ -338,12 +354,14 @@ class LessonParser:
 
     def _code_block(self, src: str, outputs: list, idx: int, assets: AssetStore, root: str,
                     role: str | None) -> dict:
-        shell = is_shell_cell(src)
-        lang = "bash" if shell else "python"
+        wf = WRITEFILE.match(src)
+        file = wf.group(1) if wf else None
+        shell = file is None and is_shell_cell(src)
+        lang = "bash" if shell else FILE_LANGS.get(Path(file).suffix.lower(), "text") if file else "python"
         code = src.rstrip()
         if shell:
             code = re.sub(r"^[!%]", "", code, flags=re.M)
-        else:
+        elif lang == "python":
             res = inject_docstrings(code, getattr(self, "docmap", {}))
             code = res.code
             self._defs.extend((idx, d) for d in res.defs)
@@ -363,7 +381,7 @@ class LessonParser:
         for o in outs:
             o["collapsed"] = (o["type"] in ("text", "error") and o["lines"] > 28) or \
                              (shell and o["type"] == "text")
-        return {"kind": "code", "lang": lang, "lines": lines, "source": shown, "outputs": outs,
+        return {"kind": "code", "lang": lang, "file": file, "lines": lines, "source": shown, "outputs": outs,
                 "role": role, "cell": idx, "src": code, "n_lines": len(lines)}
 
     # -------------------------------------------------------------- preamble

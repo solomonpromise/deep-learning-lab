@@ -1,5 +1,5 @@
 /* Results Bars — animated side-by-side comparison of recorded results.
-   props: { metrics: [{ title, note, better: 'higher'|'lower', unit, digits, max, rows: [{ label, value, series }] }], footnote } */
+   props: { metrics: [{ title, note, better: 'higher'|'lower'|'none', unit, digits, max, rows: [{ label, value, series }] }], footnote } */
 (function () {
   'use strict';
   var L = window.DLP.lib;
@@ -11,7 +11,7 @@
     (props.metrics || []).forEach(function (m) {
       var box = L.el('div', { class: 'rb-metric' });
       box.appendChild(L.el('h5', { html: m.title + (m.note ? ' <span>' + m.note + '</span>' : '') }));
-      var best = m.rows.reduce(function (a, r) { return (m.better === 'lower' ? r.value < a.value : r.value > a.value) ? r : a; }, m.rows[0]);
+      var best = m.better === 'none' ? null : m.rows.reduce(function (a, r) { return (m.better === 'lower' ? r.value < a.value : r.value > a.value) ? r : a; }, m.rows[0]);
       var max = m.max || Math.max.apply(null, m.rows.map(function (r) { return r.value; })) * 1.08;
       var min = m.min || 0;
       m.rows.forEach(function (r) {

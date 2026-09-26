@@ -1,0 +1,497 @@
+# Teaching layer for Lesson 4.4 — The Bake-Off: Gradient Boosting against a Neural Network
+# The notebook is the author's current version (not locked). Its two IMAGE placeholders are hidden by the build and
+# replaced here by SVG figures drawn from the lesson's own measurements. The statistics in the Section 5 note were
+# computed from the ten-split table as printed (four decimals).
+
+summary: |
+  Which of two models would you ship, and could you defend the choice to someone who disagrees? You write the rules before the
+  first result, then run the Day 3 network, frozen, against gradient boosting on **identical rows** across ten splits. Each
+  model on its own looks inconclusive; **paired**, boosting is ahead on all ten splits by a small, consistent 0.008 AUC. A
+  twelve-setting search turns out to add nothing but luck. The cost column shows boosting training fourteen times faster while
+  the network predicts faster from a far smaller file. Under the chronological split the **ranking reverses** and both models
+  lose most of their skill. It all ends in a written decision memo.
+
+inserts:
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "and it is the single most useful trick in this note"
+    type: explainer
+    style: math
+    title: "Why subtraction removes the shared part"
+    md: |
+      For any two scores measured on the same splits,
+
+      $$\operatorname{sd}(B-A)^2 = \operatorname{sd}(A)^2 + \operatorname{sd}(B)^2 - 2\,\operatorname{cov}(A,B).$$
+
+      The shared difficulty appears in both scores, so it appears in the covariance too, and the subtraction removes it. In the
+      simulation above, each score is *difficulty + own wobble*, so the difference keeps only the two wobbles:
+      $\sqrt{2}\times0.002\approx0.003$ on average (this draw gave 0.0021), however large the shared part is. On the real splits
+      in Section 5 the two models' scores correlate at **0.94**, which is why spreads of 0.0132 and 0.0111 shrink to 0.0047 for
+      their difference.
+
+  - section: 2
+    after: "and it is the single most useful trick in this note"
+    type: widget
+    name: paired-lab
+    title: "Paired or not: the same numbers, read two ways"
+    intro: |
+      Each split has a difficulty both models feel, plus a wobble of each model's own; B is truly better by the gap. Read the
+      verdicts, then slide **shared split difficulty** to zero: pairing has nothing left to cancel. Set the **true gap** to zero
+      and press *New splits* a few times to see how often luck looks like a finding. *The lesson's ten splits* loads the real
+      network (A) and boosting (B) scores from Section 5.
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    after: "as long as you measure it in a way that cancels the noise"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 426" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Left: the two models overlap when each is summarised alone. Right: their split-by-split difference sits entirely above zero." style="font-family:Inter,system-ui,sans-serif"><text x="360" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">Why pairing changes the verdict</text><text x="205" y="52" text-anchor="middle" style="fill:var(--ink);font-size:13.5px;font-weight:800">Each model on its own</text><line x1="36" y1="168" x2="370.0" y2="168" style="stroke:var(--line-2)"/><path d="M 43.4 168 L 43.4 165.0 L 46.9 164.7 L 50.5 164.3 L 54.0 163.8 L 57.5 163.4 L 61.0 162.9 L 64.6 162.3 L 68.1 161.7 L 71.6 161.1 L 75.2 160.4 L 78.7 159.7 L 82.2 159.0 L 85.7 158.2 L 89.3 157.4 L 92.8 156.5 L 96.3 155.6 L 99.8 154.7 L 103.4 153.7 L 106.9 152.7 L 110.4 151.7 L 113.9 150.7 L 117.5 149.6 L 121.0 148.6 L 124.5 147.5 L 128.0 146.5 L 131.6 145.5 L 135.1 144.4 L 138.6 143.5 L 142.2 142.5 L 145.7 141.6 L 149.2 140.7 L 152.7 139.9 L 156.3 139.1 L 159.8 138.4 L 163.3 137.8 L 166.8 137.2 L 170.4 136.7 L 173.9 136.3 L 177.4 136.0 L 180.9 135.8 L 184.5 135.6 L 188.0 135.6 L 191.5 135.6 L 195.1 135.8 L 198.6 136.0 L 202.1 136.3 L 205.6 136.7 L 209.2 137.2 L 212.7 137.8 L 216.2 138.4 L 219.7 139.1 L 223.3 139.9 L 226.8 140.7 L 230.3 141.6 L 233.8 142.5 L 237.4 143.5 L 240.9 144.4 L 244.4 145.5 L 248.0 146.5 L 251.5 147.5 L 255.0 148.6 L 258.5 149.6 L 262.1 150.7 L 265.6 151.7 L 269.1 152.7 L 272.6 153.7 L 276.2 154.7 L 279.7 155.6 L 283.2 156.5 L 286.7 157.4 L 290.3 158.2 L 293.8 159.0 L 297.3 159.7 L 300.8 160.4 L 304.4 161.1 L 307.9 161.7 L 311.4 162.3 L 315.0 162.9 L 318.5 163.4 L 322.0 163.8 L 325.5 164.3 L 329.1 164.7 L 332.6 165.0 L 336.1 165.4 L 339.6 165.7 L 343.2 165.9 L 346.7 166.2 L 350.2 166.4 L 353.7 166.6 L 357.3 166.8 L 360.8 166.9 L 364.3 167.1 L 367.9 167.2 L 367.9 168 Z" style="fill:var(--c0);fill-opacity:.16;stroke:var(--c0);stroke-width:2"/><path d="M 49.4 168 L 49.4 167.8 L 52.3 167.7 L 55.3 167.7 L 58.3 167.6 L 61.2 167.6 L 64.2 167.5 L 67.2 167.4 L 70.1 167.3 L 73.1 167.2 L 76.0 167.0 L 79.0 166.9 L 82.0 166.7 L 84.9 166.5 L 87.9 166.3 L 90.8 166.1 L 93.8 165.8 L 96.8 165.5 L 99.7 165.2 L 102.7 164.9 L 105.6 164.5 L 108.6 164.0 L 111.6 163.6 L 114.5 163.0 L 117.5 162.5 L 120.5 161.9 L 123.4 161.2 L 126.4 160.5 L 129.3 159.8 L 132.3 159.0 L 135.3 158.2 L 138.2 157.3 L 141.2 156.3 L 144.1 155.3 L 147.1 154.3 L 150.1 153.2 L 153.0 152.1 L 156.0 151.0 L 158.9 149.8 L 161.9 148.6 L 164.9 147.4 L 167.8 146.1 L 170.8 144.9 L 173.8 143.6 L 176.7 142.4 L 179.7 141.2 L 182.6 140.0 L 185.6 138.8 L 188.6 137.6 L 191.5 136.5 L 194.5 135.5 L 197.4 134.5 L 200.4 133.6 L 203.4 132.7 L 206.3 132.0 L 209.3 131.3 L 212.2 130.7 L 215.2 130.2 L 218.2 129.9 L 221.1 129.6 L 224.1 129.4 L 227.1 129.4 L 230.0 129.4 L 233.0 129.6 L 235.9 129.9 L 238.9 130.2 L 241.9 130.7 L 244.8 131.3 L 247.8 132.0 L 250.7 132.7 L 253.7 133.6 L 256.7 134.5 L 259.6 135.5 L 262.6 136.5 L 265.5 137.6 L 268.5 138.8 L 271.5 140.0 L 274.4 141.2 L 277.4 142.4 L 280.3 143.6 L 283.3 144.9 L 286.3 146.1 L 289.2 147.4 L 292.2 148.6 L 295.2 149.8 L 298.1 151.0 L 301.1 152.1 L 304.0 153.2 L 307.0 154.3 L 310.0 155.3 L 312.9 156.3 L 315.9 157.3 L 318.8 158.2 L 321.8 159.0 L 324.8 159.8 L 327.7 160.5 L 330.7 161.2 L 333.6 161.9 L 336.6 162.5 L 339.6 163.0 L 342.5 163.6 L 345.5 164.0 L 348.5 164.5 L 351.4 164.9 L 354.4 165.2 L 357.3 165.5 L 360.3 165.8 L 363.3 166.1 L 366.2 166.3 L 369.2 166.5 L 369.2 168 Z" style="fill:var(--c1);fill-opacity:.16;stroke:var(--c1);stroke-width:2"/><text x="144.00000000000034" y="127.56858077619995" text-anchor="middle" style="fill:var(--c0);font-size:11.5px;font-weight:800">network</text><text x="267.0500000000003" y="121.37546058445497" text-anchor="middle" style="fill:var(--c1);font-size:11.5px;font-weight:800">boosting</text><text x="205" y="190" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:700">each split: network → boosting, same test rows</text><defs><marker id="a441" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink-2)"/></marker></defs><line x1="98.0" y1="204" x2="158.5" y2="204" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="98.0" cy="204" r="3.6" style="fill:var(--c0)"/><circle cx="161.5" cy="204" r="3.6" style="fill:var(--c1)"/><line x1="259.0" y1="217" x2="294.0" y2="217" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="259.0" cy="217" r="3.6" style="fill:var(--c0)"/><circle cx="297.0" cy="217" r="3.6" style="fill:var(--c1)"/><line x1="135.0" y1="230" x2="168.5" y2="230" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="135.0" cy="230" r="3.6" style="fill:var(--c0)"/><circle cx="171.5" cy="230" r="3.6" style="fill:var(--c1)"/><line x1="107.5" y1="243" x2="175.0" y2="243" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="107.5" cy="243" r="3.6" style="fill:var(--c0)"/><circle cx="178.0" cy="243" r="3.6" style="fill:var(--c1)"/><line x1="163.0" y1="256" x2="198.5" y2="256" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="163.0" cy="256" r="3.6" style="fill:var(--c0)"/><circle cx="201.5" cy="256" r="3.6" style="fill:var(--c1)"/><line x1="186.0" y1="269" x2="191.5" y2="269" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="186.0" cy="269" r="3.6" style="fill:var(--c0)"/><circle cx="194.5" cy="269" r="3.6" style="fill:var(--c1)"/><line x1="282.0" y1="282" x2="289.0" y2="282" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="282.0" cy="282" r="3.6" style="fill:var(--c0)"/><circle cx="292.0" cy="282" r="3.6" style="fill:var(--c1)"/><line x1="227.0" y1="295" x2="291.5" y2="295" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="227.0" cy="295" r="3.6" style="fill:var(--c0)"/><circle cx="294.5" cy="295" r="3.6" style="fill:var(--c1)"/><line x1="260.5" y1="308" x2="270.5" y2="308" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="260.5" cy="308" r="3.6" style="fill:var(--c0)"/><circle cx="273.5" cy="308" r="3.6" style="fill:var(--c1)"/><line x1="162.0" y1="321" x2="203.5" y2="321" style="stroke:var(--ink-2);stroke-width:1.4" marker-end="url(#a441)"/><circle cx="162.0" cy="321" r="3.6" style="fill:var(--c0)"/><circle cx="206.5" cy="321" r="3.6" style="fill:var(--c1)"/><line x1="36" y1="334" x2="370.0" y2="334" style="stroke:var(--ink-3)"/><line x1="60.0" y1="334" x2="60.0" y2="339" style="stroke:var(--ink-3)"/><text x="60.000000000000014" y="352" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0.77</text><line x1="160.0" y1="334" x2="160.0" y2="339" style="stroke:var(--ink-3)"/><text x="160.0000000000001" y="352" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0.79</text><line x1="260.0" y1="334" x2="260.0" y2="339" style="stroke:var(--ink-3)"/><text x="260.0000000000002" y="352" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0.81</text><line x1="360.0" y1="334" x2="360.0" y2="339" style="stroke:var(--ink-3)"/><text x="359.9999999999997" y="352" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0.83</text><text x="205" y="370" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:700">test AUC</text><text x="205" y="394" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:700">spread about 0.013 each, gap 0.0078</text><text x="205" y="412" text-anchor="middle" style="fill:var(--red);font-size:12.5px;font-weight:800">looks inconclusive</text><line x1="410" y1="44" x2="410" y2="418" style="stroke:var(--line)"/><text x="545.0" y="52" text-anchor="middle" style="fill:var(--ink);font-size:13.5px;font-weight:800">The difference, split by split</text><line x1="440.0" y1="168" x2="650.0" y2="168" style="stroke:var(--line-2)"/><line x1="500.0" y1="64" x2="500.0" y2="334" style="stroke:var(--ink-3);stroke-width:1.4;stroke-dasharray:5 4"/><text x="495.0" y="76" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:700">0 = no difference</text><path d="M 464.5 168 L 464.5 167.5 L 465.7 167.3 L 466.9 167.2 L 468.2 167.1 L 469.4 166.9 L 470.7 166.8 L 471.9 166.5 L 473.2 166.3 L 474.4 166.0 L 475.6 165.7 L 476.9 165.4 L 478.1 165.0 L 479.4 164.5 L 480.6 164.0 L 481.9 163.5 L 483.1 162.8 L 484.4 162.1 L 485.6 161.4 L 486.8 160.5 L 488.1 159.6 L 489.3 158.5 L 490.6 157.4 L 491.8 156.2 L 493.1 154.9 L 494.3 153.4 L 495.5 151.9 L 496.8 150.2 L 498.0 148.4 L 499.3 146.6 L 500.5 144.5 L 501.8 142.4 L 503.0 140.2 L 504.2 137.8 L 505.5 135.4 L 506.7 132.8 L 508.0 130.2 L 509.2 127.4 L 510.5 124.6 L 511.7 121.8 L 512.9 118.9 L 514.2 115.9 L 515.4 112.9 L 516.7 110.0 L 517.9 107.0 L 519.2 104.1 L 520.4 101.2 L 521.6 98.4 L 522.9 95.7 L 524.1 93.0 L 525.4 90.5 L 526.6 88.2 L 527.9 86.0 L 529.1 84.0 L 530.3 82.2 L 531.6 80.6 L 532.8 79.2 L 534.1 78.1 L 535.3 77.2 L 536.6 76.5 L 537.8 76.1 L 539.1 76.0 L 540.3 76.1 L 541.5 76.5 L 542.8 77.2 L 544.0 78.1 L 545.3 79.2 L 546.5 80.6 L 547.8 82.2 L 549.0 84.0 L 550.2 86.0 L 551.5 88.2 L 552.7 90.5 L 554.0 93.0 L 555.2 95.7 L 556.5 98.4 L 557.7 101.2 L 558.9 104.1 L 560.2 107.0 L 561.4 110.0 L 562.7 112.9 L 563.9 115.9 L 565.2 118.9 L 566.4 121.8 L 567.6 124.6 L 568.9 127.4 L 570.1 130.2 L 571.4 132.8 L 572.6 135.4 L 573.9 137.8 L 575.1 140.2 L 576.3 142.4 L 577.6 144.5 L 578.8 146.6 L 580.1 148.4 L 581.3 150.2 L 582.6 151.9 L 583.8 153.4 L 585.0 154.9 L 586.3 156.2 L 587.5 157.4 L 588.8 158.5 L 590.0 159.6 L 591.3 160.5 L 592.5 161.4 L 593.7 162.1 L 595.0 162.8 L 596.2 163.5 L 597.5 164.0 L 598.7 164.5 L 600.0 165.0 L 601.2 165.4 L 602.5 165.7 L 603.7 166.0 L 604.9 166.3 L 606.2 166.5 L 607.4 166.8 L 608.7 166.9 L 609.9 167.1 L 611.2 167.2 L 612.4 167.3 L 613.6 167.5 L 613.6 168 Z" style="fill:var(--green);fill-opacity:.16;stroke:var(--green);stroke-width:2"/><text x="573.0500000000001" y="70" text-anchor="start" style="fill:var(--green);font-size:11.5px;font-weight:800">boosting − network</text><circle cx="563.5" cy="204" r="3.8" style="fill:var(--green)"/><circle cx="538.0" cy="217" r="3.8" style="fill:var(--green)"/><circle cx="536.5" cy="230" r="3.8" style="fill:var(--green)"/><circle cx="570.5" cy="243" r="3.8" style="fill:var(--green)"/><circle cx="538.5" cy="256" r="3.8" style="fill:var(--green)"/><circle cx="508.5" cy="269" r="3.8" style="fill:var(--green)"/><circle cx="510.0" cy="282" r="3.8" style="fill:var(--green)"/><circle cx="567.5" cy="295" r="3.8" style="fill:var(--green)"/><circle cx="513.0" cy="308" r="3.8" style="fill:var(--green)"/><circle cx="544.5" cy="321" r="3.8" style="fill:var(--green)"/><line x1="440.0" y1="334" x2="650.0" y2="334" style="stroke:var(--ink-3)"/><line x1="450.0" y1="334" x2="450.0" y2="339" style="stroke:var(--ink-3)"/><text x="450.0" y="352" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">-0.01</text><line x1="500.0" y1="334" x2="500.0" y2="339" style="stroke:var(--ink-3)"/><text x="500.0" y="352" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0</text><line x1="550.0" y1="334" x2="550.0" y2="339" style="stroke:var(--ink-3)"/><text x="550.0" y="352" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">+0.01</text><line x1="600.0" y1="334" x2="600.0" y2="339" style="stroke:var(--ink-3)"/><text x="600.0" y="352" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">+0.02</text><line x1="650.0" y1="334" x2="650.0" y2="339" style="stroke:var(--ink-3)"/><text x="650.0" y="352" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">+0.03</text><text x="545.0" y="370" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:700">difference in test AUC (same scale as the left)</text><text x="545.0" y="394" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:700">spread 0.0047, boosting ahead on 10 of 10</text><text x="545.0" y="412" text-anchor="middle" style="fill:var(--green);font-size:12.5px;font-weight:800">a small, real difference</text></svg>
+    caption: "The ten real splits from the table above, drawn to the same scale in both panels. Every arrow points the same way, from wherever that split happened to sit."
+
+  - section: 5
+    after: "as long as you measure it in a way that cancels the noise"
+    type: explainer
+    style: deep
+    title: "How sure, in numbers, and a catch about repeated splits"
+    md: |
+      The usual tests agree with the reading above:
+
+      | | paired t-test | corrected for overlapping splits | sign test |
+      |---|---|---|---|
+      | boosting minus network | t = 5.3, p = 0.0005 | t = 3.5, p = 0.006; 95% interval **+0.003 to +0.013** | 10 of 10, p = 0.002 |
+      | tuned minus default | t = 1.5, p = 0.17 | t = 1.0, p = 0.35; 95% interval −0.002 to +0.004 | 5 of 10, p = 1.0 |
+
+      The catch: ten random splits of one file are not ten independent experiments. Any two share most of their training rows,
+      so their results are correlated, and a plain t-test is too confident. Nadeau and Bengio (2003) proposed a simple fix:
+      multiply the variance by $1/k + n_\text{test}/n_\text{train}$ instead of $1/k$ (here $0.1 + 0.125$). After it, boosting's
+      advantage is still clearly real and the tuning gain still is not.
+
+      The fix also shows where more splits stop helping: the $n_\text{test}/n_\text{train}$ term does not shrink with $k$, so
+      going from 10 splits to 30 narrows this interval by only about 16%, not the 42% that the square-root rule suggests.
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "Before spending it, check whether the space you are searching is wider than your noise"
+    type: explainer
+    style: warning
+    title: "Which noise to hold a search against"
+    md: |
+      The conclusion is right, and the ten-split paired check above is the evidence for it. The yardstick in the text is not.
+      The twelve settings were all scored on the **same** validation rows, so, exactly as in Section 5, the split's difficulty is
+      shared and cancels when you compare them. Setting a spread of 0.0068 against the split-to-split noise of a *single score*
+      (0.0130) repeats the mistake Section 2 warned about: by that yardstick the real 0.0078 advantage of boosting would have
+      been dismissed too.
+
+      The right yardstick is the noise of a *difference* between two settings on one split, and the lesson measured it: tuned
+      minus default varies with a standard deviation of about **0.0024** from split to split. Against that, the search spread of
+      0.0068 is not small. The trap is subtler: picking the best of twelve noisy differences picks the luckiest one. If the
+      settings were all equally good, the best of twelve would beat the default by about one and a half standard deviations of
+      pure luck, roughly 0.004 (somewhat less, since neighbouring settings behave alike), and the winner's 0.0050 lead on
+      validation is about that size. The only way to tell a real gain
+      from that selection effect is the check the lesson ran next: carry the winner to new splits and compare paired.
+
+  # ------------------------------------------------------------------ §8
+  - section: 8
+    after: "That is a pattern worth carrying forward, not a fact about these two libraries"
+    type: explainer
+    style: warning
+    title: "Before crediting smoothness: which model saw the later rows?"
+    md: |
+      That explanation may be right, but the experiment has an asymmetry that could produce the same result. Under the
+      chronological split the **validation rows** are the 80–90% slice of the file: later than every training row, and right next
+      to the test period.
+
+      - The **network** uses them. `run_neural_network` keeps the epoch with the best validation AUC, which is how it ended at
+        epoch 2.
+      - **Boosting** does not. Its early stopping (`early_stopping="auto"`) holds out a random 10% of its *training* rows, all
+        from the earliest period; the validation rows are only scored.
+
+      So one model was tuned, lightly, on rows from the later period and the other was not. A fair version gives both the same
+      information, for example by choosing boosting's number of trees on the same validation rows:
+
+      ```python
+      check = run_gradient_boosting({"name": "chrono_trees_on_val", "split": "chronological",
+                                     "early_stopping": False, "max_iter": 300}, quiet=True, save=False)
+      trees_model, chrono = check["artifacts"]["model"], check["artifacts"]["split"]
+      val_auc_by_trees = [roc_auc_score(y[chrono["val"]], p[:, 1])
+                          for p in trees_model.staged_predict_proba(X_trees.iloc[chrono["val"]])]
+      best_trees = int(np.argmax(val_auc_by_trees)) + 1
+      test_by_trees = list(trees_model.staged_predict_proba(X_trees.iloc[chrono["test"]]))
+      print(f"trees chosen on the chronological validation rows: {best_trees}")
+      print(f"chronological test AUC at that size: {roc_auc_score(y[chrono['test']], test_by_trees[best_trees - 1][:, 1]):.4f}")
+      ```
+
+      The other direction works too: choose the network's epoch on a random slice of its own training rows. Only if the reversal
+      survives is it evidence about flexibility.
+
+  - section: 8
+    after: "and it is bigger than the choice of model"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 396" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Slope chart: boosting leads on the stratified split, the network leads on the chronological split, and both fall close to guessing" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">The ranking reverses when the question changes</text><rect x="80" y="236.0" width="580" height="120.0" style="fill:var(--ink-3);fill-opacity:.09"/><text x="88" y="253.99999999999997" text-anchor="start" style="fill:var(--ink-3);font-size:11px;font-weight:700">both models have lost</text><text x="88" y="268.0" text-anchor="start" style="fill:var(--ink-3);font-size:11px;font-weight:700">most of their skill here</text><line x1="80" y1="356.0" x2="660" y2="356.0" style="stroke:var(--line);stroke-dasharray:6 4"/><text x="70" y="360.0" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0.5</text><line x1="80" y1="276.0" x2="660" y2="276.0" style="stroke:var(--line);stroke-dasharray:0"/><text x="70" y="280.0" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0.6</text><line x1="80" y1="196.0" x2="660" y2="196.0" style="stroke:var(--line);stroke-dasharray:0"/><text x="70" y="200.00000000000003" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0.7</text><line x1="80" y1="116.0" x2="660" y2="116.0" style="stroke:var(--line);stroke-dasharray:0"/><text x="70" y="119.99999999999994" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0.8</text><text x="88" y="350.0" text-anchor="start" style="fill:var(--ink-3);font-size:10.5px;font-weight:700">0.5 = guessing</text><line x1="250" y1="76.0" x2="250" y2="356.0" style="stroke:var(--ink-2);stroke-width:1.5"/><text x="250" y="50" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:800">stratified split</text><text x="250" y="66" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">a random customer, 2008 to 2010</text><line x1="510" y1="76.0" x2="510" y2="356.0" style="stroke:var(--ink-2);stroke-width:1.5"/><text x="510" y="50" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:800">chronological split</text><text x="510" y="66" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">the last 10% of the file, in time</text><line x1="250" y1="113.3" x2="510" y2="288.7" style="stroke:var(--c1);stroke-width:3"/><circle cx="250" cy="113.3" r="5.5" style="fill:var(--c1)"/><circle cx="510" cy="288.7" r="5.5" style="fill:var(--c1)"/><text x="238" y="106.28" text-anchor="end" style="fill:var(--c1);font-size:12px;font-weight:800">gradient boosting 0.8034</text><text x="522" y="292.72" text-anchor="start" style="fill:var(--c1);font-size:12px;font-weight:800">0.5841 gradient boosting</text><line x1="250" y1="119.5" x2="510" y2="264.7" style="stroke:var(--c0);stroke-width:3"/><circle cx="250" cy="119.5" r="5.5" style="fill:var(--c0)"/><circle cx="510" cy="264.7" r="5.5" style="fill:var(--c0)"/><text x="238" y="134.52" text-anchor="end" style="fill:var(--c0);font-size:12px;font-weight:800">neural network 0.7956</text><text x="522" y="268.72" text-anchor="start" style="fill:var(--c0);font-size:12px;font-weight:800">0.6141 neural network</text><text x="360" y="384" text-anchor="middle" style="fill:var(--ink-2);font-size:11.5px;font-weight:700">chronological: network ahead by 0.030, 95% bootstrap interval +0.017 to +0.044</text></svg>
+    caption: "Stratified values are the ten-split averages; chronological values are the single later-period test set. The lines cross, and both end close to guessing."
+
+  # ------------------------------------------------------------------ §9
+  - section: 9
+    after: "Boosting is ahead on three of the four"
+    type: explainer
+    style: deep
+    title: "How much of a slice table is noise?"
+    md: |
+      Every number in the slice table comes from one split, and some slices have few positives: 206 in *contacted in an earlier
+      campaign*, 323 in *never contacted before*, 475 in *contact type known*, and only **54** in *contact type unknown*. By the
+      Hanley–McNeil approximation, a single AUC measured on those rows has a standard error of about 0.017, 0.016, 0.013 and
+      **0.041**. That is as large as most of the differences in the last column.
+
+      The difference between two models on the same rows is less noisy than either AUC, because their errors are correlated, but
+      only resampling says by how much. Run Section 8's paired bootstrap inside each slice, or repeat the slice table on the ten
+      splits of Section 5. The reading that survives either check is the big one: both models are far weaker on *contact type
+      unknown* (about 0.62, against 0.75 to 0.86 elsewhere). Which model leads inside a slice is much less certain.
+
+  # ------------------------------------------------------------------ §10
+  - section: 10
+    before: "And the records, in the five-question format from Note 4.2"
+    type: explainer
+    style: tip
+    title: "The memo points at a file that is never written"
+    md: |
+      Its last line says the chronological bootstrap interval "is in results/", but no cell saves it: Section 8 only prints it. A
+      memo's evidence belongs in the memo. Replacing the bullet's last line with
+
+      ```python
+        with a bootstrap interval from {low:+.4f} to {high:+.4f} (network minus boosting,
+        {len(differences)} resamples of the test rows). Neither is calibrated for the later period.
+      ```
+
+      puts the numbers where the reader is, and the Limitations line can then say what that interval does not cover: training
+      randomness, and rows that are not independent (Section 8's questions).
+
+answers:
+  "1-1":
+    - |
+      Because the danger is not a small budget but a flexible one. If the budget is settled after seeing results, every extra
+      adjustment is chosen by looking at the scores, so the comparison ends up measuring how much attention each side got, and
+      any win partly reflects how many tries it took (the more you try, the more luck you collect). A budget written down in
+      advance, even a small one, can be checked by a reader; a large one decided afterwards cannot. It also forces you either to
+      give both sides the same budget or to state the imbalance, as Section 1 does.
+    - |
+      **Pairing.** When both models are scored on the same test rows, the part of each score that comes from how hard those rows
+      were is shared, and subtracting cancels it. Here that shared part is most of the variation: across the ten splits the two
+      models' scores correlate at 0.94, so their difference varies about three times less than either score (0.0047 against
+      0.0132).
+  "5-1":
+    - |
+      Because most of each model's variation is not about the model; it is about the split. A test set full of easy customers
+      lifts both scores, a hard one lowers both. That shared movement is identical for the two models on the same rows, so it
+      vanishes when you subtract, and only each model's own wobble is left. In symbols, the variance of the difference is the sum
+      of the two variances **minus twice their covariance**, and here the covariance is large.
+    - |
+      That the average is not the whole story. With 6 wins in 10, the difference changes sign on four splits, so it is noisy
+      compared with its mean, and a sign test on 6 of 10 gives p = 0.75: no evidence of a consistent advantage. Check whether one
+      or two large splits are carrying the average. Under the rules of Section 1 the verdict is "within the noise", and the
+      decision passes to the cost and robustness columns.
+    - |
+      No. The average difference estimates a fixed quantity (about 0.008 here), so more splits would not move it in any particular
+      direction; they would pin it down more precisely, and give a better estimate of its spread. By the square-root rule, 30
+      splits instead of 10 would narrow the interval by about 42%. Because random splits of one file overlap, the real gain is
+      smaller: about 16% by the correction in the note above. Twenty more splits would buy a little precision and no change of
+      verdict.
+  "6-1":
+    - |
+      The search picked the setting with the highest validation score on split 42, part of that score was luck specific to those
+      4,521 rows, and the test rows of the same split do not share that luck, so the advantage vanished (here it even reversed).
+    - |
+      Candidates that really differ by more than the paired noise, and a way of scoring them that averages out luck. Concretely:
+      settings that change the model substantially (much larger or smaller trees, very different numbers of trees, class weights,
+      a different treatment of the categorical columns) rather than twelve close neighbours of the defaults; each candidate scored
+      paired across several splits (as in Section 5) instead of on one validation set; or much more data, where validation noise
+      is smaller. It also helps to decide beforehand how large a gain would be worth shipping, and ask whether the search could
+      plausibly deliver it.
+  "7-1":
+    - |
+      Any of these:
+      - **Threads.** scikit-learn's histogram boosting uses every CPU core through OpenMP by default, while PyTorch uses its own
+        thread setting (Note 4.3's machine reported one thread). Record the thread counts, and equalise them if you can.
+      - **Stopping rules.** Boosting stopped when its held-out loss stopped improving (75 trees). The network always ran all 30
+        epochs, although its best epoch across the ten splits was between 8 and 22; with early stopping its time would fall by a
+        third or more.
+      - **Warm-up.** The first call pays one-off costs (memory allocation, lazy initialisation). Time several repeats after a
+        warm-up and take the median, as the latency cell does.
+      - **Different hardware** for the two sides, or data preparation inside one timer and outside the other.
+    - |
+      Perhaps never, on a CPU and for data like this: both training costs grow roughly in proportion to the number of rows, so the
+      ratio stays similar as the data grows. What changes it lies elsewhere. A network on a GPU against boosting on a CPU (though
+      XGBoost, LightGBM and CatBoost can also train on GPUs; the table's "no" is true of scikit-learn's implementation). Very large
+      datasets, where a network may need only one or two passes. And, above all, inputs such as text, images or audio, where
+      boosting first needs features built by hand. The crossover point is something to measure on your data, not to assume.
+  "8-1":
+    - |
+      Because there is only one chronological split to run. "Train on the past, test on the future" fixes the cut-off, so the test
+      rows are the same every time; the only randomness left in the evaluation is which rows happened to land in that test
+      period, and the bootstrap measures exactly that. (A related tool, rolling-origin evaluation, trains and tests at several
+      cut-off dates. It answers a different question: whether the ranking holds across periods.)
+    - |
+      Anything that would change the **models** rather than the test rows: the training randomness (both fitted models are held
+      fixed in every resample), which rows ended up in training and validation, and the choice of cut-off date. It also does
+      not cover the next period being different again. And one limitation affects the interval itself: the bootstrap treats rows
+      as independent, but calls made on the same day or in the same campaign are alike (Note 4.1 found day-level success rates
+      varying enormously). Resampling whole days rather than rows would give a wider, more honest interval.
+    - |
+      Recalibrate on recent labelled data: fit a small calibration step (Platt scaling or isotonic regression) on the most recent
+      period, or retrain with recent rows included. The share who said yes moved from about 12% across the file to 47% in the test
+      period, so even shifting the model's intercept by the change in log-odds would remove much of the error. Calibration leaves
+      the ranking, and so the AUC, unchanged; it fixes the probabilities, which matter as soon as anyone reads them as chances or
+      puts a threshold on them. If the threshold comes from calling capacity (Note 4.1 Section 10), the ranking is what counts.
+      Then keep checking calibration as each new month of outcomes arrives.
+
+explain:
+  - cell: "def run_neural_network(settings, quiet=False, results_dir=\"results\"):"
+    title: "Side one, frozen"
+    lines:
+      - match: "settings = {**NN_SETTINGS, **settings}"
+        note: "A run is described by what it changes; everything else is the frozen Day 3 recipe."
+      - match: "pre = build_preprocessor(X).fit(X.iloc[split[\"train\"]])"
+        note: "Scaling and one-hot categories are learned from the training rows only (Note 4.1)."
+      - match: "best = {\"auc\": val_auc, \"epoch\": epoch, \"weights\": copy.deepcopy(model.state_dict())}"
+        note: "A deep copy, or the stored weights would keep changing with training (Note 4.2)."
+      - match: "result[\"artifacts\"] = {\"model\": model, \"preprocessor\": pre, \"split\": split,"
+        note: "Added after the JSON is written, so the file holds only numbers and the objects stay in memory."
+
+  - cell: "def run_gradient_boosting(settings, quiet=False, save=True, results_dir=\"results\"):"
+    title: "Side two, the same shape"
+    lines:
+      - match: "early_stopping=settings[\"early_stopping\"], categorical_features=\"from_dtype\","
+        note: "`from_dtype` treats every pandas `category` column as categorical, so no one-hot step is needed."
+      - match: "random_state=settings[\"seed\"])"
+        note: "Here the seed only chooses which 10% of the training rows early stopping holds out."
+      - match: "joblib.dump(model, buffer)"
+        note: "Serialised into memory, only to measure the size of the file you would ship."
+      - match: "\"trees_used\": int(model.n_iter_),"
+        note: "Counts every tree fitted, including the last ten that stopped improving: scikit-learn keeps them."
+
+  - cell: "for learning_rate, leaves, l2 in itertools.product([0.05, 0.1], [15, 31, 63], [0.0, 1.0]):"
+    title: "The declared search"
+    lines:
+      - match: "for learning_rate, leaves, l2 in itertools.product([0.05, 0.1], [15, 31, 63], [0.0, 1.0]):"
+        note: "2 × 3 × 2 = 12 settings, fixed before any of them ran."
+      - match: "\"test_auc\": trial[\"test\"][\"auc\"]})"
+        note: "Recorded for the post-mortem in Section 6, never used to choose."
+      - match: "winner = grid.iloc[0]"
+        note: "The top row after sorting by validation AUC: the rule decides, not the person."
+
+  - cell: "network = run_neural_network({\"name\": f\"bake_nn_s{seed}\", \"split_seed\": seed}, quiet=True)"
+    title: "Ten splits, identical rows"
+    lines:
+      - match: "network = run_neural_network({\"name\": f\"bake_nn_s{seed}\", \"split_seed\": seed}, quiet=True)"
+        note: "The same `split_seed` for all three models, so each split's rows are identical across them: that is the pairing."
+
+  - cell: "def latency_ms_per_1000_rows(predict, raw_rows, repeats=5):"
+    title: "Timing predictions fairly"
+    lines:
+      - match: "return 1000 * float(np.median(times))"
+        note: "The median ignores one slow attempt, such as a first call paying for memory allocation."
+      - match: "torch.tensor(network_preprocessor.transform(raw_rows).astype(np.float32)))).numpy()"
+        note: "Preprocessing is inside the timed call, because production has to do it too."
+      - match: "return gbdt_default[\"artifacts\"][\"model\"].predict_proba(as_categorical(raw_rows))[:, 1]"
+        note: "Safe even though the 1,000 rows may lack some categories: the model maps values by name to what it saw in training."
+
+  - cell: "network_probabilities = chronological[\"network\"][\"artifacts\"][\"test_probabilities\"]"
+    title: "A paired bootstrap"
+    lines:
+      - match: "picked = generator.integers(0, n_rows, n_rows)          # draw n rows, with replacement"
+        note: "Some rows are drawn twice and about 37% not at all; each resample is a plausible other test set."
+      - match: "if chronological_labels[picked].sum() in (0, len(picked)):"
+        note: "AUC needs both classes; with 4,521 rows this never actually triggers."
+      - match: "differences.append(roc_auc_score(chronological_labels[picked], network_probabilities[picked])"
+        note: "Both models are scored on the same resample, so the bootstrap is paired too."
+      - match: "low, high = np.percentile(differences, [2.5, 97.5])"
+        note: "The percentile interval: the middle 95% of the resampled differences."
+
+  - cell: "def experiment_record(result, why, learned, next_change, results_dir=\"results\"):"
+    title: "The record"
+    lines:
+      - match: "raise ValueError(\"a record needs both a reason and a lesson\")"
+        note: "Refuses to write a record with the two answers only a person can supply (Note 4.2)."
+
+takeaways:
+  - "Write the rules before the first result: the question, the splits, the measure, the tuning budget, the decision rule and what would change your mind."
+  - "Compare on identical rows and read the paired difference. Each model alone spread by 0.013; their difference by 0.005, with boosting ahead on 10 of 10 splits."
+  - "Random splits of one file overlap, so a plain paired test is too confident. Corrected, boosting's +0.008 still holds (95% interval +0.003 to +0.013)."
+  - "Judge tuning the same way: paired, across splits. The best of twelve settings on one validation set won by luck and added +0.001, winning 5 of 10."
+  - "Accuracy is one column. Boosting trained 14 times faster and ships as one file; the network predicted twice as fast from a file twelve times smaller."
+  - "Test the deployment condition. Chronologically the ranking reversed (network +0.030, interval +0.017 to +0.044) and both models fell towards guessing. Before explaining a reversal, check that both models saw the same information."
+  - "On tabular data of this size, gradient boosting is the baseline to beat. Networks earn their place when they learn representations from raw text, images, audio and sequences."
+
+quiz:
+  - q: "Two models are scored on the same ten splits. Why is the spread of their difference much smaller than either model's spread?"
+    options: ["The difference is averaged more", "The split's difficulty is shared by both scores and cancels in the subtraction", "Boosting is more stable", "Ten splits is enough to remove noise"]
+    answer: 1
+    why: "Here the two models' scores correlate at 0.94 across splits."
+  - q: "Each model's test AUC varies by 0.013 across splits; the gap between their averages is 0.008, and one wins on all ten paired splits. The verdict?"
+    options: ["Inconclusive: the gap is smaller than the noise", "A small, real difference", "A large difference", "Cannot tell without more models"]
+    answer: 1
+    why: "A gap smaller than the spread of single scores can still be real when the paired difference is consistent."
+  - q: "The best of twelve settings beat the default on validation, then lost on the test rows of the same split. Most likely?"
+    options: ["The test set is broken", "Picking the best of twelve noisy scores picks up luck that does not transfer", "The setting overfits the training rows", "Boosting cannot be tuned"]
+    answer: 1
+    why: "Across ten splits the tuned setting added +0.0012 and won 5 of 10: a coin toss."
+  - q: "In Section 8's bootstrap, what is resampled?"
+    options: ["The training rows, refitting both models each time", "The test rows, with both fitted models held fixed", "The random seeds", "The cut-off date"]
+    answer: 1
+    why: "So the interval covers which test rows you happened to have, not training randomness."
+  - q: "Why is ten random splits of one file weaker evidence than ten independent datasets?"
+    options: ["It is not weaker", "The splits share most of their rows, so their results are correlated", "Random splits are biased", "Ten is too few to compute a mean"]
+    answer: 1
+    why: "Hence the corrected test, and why more splits stop narrowing the interval."
+  - q: "The two models rank customers with a Spearman correlation of 0.87, and averaging them gives 0.8163 against 0.8160. What follows?"
+    options: ["Always ship both", "They make different errors, but combining them bought almost nothing here", "They are identical models", "Averaging is always worse"]
+    answer: 1
+    why: "Not worth maintaining a second model on this evidence; check it paired across splits before deciding."
+  - q: "Under the chronological split the network picked its epoch on the later-period validation rows, while boosting stopped using a slice of its training rows. Why does that matter?"
+    options: ["It does not", "One model was tuned on rows closer to the test period, which could explain part of the reversal", "Boosting cannot use validation rows", "It makes the network slower"]
+    answer: 1
+    why: "Give both models the same information before crediting the reversal to smoothness."
+
+docstrings:
+  load_bank_marketing: |
+    Download Bank Marketing if needed and return its inputs and label.
+
+    ``duration`` is dropped because a call's length is only known after the call.
+
+    Args:
+        path: Where the CSV is (or will be) stored.
+
+    Returns:
+        A tuple ``(X, y)``: the 15-column input DataFrame and a float32 label array
+        (1 = subscribed).
+
+    Raises:
+        urllib.error.URLError: If the file is missing and UCI cannot be reached.
+  make_split: |
+    Split row numbers into training, validation and test sets (Note 4.1's rules).
+
+    Args:
+        y: Labels, one per row; used to stratify the random rule.
+        policy: ``"stratified"`` (random rows, class balance kept) or
+            ``"chronological"`` (file order: earliest rows for training, latest for test).
+        fractions: Shares for training, validation and test.
+        seed: Seed for the stratified rule; ignored by the chronological one.
+
+    Returns:
+        A dict ``{"train", "val", "test"}`` of NumPy arrays of row numbers.
+  build_preprocessor: |
+    Build an unfitted preprocessor that scales numeric columns and one-hot encodes the rest.
+
+    Args:
+        X: The input table; used only to find which columns are numeric.
+
+    Returns:
+        An unfitted ``ColumnTransformer`` (unseen categories become all zeros). Fit it on
+        training rows only.
+  seed_everything: |
+    Seed Python's, NumPy's and PyTorch's random number generators.
+
+    Args:
+        seed: The seed for all three.
+  run_neural_network: |
+    Train the frozen Day 3 network once on one split and report its scores.
+
+    Seeds everything, splits, fits the preprocessing on the training rows, trains with
+    AdamW for ``epochs`` epochs, keeps the epoch with the best validation ROC-AUC, then
+    scores the test rows once. Writes ``<results_dir>/<name>.json``.
+
+    Args:
+        settings: Overrides for ``NN_SETTINGS`` (for example ``name``, ``split``,
+            ``split_seed``).
+        quiet: Skip the one-line summary.
+        results_dir: Folder for the JSON result.
+
+    Returns:
+        A dict with the settings, best epoch, validation AUC, test metrics (ROC-AUC, PR-AUC,
+        accuracy, share of positives, average prediction) and ``seconds``, which includes
+        the per-epoch validation scoring. ``artifacts`` holds the model, preprocessor, split
+        and test probabilities.
+  run_neural_network.probabilities_for: |
+    Score preprocessed rows with the current model, in evaluation mode and without a graph.
+
+    Args:
+        inputs: A float32 tensor of preprocessed rows.
+
+    Returns:
+        A 1-D NumPy array of probabilities, one per row.
+  as_categorical: |
+    Mark the non-numeric columns as pandas categories, for native categorical splits.
+
+    Args:
+        frame: A DataFrame of raw columns.
+
+    Returns:
+        A copy with every non-numeric column converted to the ``category`` dtype.
+  run_gradient_boosting: |
+    Fit ``HistGradientBoostingClassifier`` once on one split and report its scores.
+
+    Takes the raw columns from ``X_trees`` (categories marked, no scaling), with the same
+    split rules and result shape as ``run_neural_network``.
+
+    Args:
+        settings: Overrides for ``GBDT_SETTINGS`` (learning rate, leaves, L2 penalty,
+            ``max_iter``, ``early_stopping``, split and seed).
+        quiet: Skip the one-line summary.
+        save: Write ``<results_dir>/<name>.json``.
+        results_dir: Folder for the JSON result.
+
+    Returns:
+        A dict with the settings, ``trees_used``, validation AUC, test metrics, fit
+        ``seconds`` and ``artifact_bytes`` (the pickled model's size). ``artifacts`` holds
+        the model, split and test probabilities.
+  bare_training_seconds: |
+    Time the network's training loop alone, with no validation scoring between epochs.
+
+    Uses the preprocessed rows of split 42 and the frozen Day 3 settings.
+
+    Args:
+        epochs: Passes over the training rows.
+
+    Returns:
+        Seconds spent in the training loop.
+  latency_ms_per_1000_rows: |
+    Median time to score 1,000 raw rows, preprocessing included.
+
+    Args:
+        predict: A function from raw rows (a DataFrame) to probabilities.
+        raw_rows: At least 1,000 raw rows; the first 1,000 are used.
+        repeats: How many timed attempts to take the median of.
+
+    Returns:
+        Milliseconds per 1,000 rows.
+  network_predict: |
+    Score raw rows with the reference network: preprocess, forward pass, sigmoid.
+
+    Args:
+        raw_rows: A DataFrame of raw input columns.
+
+    Returns:
+        A NumPy array of probabilities, one row per input row.
+  boosting_predict: |
+    Score raw rows with the default gradient-boosting model.
+
+    Args:
+        raw_rows: A DataFrame of raw input columns.
+
+    Returns:
+        A NumPy array with the probability of "yes" for each row.
+  experiment_record: |
+    Write ``<results_dir>/<name>.md``: the five questions every experiment should answer.
+
+    Args:
+        result: A result dict from ``run_neural_network`` or ``run_gradient_boosting``.
+        why: Why the experiment was run; only a person can supply this.
+        learned: What it taught; only a person can supply this.
+        next_change: What to change next.
+        results_dir: Folder for the record.
+
+    Returns:
+        The path of the Markdown file written.
+
+    Raises:
+        ValueError: If ``why`` or ``learned`` is empty.

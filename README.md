@@ -70,6 +70,7 @@ templates/ + static/  (design, behaviour, widgets)               ─┘
 | `> **🖼️ IMAGE 1.1.2 — Title**` followed by an image | A numbered figure with that caption |
 | Math `$…$` / `$$…$$` | Typeset with KaTeX |
 | Code cells + outputs | Highlighted code with copy button, text / table / plot / error outputs (long ones fold) |
+| `%%writefile path/to/file.yaml` cells | Labelled "Writes path/to/file.yaml" and highlighted by file type (Python files also get docstrings) |
 
 ---
 
@@ -99,6 +100,13 @@ inserts:                         # things placed inside sections
     props: { model: network }    # passed to the widget
     intro: "Shown above the widget (markdown)."
     caption: "Shown below the widget (markdown)."
+
+  - section: 1
+    after: "Suppose every input feature"   # a worked question written as prose …
+    type: questions              # … becomes a question card with a hidden explanation
+    replace: 2                   # remove the anchor block and the one before it (e.g. its heading)
+    items:
+      - { q: "Question text?", a: "Explanation (markdown)" }
 
   - type: predict                # "commit to a guess, then reveal"
     mode: choice                 # or: number (slider with min/max/step/answer/tolerance)
@@ -159,6 +167,8 @@ docstrings:
     ...
 ```
 
+- A docstring in the notebook that starts with "Placeholder" marks a stub the notebook replaces further down; it is
+  kept as written, and only the real definition takes the docstring from the enrichment file.
 - `make defs L=2.2` lists every function/class in a lesson with its docstring status.
 - The build **warns** about any definition with no docstring, or with a one-line docstring despite taking arguments.
 - For new modules, `GROQ_API_KEY=gsk_... make docstrings L=5.1` drafts the missing ones with the AI model into
@@ -188,7 +198,10 @@ Read colours from `L.palette()` so the widget follows light and dark mode. Pages
 
 Every page has an **Ask the tutor** button. The tutor sees the lesson, the section being read and, from a question
 card, the learner's own written answer plus the course's reference answer, so it can **check answers**, give **hints**,
-**explain code cells**, explain any **selected passage**, quiz the learner, or summarise the lesson.
+**explain code cells**, explain any **selected passage**, quiz the learner, or summarise the lesson. It also gets an
+outline of the whole course (`static/course-map.js`, written by the build), and when the learner mentions another module
+or lesson ("Module 2", "Lesson 3.4", "day 4") it receives that lesson's summary, objectives and section titles, so it can
+answer questions about the rest of the course and link to the right lesson.
 
 Configuration lives under `tutor:` in `course.yaml` (model `qwen/qwen3.8-27b` on Groq). There are two ways to connect it:
 

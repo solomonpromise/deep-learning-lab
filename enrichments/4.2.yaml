@@ -1,0 +1,529 @@
+# Teaching layer for Lesson 4.2 — Experiments You Can Reproduce
+# The notebook is the author's current version (not locked). Its two IMAGE placeholders are hidden by the build and
+# replaced here by SVG figures; a third figure plots the lesson's measured seed and split noise.
+
+summary: |
+  If you report a number today, can anybody get it again tomorrow? You separate three meanings of **reproducible** (repeatable,
+  portable, robust), seed every generator a run touches and give the DataLoader its own, drive every run from one **settings**
+  dictionary saved as YAML and fingerprinted with a **hash**, make each result record its own provenance (data fingerprint, commit,
+  software versions), and build a **checkpoint** that resumes a run without changing a single weight. Then the number that matters most:
+  changing only the seed moves test AUC by 0.001, changing only the split moves it by 0.013. Records answer five fixed questions, and
+  MLflow stores them without making them true.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    after: "A score means nothing without the recipe that produced it"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 378" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three meanings of reproducible: repeatable, portable, robust" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">Three meanings of "reproducible"</text><rect x="20" y="196" width="220" height="144" rx="10" style="fill:var(--surface-2);stroke:var(--c0);stroke-width:1.5"/><rect x="20" y="196" width="220" height="6" rx="3" style="fill:var(--c0)"/><text x="130" y="226" text-anchor="middle" style="fill:var(--c0);font-size:15px;font-weight:800">1 · Repeatable</text><text x="130" y="246" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">same code, data, machine, software</text><text x="70" y="284" text-anchor="middle" style="fill:var(--ink);font-size:20px;font-weight:800">0.7871</text><text x="130" y="284" text-anchor="middle" style="fill:var(--c0);font-size:22px;font-weight:800">=</text><text x="190" y="284" text-anchor="middle" style="fill:var(--ink);font-size:20px;font-weight:800">0.7871</text><text x="130" y="314" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:700">identical to the last decimal</text><rect x="250" y="146" width="220" height="194" rx="10" style="fill:var(--surface-2);stroke:var(--aqua);stroke-width:1.5"/><rect x="250" y="146" width="220" height="6" rx="3" style="fill:var(--aqua)"/><text x="360" y="176" text-anchor="middle" style="fill:var(--aqua);font-size:15px;font-weight:800">2 · Portable</text><text x="360" y="196" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">another machine or software version</text><text x="300" y="234" text-anchor="middle" style="fill:var(--ink);font-size:20px;font-weight:800">0.7871</text><text x="360" y="234" text-anchor="middle" style="fill:var(--aqua);font-size:22px;font-weight:800">≈</text><text x="420" y="234" text-anchor="middle" style="fill:var(--ink);font-size:20px;font-weight:800">0.7869</text><text x="360" y="264" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:700">close, and explained by the record</text><rect x="480" y="96" width="220" height="244" rx="10" style="fill:var(--surface-2);stroke:var(--violet);stroke-width:1.5"/><rect x="480" y="96" width="220" height="6" rx="3" style="fill:var(--violet)"/><text x="590" y="126" text-anchor="middle" style="fill:var(--violet);font-size:15px;font-weight:800">3 · Robust</text><text x="590" y="146" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">other seeds, other splits</text><rect x="492" y="164" width="36" height="26" rx="5" style="fill:var(--surface);stroke:var(--line-2)"/><text x="510" y="181" text-anchor="middle" style="fill:var(--ink);font-size:10px;font-weight:700">0.7776</text><rect x="532" y="172" width="36" height="26" rx="5" style="fill:var(--surface);stroke:var(--line-2)"/><text x="550" y="189" text-anchor="middle" style="fill:var(--ink);font-size:10px;font-weight:700">0.8098</text><rect x="572" y="164" width="36" height="26" rx="5" style="fill:var(--surface);stroke:var(--line-2)"/><text x="590" y="181" text-anchor="middle" style="fill:var(--ink);font-size:10px;font-weight:700">0.7850</text><rect x="612" y="172" width="36" height="26" rx="5" style="fill:var(--surface);stroke:var(--line-2)"/><text x="630" y="189" text-anchor="middle" style="fill:var(--ink);font-size:10px;font-weight:700">0.7795</text><rect x="652" y="164" width="36" height="26" rx="5" style="fill:var(--surface);stroke:var(--line-2)"/><text x="670" y="181" text-anchor="middle" style="fill:var(--ink);font-size:10px;font-weight:700">0.7906</text><path d="M 492 208 q 0 8 8 8 h 76 l 12 8 l 12 -8 h 76 q 8 0 8 -8" style="fill:none;stroke:var(--violet);stroke-width:1.5"/><text x="590" y="236" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:700">does the conclusion survive?</text><text x="360" y="366" text-anchor="middle" style="fill:var(--ink-3);font-size:11.5px;font-weight:600">Level 3 cards: this lesson's test AUC on five different splits, same seed</text></svg>
+    caption: "Each level fails for its own reasons, and each needs its own test."
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "And the comparison from Section 1 is now concrete"
+    type: explainer
+    style: warning
+    title: "Where the earlier Bank Marketing numbers really come from"
+    md: |
+      The recipes differ even more than the text says, and two of its figures do not match the current versions of those lessons:
+
+      | Lesson | Split | Optimizer, epochs | Validation ROC-AUC |
+      |---|---|---|---|
+      | 2.3 / 2.4 | 70 / 15 / 15 | Adam, early stopping (epoch 11) | 0.7982 |
+      | 3.1 | 80 / 20 | Adam, 15 epochs (final) | 0.7939 |
+      | 3.4, Case 6 without `duration` | 80 / 10 / 10 | AdamW, 15 epochs | 0.7853 |
+      | this lesson | 80 / 10 / 10 | AdamW, best of 30 epochs (epoch 18) | 0.7871 |
+
+      The "0.7965" quoted for Module 2 and Lesson 3.1 appears in neither notebook today, and Lesson 3.4's run cannot show 0.7871: it stops
+      after 15 epochs, before this run's best epoch. None of this weakens the point; it makes it. Four recipes, four numbers, and only the
+      table tells you why.
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    after: "That is the good outcome: it fails immediately and loudly"
+    type: explainer
+    style: tip
+    title: "Why YAML reads `3e-4` as text"
+    md: |
+      PyYAML follows YAML 1.1, whose rule for floats requires a decimal point (`3.0e-4`) or a plain decimal (`0.0003`). `3e-4` matches no
+      number rule, so it falls through to a string. YAML 1.2 parsers (for example `ruamel.yaml`) read it as a float, which is exactly why the
+      same file can behave differently in two tools. Converting on load (`float(settings["lr"])`) or validating the settings before a run
+      removes the trap for good.
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "On a 30-epoch run the damage is small"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A full checkpoint resumes exactly; a weights-only one drifts" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">What a checkpoint must carry</text><rect x="40" y="46" width="300" height="196" rx="12" style="fill:var(--surface-2);stroke:var(--c0)"/><text x="190" y="68" text-anchor="middle" style="fill:var(--ink);font-size:14px;font-weight:800;font-family:JetBrains Mono,monospace">checkpoint.pt</text><rect x="56" y="80" width="268" height="25" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="190" y="97" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">weights</text><rect x="56" y="111" width="268" height="25" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="190" y="128" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">optimizer averages + step</text><rect x="56" y="142" width="268" height="25" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="190" y="159" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">row-order generator</text><rect x="56" y="173" width="268" height="25" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="190" y="190" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">global generators</text><rect x="56" y="204" width="268" height="25" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="190" y="221" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">history, best score, best weights</text><rect x="420" y="46" width="260" height="70" rx="12" style="fill:var(--surface-2);stroke:var(--line-2)"/><text x="550" y="68" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:800;font-family:JetBrains Mono,monospace">model.pt (weights only)</text><rect x="436" y="80" width="228" height="25" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="550" y="97" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">weights</text><text x="550" y="140" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:600">enough to use the model,</text><text x="550" y="157" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:600">not enough to continue training it</text><line x1="50" y1="300" x2="330" y2="300" style="stroke:var(--line-2)"/><polyline points="50.0,292.0 59.3,284.0 68.7,277.6 78.0,272.5 87.3,268.4 96.7,265.1 106.0,262.5 115.3,260.4 124.7,258.7 134.0,257.4 143.3,256.3 152.7,255.4 162.0,254.7 171.3,254.2 180.7,253.8 190.0,253.4 199.3,253.1 208.7,252.9 218.0,252.7 227.3,252.6 236.7,252.5 246.0,252.4 255.3,252.3 264.7,252.2 274.0,252.2 283.3,252.2 292.7,252.1 302.0,252.1 311.3,252.1 320.7,252.1 330.0,252.0" style="fill:none;stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:5 4"/><polyline points="162.0,254.7 171.3,254.2 180.7,253.8 190.0,253.4 199.3,253.1 208.7,252.9 218.0,252.7 227.3,252.6 236.7,252.5 246.0,252.4 255.3,252.3 264.7,252.2 274.0,252.2 283.3,252.2 292.7,252.1 302.0,252.1 311.3,252.1 320.7,252.1 330.0,252.0" style="fill:none;stroke:var(--c0);stroke-width:2.2"/><polyline points="50.0,292.0 59.3,284.0 68.7,277.6 78.0,272.5 87.3,268.4 96.7,265.1 106.0,262.5 115.3,260.4 124.7,258.7 134.0,257.4 143.3,256.3 152.7,255.4 162.0,254.7" style="fill:none;stroke:var(--c0);stroke-width:2.2"/><path d="M 166.0 254 l -8 12 h 7 l -5 12 l 11 -15 h -7 l 5 -9 z" style="fill:var(--yellow);stroke:var(--ink-3);stroke-width:.6"/><text x="50" y="318" text-anchor="start" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">epoch 1</text><text x="162.0" y="318" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">12: crash</text><text x="330" y="318" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">30</text><text x="190" y="344" text-anchor="middle" style="fill:var(--c0);font-size:12px;font-weight:700">resumed run lies exactly on the uninterrupted one</text><line x1="410" y1="300" x2="690" y2="300" style="stroke:var(--line-2)"/><polyline points="410.0,292.0 419.3,284.0 428.7,277.6 438.0,272.5 447.3,268.4 456.7,265.1 466.0,262.5 475.3,260.4 484.7,258.7 494.0,257.4 503.3,256.3 512.7,255.4 522.0,254.7 531.3,254.2 540.7,253.8 550.0,253.4 559.3,253.1 568.7,252.9 578.0,252.7 587.3,252.6 596.7,252.5 606.0,252.4 615.3,252.3 624.7,252.2 634.0,252.2 643.3,252.2 652.7,252.1 662.0,252.1 671.3,252.1 680.7,252.1 690.0,252.0" style="fill:none;stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:5 4"/><polyline points="522.0,254.7 531.3,258.1 540.7,252.6 550.0,253.1 559.3,259.7 568.7,260.4 578.0,255.1 587.3,255.9 596.7,262.7 606.0,263.5 615.3,258.3 624.7,259.1 634.0,266.0 643.3,266.9 652.7,261.7 662.0,262.6 671.3,269.5 680.7,270.4 690.0,265.2" style="fill:none;stroke:var(--red);stroke-width:2.2"/><polyline points="410.0,292.0 419.3,284.0 428.7,277.6 438.0,272.5 447.3,268.4 456.7,265.1 466.0,262.5 475.3,260.4 484.7,258.7 494.0,257.4 503.3,256.3 512.7,255.4 522.0,254.7" style="fill:none;stroke:var(--c0);stroke-width:2.2"/><path d="M 526.0 254 l -8 12 h 7 l -5 12 l 11 -15 h -7 l 5 -9 z" style="fill:var(--yellow);stroke:var(--ink-3);stroke-width:.6"/><text x="410" y="318" text-anchor="start" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">epoch 1</text><text x="522.0" y="318" text-anchor="middle" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">12: crash</text><text x="690" y="318" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">30</text><text x="550" y="344" text-anchor="middle" style="fill:var(--red);font-size:12px;font-weight:700">resumed run drifts away, silently</text><text x="360" y="368" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">dashed: the uninterrupted run (schematic)  ·  measured: identical weights vs. test AUC 0.8016 → 0.7991</text></svg>
+    caption: "The lesson's measurement: the full checkpoint reproduced every weight; the weights-only restart finished at test AUC 0.7991 instead of 0.8016, with no warning."
+
+  # ------------------------------------------------------------------ §8
+  - section: 8
+    after: "Standard deviation here just means"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 262" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Seed noise against split noise in test AUC" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="26" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:800">How far test AUC moves when nothing that matters changed</text><rect x="553.2" y="68" width="23.1" height="44" rx="6" style="fill:var(--c0);fill-opacity:.14"/><line x1="150" y1="90" x2="690" y2="90" style="stroke:var(--line-2)"/><circle cx="560.4" cy="90" r="6" style="fill:var(--c0)"/><circle cx="566.4" cy="90" r="6" style="fill:var(--c0)"/><circle cx="547.2" cy="90" r="6" style="fill:var(--c0)"/><circle cx="576.0" cy="90" r="6" style="fill:var(--c0)"/><circle cx="573.6" cy="90" r="6" style="fill:var(--c0)"/><text x="138" y="88" text-anchor="end" style="fill:var(--ink);font-size:12px;font-weight:700">5 seeds, same split</text><text x="138" y="104" text-anchor="end" style="fill:var(--c0);font-size:11.5px;font-weight:800">sd 0.001</text><rect x="216.7" y="148" width="310.6" height="44" rx="6" style="fill:var(--c1);fill-opacity:.14"/><line x1="150" y1="170" x2="690" y2="170" style="stroke:var(--line-2)"/><circle cx="241.2" cy="170" r="6" style="fill:var(--c1)"/><circle cx="627.6" cy="170" r="6" style="fill:var(--c1)"/><circle cx="330.0" cy="170" r="6" style="fill:var(--c1)"/><circle cx="264.0" cy="170" r="6" style="fill:var(--c1)"/><circle cx="397.2" cy="170" r="6" style="fill:var(--c1)"/><text x="138" y="168" text-anchor="end" style="fill:var(--ink);font-size:12px;font-weight:700">5 splits, same seed</text><text x="138" y="184" text-anchor="end" style="fill:var(--c1);font-size:11.5px;font-weight:800">sd 0.013</text><line x1="150.0" y1="200" x2="150.0" y2="206" style="stroke:var(--ink-3)"/><text x="150.0" y="222" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">0.77</text><line x1="270.0" y1="200" x2="270.0" y2="206" style="stroke:var(--ink-3)"/><text x="270.0000000000003" y="222" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">0.78</text><line x1="390.0" y1="200" x2="390.0" y2="206" style="stroke:var(--ink-3)"/><text x="390.00000000000057" y="222" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">0.79</text><line x1="510.0" y1="200" x2="510.0" y2="206" style="stroke:var(--ink-3)"/><text x="510.00000000000085" y="222" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">0.80</text><line x1="630.0" y1="200" x2="630.0" y2="206" style="stroke:var(--ink-3)"/><text x="630.0000000000011" y="222" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">0.81</text><text x="360" y="250" text-anchor="middle" style="fill:var(--ink-2);font-size:11.5px;font-weight:600">shaded: ± one standard deviation. The split moves the score about thirteen times as much as the seed.</text></svg>
+    caption: "The ten runs from the cell above. Averaging three seeds shrinks the smaller of the two wobbles."
+
+  - section: 8
+    after: "The best epoch itself is noisy"
+    type: explainer
+    style: deep
+    title: "What these standard deviations can and cannot tell you"
+    md: |
+      Five runs give only a rough estimate of a spread: with five values, the true standard deviation could easily be half or double the
+      measured one. The *ratio* is still convincing here, because the two sets do not overlap at all (every seed run scored between 0.8031
+      and 0.8055, the split runs from 0.7776 to 0.8098). Before relying on the exact figure 0.013, run more splits; before comparing two
+      models, compare them on the **same** splits, which removes most of the split noise from the difference (Lesson 4.4).
+
+answers:
+  "1-1":
+    - |
+      Most likely **Level 2, portable**: the same code on another machine or another software version gives a close but not identical number.
+      Check the recorded **environment** first (PyTorch, NumPy and scikit-learn versions, CPU or GPU, thread count), then the **data
+      fingerprint** and **settings fingerprint**. If all of those match and it is the same machine, it is a **Level 1 failure**: some random
+      choice is not seeded, or the data or code changed without being recorded.
+    - |
+      **Level 3, robust.** A noise floor measures how much the score moves under different random choices (seeds, splits), which is exactly the
+      yardstick for deciding whether a conclusion survives them.
+  "2-1":
+    - |
+      Because a private generator's state depends only on its own seed. The shared generator's state depends on every random number drawn
+      before it: re-running a cell, adding a cell above, a library that draws random numbers, a model built in a different order. Any of
+      those shifts the sequence and changes the row order. The private generator gives the same order no matter what else has run.
+    - |
+      **Yes.** After a restart, running top to bottom executes exactly the same sequence of random draws from the same seed, so both passes
+      print the same second and third triples (0.9593… and 0.2565…). The numbers are reproducible *given the same order of execution*; the
+      problem only appears when cells are run out of order, twice, or with new cells in between.
+  "4-1":
+    - |
+      The test set would become a second validation set. The reported test AUC would be the best of 30 noisy measurements on those rows,
+      so it would be optimistic, and there would be no untouched data left to give an honest estimate. Selecting on validation and
+      reporting on test is what keeps the test number unbiased.
+    - |
+      `state_dict()` returns references to the model's live tensors, not copies. Training keeps updating those tensors in place, so a stored
+      reference would always show the *latest* weights, and "restoring the best epoch" would restore nothing. `copy.deepcopy` makes an
+      independent snapshot (Lesson 2.3 measured the same trap).
+  "5-1":
+    - |
+      Because they describe **how this execution was run or labelled**, not **what was computed**. The same hyperparameters, data and seeds
+      produce the same result whatever the run is called, however often it saves a checkpoint, and whether it was resumed (an exact resume
+      gives identical weights, as Section 7 shows). Including them would give identical experiments different fingerprints and make them
+      impossible to group. (`stop_after` does change what finishes; the record's `interrupted` flag captures that separately.)
+    - |
+      The three things Section 6 records: **the data** changed (a re-downloaded or edited file, visible in the data fingerprint); **the code**
+      changed (a different commit, or uncommitted edits); **the software or hardware** changed (library versions, CPU against GPU, thread
+      count). A fourth possibility is a non-deterministic operation, which is why the lesson runs on CPU with deterministic algorithms on.
+  "6-1":
+    - |
+      The **data changed** between the two runs while the recipe stayed the same: a re-downloaded file, a fixed column, appended rows. Trust
+      neither result blindly. Find out which data is the version you intend to use (ideally the one you can fetch again and fingerprint
+      identically), rerun anything you need on that data, and compare results only when their data fingerprints match.
+    - |
+      Because parallel maths adds numbers in whatever order threads finish, and floating-point addition depends on order, so a different
+      thread count can change the last few digits. Recording it explains small Level 2 differences (this run used one thread) and also
+      explains timing differences between machines.
+  "7-1":
+    - |
+      - **Weights:** without them there is nothing to resume.
+      - **Optimizer state** (AdamW's two running averages and step count): without it the next steps are the wrong size while the averages
+        rebuild; the loss jumps and training follows a different path.
+      - **Row-order generator:** without it the next epochs visit rows in a different order, repeating or skipping examples relative to the
+        uninterrupted run.
+      - **Global generators:** without them any other random draw (dropout masks, augmentation) comes out different.
+      - **Bookkeeping** (history, best score and best weights): without it early stopping and "restore the best epoch" forget everything
+        before the crash, and you may end up keeping a worse model.
+    - |
+      `weights_only=True` only rebuilds tensors and simple containers. A full load unpickles arbitrary Python objects, and a pickle can be
+      written to call any function while it loads, so a malicious `.pt` file from the internet could run code on your machine. Use the
+      full load only for files you created or trust.
+  "8-1":
+    - |
+      **Split noise shrinks** with more data: larger validation and test sets make each AUC a more precise measurement (its sampling error
+      falls roughly with the square root of the number of rows). **Seed noise may not:** it comes from the optimisation itself (starting
+      weights, row order), and more data does not remove it, although it may reduce it a little.
+    - |
+      The **split noise** that both models share. On the same rows, both models find the same customers easy and the same ones hard, so
+      that part of the variation cancels in the *difference* between them. What remains is mostly seed noise plus how differently the two
+      models react to the particular rows, which is far smaller. That is why Lesson 4.4 compares models split by split.
+  "10-1":
+    - |
+      **Numeric comparisons.** As text, `"0.001"` and `"0.0003"` sort alphabetically, you cannot filter for `lr < 0.001`, and a plot of a
+      metric against a parameter treats every value as a separate category. MLflow always stores parameters as strings, so log the numeric
+      settings you want to compare as **metrics** as well (`mlflow.log_metric("lr", 0.001)`), or convert them back with `pd.to_numeric`
+      after `search_runs`.
+    - |
+      The **reasoning**: why the run was made, what was learned and what comes next, which MLflow never saw. Also: the full environment
+      block and git state (only a few fingerprints were copied as tags), plain-text files that `git diff` can compare and that work
+      without any server, and a writer that refuses to create a record without a reason and a lesson.
+  "11-1":
+    - |
+      ```python
+      with open("configs/pos_weight.yaml", "w") as f:
+          yaml.safe_dump({"name": "pos_weight_7_5", "pos_weight": 7.5}, f)
+      ```
+
+      Only what differs from `BASELINE` goes in the file: `run_experiment` fills in the rest. `7.5` has a decimal point, so YAML reads it as
+      a number.
+    - |
+      **Test AUC: about the same**, within the seed noise of about 0.001–0.005, because weighting the positive class barely changes the
+      ranking. **Average prediction: much higher**, well above the true 0.117, because every probability is pushed upwards. Lesson 2.3 measured
+      exactly this for the same network: mean predicted probability 0.108 → 0.362, ROC-AUC 0.797 → 0.799. Expect accuracy at 0.5 to fall
+      and recall at 0.5 to rise.
+    - |
+      ```python
+      settings = yaml.safe_load(open("configs/pos_weight.yaml"))
+      result = run_experiment(settings)
+      ```
+
+      The printed line gives the best epoch, validation and test AUC; `result["test"]["average_prediction"]` is the number to compare
+      with your prediction.
+    - |
+      ```python
+      experiment_record(
+          result,
+          why="pos_weight=7.5 should raise the probabilities without changing the ranking.",
+          learned="Test AUC moved by less than the seed noise; the average prediction rose far above 0.117.",
+          next_change="Keep the unweighted model and choose the call threshold from capacity.")
+      ```
+
+      The record shows `Changed from the baseline: {'pos_weight': 7.5}`, so the one difference is visible at a glance.
+    - |
+      ```python
+      log_to_mlflow("results/pos_weight_7_5.json")
+      log_to_mlflow("results/reference.json")
+      runs = mlflow.search_runs(experiment_names=["day4-bank-marketing"])
+      runs[runs["tags.mlflow.runName"].isin(["reference", "pos_weight_7_5"])]
+      ```
+
+      Or open `mlflow ui` and select both runs to overlay their validation curves. Check that they share a data fingerprint and differ in
+      their settings fingerprint, as they should.
+
+explain:
+  - cell: "def seed_everything(seed=42, deterministic=True):"
+    title: "Seeding everything"
+    lines:
+      - match: "torch.manual_seed(seed)                 # PyTorch's, on CPU"
+        note: "Python, NumPy and PyTorch each keep their own generator; each needs its own seed."
+      - match: "torch.use_deterministic_algorithms(True, warn_only=True)"
+        note: "Prefer repeatable implementations; warn (rather than stop) when an operation has none."
+      - match: "torch.backends.cudnn.benchmark = False"
+        note: "Stops cuDNN from timing several algorithms and picking the fastest, which can differ between runs."
+
+  - cell: "def run_experiment(settings, quiet=False"
+    title: "The experiment function"
+    summary: "Everything the run depends on arrives in `settings`, and everything it produced leaves in `result` and a JSON file."
+    lines:
+      - match: "settings = {**BASELINE, **settings}"
+        note: "Start from the baseline and override only what the caller passes: an experiment is described by what it changes."
+      - match: "seed_everything(settings[\"seed\"])"
+        note: "Seed at the start of every run, not once per notebook."
+      - match: "generator = torch.Generator().manual_seed(settings[\"seed\"])"
+        note: "The DataLoader's private generator: row order depends on nothing else."
+      - match: "start_epoch, history, best = load_checkpoint(checkpoint_path, model, optimizer, generator)"
+        note: "Resuming restores the model, optimizer, generators and bookkeeping, then continues from the next epoch."
+      - match: "if settings[\"stop_after\"] is not None and epoch >= settings[\"stop_after\"]:"
+        note: "A deliberate crash, used to test that resuming changes nothing."
+      - match: "model.load_state_dict(best[\"weights\"])              # go back to the best epoch"
+        note: "Chosen on validation, then scored once on test."
+      - match: "json.dump(result, f, indent=2, default=str)"
+        note: "`default=str` turns anything JSON cannot store natively (NumPy integers, paths, other objects) into text instead of failing."
+
+  - cell: "def settings_hash(settings):"
+    title: "Fingerprinting the settings"
+    lines:
+      - match: "ignore = {\"name\", \"resume\", \"stop_after\", \"checkpoint_every\"}"
+        note: "How the run was executed, not what was computed."
+      - match: "as_text = json.dumps(to_hash, sort_keys=True, default=str)"
+        note: "Sorting the keys makes the text, and so the hash, independent of dictionary order."
+      - match: "return hashlib.sha256(as_text.encode()).hexdigest()[:12]"
+        note: "Twelve hex characters: 48 bits, far more than enough to tell a few thousand runs apart."
+
+  - cell: "def data_fingerprint(X, y):"
+    title: "Fingerprinting the data"
+    lines:
+      - match: "hasher.update(pd.util.hash_pandas_object(X, index=True).to_numpy().tobytes())"
+        note: "One 64-bit hash per row (values and index), fed into SHA-256 as raw bytes."
+      - match: "hasher.update(\",\".join(map(str, X.columns)).encode())"
+        note: "Column names too, so a renamed or dropped column changes the fingerprint."
+
+  - cell: "torch.save({\"epoch\": epoch,"
+    title: "A checkpoint that can resume"
+    lines:
+      - match: "\"optimizer\": optimizer.state_dict(),"
+        note: "AdamW's running averages and step count: the part a weights-only save forgets."
+      - match: "\"generator\": generator.get_state(),"
+        note: "The DataLoader's row-order generator, exactly where it was."
+      - match: "saved = torch.load(path, weights_only=False)"
+        note: "Needed because generator states are not plain tensors. Only for files you made or trust."
+      - match: "return saved[\"epoch\"] + 1, saved[\"history\"], copy.deepcopy(saved[\"best\"])"
+        note: "Resume at the next epoch, with the history and best-so-far exactly as they were."
+
+takeaways:
+  - "\"Reproducible\" means three things: repeatable (identical on the same setup), portable (close and explained elsewhere) and robust (the conclusion survives new seeds and splits)."
+  - "Seed at the start of every run and give each DataLoader its own generator. Threads, hardware, library versions and some GPU operations cannot be seeded: record them."
+  - "Put every setting in one dictionary, save it as YAML, and fingerprint it. Write `0.0003` or `3.0e-4`, never `3e-4`."
+  - "Each result records its provenance: settings hash, data fingerprint, commit and uncommitted changes, software versions."
+  - "A resumable checkpoint holds weights, optimizer state, generators and bookkeeping. Weights alone resume a different run, silently."
+  - "Measure noise before interpreting a difference: here the split moves test AUC thirteen times as much as the seed. Compare models on the same splits."
+  - "Records answer five fixed questions, two of which only you can answer. A tracking tool stores records; it does not make them true."
+
+quiz:
+  - q: "Same code, data, machine and software, run twice: identical numbers. Which level of reproducibility is that?"
+    options: ["Repeatable", "Portable", "Robust", "None"]
+    answer: 0
+    why: "Portable is another machine or version (close, explained); robust is other seeds and splits (the conclusion survives)."
+  - q: "Why is one `seed_everything(42)` at the top of a notebook not enough?"
+    options: ["Seeds expire", "Every later random draw depends on everything that ran before it, so re-running or reordering cells changes the numbers", "PyTorch ignores it", "It only seeds NumPy"]
+    answer: 1
+    why: "Seed at the start of every run, and give the DataLoader its own generator."
+  - q: "What does `yaml.safe_load(\"lr: 3e-4\")[\"lr\"]` return?"
+    options: ["0.0003", "The string '3e-4'", "3", "An error"]
+    answer: 1
+    why: "PyYAML's float rule needs a decimal point; write 3.0e-4 or 0.0003."
+  - q: "A resumed run must reproduce the uninterrupted one exactly. Which save is enough?"
+    options: ["`model.state_dict()` alone", "Weights, optimizer state, row-order and global generators, and the history and best so far", "The optimizer alone", "The settings file"]
+    answer: 1
+    why: "The weights-only restart finished at test AUC 0.7991 instead of 0.8016, with no warning."
+  - q: "Changing only the seed moved test AUC by a standard deviation of 0.001; changing only the split, 0.013. What follows?"
+    options: ["Always average several seeds", "Most uncertainty comes from which rows you test on, so compare models on the same splits", "The model is broken", "Use a bigger learning rate"]
+    answer: 1
+    why: "Seed averaging barely touches the number that actually moves."
+  - q: "Two runs share a settings fingerprint but have different data fingerprints. What happened?"
+    options: ["Different seeds", "The data changed between the runs", "Different learning rates", "Nothing"]
+    answer: 1
+    why: "Same recipe, different ingredients: results are only comparable on identical data."
+  - q: "What does a tracking tool such as MLflow add?"
+    options: ["Correct fingerprints and reasons automatically", "Search, comparison and shared storage of runs; the discipline still comes from you", "Reproducibility guarantees", "Better models"]
+    answer: 1
+    why: "It will happily store a run from a folder full of uncommitted changes."
+
+docstrings:
+  seed_everything: |
+    Seed every random number generator this project touches, and ask for repeatable maths.
+
+    Seeds Python's ``random``, NumPy and PyTorch (every GPU too, when present). With
+    ``deterministic=True`` it also sets the cuBLAS workspace variable, asks PyTorch for
+    deterministic algorithms (warning where none exist) and turns off cuDNN's benchmark
+    mode. Thread scheduling, hardware and library versions are not controlled.
+
+    Args:
+        seed: The seed for every generator.
+        deterministic: Also request deterministic algorithms.
+
+    Returns:
+        The seed, for convenience.
+  first_batch: |
+    Return the first shuffled batch of the ten-row demo dataset.
+
+    Args:
+        generator: A ``torch.Generator`` for the DataLoader's shuffling, or ``None`` to use
+            PyTorch's shared global generator.
+
+    Returns:
+        A list with the five values in the first batch.
+  load_bank_marketing: |
+    Download Bank Marketing if needed and return its inputs and label.
+
+    ``duration`` is dropped because a call's length is only known after the call.
+
+    Args:
+        path: Where the CSV is (or will be) stored.
+
+    Returns:
+        A tuple ``(X, y)``: the 15-column input DataFrame and a float32 label array
+        (1 = subscribed).
+
+    Raises:
+        urllib.error.URLError: If the file is missing and UCI cannot be reached.
+  make_split: |
+    Split row numbers into training, validation and test sets.
+
+    Args:
+        y: Labels, one per row.
+        policy: ``"stratified"`` (keep the class balance), ``"random"`` or
+            ``"chronological"`` (file order, the deployment check from Lesson 4.1).
+        fractions: Shares for training, validation and test.
+        seed: Seed for the random rules.
+
+    Returns:
+        A dict ``{"train", "val", "test"}`` of NumPy arrays of row numbers.
+  build_preprocessor: |
+    Build an unfitted preprocessor that scales numeric columns and one-hot encodes the rest.
+
+    Args:
+        X: The input table; used only to find which columns are numeric.
+
+    Returns:
+        An unfitted ``ColumnTransformer`` (unseen categories become all zeros).
+  prepare_arrays: |
+    Fit the preprocessor on the training rows and transform every part of the split.
+
+    Args:
+        X: The input table.
+        y: The labels.
+        split: A dict of row numbers from ``make_split``.
+
+    Returns:
+        A tuple ``(inputs, labels, preprocessor)``: dicts of float32 input arrays and label
+        arrays keyed by part, and the fitted preprocessor.
+  build_model: |
+    Build the Module 3 network from settings, with reproducible starting weights.
+
+    Seeds PyTorch first, then stacks ``Linear → ReLU`` (plus ``Dropout`` when requested)
+    for each hidden width and ends with one output logit.
+
+    Args:
+        settings: Needs ``seed``, ``hidden`` (widths) and ``dropout``.
+        n_inputs: Number of input features (50 after preprocessing).
+
+    Returns:
+        An ``nn.Sequential`` producing one logit per row.
+  score: |
+    Score a model on one part of the data, without gradients and in evaluation mode.
+
+    Args:
+        model: The model to score.
+        X_tensor: Inputs as a float tensor.
+        y_array: Labels as a NumPy array.
+        loss_function: The loss used in training (so the loss is comparable).
+
+    Returns:
+        A tuple ``(probabilities, scores)``: the predicted probabilities and a dict with
+        ``loss``, ``auc``, ``pr_auc`` and ``accuracy`` (at 0.5).
+  run_experiment: |
+    Train once, following ``settings``, and return everything about the run.
+
+    Seeds everything, splits and prepares the data, trains with AdamW and a private
+    row-order generator, scores validation after every epoch and keeps the best epoch's
+    weights, optionally saves checkpoints, stops early, or resumes from a checkpoint.
+    The best epoch is then scored once on test, and the result is written to
+    ``results_dir/<name>.json``.
+
+    Args:
+        settings: Overrides for ``BASELINE`` (``name``, ``split``, ``split_seed``, ``seed``,
+            ``hidden``, ``dropout``, ``lr``, ``weight_decay``, ``batch_size``, ``epochs``,
+            ``pos_weight``, ``checkpoint_every``, ``resume``, ``stop_after``).
+        quiet: Do not print the one-line summary.
+        results_dir: Folder for the JSON result.
+        checkpoint_dir: Folder for checkpoints.
+
+    Returns:
+        A dict with the full ``settings``, the provenance ``run`` record, per-epoch
+        ``history``, ``best_epoch``, ``best_val_auc``, ``val_at_best``, ``test`` scores
+        (with the share of positives and the average prediction), ``seconds``,
+        ``interrupted`` and in-memory ``artifacts`` (model, preprocessor, split, final
+        weights, test probabilities).
+
+    Raises:
+        TypeError: If a setting has the wrong type, e.g. a learning rate loaded as text.
+  run_record: |
+    Everything a stranger would need to judge or reproduce a result.
+
+    Args:
+        settings: The run's full settings.
+        X: The input table the run used.
+        y: The labels the run used.
+        model: The trained model (for its parameter count).
+
+    Returns:
+        A dict with a unique ``run_id``, ``started_at`` (UTC), ``settings_hash``,
+        ``data_fingerprint``, ``git`` state, ``environment`` and ``n_parameters``.
+  save_checkpoint: |
+    Save everything the next epoch depends on, so the run can resume exactly.
+
+    Args:
+        path: File to write.
+        model: The model (its ``state_dict``).
+        optimizer: The optimizer, whose running averages and step count are saved.
+        generator: The DataLoader's row-order generator.
+        epoch: The epoch just completed.
+        history: Per-epoch records so far.
+        best: The best score, epoch and weights so far.
+  load_checkpoint: |
+    Put a saved run back exactly as it was.
+
+    Restores the model, optimizer, row-order generator and the global PyTorch, NumPy and
+    Python generators. Uses ``weights_only=False``: only load files you made or trust.
+
+    Args:
+        path: Checkpoint written by ``save_checkpoint``.
+        model: A model with the same architecture, loaded in place.
+        optimizer: An optimizer over that model, loaded in place.
+        generator: The DataLoader's generator, restored in place.
+
+    Returns:
+        A tuple ``(next_epoch, history, best)``.
+  settings_hash: |
+    A short fingerprint of the settings that decide the result.
+
+    Ignores ``name``, ``resume``, ``stop_after`` and ``checkpoint_every`` (how a run was
+    executed, not what it computed) and hashes the rest with sorted keys, so key order does
+    not matter.
+
+    Args:
+        settings: A settings dictionary.
+
+    Returns:
+        The first 12 hexadecimal characters of a SHA-256 hash.
+  data_fingerprint: |
+    A short hash of the exact rows, columns and labels a run saw.
+
+    Args:
+        X: The input table (values, index and column names are hashed).
+        y: The labels.
+
+    Returns:
+        The first 12 hexadecimal characters of a SHA-256 hash; one changed value changes it.
+  git_state: |
+    Which commit produced this run, and did the folder have uncommitted changes?
+
+    Args:
+        folder: A folder inside the git repository.
+
+    Returns:
+        A dict with ``commit`` (short hash) and ``uncommitted_changes`` (bool), or both
+        ``None`` plus a ``note`` when the folder is not a git repository or git is missing.
+  git: |
+    Run a git command inside the scratch repository.
+
+    Args:
+        *args: The git subcommand and its arguments.
+
+    Returns:
+        The ``subprocess.CompletedProcess`` with captured output; failures do not raise.
+  environment_info: |
+    The software and hardware details that explain small differences between machines.
+
+    Returns:
+        A dict with the Python version, platform, PyTorch, NumPy, pandas and scikit-learn
+        versions, the device used and the number of CPU threads.
+  experiment_record: |
+    Write a five-question Markdown record next to a run's JSON result.
+
+    Questions 1 and 3 (what changed from ``BASELINE``, what happened) are generated from
+    the result; the reason, the lesson and the next step must come from you.
+
+    Args:
+        result: A result dict from ``run_experiment``.
+        why: Why you ran it, written before looking at the result.
+        learned: What you concluded.
+        next_change: The next experiment this suggests.
+        results_dir: Folder for the Markdown file.
+
+    Returns:
+        The path of the written record, ``results_dir/<name>.md``.
+
+    Raises:
+        ValueError: If ``why`` or ``learned`` is empty.
+  log_to_mlflow: |
+    Copy one saved result file into the active MLflow experiment as a new run.
+
+    Settings become parameters (as text), fingerprints and the torch version become tags,
+    per-epoch losses and AUC become metrics with the epoch as step, and the JSON file is
+    attached as an artifact.
+
+    Args:
+        path: A JSON result written by ``run_experiment``.

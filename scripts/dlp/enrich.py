@@ -110,9 +110,17 @@ class Enricher:
         s, idx = where
         block["_ins"] = True
         s.blocks.insert(idx, block)
-        if item.get("replace") and item.get("after") and idx > 0 and not s.blocks[idx - 1].get("_ins"):
-            # the enrichment supersedes the anchor block (e.g. an un-answerable question list)
-            s.blocks.pop(idx - 1)
+        n = item.get("replace")
+        if n and item.get("after"):
+            # the enrichment supersedes the anchor block (e.g. an un-answerable question list);
+            # `replace: 2` also removes the block before it, such as a "Check your understanding" heading
+            for _ in range(1 if n is True else int(n)):
+                if idx == 0 or s.blocks[idx - 1].get("_ins"):
+                    break
+                gone = s.blocks.pop(idx - 1)
+                idx -= 1
+                if gone.get("kind") == "subheading":
+                    s.subs = [x for x in s.subs if x["id"] != gone.get("id")]
 
     def _insert_block(self, item: dict) -> dict:
         t = item.get("type", "explainer")
@@ -197,6 +205,7 @@ class Enricher:
     def _explain(self, lesson: Lesson, notes: list[dict]) -> None:
         code_blocks = [b for s in lesson.sections for b in s.blocks if b["kind"] == "code"]
         code_blocks += lesson.preamble.get("setup_blocks", [])
+        code_blocks += [b for part in lesson.preamble.get("intro", []) for b in part["blocks"] if b["kind"] == "code"]
         for note in notes:
             needle = note["cell"]
             target = next((b for b in code_blocks if needle in b["src"]), None)

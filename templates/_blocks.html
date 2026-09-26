@@ -82,7 +82,7 @@
   <div class="predict-head"><span class="qcard-icon"><svg class="ic"><use href="#i-target"/></svg></span><div><span class="qcard-tag">Predict before you run</span><div class="prose predict-prompt">{{ b.prompt_html | safe }}</div></div></div>
   {% if b.mode == 'choice' %}
   <div class="predict-options">
-    {% for o in b.options %}<button class="opt" data-opt="{{ loop.index0 }}">{{ o | safe }}</button>{% endfor %}
+    {% for o in b.options %}<button class="opt" data-opt="{{ loop.index0 }}"><span>{{ o | safe }}</span></button>{% endfor %}
   </div>
   {% else %}
   <div class="predict-slider">
@@ -149,7 +149,7 @@
 {% set long = b.n_lines > 26 %}
 <div class="code-cell role-{{ b.role }}{% if long %} is-long{% endif %}{% if b.explain %} has-explain{% endif %}" data-code>
   <div class="code-head">
-    <span class="code-lang">{% if b.lang == 'bash' %}<svg class="ic"><use href="#i-terminal"/></svg> Terminal{% elif b.role == 'inspect' %}<svg class="ic"><use href="#i-eye"/></svg> Inspect a value{% elif b.role == 'setup' %}<svg class="ic"><use href="#i-gear"/></svg> Setup{% else %}<svg class="ic"><use href="#i-code"/></svg> Python{% endif %}</span>
+    <span class="code-lang">{% if b.file %}<svg class="ic"><use href="#i-pencil"/></svg> Writes {{ b.file }}{% elif b.lang == 'bash' %}<svg class="ic"><use href="#i-terminal"/></svg> Terminal{% elif b.role == 'inspect' %}<svg class="ic"><use href="#i-eye"/></svg> Inspect a value{% elif b.role == 'setup' %}<svg class="ic"><use href="#i-gear"/></svg> Setup{% else %}<svg class="ic"><use href="#i-code"/></svg> Python{% endif %}</span>
     <span class="code-meta">{{ b.n_lines }} line{{ 's' if b.n_lines != 1 }}</span>
     <span class="code-actions">
       {% if b.explain %}<button class="chip-btn accent" data-explain-toggle aria-expanded="true"><svg class="ic"><use href="#i-bulb"/></svg> <span>Hide explanation</span></button>{% endif %}

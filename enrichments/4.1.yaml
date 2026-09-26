@@ -1,0 +1,473 @@
+# Teaching layer for Lesson 4.1 — Data You Can Trust
+# The notebook is the author's current version (not locked). Its three IMAGE placeholders (a label plus a description,
+# no image) are hidden by the build and replaced here by SVG figures.
+
+summary: |
+  How do you know your validation score is telling the truth? This lesson checks the trust you have placed in every split since
+  Module 2. You **audit** Bank Marketing for problems `isna()` cannot see (sentinels, placeholders, near-constant columns), write a
+  split function with four rules and **checks that stop the run**, fit preprocessing on training rows only, and then find three real
+  failures in the same file: a hidden **clock** (the yes rate goes from 5% to 52% down the file, so a chronological split scores
+  0.61 where a random one scores 0.78), **group leakage** through the calling day (about 0.08 AUC), and **class imbalance**, where
+  re-weighting moves the threshold but not the ranking.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    after: "That is the whole idea: cut once to get training"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 286" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A split is a simulation: the test set stands in for the future" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">A split is a simulation</text><text x="175" y="58" text-anchor="middle" style="fill:var(--ink-2);font-size:13px;font-weight:700">What you split</text><text x="535" y="58" text-anchor="middle" style="fill:var(--ink-2);font-size:13px;font-weight:700">What the test set is pretending to be</text><rect x="30.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="40.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="51.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="61.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="72.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="82.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="93.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="103.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="114.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="124.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="135.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="145.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="156.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="166.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="177.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="187.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="198.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="208.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="219.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="229.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="240.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="250.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="261.0" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="271.5" y="80" width="9" height="34" rx="2" style="fill:var(--c0)"/><rect x="282.0" y="80" width="9" height="34" rx="2" style="fill:var(--aqua)"/><rect x="292.5" y="80" width="9" height="34" rx="2" style="fill:var(--aqua)"/><rect x="303.0" y="80" width="9" height="34" rx="2" style="fill:var(--aqua)"/><rect x="313.5" y="80" width="9" height="34" rx="2" style="fill:var(--c1)"/><rect x="324.0" y="80" width="9" height="34" rx="2" style="fill:var(--c1)"/><rect x="334.5" y="80" width="9" height="34" rx="2" style="fill:var(--c1)"/><text x="156.0" y="136" text-anchor="middle" style="fill:var(--c0);font-size:12px;font-weight:800">TRAIN (80%)</text><text x="297.75" y="136" text-anchor="middle" style="fill:var(--aqua);font-size:11px;font-weight:800">VAL</text><text x="329.25" y="152" text-anchor="middle" style="fill:var(--c1);font-size:11px;font-weight:800">TEST</text><path d="M 280 70 l 6 8 m -6 0 l 6 -8" style="stroke:var(--ink-3);stroke-width:1.6"/><path d="M 311 70 l 6 8 m -6 0 l 6 -8" style="stroke:var(--ink-3);stroke-width:1.6"/><text x="175" y="170" text-anchor="middle" style="fill:var(--ink-3);font-size:12px;font-weight:500">rows you already have</text><line x1="390" y1="150" x2="700" y2="150" style="stroke:var(--ink-3);stroke-width:1.5"/><rect x="400" y="90" width="150" height="34" rx="6" style="fill:var(--c0)"/><text x="475" y="112" text-anchor="middle" style="fill:var(--surface);font-size:13px;font-weight:800">the past</text><line x1="575" y1="74" x2="575" y2="158" style="stroke:var(--ink);stroke-width:1.6;stroke-dasharray:5 4"/><text x="575" y="172" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">the day you deploy</text><rect x="600" y="90" width="95" height="34" rx="6" style="fill:var(--c1)"/><text x="647" y="112" text-anchor="middle" style="fill:var(--surface);font-size:13px;font-weight:800">the future</text><text x="475" y="144" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:500">training rows</text><text x="647" y="144" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:500">not yet called</text><path d="M 330 160 C 380 262, 590 262, 606 128" style="fill:none;stroke:var(--c1);stroke-width:1.8;stroke-dasharray:6 4" marker-end="url(#a411)"/><defs><marker id="a411" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--c1)"/></marker></defs><text x="470" y="272" text-anchor="middle" style="fill:var(--c1);font-size:13px;font-weight:800">is this a convincing stand-in?</text></svg>
+    caption: "A split is only as good as that stand-in is convincing. Every later section tests one part of it."
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "inputs_only = data.drop(columns=\"y\")"
+    type: explainer
+    style: warning
+    title: "The output says 16, not none"
+    md: |
+      The cell prints **16** rows that repeat entirely and 16 whose inputs repeat, but the text below it, and the data card in Section 11,
+      say there are none. Sixteen of 45,211 rows (0.04%) is far too few to move any score in this lesson, and because the two counts are
+      equal, none of the duplicates disagree about the label. They still break the rule this lesson is about: a duplicated row can land on
+      both sides of a split, Case 4 of Lesson 3.4 in miniature. Either drop them before splitting (`data = data.drop_duplicates()`) or keep
+      them deliberately and say so in the data card.
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "rolling_rate = pd.Series((data[\"y\"] == \"yes\").astype(float)).rolling(1000, center=True).mean()"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 304" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rows in date order: 2008, 2009 and 2010 with rising success rates" style="font-family:Inter,system-ui,sans-serif"><text x="360.0" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">A dataset with a clock in it</text><rect x="30.0" y="92" width="404.8" height="40" style="fill:var(--c1);fill-opacity:0.21"/><rect x="32" y="60" width="400.79396607020414" height="22" rx="5" style="fill:var(--surface-2);stroke:var(--line)"/><text x="232.39698303510207" y="75" text-anchor="middle" style="fill:var(--ink-2);font-size:11px;font-weight:700">May…Dec</text><path d="M 32.0 144 v 8 h 400.8 v -8" style="fill:none;stroke:var(--ink-3);stroke-width:1.3"/><text x="232.39698303510207" y="172" text-anchor="middle" style="fill:var(--ink);font-size:14px;font-weight:800">2008</text><text x="232.39698303510207" y="190" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:600">27,729 rows</text><text x="232.39698303510207" y="207" text-anchor="middle" style="fill:var(--c1);font-size:12.5px;font-weight:800">5% said yes</text><rect x="434.8" y="92" width="217.0" height="40" style="fill:var(--c1);fill-opacity:0.41"/><rect x="436.79396607020414" y="60" width="212.9587047399969" height="22" rx="5" style="fill:var(--surface-2);stroke:var(--line)"/><text x="543.2733184402026" y="75" text-anchor="middle" style="fill:var(--ink-2);font-size:11px;font-weight:700">Jan…Dec</text><path d="M 436.8 144 v 8 h 213.0 v -8" style="fill:none;stroke:var(--ink-3);stroke-width:1.3"/><text x="518.2733184402026" y="172" text-anchor="middle" style="fill:var(--ink);font-size:14px;font-weight:800">2009</text><text x="518.2733184402026" y="190" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:600">14,862 rows</text><text x="518.2733184402026" y="207" text-anchor="middle" style="fill:var(--c1);font-size:12.5px;font-weight:800">17% said yes</text><rect x="651.8" y="92" width="38.2" height="40" style="fill:var(--c1);fill-opacity:0.99"/><rect x="653.752670810201" y="60" width="34.24732918979894" height="22" rx="5" style="fill:var(--surface-2);stroke:var(--line)"/><text x="670.8763354051005" y="75" text-anchor="middle" style="fill:var(--ink-2);font-size:11px;font-weight:700">Jan…Nov</text><path d="M 653.8 144 v 8 h 34.2 v -8" style="fill:none;stroke:var(--ink-3);stroke-width:1.3"/><path d="M 670.9 156 V 222" style="stroke:var(--ink-3);stroke-width:1"/><text x="664.8763354051005" y="232" text-anchor="end" style="fill:var(--ink);font-size:14px;font-weight:800">2010</text><text x="664.8763354051005" y="250" text-anchor="end" style="fill:var(--ink-2);font-size:12px;font-weight:600">2,620 rows</text><text x="664.8763354051005" y="267" text-anchor="end" style="fill:var(--c1);font-size:12.5px;font-weight:800">52% said yes</text><circle cx="434.8" cy="71" r="12" style="fill:none;stroke:var(--red);stroke-width:2"/><circle cx="651.8" cy="71" r="12" style="fill:none;stroke:var(--red);stroke-width:2"/><text x="591.752670810201" y="48" text-anchor="end" style="fill:var(--red);font-size:11.5px;font-weight:700">the only two backward steps in the month order</text><text x="260" y="292" text-anchor="middle" style="fill:var(--ink-2);font-size:13px;font-weight:600;font-style:italic">No year column. The order was the date all along.</text></svg>
+    caption: "Widths are to scale: 2010 is the smallest year and by far the most successful. The file has no year column; the month order gives it away."
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "comparison = pd.DataFrame(results).T"
+    type: widget
+    name: results-bars
+    title: "Same rows, two splits, and a floor that moves"
+    props:
+      metrics:
+        - title: "Test ROC-AUC"
+          note: "random ranking scores 0.5 on any test set"
+          digits: 4
+          min: 0.5
+          max: 0.82
+          rows:
+            - { label: "Stratified split", value: 0.7796, series: 0 }
+            - { label: "Chronological split", value: 0.6108, series: 1 }
+        - title: "Test PR-AUC"
+          note: "higher on the chronological split, but its floor is 0.471"
+          digits: 4
+          max: 0.6
+          rows:
+            - { label: "Stratified split", value: 0.4331, series: 0 }
+            - { label: "Chronological split", value: 0.5531, series: 1 }
+        - title: "PR-AUC above its floor (the share of positives)"
+          note: "what the model adds over random ranking"
+          digits: 3
+          max: 0.35
+          rows:
+            - { label: "Stratified: 0.4331 − 0.117", value: 0.316, series: 0 }
+            - { label: "Chronological: 0.5531 − 0.471", value: 0.082, series: 1 }
+      footnote: "Subtract the floor and PR-AUC tells the same story as ROC-AUC: the chronological model adds a quarter of what the stratified one does."
+
+  - section: 7
+    after: "Neither split is the correct one in general"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Random split 0.78 against chronological split 0.61" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">Same model, two questions</text><rect x="20" y="44" width="320" height="196" rx="12" style="fill:var(--surface-2);stroke:var(--line)"/><text x="180" y="70" text-anchor="middle" style="fill:var(--ink);font-size:14px;font-weight:800">Random split</text><rect x="21.9" y="86" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="20.9" y="85" width="8" height="32" rx="2" style="fill:none;stroke:var(--ink);stroke-width:1"/><rect x="29.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="36.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="44.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="51.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="58.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="66.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="73.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="81.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="88.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:1.0"/><rect x="95.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="103.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="110.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="118.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="125.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="132.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="140.3" y="86" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="139.3" y="85" width="8" height="32" rx="2" style="fill:none;stroke:var(--ink);stroke-width:1"/><rect x="147.7" y="86" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="146.7" y="85" width="8" height="32" rx="2" style="fill:none;stroke:var(--ink);stroke-width:1"/><rect x="155.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:1.0"/><rect x="162.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="169.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="177.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:1.0"/><rect x="184.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="192.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="199.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="206.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="214.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="221.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="229.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="236.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="243.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="251.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="258.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="266.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="273.5" y="86" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="272.5" y="85" width="8" height="32" rx="2" style="fill:none;stroke:var(--ink);stroke-width:1"/><rect x="280.9" y="86" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="279.9" y="85" width="8" height="32" rx="2" style="fill:none;stroke:var(--ink);stroke-width:1"/><rect x="288.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="295.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="303.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="310.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="317.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="325.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="332.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><text x="180" y="150" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:600">How well on a random customer, 2008–2010?</text><text x="180" y="206" text-anchor="middle" style="fill:var(--ink);font-size:42px;font-weight:800">0.78</text><text x="180" y="228" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">test ROC-AUC</text><rect x="380" y="44" width="320" height="196" rx="12" style="fill:var(--surface-2);stroke:var(--line)"/><text x="540" y="70" text-anchor="middle" style="fill:var(--ink);font-size:14px;font-weight:800">Chronological split</text><rect x="381.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="389.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="396.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="404.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="411.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="418.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="426.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="433.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="441.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="448.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="455.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="463.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="470.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="478.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="485.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="492.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="500.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="507.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="515.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="522.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="529.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="537.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="544.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="552.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="559.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="566.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.2"/><rect x="574.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="581.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="589.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="596.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="603.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="611.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="618.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="626.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="633.5" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="640.9" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="648.3" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="655.7" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="663.1" y="96" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="670.5" y="86" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:0.55"/><rect x="669.5" y="85" width="8" height="32" rx="2" style="fill:none;stroke:var(--ink);stroke-width:1"/><rect x="677.9" y="86" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:1.0"/><rect x="676.9" y="85" width="8" height="32" rx="2" style="fill:none;stroke:var(--ink);stroke-width:1"/><rect x="685.3" y="86" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:1.0"/><rect x="684.3" y="85" width="8" height="32" rx="2" style="fill:none;stroke:var(--ink);stroke-width:1"/><rect x="692.7" y="86" width="6" height="30" rx="1.5" style="fill:var(--c1);fill-opacity:1.0"/><rect x="691.7" y="85" width="8" height="32" rx="2" style="fill:none;stroke:var(--ink);stroke-width:1"/><text x="540" y="150" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:600">How well on next month's campaign?</text><text x="540" y="206" text-anchor="middle" style="fill:var(--ink);font-size:42px;font-weight:800">0.61</text><text x="540" y="228" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">test ROC-AUC</text><text x="360" y="268" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:700">only the choice of rows changed  ·  pale = 2008, dark = 2010, raised = test rows</text></svg>
+    caption: "Same file, same model, same preprocessing code. The question the split answers is the only thing that changed."
+
+  # ------------------------------------------------------------------ §10
+  - section: 10
+    after: "for label, weighting in [(\"plain\", None), (\"balanced weights\", \"balanced\")]:"
+    type: widget
+    name: threshold-explorer
+    title: "Threshold or budget, weighted or not"
+    props: { n: 4522, positives: 529, separation: 1.12 }
+    intro: |
+      Scores simulated to behave like this lesson's logistic regression on the stratified test set (4,522 customers, 529 yes, ROC-AUC
+      about 0.78). Toggle the **weighted loss**: every probability moves up and the 0.5 threshold catches far more customers. Then switch to
+      **Rank and call the top k%** at 10%: the weighting changes nothing, which is exactly what the next cell measures.
+
+answers:
+  "1-1":
+    - |
+      The future the model will actually work in: customers it has never seen, on days after it was deployed. The test score is an estimate
+      of performance there, and it is only as good as the test rows are a convincing stand-in for that future.
+    - |
+      Because the loss curve only describes how the model fits the rows it is shown. When validation rows are copies of training rows,
+      training is perfectly healthy and the validation curve faithfully reports that the model fits those rows. Nothing in the optimisation
+      is wrong. Whether validation rows are genuinely unseen is a property of **how rows were assigned**, which no loss, gradient or metric
+      can see; only a check on the split itself (overlap, provenance) can.
+    - |
+      Only if the rows are **exchangeable**: if it does not matter when a customer was called or who else was called that day, so a random
+      handful of past rows looks just like future rows. That needs no trend over time, no change in who is being called, and no groups of
+      rows that share an outcome. This file breaks all three (Sections 6 to 9), so a random split is not a convincing stand-in here.
+  "2-1":
+    - |
+      **No, by timing.** `pdays` counts days since the customer was contacted in a *previous* campaign, so it exists before the current call
+      is made and cannot be influenced by this call's outcome. Two caveats: its `-1` is a sentinel, not a number of days (Section 3), and you
+      would still confirm when the value was recorded, to be sure "previous" really means a campaign that ended before the prediction.
+    - |
+      **When is the total counted?** If it includes calls made during or after the current campaign, and especially if the bank keeps calling
+      interested customers until they sign, then the count grows *because* of the outcome, and it is target leakage like `duration`. Ask for
+      the definition and the timestamp at which it is recorded, and allow it only as "calls made before the moment of prediction".
+  "3-1":
+    - |
+      Because encoding hides the evidence. After one-hot encoding, `"unknown"` is just another 0/1 column; after scaling, the sentinel `-1`
+      becomes an ordinary-looking number like −0.41; a near-constant column is spread across several indicator columns. The raw table keeps
+      the names and values whose *meaning* the audit is checking, and the audit's findings are what should decide how to encode each column.
+    - |
+      **A genuine signal:** the contact method reflects how the bank ran that part of the campaign (which lists it called, which channel it
+      used), an operational fact that also exists when a new prediction is made. **A warning sign:** it may be a proxy for **time**
+      (Section 8: 35% unknown early in the file against 6% late, when success rates were very different), so it predicts partly because of
+      drift and may stop working; or the contact type may have been filled in only for customers who engaged, which would make it depend on
+      the outcome.
+    - |
+      Look for values that are valid numbers but impossible or oddly frequent. Common examples: an age of 0 or 999, a date of 1900-01-01 or
+      1970-01-01 (the Unix epoch), a postcode of 00000, an income or balance of exactly 0 for "not provided", a sensor reading pinned at 0 or
+      at its maximum (65535), a tenure of −1, and strings such as `"N/A"`, `"none"`, `"?"` or `"-"`. A value count sorted by frequency usually
+      exposes them.
+  "3-2":
+    - |
+      The audit shows a new two-valued column: `False` (never contacted) on 81.7% of rows. Now the flag carries the fact that `-1` was
+      encoding, so `pdays` no longer needs its sentinel. A sensible treatment is to keep `was_contacted_before` and replace the `-1` in
+      `pdays` with a neutral value (for example 0, or the median of the contacted customers), so the scaler and the model read `pdays` only
+      as "days since the last contact, for customers who had one". Leaving `-1` in place makes the scaler treat "never" as a day count
+      sitting just below real values that run into the hundreds.
+  "4-1":
+    - |
+      Row numbers index everything consistently: the inputs, the labels, and anything computed later (the calling-day column, the dates,
+      predictions) all line up because they share the same row positions. They are tiny, easy to save and to check (set intersections find
+      overlaps), and they keep the split separate from the data, so the same split can be applied to a new version of the features.
+    - |
+      When groups differ a lot in size. `GroupShuffleSplit` counts **groups**, not rows, so if a few enormous days (the largest has 825
+      calls; the median is 15) happen to land in test, the test set is far bigger than 10% of the rows, and far smaller if test gets mostly
+      small days. Section 9 shows it: the group test sets hold 4,167, 3,131 and 4,026 rows against 4,522 for the stratified split.
+    - |
+      Because a broken split does not produce an error; it produces a plausible number. A printed warning scrolls past and the notebook goes
+      on to report results nobody should trust. `assert` makes the failure impossible to ignore at the moment it is cheapest to fix, before
+      anything is trained or written down.
+  "5-1":
+    - |
+      "No difference here" is a fact about this dataset and this step: a large training set and a scaler that only reads means and spreads.
+      The same habit with a step that reads the **label**, or with a small dataset, is expensive, and you cannot tell in advance which case
+      you are in. A pipeline that is correct by construction also mirrors deployment, where the future rows do not exist yet, and is far
+      easier to review than one that is "probably fine".
+    - |
+      The **target encoder**. A scaler reads only the inputs' average and spread, which a few thousand extra rows barely move. A target encoder
+      reads the **label**: fitted before splitting, it writes an average of the test rows' own answers into the inputs, so the model is partly
+      reading the result it is supposed to predict.
+    - |
+      Every customer's inputs would depend on who else is in the batch. A batch of wealthy customers shifts the balance average, so the same
+      customer gets a different scaled balance on different days; a batch of one row has no spread at all. The inputs stop meaning what they
+      meant in training, predictions become inconsistent and unreproducible, and genuine drift is silently standardised away. Ship the fitted
+      preprocessor and reuse it; refit only when you retrain.
+  "6-1":
+    - |
+      Because it is the evidence behind the claim. Zero small backward steps means that within each year the file never goes back even one
+      month: it is strictly in date order, not roughly. That is what makes the two big jumps trustworthy as year boundaries. Many small
+      backward steps would have meant shuffling or merged files, and the inferred years would have been doubtful.
+    - |
+      **Who was called changed:** Section 8 shows 59% of late-period customers had been contacted before, against 11% early on, so the bank
+      moved from cold calls to calling back warm leads. **The offer or the economy changed:** 2008–2010 spans the financial crisis, when
+      guaranteed deposits became attractive and interest rates moved, and a smaller, better-targeted 2010 campaign could reach mostly
+      likely buyers. To tell them apart you would need the campaign logs (lead source, whether each call was a follow-up), the interest rate
+      offered each month, call volumes, and economic indicators for the period.
+  "7-1":
+    - |
+      **Stratified:** "How well does the model rank a random customer from 2008–2010, having seen other customers from the same period?"
+      **Chronological:** "Trained on everything before a point in time, how well does the model rank the customers called after it?", which is
+      the question a bank deploying the model is actually asking.
+    - |
+      PR-AUC's **floor** is the share of positives in the test set: random ranking scores about that much. The chronological test set is
+      47.1% yes, so the floor jumped from 0.117 to 0.471, and the model's PR-AUC rose by less than the floor did (0.433 → 0.553). Its lift
+      above random fell from 0.32 to 0.08. Print the test set's share of positives beside PR-AUC, or report the lift above it.
+    - |
+      Probably not. Retraining on all three years anchors the probabilities to their average rate, 11.7%, and 2011 will have its own rate:
+      higher if the trend continued, perhaps lower if the strategy changed. The problem is **label shift**, which more past data does not fix.
+      What helps is recalibrating on the most recent data (the last months rather than three years), weighting recent rows more, adjusting
+      the probabilities to a newly estimated base rate, and monitoring calibration once the model is live. The ranking tends to transfer
+      better than the probabilities do.
+  "8-1":
+    - |
+      **Label shift:** the fraud rate on card payments rising sharply over the holiday season, or a disease's prevalence rising during an
+      outbreak, while what each case looks like stays the same. **Covariate shift:** a new app bringing in much younger customers, a hospital
+      replacing its scanner with a different model, or a camera upgrade changing the images a vision model receives.
+    - |
+      **Between training and test, 0.5 is good:** the test set looks like the training data, so the test score is a like-for-like estimate.
+      (It does not prove the test set looks like the *future*.) **Between training data and last week's live traffic, 0.5 is great news:** no
+      detectable input drift since training. A high value there is the alarm that tells you to investigate and probably retrain.
+    - |
+      Why and when the strategy changed: did the bank switch from cold calling to calling back people from earlier campaigns, and from which
+      date? How were the lists chosen in each period? Will future campaigns look like the late period or the early one? And was "previous
+      contact" recorded the same way throughout? The answers decide which period the test set should represent.
+  "9-1":
+    - |
+      From the test row's **neighbours**. Its calling day also appears in training, and the day's rate was averaged from those training
+      rows' answers. Calls on the same day share their conditions and, strongly, their outcomes, so that average carries information about
+      the test row's own answer, even though the test label was never read.
+    - |
+      **Hospital readmission:** the patient (and ideally the hospital or the admission period too). **Product reviews:** the author (and
+      possibly the product). **Frames cut from videos:** the video, or the recording session or person if several videos share one.
+    - |
+      Because whole groups move together. There are far fewer independent units (561 days instead of 45,211 rows), groups vary enormously in
+      size and success rate, and one large unusual day landing in the test set can swing the score. The test set's size changes too
+      (3,131 to 4,167 rows here), so each seed is a genuinely different test.
+  "10-1":
+    - |
+      Because the model did not get better at finding subscribers; its probabilities got bigger. The ranking is the same (AUC 0.7796 against
+      0.7795), so more customers simply cross the fixed 0.5 line: 26.6% are phoned instead of 3.0%, and precision falls from 0.71 to 0.27.
+      The plain model reaches the same recall with a lower threshold, and at a fixed calling budget the two are indistinguishable (precision
+      0.49 against 0.50). It is a different operating point, bought with worse calibration (the Brier score doubled).
+    - |
+      Minimise expected cost. With calibrated probabilities (the plain model), calling a customer with probability $p$ is worth it when the
+      expected cost of missing them exceeds the cost of a wasted call: $10p > 1 - p$, so $p > 1/11 \approx 0.09$. Check that on the validation
+      set by computing the total cost at every threshold and taking the minimum, and respect the call centre's capacity if it binds first.
+    - |
+      At 47% yes it is no longer imbalanced. That exposes the flaw in fixing one class weight (or one threshold) and keeping it: the imbalance
+      itself drifts. A weight derived from 11.7% positives makes a model over-predict wildly when positives become common. Keep the model
+      calibrated, choose the threshold from current conditions (capacity, costs, the current base rate), and revisit both as the base rate moves.
+
+explain:
+  - cell: "def audit(df, sentinels=None):"
+    title: "The audit function"
+    lines:
+      - match: "sentinels = sentinels or {}          # e.g. {\"pdays\": -1}"
+        note: "Sentinels have to be named by a person: only you know that -1 means \"never\"."
+      - match: "shares = values.value_counts(normalize=True)"
+        note: "Each value's share of the column, most common first: the source of `top_value` and `top_share`."
+      - match: "\"unknown\": 0.0 if is_numeric else float((values == \"unknown\").mean()),"
+        note: "The placeholder word this file uses; other datasets use \"N/A\", \"none\" or \"?\"."
+      - match: "\"negative\": float((values < 0).mean()) if is_numeric else 0.0,"
+        note: "Negative values are not always wrong (an overdraft), but they are always worth a question."
+
+  - cell: "def make_split(y, policy=\"stratified\""
+    title: "One function, four splitting rules"
+    lines:
+      - match: "test_share_of_rest = f_test / (f_val + f_test)      # how much of the leftover is test"
+        note: "10% test out of the 20% left over is half of the leftover: 0.5."
+      - match: "return {\"train\": row_numbers[:first_cut],"
+        note: "Chronological: no randomness at all, just the file order."
+      - match: "train_pos, rest_pos = next(splitter.split(row_numbers, groups=groups))"
+        note: "`GroupShuffleSplit` keeps every row of a group on one side; its fractions count groups, not rows."
+      - match: "val_pos, test_pos = next(splitter2.split(rest_pos, groups=np.asarray(groups)[rest_pos]))"
+        note: "The second split works on positions within `rest_pos`, so they are mapped back with `rest_pos[...]` below."
+      - match: "stratify_rest = y[rest] if policy == \"stratified\" else None"
+        note: "The leftover rows' own labels, not the whole `y`: the silent bug Section 4 warns about."
+
+  - cell: "def check_split(split, y, policy=\"stratified\"):"
+    title: "Checks that stop the run"
+    lines:
+      - match: "assert not (as_sets[0] & as_sets[1]), \"a row is in both train and validation\""
+        note: "`&` on two sets is their intersection: any shared row number fails the check."
+      - match: "assert len(train) + len(val) + len(test) == len(y), \"rows were lost or duplicated\""
+        note: "No overlap plus the right total means every row is used exactly once."
+      - match: "assert train.max() < val.min(), \"training rows are not all before validation rows\""
+        note: "For a chronological split, time must only move forward from train to validation to test."
+
+  - cell: "def infer_year(month_column, first_year=2008):"
+    title: "Recovering the year from the month order"
+    lines:
+      - match: "is_new_year = steps < -6"
+        note: "A big backward jump (December to January is −11) marks a new year; small wobbles would not count."
+      - match: "years_so_far = np.concatenate([[0], np.cumsum(is_new_year)])"
+        note: "`np.diff` gives one fewer value than there are rows; the leading 0 puts the first row back in 2008."
+
+  - cell: "def adversarial_auc(columns):"
+    title: "Adversarial validation"
+    lines:
+      - match: "is_late = np.concatenate([np.zeros(len(early)), np.ones(len(late))])"
+        note: "The real label is ignored: the target is \"which period does this row come from?\"."
+      - match: "LogisticRegression(max_iter=3000, class_weight=\"balanced\"))"
+        note: "The late period is eight times smaller, so both periods are weighted equally."
+      - match: "cv=StratifiedKFold(5, shuffle=True, random_state=0))[:, 1]"
+        note: "Every row is predicted by a model that never saw it, so the AUC is not an in-sample fit."
+
+  - cell: "def day_rate_feature(split, dates, y):"
+    title: "The leaky day column"
+    lines:
+      - match: "rate_per_day = pd.Series(y[train_rows]).groupby(dates[train_rows]).mean()"
+        note: "Computed from training rows only, which looks correct, and still leaks through the group."
+      - match: "fallback = float(y[train_rows].mean())      # for a day we have never seen"
+        note: "Under a group split every test day is unseen, so every test row gets this same value."
+
+takeaways:
+  - "A split is a claim about the future: ask who, and when, the model will be used on, then check the data supports it."
+  - "Audit before you model. Sentinels (`pdays = -1`), placeholder words (`\"unknown\"`) and near-constant columns all pass `isna()`; audit the raw table, because encoding hides them."
+  - "Return row numbers from a split, and `assert` that parts do not overlap, cover every row, and (for time) run forward."
+  - "Fit preprocessing on training rows only and ship the fitted object with the model. Label-reading steps (target encoding, feature selection) leak far more than scalers."
+  - "Leaks come through a row (duplicates, copies), through time (future mixed into the past: 0.78 random against 0.61 chronological) and through a group (the calling day: about 0.08 AUC)."
+  - "Diagnose drift: label shift breaks the size of the probabilities; covariate shift breaks the model where it has little experience. Adversarial validation measures both before training."
+  - "Report PR-AUC next to the share of positives, which is its floor."
+  - "Re-weighting moves probabilities and the 0.5 threshold, not the ranking. Choose the threshold from capacity or costs, and check calibration."
+
+quiz:
+  - q: "What is the test set standing in for?"
+    options: ["The training data, seen again", "The data the model will meet after it is deployed", "A random sample of the validation set", "The worst case"]
+    answer: 1
+    why: "A score is only as trustworthy as the test rows are a convincing stand-in for that future."
+  - q: "`pdays` is −1 on 81.7% of rows. What is it?"
+    options: ["A data-entry error to delete", "A sentinel: a number used as a flag for \"never contacted before\"", "A negative number of days", "Missing values that `isna()` counts"]
+    answer: 1
+    why: "It sails past `isna()`, and a scaler would treat it as a day count."
+  - q: "Fitting the scaler on all rows changed test AUC by only +0.000093. Why keep the train-only rule?"
+    options: ["Scalers are slow", "Steps that read the label, or small datasets, leak far more, and you cannot tell in advance", "It improves accuracy", "scikit-learn requires it"]
+    answer: 1
+    why: "The same habit with a target encoder or a small dataset is expensive."
+  - q: "On the chronological split, ROC-AUC fell from 0.78 to 0.61 while PR-AUC rose from 0.43 to 0.55. Why did PR-AUC rise?"
+    options: ["The model improved", "Its floor, the share of positives, rose from 11.7% to 47.1%", "PR-AUC ignores time", "Rounding"]
+    answer: 1
+    why: "Random ranking scores about the positive rate. Subtract it, and the lift fell from 0.32 to 0.08."
+  - q: "A model separates early rows from late rows with AUC 0.94. What does that tell you?"
+    options: ["The labels leak", "The inputs differ strongly between the periods: covariate shift", "The split is safe", "The model overfits"]
+    answer: 1
+    why: "Adversarial validation: 0.5 would mean the periods are indistinguishable."
+  - q: "A day-average success-rate column, computed from training rows only, still inflated a random split's score. How?"
+    options: ["The scaler was fitted on all rows", "Test rows' same-day neighbours were in training, so the column summarised their answers", "Duplicate rows", "The label was in the inputs"]
+    answer: 1
+    why: "Group leakage: nothing crossed the split row by row; the information travelled through the day."
+  - q: "`class_weight=\"balanced\"` changed AUC from 0.7796 to 0.7795 and recall at 0.5 from 0.18 to 0.62. What really changed?"
+    options: ["The ranking improved", "The probabilities got bigger, so the fixed 0.5 threshold catches more customers", "The model found new features", "Nothing"]
+    answer: 1
+    why: "At a fixed calling budget the two models perform the same."
+
+docstrings:
+  download_bank_marketing: |
+    Download ``bank-full.csv`` from UCI unless it is already on disk.
+
+    The UCI archive contains a second zip (``bank.zip``), which holds the CSV; both are
+    read in memory and only the CSV is written.
+
+    Args:
+        path: Where to save the CSV.
+
+    Returns:
+        The path of the CSV.
+
+    Raises:
+        urllib.error.URLError: If the file is missing and UCI cannot be reached.
+  audit: |
+    Describe what is actually in each column of a table, one row per column.
+
+    Reports the kind of column, the number of distinct values, and the shares that are
+    missing, equal to ``"unknown"``, equal to a named sentinel, or negative, plus the most
+    common value and its share. It raises questions; it does not change the data.
+
+    Args:
+        df: The raw table to inspect (before any encoding).
+        sentinels: Optional ``{column: value}`` of numbers you know to be flags, e.g.
+            ``{"pdays": -1}``.
+
+    Returns:
+        A DataFrame indexed by column name with columns ``kind``, ``n_unique``, ``missing``,
+        ``unknown``, ``sentinel``, ``negative``, ``top_value`` and ``top_share``.
+  flag_issues: |
+    Turn an audit table into a list of questions somebody has to answer.
+
+    Args:
+        report: The DataFrame returned by ``audit``.
+        threshold: Smallest share of placeholders, sentinels or negatives worth asking about.
+
+    Returns:
+        A list of strings, one per issue: any missing values, frequent placeholders,
+        sentinels or negatives, and columns where one value covers at least 95% of rows.
+  make_split: |
+    Split row numbers into training, validation and test sets using a named rule.
+
+    ``"stratified"`` and ``"random"`` shuffle rows (the first keeps the class balance);
+    ``"chronological"`` takes the first, middle and last parts of the file in order;
+    ``"group"`` keeps every row of a group on one side, with ``fractions`` counting groups.
+
+    Args:
+        y: Labels, one per row (used for stratification and the row count).
+        policy: ``"stratified"``, ``"random"``, ``"chronological"`` or ``"group"``.
+        fractions: Shares for training, validation and test, summing to 1.
+        seed: Seed for the random rules.
+        groups: One group label per row; required for ``"group"``.
+
+    Returns:
+        A dict ``{"train", "val", "test"}`` of NumPy arrays of row numbers.
+  check_split: |
+    Stop the run if a split is broken, then summarise it.
+
+    Asserts that no row is in two parts, that the parts add up to every row, and, for a
+    chronological split, that training rows come before validation rows, which come before
+    test rows.
+
+    Args:
+        split: A dict of row numbers from ``make_split``.
+        y: The labels, to count rows and positive shares.
+        policy: The rule used; ``"chronological"`` adds the ordering checks.
+
+    Returns:
+        A DataFrame with rows, share of the file and share of positives for each part.
+
+    Raises:
+        AssertionError: If any check fails, with a message naming it.
+  build_preprocessor: |
+    Build an unfitted preprocessor: scale numeric columns, one-hot encode the rest.
+
+    Categories unseen at fitting time are encoded as all zeros rather than raising an error.
+
+    Args:
+        X: The input table; used only to find which columns are numeric.
+
+    Returns:
+        An unfitted ``ColumnTransformer``. Fit it on training rows only.
+  infer_year: |
+    Recover each row's year from the order of the month column.
+
+    The file is stored in date order without a year. Every backward jump of more than six
+    months (December to January is −11) marks the start of a new year.
+
+    Args:
+        month_column: A Series of three-letter month names in file order.
+        first_year: The year of the first row.
+
+    Returns:
+        A NumPy array with one year per row.
+
+    Raises:
+        ValueError: If a month name is not one of ``MONTHS``.
+  fit_and_score: |
+    Fit a preprocessor and a logistic regression on the training rows, score the test rows.
+
+    Args:
+        X: The input table.
+        y: The labels (1.0 = subscribed).
+        split: A dict of row numbers from ``make_split``.
+        extra_columns: Optional ``{"train": array, "test": array}`` of extra input columns
+            appended after preprocessing (Section 9's day column).
+
+    Returns:
+        A tuple ``(summary, predictions)``: a dict with test ROC-AUC, test PR-AUC, the share
+        of positives in training and test rows, and the average prediction; and the test
+        rows' predicted probabilities.
+  adversarial_auc: |
+    Measure how well a model can tell early rows from late rows (adversarial validation).
+
+    Labels the global ``early`` rows 0 and ``late`` rows 1, ignores the real label, and
+    scores five-fold cross-validated predictions of a balanced logistic regression.
+
+    Args:
+        columns: The input columns the detector may use.
+
+    Returns:
+        The ROC-AUC of telling the periods apart: about 0.5 means they look alike, near 1
+        means they are clearly different.
+  day_rate_feature: |
+    Build a column holding each row's calling-day success rate, from training rows only.
+
+    Days never seen in training fall back to the overall training rate. The column is fair
+    in form and still leaks across a row-level split, which is Section 9's point.
+
+    Args:
+        split: A dict of row numbers from ``make_split``.
+        dates: One calling-day key per row.
+        y: The labels.
+
+    Returns:
+        A dict ``{"train", "val", "test"}`` of float32 arrays shaped ``(rows, 1)``.

@@ -1,0 +1,399 @@
+# Teaching layer for Lesson 3.3 — When Gradients Misbehave
+# The notebook is the author's current version (not locked). Its Section 3 image prompt is hidden by the build and
+# replaced here by the gradient-flow lab, which runs a real forward/backward pass in the browser.
+
+summary: |
+  A falling loss does not prove every layer is learning. You turn Module 2's single gradient norm into a **per-layer probe**
+  and use it to catch five failures: a broken **initialisation** (all zeros, or far too large), **vanishing** gradients through a
+  deep sigmoid stack (nine orders of magnitude between first and last layer), **exploding** gradients and what **clipping** does
+  about them, **dead ReLU units** behind Lesson 3.1's collapse, and the two structural fixes, **normalisation** and
+  **residual connections**. The lesson ends with a layer-health checklist you can run on any model.
+
+inserts:
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "# Why zeros fails: check whether the hidden units differ from each other at all."
+    type: explainer
+    style: deep
+    title: "What actually happened in the all-zeros run"
+    md: |
+      With every weight *and* bias at zero, each hidden activation is `ReLU(0) = 0` for every row, so the output is just the last layer's
+      bias. The backward signal to a layer passes through the *next* layer's weights, which are zero, so **no hidden weight ever receives a
+      gradient**: the 64 units are not only identical, they never move. The only parameter that learns is the output bias, which drifts
+      towards the base rate. That is why the loss creeps down (0.692, 0.689, 0.686, …, heading for the 30% base-rate loss of 0.611) while the
+      AUC stays at exactly 0.5: a constant prediction ranks nobody.
+
+  - section: 2
+    after: "The network is no longer failing because its units are identical"
+    type: explainer
+    style: why
+    title: "The 50.7% is not what breaks the large initialisation"
+    md: |
+      About half of a ReLU layer's inputs are negative under **any** zero-mean initialisation: the default one gives roughly 50% zeros too.
+      What differs is the **scale**. With standard deviation 3 and 61 inputs, pre-activations have a spread of about 12.8 instead of about 1,
+      so the logits, and with them the starting loss (641 against 0.70), are enormous, and every gradient that follows is in a broken
+      numerical regime.
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    before: "for tag, act in [(\"12-layer sigmoid\", \"sigmoid\"), (\"12-layer ReLU\", \"relu\")]:"
+    type: predict
+    mode: choice
+    prompt: "An untrained 12-layer sigmoid network, one backward pass. How much smaller is the gradient reaching the **first** layer than the one reaching the **last**?"
+    options: ["About the same", "About 10 times smaller", "About 1,000 times smaller", "About a billion times smaller"]
+    answer: 3
+    reveal: |
+      **About six billion times** (1.9e-10 against 1.1). The 12-layer ReLU network loses a factor of about 4,500: much better, still far
+      from healthy. The lab below lets you rebuild both and see where the signal goes.
+
+  - section: 3
+    after: "Attention takes a different route by allowing positions to interact"
+    type: widget
+    name: gradient-flow
+    title: "Gradient flow, layer by layer"
+    intro: |
+      A real forward and backward pass on a deep MLP (width 64, 128 random rows shaped like this data), computed in your browser. Each bar
+      is one weight matrix's gradient norm, on a log scale. Start with **Sigmoid** and **ReLU**, then try the fixes of Sections 6 and 7, and
+      compare PyTorch's default initialisation with **Kaiming**.
+    caption: "Synthetic inputs, so the exact numbers differ from the notebook's, but the orders of magnitude match: sigmoid about 1e10, ReLU about 5e3, LayerNorm, BatchNorm and residual all within about 10."
+
+  - section: 3
+    after: "Attention takes a different route by allowing positions to interact"
+    type: explainer
+    style: math
+    title: "Where nine orders of magnitude come from"
+    md: |
+      On the way back, each hidden layer multiplies the gradient by its activation's slope and by its weight matrix. PyTorch's default
+      `nn.Linear` initialisation draws weights uniformly from $\pm 1/\sqrt{\text{fan\_in}}$, a standard deviation of
+      $1/\sqrt{3\,\text{fan\_in}}$, so a 64-wide layer scales a vector's length by about $\sqrt{64}\cdot 1/\sqrt{3\cdot 64} = 1/\sqrt 3 \approx 0.58$.
+
+      - **Sigmoid:** slope at most 0.25, so each layer gives about $0.25 \times 0.58 \approx 0.14$. Eleven layers between the last weight
+        matrix and the first: $0.14^{11} \approx 6\times10^{-10}$. Measured: $1.7\times10^{-10}$.
+      - **ReLU:** slope 1 on the half of units that are active, which shrinks a vector's length by about $\sqrt{1/2}$, so each layer gives about
+        $0.71 \times 0.58 \approx 0.41$, and $0.41^{11} \approx 5\times10^{-5}$. Measured: $2\times10^{-4}$.
+
+      **Kaiming initialisation** (standard deviation $\sqrt{2/\text{fan\_in}}$) is designed to cancel exactly that ReLU factor:
+      $\sqrt{1/2} \times \sqrt 2 = 1$ per layer. PyTorch's default is fine for shallow networks; for a deep plain ReLU stack it is not,
+      which is why the lab's *Kaiming* preset is so much flatter.
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "at lr={lr}, that one weight would move by"
+    type: explainer
+    style: warning
+    title: "That calculation assumes plain SGD"
+    md: |
+      `lr × gradient` is SGD's step. Adam and AdamW, used everywhere else in this module, divide by the gradient's own running scale, so on
+      the first step each weight moves by about `lr` whatever the gradient (Lesson 3.1). The explosion is still a problem: the forward pass
+      already produced enormous logits, and one gigantic gradient fills Adam's second-moment estimate `v` with a huge value that shrinks
+      every later step for hundreds of iterations. Clipping protects that state too, and fixing the initialisation removes the cause.
+
+  - section: 4
+    after: "Continually lowering the threshold can hide the symptom without fixing the underlying problem"
+    type: compare
+    title: "Two ways to clip"
+    items:
+      - { title: "`clip_grad_norm_(params, max_norm)`", tone: green, icon: check, md: "Rescales **all** gradients together when their combined norm exceeds `max_norm`. Direction preserved. The usual choice." }
+      - { title: "`clip_grad_value_(params, clip_value)`", tone: orange, icon: alert, md: "Clamps **each element** to ±`clip_value` separately. Large components are cut more than small ones, so the direction changes." }
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "what is being normalised, over which dimensions, and why that choice matters"
+    type: compare
+    title: "BatchNorm and LayerNorm, side by side"
+    items:
+      - { title: "BatchNorm1d(64)", tone: blue, icon: layers, md: "Mean and variance of **each feature across the rows of the batch**. Training uses the batch's statistics and updates running averages; `eval()` uses the running averages. Needs batches bigger than one row. Typical in vision CNNs." }
+      - { title: "LayerNorm(64)", tone: violet, icon: blocks, md: "Mean and variance of **each row across its 64 features**. Identical in training and evaluation, independent of batch size and of the other rows. Standard in Transformers." }
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "A residual connection gives the gradient a route that bypasses the transformation"
+    type: explainer
+    style: tip
+    title: "Try it in the lab"
+    md: |
+      The gradient-flow lab in Section 3 has an **x + f(x)** switch. Turn it on for the 12-layer ReLU network and the first layer's gradient
+      comes up by more than three orders of magnitude, the same effect this section measures. Then make the network 24 layers deep: the
+      plain stack's last/first ratio jumps to about 5×10⁸, while the residual one stays below 100.
+
+answers:
+  "2-1":
+    - |
+      **Zero weights, non-zero biases.** Each hidden unit's output is then a function of its bias alone: it does not depend on the input at
+      all. The backward signal to a layer also has to pass through the next layer's weights, which are zero, so at first the early layers
+      receive no gradient. When updates do start to reach the first layer, every unit's update is **the same input direction scaled by a
+      different number**, so all 64 rows of the weight matrix point the same way and the layer effectively learns one feature. With equal
+      biases the units stay exactly identical; with different biases they only get different offsets along that single direction. Random
+      weights are what give each unit its own direction from the start.
+
+      **Every weight 0.1.** The signal now flows: activations depend on the input and gradients are non-zero, so the network learns. But
+      every unit in a layer still has the same weights (and biases), so they compute the same value, receive the same gradient and make the
+      same update, forever. The symmetry is unchanged: each layer behaves like a single unit, however wide it is.
+  "3-1":
+    - |
+      **Usually worse.** Training tends to make weights larger, and larger weights push pre-activations further from zero. Once an input to a
+      sigmoid is far from zero the sigmoid **saturates**: its output sits near 0 or 1 and its slope $\sigma(z)(1-\sigma(z))$ falls from 0.25
+      towards zero (0.0066 at $z = 5$). Each saturated layer multiplies the backward signal by that tiny slope, so the early layers, which
+      were already receiving about a billionth of the last layer's gradient, receive even less. The later layers keep learning, which
+      makes the network more confident and the saturation worse. This self-reinforcing effect is why deep sigmoid networks were so hard
+      to train, and why ReLU, normalisation and residual connections replaced them.
+  "5-1":
+    - |
+      **Yes.** A unit can fire only for a few training rows, for example rows with a rare category or an extreme numeric value, and for none
+      of the 250 validation rows. On the training set it counts as alive; on validation it contributes nothing.
+
+      Two readings are possible. With a small validation set it can simply mean the **region of feature space** that unit responds to is
+      rare and happened to be missing from the validation sample. If many units behave this way, it suggests the network has built units for
+      a handful of **specific training rows** (a sign of memorisation), or that validation data **differs** from training data in which
+      regions of the feature space it covers (a distribution shift). Comparing each unit's firing rate on training and validation is a cheap
+      way to find out which.
+  "6-1":
+    - |
+      During training the batch statistics are part of a **stochastic training procedure**, much like dropout or the random order of
+      mini-batches: they normalise activations using the rows at hand, and the small amount of noise they add even acts as a mild
+      regulariser. At inference the requirement is different: a customer's prediction must depend **only on that customer**. Recomputing
+      statistics from the inference batch would make the same row score differently depending on which other rows it arrived with, would
+      break entirely for a batch of one (the variance of one value is zero), and would drift whenever a batch is unrepresentative.
+
+      So in `eval()` mode PyTorch's BatchNorm uses the **running mean and variance** it accumulated during training (an exponential average,
+      `momentum=0.1`), stops updating them, and normalises every row with those fixed values, which makes evaluation deterministic and
+      independent of batch composition. (In training mode, a batch of one row raises an error for exactly this reason.)
+  "7-1":
+    - |
+      `x` has shape `(N, 64)` and `self.f(x)` has shape `(N, 128)`. Element-wise addition needs matching shapes, and broadcasting cannot
+      match 64 with 128, so PyTorch raises a size-mismatch error.
+
+      A projection on the shortcut must **map 64 features to 128**, usually with a learned linear layer (a 1×1 convolution in a CNN):
+      `y = P(x) + f(x)`. It should be cheap and simple, typically a single linear map with no activation, so that it does not become a
+      second deep path.
+
+      The shortcut still provides a **short** gradient route: the gradient reaches `x` through one matrix $P^\top$ instead of through the
+      whole transformation `f`, but it is no longer the pure identity. Real architectures therefore use projections only where the width
+      changes and keep identity shortcuts everywhere else.
+
+explain:
+  - cell: "def layer_grad_norms(model, xb, yb, loss_function=None):"
+    title: "The per-layer probe"
+    summary: "One forward and backward pass, then one gradient norm per weight matrix, in forward order."
+    lines:
+      - match: "model.train()"
+        note: "Training mode, so BatchNorm uses batch statistics as it would during a real training step."
+      - match: "if p.grad is not None and p.dim() > 1:          # weight matrices only, skip biases"
+        note: "2-D tensors are the weight matrices; biases and normalisation parameters (1-D) are skipped."
+      - match: "out.append((name, p.grad.norm().item()))"
+        note: "`p.grad.norm()` is the Frobenius norm: the square root of the sum of every squared gradient element."
+      - match: "return ratio"
+        note: "Returned as well as printed. When `summarise` is the last line of a cell, Jupyter also echoes this number."
+
+  - cell: "profiles = {}"
+    title: "Probing two deep networks"
+    lines:
+      - match: "summarise(\"3-layer ReLU\", layer_grad_norms(build_with_init(\"default\"), xb, yb))"
+        note: "This is the cell's last expression, so Jupyter displays `summarise`'s return value: the stray `1.2737…` below is the healthy network's last/first ratio."
+
+  - cell: "def build_with_init(kind, seed=SEED):"
+    title: "Four initialisations of the same network"
+    lines:
+      - match: "return m                                   # PyTorch's own initialisation"
+        note: "`nn.Linear` draws weights and biases uniformly from ±1/√fan_in."
+      - match: "nn.init.zeros_(mod.weight); nn.init.zeros_(mod.bias)"
+        note: "Everything zero: no hidden weight will ever receive a gradient (see the explainer below)."
+      - match: "nn.init.normal_(mod.weight, 0.0, 3.0); nn.init.zeros_(mod.bias)"
+        note: "Standard deviation 3, about 40 times the default for 61 inputs (1/√(3·61) ≈ 0.074)."
+      - match: "nn.init.kaiming_normal_(mod.weight, nonlinearity=\"relu\"); nn.init.zeros_(mod.bias)"
+        note: "Standard deviation √(2/fan_in): the scale that keeps a ReLU layer's signal size roughly constant."
+
+  - cell: "# Gradient clipping: rescale the whole gradient if its norm exceeds a threshold."
+    title: "Clipping, measured"
+    lines:
+      - match: "before = nn.utils.clip_grad_norm_(explode2.parameters(), max_norm=1.0)   # returns the PRE-clip norm"
+        note: "Clips in place and returns the norm *before* clipping: log it during training to see how often clipping fires."
+      - match: "after = torch.sqrt(sum(p.grad.pow(2).sum() for p in explode2.parameters())).item()"
+        note: "The same total norm, recomputed by hand: exactly `max_norm` after clipping."
+
+  - cell: "def dead_fraction(model, X, layer_idx=1):"
+    title: "Counting dead units"
+    lines:
+      - match: "acts = model[layer_idx](model[0](X))"
+        note: "Run only the first linear layer and its ReLU on every row."
+      - match: "return (acts.max(dim=0).values == 0).float().mean().item()"
+        note: "A unit is dead if its largest output over all rows is 0: it never fires on this data."
+
+  - cell: "class ResidualBlock(nn.Module):"
+    title: "A residual block"
+    lines:
+      - match: "return x + self.f(x)                      # <- the residual connection"
+        note: "The input is added back to the transformed value, so the gradient reaches `x` directly as well as through `f`."
+
+takeaways:
+  - "Measure gradients **per layer**: a summed norm lets a healthy last layer hide a first layer that receives almost nothing."
+  - "Initialisation sets the starting regime. All-zero weights keep units identical (here, frozen); weights far too large make activations, losses and gradients explode."
+  - "Backpropagation multiplies one factor per layer: below 1 they vanish, above 1 they explode. Sigmoid (slope ≤ 0.25) vanishes fastest; PyTorch's default init also shrinks deep ReLU stacks, Kaiming init does not."
+  - "Gradient clipping (`backward` → `clip_grad_norm_` → `step`) caps the length of an update and keeps its direction. If it fires constantly, find the cause."
+  - "A ReLU unit that is negative for every row gets no gradient and cannot recover in that run. Too-large learning rates kill them in bulk; restart after fixing the cause."
+  - "Normalisation controls activation scale: BatchNorm across the batch (eval uses running statistics), LayerNorm across each row's features (same in train and eval)."
+  - "A residual block `x + f(x)` gives the gradient a direct route: `d/dx = 1 + f′(x)`."
+  - "Run the layer-health checklist on any unfamiliar model: total gradient norm, per-layer profile, dead units, NaN/Inf, activation scale."
+
+quiz:
+  - q: "A network's summed gradient norm looks normal. What can it still hide?"
+    options: ["Nothing: the sum covers every layer", "Early layers receiving almost no gradient while late layers dominate the sum", "A wrong learning rate", "Overfitting"]
+    answer: 1
+    why: "A first layer at 1e-10 and a last layer at 1 give a total of about 1."
+  - q: "Why does an all-zero initialisation fail?"
+    options: ["Zero is not a valid float", "Every unit in a layer starts identical, and here no hidden weight even receives a gradient", "The loss becomes NaN", "Zero weights overfit"]
+    answer: 1
+    why: "Random initialisation breaks symmetry. With every weight and bias at zero, only the output bias learns."
+  - q: "What is the largest slope a sigmoid can have?"
+    options: ["1", "0.5", "0.25", "It has no maximum"]
+    answer: 2
+    why: "σ′(z) = σ(z)(1 − σ(z)), at most 0.25 at z = 0, and far smaller when saturated."
+  - q: "Where does gradient clipping go in the training loop?"
+    options: ["Before `loss.backward()`", "Between `loss.backward()` and `optimizer.step()`", "After `optimizer.step()`", "Before `optimizer.zero_grad()`"]
+    answer: 1
+    why: "The gradients must exist to be clipped, and the step must not have happened yet."
+  - q: "Most of a layer's ReLU units are dead after training at lr = 0.5. Lowering the learning rate now:"
+    options: ["Revives them within a few epochs", "Cannot revive them: they receive no gradient; restart training", "Turns them into LeakyReLU", "Makes them overfit"]
+    answer: 1
+    why: "A unit that outputs 0 for every row has zero gradient, so no learning rate can move it."
+  - q: "What does `model.eval()` change for BatchNorm?"
+    options: ["Nothing", "It uses the stored running mean and variance instead of the current batch's", "It switches to LayerNorm", "It freezes the weights of the next layer"]
+    answer: 1
+    why: "Predictions must not depend on which other rows share the batch."
+  - q: "Why does `y = x + f(x)` help gradients reach early layers?"
+    options: ["It doubles the learning rate", "Its derivative is 1 + f′(x), so the gradient has a direct path even when f′ is tiny", "It removes the activation", "It normalises the activations"]
+    answer: 1
+    why: "The identity path carries the gradient past the transformation."
+
+docstrings:
+  layer_grad_norms: |
+    Run one forward/backward pass and return the gradient norm of each weight matrix.
+
+    The Module 2 gradient-norm probe, computed per layer instead of summed. The model is
+    put in training mode, gradients are cleared before and after, and only 2-D parameters
+    (weight matrices) are reported, in forward order.
+
+    Args:
+        model: The network to probe.
+        xb: A batch of inputs.
+        yb: The matching targets, shaped like the model's output.
+        loss_function: Loss taking ``(output, target)``; defaults to the global ``loss_fn``.
+
+    Returns:
+        A list of ``(parameter_name, gradient_norm)`` pairs, first layer first.
+  summarise: |
+    Print the first, middle and last gradient norms of a profile and their ratio.
+
+    Args:
+        tag: Label printed at the start of the line.
+        norms: A list of ``(name, norm)`` pairs from ``layer_grad_norms``.
+
+    Returns:
+        The ratio last-layer norm ÷ first-layer norm (huge = vanishing).
+  plot_profiles: |
+    Plot one or more per-layer gradient profiles on a log scale.
+
+    Args:
+        profiles: Dict mapping a label to a list of ``(name, norm)`` pairs.
+        title: Title of the figure.
+  build_with_init: |
+    Build the 3-layer ReLU MLP (61 → 64 → 32 → 1) with a chosen initialisation.
+
+    Args:
+        kind: ``"default"`` (PyTorch's own initialisation), ``"zeros"`` (every weight and
+            bias 0), ``"big"`` (weights drawn with standard deviation 3, biases 0) or
+            ``"kaiming"`` (Kaiming-normal weights for ReLU, biases 0).
+        seed: Seed for the random initialisation.
+
+    Returns:
+        The initialised ``nn.Sequential``.
+  short_train: |
+    Train a model briefly with AdamW and report its losses and validation AUC.
+
+    Args:
+        model: The model to train (modified in place).
+        epochs: Number of passes over the 500 training rows.
+        lr: Learning rate.
+        bs: Mini-batch size.
+        seed: Seed for the batch order.
+
+    Returns:
+        A tuple ``(losses, auc)``: the mean training loss of each epoch and the validation
+        ROC-AUC after training.
+  deep_net: |
+    Build a deep MLP for studying gradient flow.
+
+    ``n_layers`` weight matrices in total: an input layer, ``n_layers − 2`` hidden
+    ``width × width`` layers (each optionally followed by LayerNorm or BatchNorm) and an
+    output layer, with the chosen activation after every layer but the last.
+
+    Args:
+        activation: ``"sigmoid"``, or anything else for ReLU.
+        n_layers: Total number of linear layers.
+        width: Width of every hidden layer.
+        norm: ``None``, ``"ln"`` for LayerNorm or ``"bn"`` for BatchNorm1d, applied after
+            each hidden linear layer.
+        seed: Seed for the initial weights.
+
+    Returns:
+        An ``nn.Sequential`` producing one logit per row.
+  dead_fraction: |
+    Fraction of units in a ReLU layer that output 0 for every row of ``X``.
+
+    Runs ``model[0]`` (the first linear layer) and then ``model[layer_idx]`` on the data in
+    evaluation mode, so it is meant for the first activation of a sequential model.
+
+    Args:
+        model: An ``nn.Sequential`` whose first module is a linear layer.
+        X: Input rows to check.
+        layer_idx: Index of the activation module to apply after ``model[0]``.
+
+    Returns:
+        The fraction of units (0 to 1) whose largest output over all rows is 0.
+  ResidualBlock: |
+    A residual block: returns ``x + f(x)`` with ``f`` = ``Linear → ReLU``.
+
+    The identity path adds the input back to the transformed value, which gives the
+    gradient a direct route around ``f``.
+  ResidualBlock.__init__: |
+    Create the transformation ``f``.
+
+    Args:
+        width: Size of the input and of the output (they must match to be added).
+  ResidualBlock.forward: |
+    Apply the block.
+
+    Args:
+        x: Input of shape ``(N, width)``.
+
+    Returns:
+        ``x + f(x)``, shape ``(N, width)``.
+  deep_residual: |
+    Build a deep MLP whose hidden blocks are plain ``f(x)`` or residual ``x + f(x)``.
+
+    Args:
+        n_layers: Total number of linear layers.
+        width: Width of every hidden layer.
+        residual: Use ``ResidualBlock`` for the hidden blocks instead of plain
+            ``Linear → ReLU``.
+        seed: Seed for the initial weights.
+
+    Returns:
+        An ``nn.Sequential`` producing one logit per row.
+  layer_health_report: |
+    Run this lesson's diagnostics on a model and print a short report.
+
+    One forward/backward pass gives the per-layer gradient profile and the total gradient
+    norm; one forward pass counts dead units in the first ReLU (when the model starts with
+    ``Linear`` then ``ReLU``). Flags are raised for vanishing or inverted profiles (ratio
+    above 1e3 or below 1e-3), exploding (total norm above 1e3) or absent gradients (below
+    1e-6), NaN/Inf, and more than half of the first layer's units being dead.
+
+    Args:
+        model: The model to inspect (its gradients are cleared afterwards).
+        X: A batch of inputs.
+        Y: The matching targets.
+        name: Label for the report.
+
+    Returns:
+        The list of flag messages; empty when nothing looks wrong.

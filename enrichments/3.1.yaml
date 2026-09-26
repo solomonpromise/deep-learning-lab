@@ -1,0 +1,479 @@
+# Teaching layer for Lesson 3.1 — Optimizers and the Learning Rate
+# The notebook is the author's current version (not locked). Its two "Check your understanding" sections are
+# written as a question followed by its worked answer; the inserts below turn each back into a question card
+# (answer hidden until asked for), keeping the author's explanation as the answer.
+
+summary: |
+  `optimizer.step()`, opened up. Plain SGD is literally `p -= lr * p.grad`; **momentum** adds a velocity that cancels zig-zags;
+  **Adam** keeps two running averages per weight and normalises every step, which is why its good learning rate (about 1e-3)
+  looks nothing like SGD's; **AdamW** decouples weight decay and is exactly Adam when the decay is 0. Then the experiments: optimizers
+  compared fairly, six learning rates and the curve each one leaves behind (including a collapse that looks perfectly calm), an
+  **LR range test** that finds a good range in one run, and schedules. The verdict: the learning rate matters far more than the
+  optimizer or the schedule.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    after: "Suppose every input feature in the dataset were multiplied by"
+    type: questions
+    replace: 2
+    id: "1-1"
+    label: "Check your understanding"
+    items:
+      - q: "Suppose every input feature in the dataset were multiplied by `2`. Would the same learning rate necessarily behave the same way?"
+        a: |
+          **Probably not.** Changing the scale of the inputs changes the scale of the activations and, consequently, the scale of the gradients,
+          so preprocessing affects optimisation. This is one reason `StandardScaler` is not merely cosmetic: putting numeric features on
+          comparable scales makes the problem easier for a gradient-based optimizer to navigate.
+
+          For the first layer you can be precise. Each weight's gradient is proportional to the input it multiplies, so for the same error signal,
+          doubling the inputs doubles those gradients, and SGD's step doubles with them. Each weight change also moves the layer's output twice as much (its
+          input is doubled), so the same `lr` changes the first layer's output about **four times** as much. Adam divides the gradient's
+          scale back out, so its step size barely changes; the effect on the output is about **twice** as large.
+
+          > **The model is learning in parameter space, but the scale of the inputs influences the shape and scale of the gradients that guide that learning.**
+
+  - section: 1
+    after: "# --- way 2: the arithmetic, by hand ---"
+    type: explainer
+    style: tip
+    title: "Why `torch.no_grad()` around the update"
+    md: |
+      `p -= LR * p.grad` is itself a tensor operation. Without `no_grad()`, autograd would try to record it as part of the graph, and an
+      in-place change to a leaf tensor that requires grad raises an error. Updating weights is bookkeeping, not part of the model's
+      computation, which is exactly how `optimizer.step()` does it internally.
+
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "although this is not a literal ten-step window"
+    type: widget
+    name: momentum-valley
+    title: "Momentum in the stretched valley"
+    intro: |
+      The notebook's valley, `f(x, y) = 0.05·x² + y²`, with plain SGD (grey) and SGD + momentum (colour) at the same learning rate.
+      Start from the lesson's setting, then try **β = 0.9** and a learning rate that breaks plain SGD.
+
+  - section: 2
+    after: "you may need a smaller learning rate"
+    type: explainer
+    style: deep
+    title: "What β = 0.9 actually does in this valley"
+    md: |
+      Run the notebook's `descend(lr=0.85, beta=0.9)` and it does **not** diverge. It ends 40 steps later with loss 0.168, fifty times
+      worse than plain SGD's 0.0033, because the path **rings**: the velocity keeps overshooting, and each swing shrinks by only
+      $\sqrt{\beta} \approx 0.95$ per step. On a bowl like this one, momentum actually makes larger learning rates *stable*: plain SGD
+      diverges once $\text{lr} \cdot h > 2$ ($h$ is the curvature, 2 in the steep direction, so lr > 1), while with momentum the limit is
+      $\text{lr} \cdot h < 2(1 + \beta)$. At lr = 1.05, SGD explodes and momentum 0.3 converges.
+
+      The practical rule "more momentum, smaller learning rate" still holds, for a different reason. Along a direction where the gradients
+      agree, the velocity builds up to $g / (1 - \beta)$, so the **effective step** is $\text{lr} / (1 - \beta)$: ten times `lr` at β = 0.9.
+      Real loss surfaces are not fixed bowls, and that larger effective step is what destabilises training. Tune the two together.
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "That is why Adam's learning rate behaves differently from plain SGD's learning rate"
+    type: explainer
+    style: math
+    title: "The full Adam update, including bias correction"
+    md: |
+      For each parameter, with gradient $g_t$ at step $t$ and the defaults $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-8}$:
+
+      $$m_t = \beta_1 m_{t-1} + (1-\beta_1)\,g_t \qquad v_t = \beta_2 v_{t-1} + (1-\beta_2)\,g_t^2$$
+      $$\hat m_t = \frac{m_t}{1-\beta_1^t} \qquad \hat v_t = \frac{v_t}{1-\beta_2^t} \qquad p \leftarrow p - \text{lr}\cdot\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}$$
+
+      $m$ and $v$ start at zero, so early on they are biased towards zero; dividing by $1-\beta^t$ corrects that. On the very first step
+      $\hat m_1 = g_1$ and $\hat v_1 = g_1^2$, so every weight moves by $\text{lr}\cdot\text{sign}(g_1)$: about `lr`, whatever the size of its gradient
+      (Lesson 2.3 measured exactly this).
+
+  - section: 3
+    after: "# How much does each parameter actually move, per step"
+    type: explainer
+    style: deep
+    title: "Those RMS values are about 2.7 times too small"
+    md: |
+      The cell reads `exp_avg_sq` directly, and that buffer is **not** bias-corrected. After 142 steps with $\beta_2 = 0.999$ it holds only
+      $1 - 0.999^{142} \approx 13\%$ of the running mean of $g^2$, so its square root is about $\sqrt{0.13} \approx 0.36$ of the true RMS gradient.
+      Adam's own update divides by the corrected $\hat v$, so the optimizer is not affected. The cell's point survives too: every weight is
+      scaled by the same factor, so the **5,229× spread** between the largest and smallest gradient is real.
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "w_decup = one_step(\"adamw\",   0.1)"
+    type: explainer
+    style: why
+    title: "Why Adam + L2 shrank the weights a hundred times more"
+    md: |
+      **AdamW** multiplies every weight by $1 - \text{lr}\cdot\lambda = 1 - 10^{-4}$ per step: $0.9999^{50} \approx 0.995$, a **0.5%** shrink
+      in 50 steps, the same fraction for every weight (0.43% measured).
+
+      **Adam with `weight_decay`** adds $\lambda p$ to the gradient. A typical weight here is about 0.07, so $\lambda p \approx 0.007$,
+      around thirty times the median data gradient (about $2\times10^{-4}$ in Section 3). The penalty now *is* the gradient, and Adam normalises
+      it: each weight moves about `lr` = 0.001 towards zero per step whatever its size. Fifty steps move each weight about 0.05, enough to
+      drive the smaller weights to nearly zero, hence **47%**. The same $\lambda$ gives a completely different strength of regularisation,
+      and one that depends on each weight's gradient history. That is the non-uniformity the text describes.
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    before: "for name in [\"sgd\", \"momentum\", \"adam\", \"adamw\"]:"
+    type: predict
+    mode: choice
+    prompt: "All four optimizers train the same model for 15 epochs at the **same** learning rate, `1e-3`. Which ends with the best validation AUC?"
+    options: ["Plain SGD", "SGD with momentum", "Adam and AdamW, exactly tied", "All four about the same"]
+    answer: 2
+    reveal: |
+      **Adam and AdamW, tied at 0.7939**, then momentum (0.7379) and plain SGD (0.6525). The tie is exact because AdamW with
+      `weight_decay=0` *is* Adam. The gap to SGD mostly says that 1e-3 is a good rate for Adam and a far-too-small one for SGD, as the next
+      experiment shows.
+
+  - section: 5
+    after: "print(\"Each optimizer at ITS OWN best learning rate:\")"
+    type: widget
+    name: results-bars
+    title: "Same optimizers, two ways to compare them"
+    props:
+      metrics:
+        - title: "Shared learning rate, 1e-3"
+          note: "final validation ROC-AUC"
+          digits: 4
+          min: 0.5
+          max: 0.82
+          rows:
+            - { label: "SGD", value: 0.6525, series: 0 }
+            - { label: "Momentum", value: 0.7379, series: 1 }
+            - { label: "AdamW", value: 0.7939, series: 3 }
+        - title: "Each at its own best learning rate"
+          note: "SGD 0.5, momentum 0.1, AdamW 1e-3"
+          digits: 4
+          min: 0.5
+          max: 0.82
+          rows:
+            - { label: "SGD", value: 0.7898, series: 0 }
+            - { label: "Momentum", value: 0.7966, series: 1 }
+            - { label: "AdamW", value: 0.7939, series: 3 }
+      footnote: "The axis starts at 0.5 (random ranking). A 0.14 spread shrinks to 0.007 once each optimizer gets a learning rate that suits it."
+
+  - section: 5
+    after: "If you ever read a paper or a blog post claiming architecture A beats architecture B"
+    type: explainer
+    style: warning
+    title: "Two catches in the fair comparison"
+    md: |
+      **The sweep may not have reached SGD's best rate.** SGD's winner (0.5) and momentum's (0.1) are the *largest* values in their grids,
+      so their true best may lie higher. AdamW's winner, 1e-3, sits in the middle of its grid. When the winner is at the edge of the range
+      you searched, extend the range before concluding.
+
+      **The winner was picked on the number it reports.** Each "best" AUC was chosen as the maximum of three final AUCs on the same
+      validation set, with one seed. Momentum's 0.7966 against AdamW's 0.7939 is a 0.003 gap, well within what a different seed or split
+      would move. Lesson 3.2 measures that noise.
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "There is also a middle region between"
+    type: explainer
+    style: plain
+    title: "The sixth run: lr = 0.1"
+    md: |
+      The grid has six rates and the text describes five. `lr=0.1` is that middle region: it learns (final AUC 0.7850, best 0.7864) but ends
+      below 1e-3 and 1e-2, and its training loss ends higher (0.2939 at epoch 15 against 0.2715 for 1e-2). Nothing looks broken,
+      which is why it is easy to miss.
+
+  - section: 6
+    after: "Never interpret a training curve using loss alone"
+    type: explainer
+    style: math
+    title: "Why the dead model's loss settles at exactly 0.3609"
+    md: |
+      A model that predicts the same probability $q$ for everyone has loss $-[p\log q + (1-p)\log(1-q)]$, lowest at $q = p$, the base rate.
+      With $p = 0.117$:
+      $$-[0.117\log 0.117 + 0.883\log 0.883] = 0.3609,$$
+      which is exactly where the `lr=0.5` run's validation loss settles (0.3609 at epochs 14 and 15). It is the **entropy of the labels**, the same 0.3609 that
+      Lesson 2.3 used as the "knows nothing" bar. A loss sitting on that number is not calm convergence; it is a model that has learned
+      only the base rate. Compute it for your own data before trusting a flat curve.
+
+  - section: 6
+    after: "Never interpret a training curve using loss alone"
+    type: widget
+    name: curve-doctor
+    title: "Curve doctor: learning-rate cases"
+    props: { patterns: [lrlow, healthy, lrhigh, diverge, collapse] }
+    intro: "Five patients, five learning-rate stories, including the collapse above. Name the pattern from the curves before reading the explanation."
+
+  - section: 6
+    after: "Suppose the loss is steadily falling from"
+    type: questions
+    replace: 2
+    id: "6-1"
+    label: "Check your understanding"
+    items:
+      - q: "Suppose the loss is steadily falling from `0.69` to `0.42` after 50 epochs and is still falling. Is the learning rate too small, or is it fine and the model just needs more epochs? How would you decide?"
+        a: |
+          The key question is not simply whether the loss is still decreasing. Ask:
+
+          > **How quickly is it decreasing, and what is happening to the validation metric?**
+
+          If the curve is still improving meaningfully and smoothly, more epochs may be enough. If the loss has been decreasing extremely
+          slowly from the very beginning, increasing the learning rate may make training more efficient. So decide from the **shape of the
+          curve and the validation behaviour**, not from the final loss value alone.
+
+          Two quick experiments settle it. Rerun with the learning rate **3× and 10× higher** for a few epochs: if the loss falls much faster
+          and stays stable, the rate was too small. Or run an **LR range test** (Section 7): if 1e-3-ish sits far to the left of the steep part
+          of the curve, the rate was too small. If this is the Bank Marketing data, also compare with the base-rate
+          loss, 0.3609: a loss of 0.42 is still worse than predicting 11.7% for everyone, so the model has a long way to go either way.
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "lrs, smooth, raw = lr_range_test()"
+    type: predict
+    mode: choice
+    prompt: "The smoothed loss is lowest at lr ≈ 0.145. What learning rate would you actually train with?"
+    options: ["0.145, the minimum", "Somewhere around 1e-3 to 1e-2, well below the minimum", "Higher than 0.145: the loss was still falling there"]
+    answer: 1
+    reveal: |
+      **Well below the minimum.** By the time the loss bottoms out, the rate is already close to where training breaks down, and the
+      range test's rate is changing every batch. The two usual read-outs are the **steepest-descent point** (1.4e-3 here) and
+      **minimum ÷ 10** (1.45e-2). The six full runs of Section 6 put the best rates at 1e-3 and 1e-2: the same range.
+
+  - section: 7
+    after: "Choosing a somewhat smaller value provides a safety margin for a full training run"
+    type: explainer
+    style: result
+    title: "One run against six"
+    md: |
+      | | Batches of training | Suggested range |
+      |---|---|---|
+      | Section 6: six rates × 15 epochs | 6 × 15 × 142 = **12,780** | best final AUC at 1e-3 (0.7939) and 1e-2 (0.7922) |
+      | LR range test | **300** | 1.4e-3 (steepest) to 1.45e-2 (minimum ÷ 10) |
+
+      About **40 times cheaper** for the same answer. On a model where one epoch takes an hour, that is the difference between a
+      morning and two weeks.
+
+  # ------------------------------------------------------------------ §8
+  - section: 8
+    after: "Warmup is particularly common in Transformer training"
+    type: widget
+    name: lr-schedules
+    title: "What each schedule does to the learning rate"
+    props: { lr: 0.01, epochs: 15 }
+    intro: "The learning rate each epoch trains with, for the notebook's settings (AdamW from 1e-2, 15 epochs), plus warmup. Change the settings and read the PyTorch code that produces each curve."
+
+  # ------------------------------------------------------------------ §9
+  - section: 9
+    after: "# Which choice had the largest effect?"
+    type: widget
+    name: results-bars
+    title: "How much each decision moved validation AUC"
+    props:
+      metrics:
+        - title: "Range of final validation ROC-AUC across the options tried"
+          note: "a bigger range means the decision matters more"
+          better: none
+          digits: 4
+          rows:
+            - { label: "Learning rate (1e-5 … 0.5)", value: 0.2939, series: 0 }
+            - { label: "Optimizer, shared lr", value: 0.1414, series: 1 }
+            - { label: "Optimizer, each tuned", value: 0.0068, series: 2 }
+            - { label: "Schedule", value: 0.0048, series: 3 }
+      footnote: "Single seed, final epoch. The last two ranges are within run-to-run noise (Lesson 3.2)."
+
+explain:
+  - cell: "def train(optimizer_name, lr, epochs=15"
+    title: "One training function for every experiment"
+    summary: "Everything except the optimizer, learning rate and schedule is fixed, so each experiment changes one thing."
+    lines:
+      - match: "model = make_model(seed=seed)"
+        note: "Same seed, same starting weights for every run."
+      - match: "g = torch.Generator().manual_seed(seed)"
+        note: "A private random generator for the DataLoader: every run sees the batches in the same order."
+      - match: "opt = torch.optim.SGD(model.parameters(), lr=lr, momentum=momentum)"
+        note: "Momentum is SGD with one extra argument; `momentum=0.9` unless the caller says otherwise."
+      - match: "sched.step()"
+        note: "Once per epoch, after the batches: the schedules here count epochs, not batches."
+      - match: "auc = roc_auc_score(y_va, probs) if np.isfinite(probs).all() else float(\"nan\")"
+        note: "A diverged run produces NaN probabilities; record NaN instead of crashing the sweep."
+      - match: "val_auc=auc, lr=opt.param_groups[0][\"lr\"]))"
+        note: "Read **after** `sched.step()`, so each row holds the rate the *next* epoch will use: the drops in the schedule plot appear one epoch early."
+
+  - cell: "def descend(lr, beta=0.0, steps=40, start=(-9.0, 2.5)):"
+    title: "Gradient descent and momentum in three lines"
+    summary: "The same loop as PyTorch's SGD, on a 2-D function you can draw."
+    lines:
+      - match: "v = beta * v + g"
+        note: "The velocity: this step's gradient plus a fraction β of the previous velocity. With β = 0 it is just the gradient."
+      - match: "p = p - lr * v"
+        note: "Step against the velocity. This is exactly `torch.optim.SGD(momentum=beta)`."
+
+  - cell: "# Train briefly with Adam, then open the optimizer's state"
+    title: "Looking inside Adam"
+    lines:
+      - match: "if i == 199: break"
+        note: "Never triggers: 36,168 rows ÷ 256 is 142 batches, so the loop ends after one epoch. That is why the step count prints 142, not 200."
+      - match: "state = opt.state[first_layer_w]"
+        note: "The optimizer keeps its state in a dict keyed by the parameter tensor itself."
+
+  - cell: "def lr_range_test(lr_min=1e-7"
+    title: "The LR range test"
+    summary: "One short run in which the learning rate grows exponentially, batch by batch, from 1e-7 to 10."
+    lines:
+      - match: "gamma = (lr_max / lr_min) ** (1 / n_steps)"
+        note: "The constant factor per batch that turns lr_min into lr_max in n_steps multiplications: equal spacing on a log axis."
+      - match: "grp[\"lr\"] = lr_min * (gamma ** step)"
+        note: "Set the rate by hand before every step. Changing `param_groups` is also how schedulers work under the hood."
+      - match: "avg = beta * avg + (1 - beta) * l"
+        note: "Exponential smoothing of the noisy batch loss."
+      - match: "smooth.append(avg / (1 - beta ** (step + 1)))"
+        note: "Bias correction, the same trick Adam uses: `avg` starts at 0, so early values are divided up to their true scale."
+
+  - cell: "# The lr=0.5 run: loss looks calm, model is dead."
+    title: "Checking a calm-looking run"
+    lines:
+      - match: "p = torch.sigmoid(m_dead(X_va)).numpy().ravel()"
+        note: "Look at the predictions themselves, not just the loss."
+      - match: "dead_frac = (act1.max(0).values == 0).float().mean().item()"
+        note: "A unit is dead if its largest output over 2,000 rows is 0: it never fires, so it passes no gradient and cannot recover."
+
+takeaways:
+  - "For plain SGD, `optimizer.step()` is `p -= lr * p.grad`: the learning rate scales the gradient, so the right lr depends on the size of the gradients (and the scale of the inputs)."
+  - "Momentum keeps a velocity that cancels back-and-forth steps and builds speed along consistent directions. Its effective step is about lr / (1 − β), so tune lr and β together."
+  - "Adam keeps two running averages per parameter (2 extra floats each) and normalises every step, so its lr is roughly \"how far each weight moves\": about 1e-3."
+  - "AdamW applies weight decay directly to the weights, outside Adam's normalisation. With `weight_decay=0` it is exactly Adam; with decay, Adam + L2 and AdamW are different algorithms."
+  - "Compare optimizers at their own tuned learning rates. At a shared lr the comparison mostly measures the lr."
+  - "Learning rate had by far the largest effect here: too small crawls, too large bounces, far too large can **collapse** to the base rate with a calm-looking loss of 0.3609. Always check AUC and the predictions."
+  - "An LR range test finds a good range in one short run: take the steepest-descent point or the minimum ÷ 10, then confirm with a normal run."
+  - "Schedules are a refinement: they matter for long runs, final-checkpoint pipelines and Transformer warmup, and add little when you keep the best checkpoint of a short run."
+
+quiz:
+  - q: "For plain SGD, what does `optimizer.step()` do to each parameter `p`?"
+    options: ["`p = p.grad`", "`p -= lr * p.grad`", "`p -= lr * sign(p.grad)`", "`p *= (1 - lr)`"]
+    answer: 1
+    why: "The notebook reproduces torch's SGD with exactly this line, to within 7e-9."
+  - q: "How many extra numbers does Adam store for a model with 5,377 parameters?"
+    options: ["None", "5,377", "10,754", "16,131"]
+    answer: 2
+    why: "Two per parameter: the running average of the gradient (`exp_avg`) and of its square (`exp_avg_sq`)."
+  - q: "`AdamW(..., weight_decay=0)` compared with `Adam(...)`:"
+    options: ["AdamW still regularises a little", "They are identical", "AdamW uses a different learning-rate default", "Adam adds decay automatically"]
+    answer: 1
+    why: "The only difference is how weight decay is applied; with none, the updates are the same (the notebook checks it)."
+  - q: "At a shared lr = 1e-3, SGD reaches 0.65 AUC and Adam 0.79. Tuned separately, they reach 0.79 and 0.79. What does the first result mainly show?"
+    options: ["SGD is a worse optimizer", "1e-3 suits Adam but is far too small for SGD", "Adam overfits less", "The data favours adaptive methods"]
+    answer: 1
+    why: "An optimizer cannot be judged apart from its learning rate. Give each one a rate that suits it."
+  - q: "The lr = 0.5 run shows a flat loss of 0.361 for ten epochs and AUC 0.500. What happened?"
+    options: ["It converged to a good minimum", "It collapsed to predicting the base rate for everyone", "It is overfitting", "The data loader stopped shuffling"]
+    answer: 1
+    why: "0.361 is the entropy of an 11.7%-positive label, the loss of a constant prediction. 95% of the first-layer ReLUs were dead."
+  - q: "An LR range test's smoothed loss is lowest at lr ≈ 0.15. A sensible first learning rate is about:"
+    options: ["0.15", "0.015 (the minimum ÷ 10)", "1.5", "1e-7"]
+    answer: 1
+    why: "Stay well below the minimum, which is already near the unstable region; the steepest-descent point is another good choice."
+  - q: "Which decision changed validation AUC the most in this lesson's experiments?"
+    options: ["The optimizer, once each was tuned", "The learning-rate schedule", "The learning rate", "The random seed"]
+    answer: 2
+    why: "A range of 0.29 AUC across learning rates, against 0.007 for tuned optimizers and 0.005 for schedules."
+
+docstrings:
+  make_model: |
+    Build the lesson's baseline MLP (50 → 64 → 32 → 1) with reproducible initial weights.
+
+    Seeds PyTorch immediately before creating the layers, so every call with the same seed
+    starts from exactly the same weights. That is what lets experiments compare optimizers
+    and learning rates rather than lucky initialisations.
+
+    Args:
+        n_features: Number of input features (50 after preprocessing).
+        seed: Seed for the weight initialisation.
+
+    Returns:
+        An ``nn.Sequential`` that outputs one raw logit per row.
+  train: |
+    Train the baseline MLP with one optimizer configuration and record every epoch.
+
+    The data, architecture, batch order and initial weights are fixed by ``seed``, so only
+    the optimizer, learning rate and schedule differ between calls. After each epoch the
+    model is evaluated on the whole validation set.
+
+    Args:
+        optimizer_name: ``"sgd"``, ``"momentum"``, ``"adam"`` or ``"adamw"``.
+        lr: Learning rate (the starting rate when a schedule is used).
+        epochs: Number of passes over the training data.
+        batch_size: Rows per mini-batch.
+        seed: Seed for the initial weights and the batch order.
+        weight_decay: Decoupled weight decay; used only by ``"adamw"``.
+        scheduler: ``None`` (constant), ``"step"`` (×0.1 every 5 epochs) or ``"cosine"``
+            (cosine annealing to 0 over ``epochs``); stepped once per epoch.
+        momentum: Momentum coefficient for ``"momentum"``.
+        verbose: Print one line per epoch.
+
+    Returns:
+        A dict with ``"history"`` (one dict per epoch: ``epoch``, ``train_loss``,
+        ``val_loss``, ``val_auc`` and ``lr``, the rate *after* the scheduler step),
+        ``"seconds"`` (wall-clock training time) and ``"model"`` (the trained model).
+
+    Raises:
+        ValueError: If ``optimizer_name`` is not one of the four above.
+  f: |
+    The stretched bowl ``f(x, y) = 0.05·x² + y²``: 20 times steeper along ``y`` than ``x``.
+
+    Args:
+        p: A point ``(x, y)`` as a sequence or NumPy array.
+
+    Returns:
+        The function's value at ``p``; the minimum is 0 at the origin.
+  grad: |
+    The exact gradient of ``f``: ``(0.1·x, 2·y)``.
+
+    Args:
+        p: A point ``(x, y)`` as a NumPy array.
+
+    Returns:
+        A NumPy array with the partial derivatives along ``x`` and ``y``.
+  descend: |
+    Run gradient descent on ``f``, with optional classical momentum, and record the path.
+
+    Uses PyTorch's momentum rule: ``v ← β·v + g``, then ``p ← p − lr·v``. With ``beta=0``
+    this is plain gradient descent.
+
+    Args:
+        lr: Learning rate.
+        beta: Momentum coefficient β; 0 turns momentum off.
+        steps: Number of update steps.
+        start: Starting point ``(x, y)``.
+
+    Returns:
+        A NumPy array of shape ``(steps + 1, 2)`` with every point visited, starting point
+        included.
+  one_step: |
+    Train a fresh baseline model for a few steps with Adam + L2 or with AdamW.
+
+    Despite its name it runs ``warmup`` optimizer steps (50 by default), enough for
+    Adam's running averages to fill, and returns the resulting weights so the two ways of
+    applying weight decay can be compared.
+
+    Args:
+        kind: ``"adam_l2"`` for ``Adam(weight_decay=wd)``, which adds ``wd·p`` to the
+            gradient; anything else uses ``AdamW(weight_decay=wd)``, which decays the
+            weights directly.
+        wd: Weight-decay coefficient λ.
+        lr: Learning rate.
+        warmup: Number of optimizer steps to take.
+
+    Returns:
+        Every parameter of the model flattened into one 1-D tensor.
+  lr_range_test: |
+    Run an LR range test: one short run with an exponentially increasing learning rate.
+
+    Before every batch the learning rate is set to ``lr_min · gammaᵏ``, rising from
+    ``lr_min`` to ``lr_max`` over ``n_steps`` batches (AdamW, fresh model). The batch loss
+    is recorded raw and exponentially smoothed with bias correction.
+
+    Args:
+        lr_min: Learning rate for the first batch.
+        lr_max: Learning rate approached at the last batch.
+        n_steps: Number of batches (and learning rates) to try.
+        batch_size: Rows per batch.
+        seed: Seed for the initial weights and the batch order.
+        beta: Smoothing factor for the loss; closer to 1 is smoother.
+
+    Returns:
+        A tuple ``(lrs, smooth, raw)`` of NumPy arrays: the learning rate used at each
+        batch, the smoothed loss and the raw batch loss.
