@@ -1,0 +1,615 @@
+# Teaching layer for Lesson 2.2 — Dataset and DataLoader: Feeding the Model
+
+summary: |
+  How a table or a folder of files becomes the batches a network trains on. You measure **why mini-batches matter even when
+  memory doesn't**, split *before* preprocessing so nothing leaks, encode a real mixed-type table, write your own **`Dataset`**
+  (in memory and lazily from disk), configure a **`DataLoader`** deliberately, and inspect one batch before training.
+
+inserts:
+  # ------------------------------------------------------------------ preamble
+  - section: 1
+    at: start
+    type: compare
+    title: "Three jobs, three objects"
+    items:
+      - { title: "Dataset", tone: blue, icon: database, md: "\"Give me **one** example.\" Knows how many examples exist (`__len__`) and how to produce example *i* (`__getitem__`)." }
+      - { title: "DataLoader", tone: orange, icon: layers, md: "\"Give me **many** examples, grouped into a batch.\" Decides the order (shuffle), the batch size and how to stack examples." }
+      - { title: "Training loop", tone: green, icon: refresh, md: "\"Give this batch to the model, compute the loss and gradients, update.\" Knows nothing about files or order." }
+
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    before: "# ---------- Run B: mini batch ----------"
+    type: predict
+    mode: choice
+    prompt: "Same model, same initial weights, same **20 epochs** over the same data, but with `batch_size=256` instead of the whole set. Compared with full-batch training, the mini-batch run will…"
+    options: ["be faster and score worse", "be slower and score better", "take the same time and score the same", "be faster and score better"]
+    answer: 1
+    reveal: |
+      **Slower and much better:** 2,840 updates instead of 20, about 16× the wall-clock time, and validation ROC-AUC **0.788 vs 0.624**.
+      Both runs did the same arithmetic on the same rows; the mini-batch run simply turned it into **142× more parameter updates**.
+
+  - section: 1
+    after: "Mini-batching is not only a memory-saving technique"
+    type: widget
+    name: minibatch-paths
+    title: "Full batch vs mini-batch on the same loss surface"
+    intro: |
+      A two-weight model trained on 512 rows. The blue path takes one exact step per epoch; the orange path takes one step per
+      mini-batch. Slide the batch size from 8 to 512 and the number of epochs, and watch how far each gets and how noisy the steps are.
+    caption: "**Gradient agreement** is the average cosine similarity between a mini-batch gradient and the full gradient: 1.0 means identical direction. Smaller batches give noisier (lower) agreement, but many more steps."
+
+  - section: 1
+    after: "Well above zero: each mini-batch points broadly the right way"
+    type: explainer
+    style: result
+    title: "Reading the cosine similarities"
+    md: |
+      Cosine similarity compares two gradient **directions**: 1 means identical, 0 unrelated, −1 opposite. Here 16 mini-batch gradients average **0.988**
+      (range 0.978–0.993): every one points almost exactly the way the full gradient does, but not perfectly. That small wobble is the **gradient noise**.
+      It averages out over many steps, and it can even help optimisation escape narrow bad regions.
+
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "Notice that we do **not** call `scaler.fit()` on `X_va`"
+    type: compare
+    title: "Leaky pipeline vs correct pipeline"
+    items:
+      - title: "Leaky"
+        tone: red
+        icon: alert
+        md: "`scaler.fit(X)` on **all** rows → split. Validation and test rows helped choose the mean and scale, so the held-out data is no longer truly unseen."
+      - title: "Correct"
+        tone: green
+        icon: check
+        md: "Split → `scaler.fit(X_tr)` → `transform` train, validation and test with that **same** fitted scaler. The held-out sets play the role of future data."
+
+  - section: 2
+    after: "`stratify=y_all` tells `train_test_split`"
+    type: explainer
+    style: plain
+    title: "Why the split is done twice"
+    md: |
+      `train_test_split` only makes **two** pieces, so a 70/15/15 split takes two calls: first 70% train / 30% temporary, then the temporary 30% is cut in half
+      into validation and test. Passing `stratify=` both times keeps the 11.7% positive rate in all three, and fixing `random_state` makes the split reproducible.
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "This gives the model category membership without inventing an ordering"
+    type: widget
+    name: onehot-viz
+    title: "Ordinal codes vs one-hot: see the invented distances"
+    intro: "Switch between the two encodings and click a job to see how far it sits from every other job, as the model would measure it."
+
+  - section: 3
+    after: "Two metrics used here are more informative"
+    type: explainer
+    style: plain
+    title: "Average precision, and why its baseline is 0.117"
+    md: |
+      Sort all customers by the model's score, highest first. **Precision** at a cut-off = the share of those selected who really subscribed;
+      **recall** = the share of all subscribers you've caught. **Average precision** (the area under the precision–recall curve) summarises precision
+      across every cut-off. A model that ranks randomly has precision equal to the positive rate everywhere, so its average precision is **0.117**, not 0.5.
+      An AP of 0.35 therefore means "three times better than random at finding subscribers", which is a much more honest headline than 89% accuracy.
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "As long as the dataset can answer"
+    type: explainer
+    style: analogy
+    title: "A library catalogue and a librarian"
+    md: |
+      The **Dataset** is the catalogue: it knows how many books exist and can fetch book number *i* from the shelves (or from storage in the basement).
+      The **DataLoader** is the librarian: it decides which books to bring you, in what order, and in piles of a fixed size. The **training loop** is the reader:
+      it just reads whatever pile arrives. Change the pile size and the catalogue doesn't change at all.
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    after: "This is called **lazy loading**"
+    type: compare
+    title: "Eager vs lazy datasets"
+    items:
+      - { title: "Eager (in memory)", tone: blue, icon: database, md: "Load everything once into a tensor. Fast indexing, simple code. Only works while the data fits in RAM (e.g. the 7 MB Bank table)." }
+      - { title: "Lazy (from disk)", tone: violet, icon: layers, md: "Store only file **paths**; read each example inside `__getitem__` when asked. Memory stays tiny, so a million images work fine. Reading costs time, which is where `num_workers` can help." }
+
+  - section: 5
+    after: "Random transforms belong in training; validation transforms should be deterministic"
+    type: explainer
+    style: warning
+    title: "A detail about `random_shift`"
+    md: |
+      `torch.roll` doesn't shift pixels off the edge: it **wraps them round** to the opposite side. On 8×8 digits with blank borders that's harmless (a
+      column of zeros wraps round). On real photos, prefer a true translation with padding, e.g. `torchvision.transforms.RandomAffine(degrees=0, translate=(0.1, 0.1))`
+      or `RandomCrop` with `padding=`.
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "The important `DataLoader` settings in this note are"
+    type: widget
+    name: dataloader-viz
+    title: "What a DataLoader does to a Dataset"
+    intro: |
+      22 examples stored in file order, with most positives near the end (like the Bank file's drift). Change `batch_size`, `shuffle` and `drop_last`,
+      then press **Next epoch** a few times.
+
+  - section: 6
+    after: "The final batch is smaller because"
+    type: explainer
+    style: warning
+    title: "Check the numbers against the output above"
+    md: |
+      This paragraph (and the one opening the section) use **36,169** examples and 141 full batches: numbers from Section 1's 80/20 timing experiment.
+      The loaders here are built on the 70/15/15 split, so the output shows **31,647** examples → `ceil(31,647 / 256)` = **124 batches**: 123 full batches of 256
+      plus a final batch of **159**. The idea is the same; only the counts differ.
+
+  - section: 6
+    after: "Measure on your own hardware before raising num_workers"
+    type: explainer
+    style: tip
+    title: "When `num_workers > 0` actually pays off"
+    md: |
+      Workers help when producing one example is **slow** (decoding JPEGs, reading audio, heavy augmentation) and the GPU would otherwise wait for data.
+      They don't help when examples are already tensors in RAM, where starting processes and passing batches between them costs more than the indexing saves.
+      Two more habits when you do use them: set `persistent_workers=True` so workers aren't restarted every epoch, and `pin_memory=True` when copying batches to a CUDA GPU.
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "These checks are cheap"
+    type: explainer
+    style: remember
+    title: "The batch contract for this project"
+    md: |
+      | | shape | dtype | values |
+      |---|---|---|---|
+      | `x` | `(batch, 50)` | `float32` | finite; numeric columns ≈ standardised; one-hot block of 0/1 |
+      | `y` | `(batch, 1)` | `float32` | only 0.0 or 1.0; about 11.7% ones |
+
+      If the first batch satisfies this, most of the bugs of Lesson 2.1 are already impossible.
+
+answers:
+  "1-1":
+    - |
+      Into **per-batch overhead**, not arithmetic. The mini-batch run executes the Python training loop 2,840 times instead of 20: each iteration pays for
+      DataLoader indexing and collation (stacking 256 rows into a tensor), building an autograd graph, launching many small operations and an optimiser step.
+      Small matrix multiplications also use the CPU's vector units less efficiently than one large one. Same FLOPs, far more bookkeeping.
+    - |
+      - **Updates per epoch:** halve (124 → 62 on the main split; 142 → 71 in Section 1). *Certain.*
+      - **Gradient noise:** falls, since the spread of a mini-batch average shrinks roughly like $1/\sqrt{B}$, so about 0.71× as noisy. *Confident.*
+      - **Wall-clock per epoch:** usually drops, because fewer loop iterations means less overhead. *Likely*, but hardware-dependent.
+      - **Final ROC-AUC after 20 epochs:** probably slightly lower (half as many updates at the same learning rate), but it could go either way. *Least confident.*
+        This is exactly the kind of prediction to test rather than argue about.
+    - |
+      Rough budget per row: 50 input floats, plus the hidden layer's 64 pre-activations and 64 activations (kept for backward), the output, and similar-sized
+      gradients during the backward pass. That's about **1–1.5 KB per row** in float32. 15 GB ÷ ~1.2 KB ≈ **12 million rows** (the parameters themselves are
+      tiny: 3,329 numbers). So for narrow tabular data, full-batch training remains *possible* far beyond this dataset's 45,211 rows. The surprise is that memory
+      isn't what makes mini-batches worthwhile here; update count and speed of learning are.
+  "2-1":
+    - |
+      With 31,647 training rows, the other 30% of rows come from the same distribution and barely move the mean and standard deviation (under 1%, as the table shows),
+      so today's score hardly changes. It's still unacceptable because (a) the **pipeline** is what you ship and reuse, and on smaller data, time-ordered data,
+      or target-based encodings the same mistake can inflate results a lot; (b) it breaks the guarantee that validation/test measure performance on *unseen*
+      data; and (c) in production you can never fit on the future, so a pipeline that does so in evaluation isn't the one you'll run.
+    - |
+      Rows from the same patient share hidden, patient-specific patterns (their physiology, their measuring device, their history). With some rows in training
+      and others in validation, the model can score well by **recognising the patient** rather than learning something that generalises to new patients.
+      Validation then overstates real performance. The fix is a **group split** (`GroupShuffleSplit` / `GroupKFold` on patient ID), so each patient lives entirely on one side.
+      Lesson 4.1 measures exactly this with calendar days.
+  "3-1":
+    - |
+      The pipeline must neither crash nor invent a new column. Standard behaviour: encode the unseen category as **all zeros** in that column group
+      (what `encode_features` does via `reindex(..., fill_value=0)`, or `OneHotEncoder(handle_unknown="ignore")`), or map rare/unseen values to an explicit `"other"`
+      category. In production, also **count** how often unseen categories arrive: a rising rate is a sign of distribution shift.
+    - |
+      With all columns kept, every category has **its own weight** in the first layer, which is easy to read, and an *unseen* category (all zeros) is distinct
+      from every known one. With `drop_first=True`, the dropped baseline category is *also* all zeros, so baseline and unknown become indistinguishable.
+      The usual reason to drop a column, the "dummy-variable trap" (perfect collinearity with the intercept), matters for *unregularised linear regression*,
+      not for a neural network trained with gradient descent, so keeping every column costs nothing.
+  "4-1":
+    - |
+      Exactly. `__getitem__` can return any structure: a tuple, a dict such as `{"image": ..., "caption": ..., "label": ...}` or a small dataclass.
+      The DataLoader's default `collate_fn` batches each field: tensors are **stacked**, numbers become a tensor, strings become a list. When fields have
+      *variable size* (captions of different lengths), you write a custom `collate_fn` that pads them, a pattern you'll use constantly with text in Modules 6–7.
+    - |
+      Right, and the reason is measurement. If validation examples changed on every evaluation, a change in the validation score could come from the
+      *examples changing* rather than the *model improving*, which would make model selection and early stopping unreliable. Training is where randomness helps:
+      it shows the model many variations of each example so it learns what doesn't change (the digit, not its exact position).
+  "5-1":
+    - |
+      Two things break. **Speed:** every call rescans the directory, so one epoch performs about $N$ scans of $N$ files, i.e. $O(N^2)$ file-system work.
+      For 1,437 images that's roughly two million directory entries per epoch instead of 1,437 reads, easily **hundreds of times slower**, and it gets
+      quadratically worse with larger datasets. **Correctness:** `glob` doesn't guarantee an order, so index `i` might point to different files on different calls,
+      giving non-reproducible (even inconsistent) examples, and `__len__` would need its own scan. Scan once, store the list, index into it.
+    - |
+      Stream through the data once and keep **running sums**: count, the sum of pixel values and the sum of squared pixel values, batch by batch through a
+      DataLoader. Then mean = sum/count and std = √(sumsq/count − mean²). For better numerical stability use **Welford's algorithm**. In practice people often
+      estimate the statistics from a random sample of a few thousand training images, which is accurate to several decimal places (that is where ImageNet's familiar
+      `mean=[0.485, 0.456, 0.406]` comes from).
+  "7-1":
+    - |
+      Yes, **consistency is the whole point**. Pick the convention once, where the labels first become tensors (here in the Dataset: `unsqueeze(1)` → `(N, 1)`),
+      and make the model's output match it. Then enforce it: `inspect_batch` asserts `yb.shape == (N, 1)` before any training happens. The bugs of Lesson 2.1 come
+      from *mixing* the conventions, not from choosing either one.
+    - |
+      Correct. The gradient for a first-layer weight is (input value × error signal), summed over the batch. For the `job=student` column the input is 0 for most rows, so only
+      the few student rows move that weight. **Rare categories learn slowly and noisily** and are easy to overfit. Common remedies: group very rare categories
+      into `"other"`, use weight decay, gather more data, or (for high-cardinality columns) use a learned **embedding** that lets similar categories share information.
+
+explain:
+  - cell: "EPOCHS = 20"
+    title: "Run A: full batch"
+    summary: "The whole training set goes through the model at once, so each epoch produces exactly one parameter update."
+    lines:
+      - match: "def fresh_model()"
+        note: "Resets the seed before building the model, so both runs start from **identical** weights and the comparison is fair."
+      - match: "loss = loss_fn(model_full(Xtr_t), ytr_t)"
+        note: "All 36,168 rows in one forward pass."
+      - match: "full_updates += 1"
+        note: "One update per epoch: 20 in total."
+
+  - cell: "# ---------- Run B: mini batch ----------"
+    title: "Run B: mini-batches"
+    summary: "The same five steps, now inside an inner loop over batches of 256, so one epoch produces about 142 updates."
+    lines:
+      - match: "train_dl = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)"
+        note: "The DataLoader cuts the dataset into shuffled batches of 256."
+      - match: "for xb, yb in train_dl:"
+        note: "The inner loop: one iteration per batch."
+      - match: "mini_updates += 1"
+        note: "Counts every update: 2,840 after 20 epochs."
+
+  - cell: "def encode_features("
+    title: "One-hot + standardise, fitted on training data only"
+    summary: "Turns the mixed table into a float32 matrix. Every statistic (the column list and the scaler) comes from the **training** split, then gets applied unchanged to validation and test."
+    lines:
+      - match: "train_ohe = pd.get_dummies(X_train, columns=categorical)"
+        note: "One-hot encode the training split; its columns define the feature set."
+      - match: "scaler = StandardScaler().fit(train_ohe[numeric])"
+        note: "Fit the scaler on training rows only."
+      - match: "df_ohe = df_ohe.reindex(columns=feature_names, fill_value=0)"
+        note: "Force validation/test to have **exactly** the training columns: an unseen category's column is dropped, a missing one becomes zeros."
+      - match: "df_ohe[numeric] = scaler.transform"
+        note: "Transform (never fit) with the training scaler."
+
+  - cell: "class BankMarketingDataset(Dataset):"
+    title: "A custom Dataset"
+    summary: "The two-method protocol, plus a hook for per-example augmentation."
+    lines:
+      - match: "self.labels = torch.from_numpy(np.asarray(labels, dtype=np.float32)).unsqueeze(1)"
+        note: "Labels become float `(N, 1)` once, here, matching a one-logit model and `BCEWithLogitsLoss`."
+      - match: "def __len__(self) -> int:"
+        note: "How many examples: the DataLoader uses it to plan batches."
+      - match: "x = x + torch.randn_like(x) * self.noise_std"
+        note: "Augmentation runs inside `__getitem__`, so each epoch sees a fresh random version."
+
+  - cell: "class DigitImageFolder(Dataset):"
+    title: "A lazy, disk-backed Dataset"
+    summary: "Stores only `(path, label)` pairs; pixels are read from disk inside `__getitem__`, one example at a time."
+    lines:
+      - match: "for class_dir in sorted(self.root.iterdir()):"
+        note: "One folder per class; the folder name is the label."
+      - match: "with Image.open(path) as img:"
+        note: "The disk read happens here, only when an example is requested."
+      - match: "x = torch.from_numpy(arr).unsqueeze(0)"
+        note: "Add the channel axis: `(H, W)` → `(1, H, W)`, PyTorch's channels-first layout."
+
+  - cell: "def inspect_batch(loader: DataLoader"
+    title: "Checking the batch contract"
+    summary: "Pull one batch, print what it contains and assert every property the model and loss depend on. Run it before every training run."
+    lines:
+      - match: "xb, yb = next(iter(loader))"
+        note: "Create an iterator over the loader and take its first batch."
+      - match: "assert yb.shape == (xb.shape[0], 1)"
+        note: "One label per example, shaped `(N, 1)`. This catches the silent broadcast of Lesson 2.1."
+      - match: "assert torch.isfinite(xb).all()"
+        note: "No NaN or infinity anywhere in the features."
+
+takeaways:
+  - "**Dataset** gives one example (`__len__`, `__getitem__`); **DataLoader** groups examples into batches; the **training loop** only consumes batches."
+  - "Mini-batches matter even when data fits in memory: **many more updates per epoch**, each with a slightly noisy gradient (here 142× more updates and ROC-AUC 0.79 vs 0.62)."
+  - "**Split first**, then fit preprocessing on training data only, then transform every split with that same fitted object. Stratify to keep class rates equal."
+  - "Ask of every feature: *would I know this at prediction time?* If not (like call `duration`), it's target leakage."
+  - "One-hot encode nominal categories; ordinal codes invent order and distance. Align validation/test columns to the training columns."
+  - "With 11.7% positives, 88.3% accuracy is worthless: report **ROC-AUC** and **average precision** (baseline 0.117)."
+  - "Lazy datasets store paths and read in `__getitem__`; random augmentation belongs to training only."
+  - "`shuffle=True` for training, `False` for evaluation; `drop_last` only for training; measure before raising `num_workers`; seed for reproducibility."
+  - "**Inspect one batch before training**: shapes, dtypes, value ranges and label values."
+
+quiz:
+  - q: "A training set of 31,647 rows with `batch_size=256` gives how many batches per epoch (drop_last=False)?"
+    options: ["123", "124", "125", "31,647"]
+    answer: 1
+    why: "`ceil(31,647 / 256) = 124`: 123 full batches plus one of 159."
+  - q: "Why did mini-batch training reach a much higher ROC-AUC than full-batch training after 20 epochs?"
+    options: ["It used more data", "It made ~142× more parameter updates", "It used a bigger model", "It avoided overfitting"]
+    answer: 1
+    why: "Both saw every row 20 times; mini-batching turned that into 2,840 updates instead of 20."
+  - q: "Which order is correct?"
+    options: ["Fit scaler → split → transform", "Split → fit scaler on train → transform all splits with it", "Split → fit a scaler on each split", "Transform → split → fit"]
+    answer: 1
+    why: "Statistics must come from training data only, then be applied unchanged to validation and test."
+  - q: "What must a custom PyTorch `Dataset` implement?"
+    options: ["`fit` and `transform`", "`__len__` and `__getitem__`", "`forward` and `backward`", "`__iter__` and `batch`"]
+    answer: 1
+    why: "How many examples, and how to return example `i`. Batching is the DataLoader's job."
+  - q: "For the validation DataLoader you should use…"
+    options: ["shuffle=True, drop_last=True", "shuffle=False, drop_last=False", "shuffle=True, drop_last=False", "shuffle=False, drop_last=True"]
+    answer: 1
+    why: "Stable order and every held-out example evaluated."
+  - q: "Why is one-hot encoding preferred to numbering categories 0, 1, 2 … for `job`?"
+    options: ["It uses less memory", "Numbers invent an order and distances between jobs that don't exist", "Neural networks can't read integers", "It prevents overfitting"]
+    answer: 1
+    why: "One-hot keeps every category equally far from every other."
+
+docstrings:
+  get_device: |
+    Return the best available device: CUDA, then Apple MPS, then CPU.
+
+    Returns:
+        A ``torch.device`` for the fastest backend available on this machine.
+  download_bank_marketing: |
+    Download UCI Bank Marketing once and return the path to ``bank-full.csv``.
+
+    If the CSV already exists locally it is reused. Otherwise the UCI archive is
+    downloaded; it contains a *second* zip (``bank.zip``) holding the CSV, so the
+    function extracts twice and then deletes both zip files.
+
+    Args:
+        csv_path: Where the CSV should live (the cache location).
+        url: Address of the UCI zip archive.
+
+    Returns:
+        The path to the extracted ``bank-full.csv``.
+
+    Raises:
+        RuntimeError: If the download fails. The message explains how to fetch the
+            file manually and where to put it.
+  fresh_model: |
+    Build the small comparison network with identical initial weights every time.
+
+    Re-seeding PyTorch before creating the layers guarantees that the full-batch and
+    mini-batch runs start from exactly the same weights, so any difference between
+    them comes from how they were trained, not from luck.
+
+    Returns:
+        ``nn.Sequential(Linear(n_features, 64), ReLU(), Linear(64, 1))``: one hidden
+        layer, one output logit.
+  batch_memory_mb: |
+    Memory, in megabytes, of one float tensor with shape ``(n, *dims)``.
+
+    Multiplies all dimensions to get the number of elements, then by the bytes per
+    element. Activations, gradients and optimizer state are *not* included.
+
+    Args:
+        n: Number of examples (the batch axis).
+        *dims: The remaining dimensions, e.g. ``50`` for 50 features or
+            ``3, 224, 224`` for RGB images.
+        bytes_per: Bytes per number: 4 for float32, 2 for float16/bfloat16.
+
+    Returns:
+        The size in megabytes (1 MB = 1,000,000 bytes).
+  encode_features: |
+    One-hot encode categoricals and standardise numerics, using TRAIN statistics only.
+
+    The training split defines the final column list (after one-hot encoding) and
+    fits the scaler. Every other split is then forced into exactly those columns and
+    transformed with that same scaler, so no statistic ever comes from held-out data.
+
+    Args:
+        X_train: Training rows as a DataFrame with the original columns.
+        X_others: ``{name: DataFrame}`` for the other splits, e.g.
+            ``{"val": X_va, "test": X_te}``.
+        numeric: Names of the numeric columns to standardise.
+        categorical: Names of the categorical columns to one-hot encode.
+
+    Returns:
+        A tuple ``(encoded_train, encoded_others, feature_names)``: a float32 array
+        ``(N_train, F)``, a dict of float32 arrays with the same ``F`` columns, and the
+        list of ``F`` column names.
+  encode_features.finish: |
+    Align one one-hot-encoded split with the training columns and scale it.
+
+    Categories never seen in training are dropped, and training categories missing
+    from this split become all-zero columns, so every split has identical columns in
+    identical order. Numeric columns are then transformed with the training scaler.
+
+    Args:
+        df_ohe: A split after ``pd.get_dummies``.
+
+    Returns:
+        A float32 NumPy array with the training feature columns.
+  BankMarketingDataset: |
+    A PyTorch ``Dataset`` over the pre-encoded Bank Marketing arrays.
+
+    Holds features and labels as tensors and returns one ``(x, y)`` pair per index.
+    Optionally adds Gaussian noise to each example as it is requested, a simple
+    form of data augmentation meant for the training split only.
+  BankMarketingDataset.__init__: |
+    Store the features and labels as float32 tensors.
+
+    Args:
+        features: Encoded feature matrix of shape ``(N, F)``.
+        labels: Array of ``N`` labels, 0 or 1. Stored as float with shape ``(N, 1)``
+            to match a one-logit model and ``BCEWithLogitsLoss``.
+        noise_std: Standard deviation of the noise added in ``__getitem__``;
+            0 disables augmentation.
+
+    Raises:
+        AssertionError: If ``features`` and ``labels`` have different lengths.
+  BankMarketingDataset.__len__: |
+    Return the number of examples (the DataLoader uses this to plan its batches).
+  BankMarketingDataset.__getitem__: |
+    Return example ``idx`` as a ``(features, label)`` pair.
+
+    Args:
+        idx: Position of the example, from 0 to ``len(self) - 1``.
+
+    Returns:
+        ``x`` of shape ``(F,)`` (with fresh noise added if ``noise_std > 0``) and
+        ``y`` of shape ``(1,)``. There is no batch axis: the DataLoader adds it.
+  export_digits_to_png: |
+    Write scikit-learn's 8×8 digits to disk as one PNG per image.
+
+    Creates the folder-per-class layout ``root/{train,val}/{digit}/NNNN.png`` that
+    ``torchvision.datasets.ImageFolder`` also expects, with a random 80/20
+    train/validation split. Pixel values 0–16 are rescaled to 0–255. If PNGs already
+    exist under ``root`` nothing is written.
+
+    Args:
+        root: Destination folder.
+        seed: Seed for the random train/validation assignment.
+
+    Returns:
+        The ``root`` path.
+  DigitImageFolder: |
+    A lazily loaded image ``Dataset``: only file paths live in memory, never pixels.
+
+    The directory is scanned once at construction; each call to ``__getitem__``
+    opens a single PNG, converts it to a tensor and applies an optional transform.
+    This is the same pattern used for datasets far too large to fit in RAM.
+
+    Attributes:
+        root: The folder that holds one subfolder per class.
+        transform: Optional function applied to each image tensor.
+        samples: List of ``(path, label)`` pairs, one per image.
+  DigitImageFolder.__init__: |
+    Scan ``root`` once and record every image's path and label.
+
+    Args:
+        root: Folder containing one subfolder per class, named ``"0"`` … ``"9"``.
+        transform: Optional function taking and returning an image tensor
+            ``(1, H, W)``, e.g. a normalisation or a random shift.
+
+    Raises:
+        RuntimeError: If no PNG files are found under ``root``.
+  DigitImageFolder.__len__: |
+    Return the number of images found when the folder was scanned.
+  DigitImageFolder.__getitem__: |
+    Read image ``idx`` from disk and return it with its label.
+
+    Args:
+        idx: Position in ``self.samples``.
+
+    Returns:
+        A tuple ``(x, label)``: ``x`` is a float32 tensor ``(1, H, W)`` with values in
+        [0, 1] (before any transform); ``label`` is a plain Python ``int`` that the
+        DataLoader will collate into a tensor.
+  normalise: |
+    Build a transform that standardises pixel values: ``(x - mean) / std``.
+
+    Deterministic, so it is safe for training and validation alike. Compute
+    ``mean`` and ``std`` from the training split only.
+
+    Args:
+        mean: Mean pixel value of the training images.
+        std: Standard deviation of the training pixel values.
+
+    Returns:
+        A function that takes an image tensor and returns its normalised copy.
+  normalise.apply: |
+    Standardise one image tensor.
+
+    Args:
+        x: Image tensor of any shape.
+
+    Returns:
+        ``(x - mean) / std``, same shape as ``x``.
+  random_shift: |
+    Build a random translation transform (training only).
+
+    Each call moves the image by a random number of pixels (between ``-max_pixels``
+    and ``+max_pixels``) vertically and horizontally, so every epoch sees a slightly
+    different version of each digit. Uses ``torch.roll``, so pixels pushed off one
+    edge wrap round to the opposite edge.
+
+    Args:
+        max_pixels: Largest shift in each direction.
+
+    Returns:
+        A function that takes an image tensor ``(C, H, W)`` and returns a shifted copy.
+  random_shift.apply: |
+    Shift one image by a freshly drawn random offset.
+
+    Args:
+        x: Image tensor of shape ``(C, H, W)``.
+
+    Returns:
+        The shifted image, same shape.
+  compose: |
+    Chain several transforms into one, applied left to right.
+
+    Args:
+        *fns: Transform functions, each taking and returning a tensor.
+
+    Returns:
+        A single function that applies ``fns[0]``, then ``fns[1]``, and so on.
+
+    Example:
+        >>> t = compose(random_shift(1), normalise(mean, std))
+  compose.apply: |
+    Apply every transform in order.
+
+    Args:
+        x: The input tensor.
+
+    Returns:
+        The tensor after all transforms.
+  positive_rates: |
+    Positive-label rate of each of the first ``n`` batches a loader produces.
+
+    Used to compare shuffled and unshuffled loaders: without shuffling, batches
+    follow storage order and can have very different class mixes.
+
+    Args:
+        dl: A DataLoader yielding ``(x, y)`` batches with 0/1 labels.
+        n: How many batches to inspect.
+
+    Returns:
+        A list of ``n`` floats, the mean label of each batch.
+  time_one_epoch: |
+    Seconds needed just to iterate over a dataset once, with no training.
+
+    Measures the cost of loading and batching alone, to decide whether extra
+    worker processes are worth it for this particular dataset.
+
+    Args:
+        dataset: Any PyTorch ``Dataset``.
+        num_workers: Number of worker processes the DataLoader uses (0 = main process).
+        batch_size: Examples per batch.
+
+    Returns:
+        Wall-clock seconds for one full pass.
+  seed_everything: |
+    Seed every random-number generator that affects a training run.
+
+    Sets Python's hash seed, NumPy, PyTorch (CPU) and, when present, every CUDA
+    device, so shuffling, initialisation and augmentation repeat exactly for the
+    same code, data and seed.
+
+    Args:
+        seed: The seed value to use everywhere.
+  first_batch_labels: |
+    Re-seed, build a fresh shuffled loader and return its first batch's labels.
+
+    Demonstrates reproducibility: the same seed gives the same shuffle order, and
+    a different seed gives a different one.
+
+    Args:
+        seed: Seed passed to ``seed_everything`` before the loader is built.
+
+    Returns:
+        The eight labels of the first batch, as a list of ints.
+  inspect_batch: |
+    Pull one batch from a loader, print what it contains and check the model's contract.
+
+    Prints the shapes, dtypes and devices of the features and labels, the feature
+    range and mean, the distinct label values and the share of positives. Then it
+    asserts everything training depends on: features ``(N, F)`` float32 with the
+    expected ``F``, labels ``(N, 1)`` float32 with only 0/1 values, and no NaN or
+    infinity.
+
+    Args:
+        loader: The DataLoader to check.
+        name: Label used in the printout, e.g. ``"train"``.
+        expected_features: The number of feature columns the model expects.
+
+    Raises:
+        AssertionError: With a descriptive message for the first broken requirement.
