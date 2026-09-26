@@ -231,8 +231,8 @@ npx wrangler secret put GROQ_API_KEY   # paste the key when prompted
 ```
 
 Then set `tutor.endpoint: "https://deep-learning-lab-tutor.<you>.workers.dev"` in `course.yaml` and run `make publish`.
-`ALLOWED_ORIGINS` in `tutor-proxy/wrangler.toml` restricts which sites may use it. Uncomment the rate-limit block to cap
-requests per visitor.
+`ALLOWED_ORIGINS` in `tutor-proxy/wrangler.toml` restricts which sites may use it, and its `[[ratelimits]]` block caps each
+visitor at 20 questions a minute (change `limit` there; `period` must be 10 or 60 seconds). Redeploy after editing either.
 
 To test locally with a key: `GROQ_API_KEY=gsk_... python scripts/tutor_dev_proxy.py`, set
 `tutor.endpoint: "http://localhost:8787"`, then `make serve`.
