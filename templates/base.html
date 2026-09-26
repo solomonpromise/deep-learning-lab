@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ course.title }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ course.tagline }}{% endblock %}">
+  <meta name="theme-color" content="#0e0f12" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="{{ root }}static/img/favicon.svg" type="image/svg+xml">
+  <script>
+    (function () {
+      try { var t = localStorage.getItem('dlp-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ root }}static/css/site.css?v={{ v }}">
+  <link rel="stylesheet" href="{{ root }}static/css/widgets.css?v={{ v }}">
+</head>
+<body class="page-{{ page }}" data-root="{{ root }}">
+{% include "_icons.html" %}
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <button class="icon-btn nav-toggle" aria-label="Open navigation" data-nav-toggle><svg class="ic"><use href="#i-menu"/></svg></button>
+  <a class="brand" href="{{ root }}index.html">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32"><circle cx="7" cy="9" r="3"/><circle cx="7" cy="23" r="3"/><circle cx="16" cy="16" r="3.4"/><circle cx="25" cy="9" r="3"/><circle cx="25" cy="23" r="3"/><path d="M9.6 10.4 13.3 14M9.6 21.6l3.7-3.6M18.7 14l3.7-3.6M18.7 18l3.7 3.6"/></svg>
+    </span>
+    <span class="brand-text"><strong>{{ course.short_title }}</strong><span>{{ course.title }}</span></span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <button class="search-btn" data-search-open aria-label="Search the course">
+    <svg class="ic"><use href="#i-search"/></svg><span>Search lessons, terms…</span><kbd>⌘K</kbd>
+  </button>
+  <a class="icon-btn hide-sm" href="{{ root }}glossary.html" title="Glossary" aria-label="Glossary"><svg class="ic"><use href="#i-book"/></svg></a>
+  <a class="icon-btn hide-sm" href="{{ root }}guide.html" title="How to use this platform" aria-label="How to use this platform"><svg class="ic"><use href="#i-help"/></svg></a>
+  <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="ic show-light"><use href="#i-moon"/></svg><svg class="ic show-dark"><use href="#i-sun"/></svg>
+  </button>
+  <div class="read-progress" aria-hidden="true"><span></span></div>
+</header>
+
+<div class="shell">
+  <nav class="sidebar" aria-label="Course navigation" data-sidebar>
+    <div class="sidebar-inner">
+      <a class="side-home{% if page == 'home' %} is-active{% endif %}" href="{{ root }}index.html"><svg class="ic"><use href="#i-home"/></svg> Course home</a>
+      {% for m in nav %}
+      <div class="side-module{% if not m.available %} is-locked{% endif %}{% if module is defined and module.number == m.number %} is-open{% endif %}" style="--mc: {{ m.color }}">
+        {% if m.available %}
+        <button class="side-module-head" data-side-toggle aria-expanded="{{ 'true' if module is defined and module.number == m.number else 'false' }}">
+          <span class="side-num">{{ m.number }}</span>
+          <span class="side-title">{{ m.title }}</span>
+          <svg class="ic chev"><use href="#i-chevron-down"/></svg>
+        </button>
+        <ul class="side-lessons">
+          <li><a href="{{ root }}{{ m.url }}" class="side-overview{% if page == 'module' and module.number == m.number %} is-active{% endif %}">Module overview</a></li>
+          {% for le in m.lessons %}
+          <li><a href="{{ root }}{{ le.url }}" data-lesson-link="{{ le.id }}" class="{% if lesson is defined and lesson.id == le.id %}is-active{% endif %}">
+            <span class="side-dot" data-progress-dot="{{ le.id }}"></span><span class="side-lnum">{{ le.id }}</span> {{ le.title }}</a></li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="side-module-head" title="Coming soon">
+          <span class="side-num">{{ m.number }}</span>
+          <span class="side-title">{{ m.title }}</span>
+          <svg class="ic"><use href="#i-lock"/></svg>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <div class="side-foot">
+        <a href="{{ root }}glossary.html"><svg class="ic"><use href="#i-book"/></svg> Glossary</a>
+        <a href="{{ root }}guide.html"><svg class="ic"><use href="#i-help"/></svg> How to use this platform</a>
+      </div>
+    </div>
+  </nav>
+  <div class="scrim" data-nav-close></div>
+
+  <main id="main" class="main">
+    {% block main %}{% endblock %}
+    <footer class="site-foot">
+      <p><strong>{{ course.title }}</strong> · {{ course.hours }} hours · {{ course.hands_on }} hands-on.</p>
+      <p class="muted">Generated from the course notebooks on {{ now }}. Progress and notes are stored only in this browser.</p>
+    </footer>
+  </main>
+</div>
+
+<!-- search -->
+<div class="search-modal" data-search-modal hidden>
+  <div class="search-box" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="search-input-row">
+      <svg class="ic"><use href="#i-search"/></svg>
+      <input type="search" placeholder="Search lessons, sections and glossary terms" data-search-input autocomplete="off">
+      <button class="icon-btn" data-search-close aria-label="Close search"><svg class="ic"><use href="#i-x"/></svg></button>
+    </div>
+    <ol class="search-results" data-search-results></ol>
+    <div class="search-hint"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>Enter</kbd> to open · <kbd>Esc</kbd> to close</div>
+  </div>
+</div>
+
+<!-- lightbox -->
+<div class="lightbox" data-lightbox hidden><button class="icon-btn" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button><img alt=""></div>
+<!-- glossary popover -->
+<div class="term-pop" role="tooltip" data-term-pop hidden></div>
+
+<script>window.DLP_GLOSSARY = {{ glossary_js | safe }};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+{% block scripts %}{% endblock %}
+<script defer src="{{ root }}static/js/app.js?v={{ v }}"></script>
+</body>
+</html>

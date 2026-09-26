@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block main %}
+<div class="home">
+  <section class="home-hero">
+    <div class="hero-bg" aria-hidden="true"><canvas data-hero-canvas></canvas></div>
+    <div class="home-hero-inner">
+      <span class="eyebrow"><svg class="ic"><use href="#i-sparkles"/></svg> {{ course.hours }}-hour engineering course · {{ course.hands_on }} hands-on</span>
+      <h1>{{ course.title }}</h1>
+      <p class="lead">{{ course.tagline }}</p>
+      <div class="hero-actions">
+        <a class="btn btn-lg" href="{{ nav[0].lessons[0].url }}" data-continue><svg class="ic"><use href="#i-play"/></svg> <span>Start with Lesson 1.1</span></a>
+        <a class="btn btn-lg btn-ghost" href="guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
+      </div>
+      <ul class="stat-row">
+        <li><strong>{{ stats.modules }}</strong><span>modules live</span></li>
+        <li><strong>{{ stats.lessons }}</strong><span>lessons</span></li>
+        <li><strong>{{ stats.sections }}</strong><span>sections</span></li>
+        <li><strong>{{ stats.figures }}</strong><span>figures &amp; plots</span></li>
+        <li><strong>{{ stats.code }}</strong><span>code cells</span></li>
+        <li><strong>{{ stats.questions }}</strong><span>question sets</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="section-intro">
+      <h2>Your learning path</h2>
+      <p>Ten modules, each built around one question. Work through them in order: every module uses what the previous one built. Modules unlock here as soon as their lessons are published.</p>
+    </div>
+    <ol class="path">
+      {% for m in nav %}
+      <li class="path-node{% if not m.available %} is-locked{% endif %}" style="--mc: {{ m.color }}">
+        <div class="path-marker"><span>{{ m.number }}</span><svg class="ring" viewBox="0 0 44 44" data-module-ring="{{ m.number }}"><circle cx="22" cy="22" r="20"/><circle class="ring-fill" cx="22" cy="22" r="20" pathLength="100" stroke-dasharray="0 100"/></svg></div>
+        {% if m.available %}<a class="path-card" href="{{ m.url }}">{% else %}<div class="path-card">{% endif %}
+          <div class="path-card-head">
+            <span class="path-icon"><svg class="ic"><use href="#i-{{ m.icon }}"/></svg></span>
+            <div>
+              <span class="path-kicker">Module {{ m.number }}{% if not m.available %} · coming soon{% else %} · {{ m.lessons|length }} lessons · ~{{ (m.minutes / 60)|round(1) }} h{% endif %}</span>
+              <h3>{{ m.title }}</h3>
+            </div>
+          </div>
+          <p class="path-q">“{{ m.question }}”</p>
+          <ul class="chips">{% for t in m.topics[:6] %}<li>{{ t }}</li>{% endfor %}</ul>
+          {% if m.available %}
+          <ol class="path-lessons">
+            {% for le in m.lessons %}<li><span class="side-dot" data-progress-dot="{{ le.id }}"></span><span class="pl-id">{{ le.id }}</span> {{ le.title }}</li>{% endfor %}
+          </ol>
+          <span class="path-go">Open module <svg class="ic"><use href="#i-arrow-right"/></svg></span>
+          {% endif %}
+        {% if m.available %}</a>{% else %}</div>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section class="home-section">
+    <div class="section-intro">
+      <h2>Built so nothing is left for you to guess</h2>
+      <p>Each lesson is the complete teaching note, restructured for reading and enriched with visuals and interactive labs.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-book"/></svg></span><h3>The full notes</h3><p>Every explanation, derivation and result from the course notebooks, organised into numbered sections with a live table of contents.</p></div>
+      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-flask"/></svg></span><h3>Interactive labs</h3><p>Train tiny networks in your browser, drag sliders, step through backpropagation and watch the ideas move.</p></div>
+      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-help"/></svg></span><h3>Every question explained</h3><p>Write your own answer first, then reveal a full worked explanation. Your notes stay in your browser.</p></div>
+      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-code"/></svg></span><h3>Code you can read</h3><p>Every code cell with its real output, and key cells annotated line by line. Copy anything with one click.</p></div>
+      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-link"/></svg></span><h3>Built-in glossary</h3><p>Hover or tap any underlined term for a plain-English definition. The full glossary lives one click away.</p></div>
+      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-download"/></svg></span><h3>Run it yourself</h3><p>Download the original notebook for every lesson and run it locally or in Colab.</p></div>
+    </div>
+  </section>
+
+  <section class="home-section facts">
+    <div class="fact"><span class="fact-k">Prerequisites</span><span class="fact-v">{{ course.prerequisites | join(' · ') }}</span></div>
+    <div class="fact"><span class="fact-k">Length</span><span class="fact-v">{{ course.hours }} hours, {{ course.hands_on }} hands-on</span></div>
+    <div class="fact"><span class="fact-k">Followed by</span><span class="fact-v">{{ course.followed_by }}</span></div>
+  </section>
+</div>
+{% endblock %}

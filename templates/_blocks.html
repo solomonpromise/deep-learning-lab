@@ -1,0 +1,207 @@
+{# ------------------------------------------------------------------ block renderers #}
+{% set QMETA = {
+  'check': {'icon': 'i-help', 'tag': 'Check your understanding'},
+  'think': {'icon': 'i-thought', 'tag': 'Pause & think'},
+  'try':   {'icon': 'i-flask', 'tag': 'Try it yourself'},
+} %}
+{% set EXMETA = {
+  'plain':   {'icon': 'i-bulb',     'tag': 'In plain English'},
+  'analogy': {'icon': 'i-link',     'tag': 'Analogy'},
+  'why':     {'icon': 'i-target',   'tag': 'Why this matters'},
+  'deep':    {'icon': 'i-layers',   'tag': 'Deep dive'},
+  'warning': {'icon': 'i-alert',    'tag': 'Common mistake'},
+  'tip':     {'icon': 'i-sparkles', 'tag': 'Pro tip'},
+  'math':    {'icon': 'i-pencil',   'tag': 'The maths, step by step'},
+  'recap':   {'icon': 'i-refresh',  'tag': 'Quick recap'},
+  'remember':{'icon': 'i-flag',     'tag': 'Remember this'},
+  'code':    {'icon': 'i-code',     'tag': 'Reading the code'},
+  'result':  {'icon': 'i-eye',      'tag': 'Reading the result'},
+} %}
+
+{% macro block(b) %}
+{% if b.kind == 'md' %}
+<div class="prose">{{ b.html | safe }}</div>
+
+{% elif b.kind == 'subheading' %}
+<h{{ b.level }} class="subhead" id="{{ b.id }}">{{ b.title_html | safe }}</h{{ b.level }}>
+
+{% elif b.kind == 'code' %}
+{{ code_cell(b) }}
+
+{% elif b.kind == 'questions' %}
+{% set qm = QMETA[b.qtype] %}
+<div class="qcard q-{{ b.qtype }} reveal" id="q-{{ b.id }}" data-qblock="{{ b.id }}">
+  <div class="qcard-head">
+    <span class="qcard-icon"><svg class="ic"><use href="#{{ qm.icon }}"/></svg></span>
+    <div><span class="qcard-tag">{{ qm.tag }}</span><span class="qcard-label">{{ b.label }}</span></div>
+  </div>
+  {% if b.intro_html %}<p class="qcard-intro">{{ b.intro_html | safe }}</p>{% endif %}
+  <ol class="qlist{% if b['items']|length == 1 %} single{% endif %}">
+    {% for q in b['items'] %}
+    <li class="qitem">
+      <div class="qtext">{{ q.html | safe }}</div>
+      <div class="qactions">
+        <button class="chip-btn" data-note-toggle><svg class="ic"><use href="#i-pencil"/></svg> Write my answer</button>
+        {% if q.answer_html %}<button class="chip-btn accent" data-answer-toggle aria-expanded="false"><svg class="ic"><use href="#i-eye"/></svg> <span>Show explanation</span></button>{% endif %}
+      </div>
+      <textarea class="qnote" data-note-key="{{ b.id }}-{{ loop.index }}" placeholder="Type your answer before revealing the explanation. It is saved in this browser only." hidden></textarea>
+      {% if q.answer_html %}<div class="qanswer" hidden><div class="qanswer-body prose">{{ q.answer_html | safe }}</div></div>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</div>
+
+{% elif b.kind == 'widget' %}
+<figure class="widget reveal" data-widget="{{ b.name }}" data-props="{{ b.props }}"{% if b.height %} style="--wh: {{ b.height }}px"{% endif %}>
+  <div class="widget-head">
+    <span class="badge-lab"><svg class="ic"><use href="#i-flask"/></svg> Interactive</span>
+    {% if b.title %}<h4 class="widget-title">{{ b.title | md_inline | safe }}</h4>{% endif %}
+  </div>
+  {% if b.intro_html %}<div class="widget-intro prose">{{ b.intro_html | safe }}</div>{% endif %}
+  <div class="widget-mount"><div class="widget-loading">Loading interactive…</div></div>
+  <noscript><p class="muted">This interactive needs JavaScript.</p></noscript>
+  {% if b.caption_html %}<figcaption class="widget-caption prose">{{ b.caption_html | safe }}</figcaption>{% endif %}
+</figure>
+
+{% elif b.kind == 'explainer' %}
+{% set em = EXMETA.get(b.style, EXMETA['plain']) %}
+{% if b.collapsed %}
+<details class="explainer ex-{{ b.style }} reveal">
+  <summary class="ex-head"><span class="ex-icon"><svg class="ic"><use href="#{{ em.icon }}"/></svg></span><span class="ex-tag">{{ em.tag }}</span>{% if b.title %}<span class="ex-title">{{ b.title | md_inline | safe }}</span>{% endif %}<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+  <div class="prose">{{ b.html | safe }}</div>
+</details>
+{% else %}
+<aside class="explainer ex-{{ b.style }} reveal">
+  <div class="ex-head"><span class="ex-icon"><svg class="ic"><use href="#{{ em.icon }}"/></svg></span><span class="ex-tag">{{ em.tag }}</span>{% if b.title %}<span class="ex-title">{{ b.title | md_inline | safe }}</span>{% endif %}</div>
+  <div class="prose">{{ b.html | safe }}</div>
+</aside>
+{% endif %}
+
+{% elif b.kind == 'predict' %}
+<div class="predict reveal" data-predict data-mode="{{ b.mode }}" data-answer="{{ b.answer }}" data-tolerance="{{ b.tolerance }}">
+  <div class="predict-head"><span class="qcard-icon"><svg class="ic"><use href="#i-target"/></svg></span><div><span class="qcard-tag">Predict before you run</span><div class="prose predict-prompt">{{ b.prompt_html | safe }}</div></div></div>
+  {% if b.mode == 'choice' %}
+  <div class="predict-options">
+    {% for o in b.options %}<button class="opt" data-opt="{{ loop.index0 }}">{{ o | safe }}</button>{% endfor %}
+  </div>
+  {% else %}
+  <div class="predict-slider">
+    <input type="range" min="{{ b.min }}" max="{{ b.max }}" step="{{ b.step }}" value="{{ (b.min + b.max) / 2 }}" data-predict-range>
+    <output data-predict-out>{{ (b.min + b.max) / 2 }}</output><span class="unit">{{ b.unit }}</span>
+    <button class="btn btn-sm" data-predict-lock>Lock in my guess</button>
+  </div>
+  {% endif %}
+  <div class="predict-reveal prose" hidden>{{ b.reveal_html | safe }}</div>
+</div>
+
+{% elif b.kind == 'steps' %}
+<div class="stepper reveal" data-stepper>
+  <div class="stepper-head">
+    <span class="badge-lab"><svg class="ic"><use href="#i-footprints"/></svg> Step by step</span>
+    {% if b.title %}<h4 class="widget-title">{{ b.title | md_inline | safe }}</h4>{% endif %}
+  </div>
+  {% if b.intro_html %}<div class="prose stepper-intro">{{ b.intro_html | safe }}</div>{% endif %}
+  <ol class="stepper-dots">{% for st in b.steps %}<li><button data-step-go="{{ loop.index0 }}" aria-label="Step {{ loop.index }}">{{ loop.index }}</button></li>{% endfor %}</ol>
+  <div class="stepper-frames">
+    {% for st in b.steps %}
+    <section class="step-frame{% if loop.first %} is-active{% endif %}" data-step="{{ loop.index0 }}">
+      {% if st.visual %}<div class="step-visual">{{ st.visual | safe }}</div>{% endif %}
+      <div class="step-text prose">
+        {% if st.title %}<h5>{{ loop.index }}. {{ st.title | md_inline | safe }}</h5>{% endif %}
+        {{ st.html | safe }}
+      </div>
+    </section>
+    {% endfor %}
+  </div>
+  <div class="stepper-nav">
+    <button class="btn btn-ghost btn-sm" data-step-prev><svg class="ic"><use href="#i-arrow-left"/></svg> Back</button>
+    <span class="stepper-count" data-step-count>1 / {{ b.steps|length }}</span>
+    <button class="btn btn-sm" data-step-next>Next <svg class="ic"><use href="#i-arrow-right"/></svg></button>
+  </div>
+</div>
+
+{% elif b.kind == 'compare' %}
+<div class="compare reveal">
+  {% if b.title %}<h4 class="compare-title">{{ b.title | md_inline | safe }}</h4>{% endif %}
+  <div class="compare-grid n{{ b['items']|length }}">
+    {% for c in b['items'] %}
+    <div class="compare-card tone-{{ c.tone or 'neutral' }}">
+      <div class="compare-card-head">{% if c.icon %}<svg class="ic"><use href="#i-{{ c.icon }}"/></svg>{% endif %}<strong>{{ c.title | md_inline | safe }}</strong></div>
+      <div class="prose">{{ c.html | safe }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% elif b.kind == 'figure' %}
+<figure class="figure custom-figure reveal">{{ b.html | safe }}{% if b.caption_html %}<figcaption>{{ b.caption_html | safe }}</figcaption>{% endif %}</figure>
+
+{% elif b.kind == 'quiz' %}
+{{ quiz(b) }}
+
+{% elif b.kind == 'raw' %}
+{{ b.html | safe }}
+{% endif %}
+{% endmacro %}
+
+{# ------------------------------------------------------------------ code cell #}
+{% macro code_cell(b) %}
+{% set long = b.n_lines > 26 %}
+<div class="code-cell role-{{ b.role }}{% if long %} is-long{% endif %}{% if b.explain %} has-explain{% endif %}" data-code>
+  <div class="code-head">
+    <span class="code-lang">{% if b.lang == 'bash' %}<svg class="ic"><use href="#i-terminal"/></svg> Terminal{% elif b.role == 'inspect' %}<svg class="ic"><use href="#i-eye"/></svg> Inspect a value{% elif b.role == 'setup' %}<svg class="ic"><use href="#i-gear"/></svg> Setup{% else %}<svg class="ic"><use href="#i-code"/></svg> Python{% endif %}</span>
+    <span class="code-meta">{{ b.n_lines }} line{{ 's' if b.n_lines != 1 }}</span>
+    <span class="code-actions">
+      {% if b.explain %}<button class="chip-btn accent" data-explain-toggle aria-expanded="true"><svg class="ic"><use href="#i-bulb"/></svg> <span>Hide explanation</span></button>{% endif %}
+      <button class="icon-btn sm" data-copy aria-label="Copy code" title="Copy code"><svg class="ic"><use href="#i-copy"/></svg></button>
+    </span>
+  </div>
+  <pre class="code"><code>{% for line in b.lines %}<span class="ln"{% if b.note_map and loop.index0 in b.note_map %} data-note="{{ b.note_map[loop.index0] }}"{% endif %}>{{ line | safe }}</span>{% endfor %}</code></pre>
+  {% if long %}<button class="code-expand" data-code-expand><svg class="ic"><use href="#i-chevron-down"/></svg> <span>Show all {{ b.n_lines }} lines</span></button>{% endif %}
+  <textarea class="code-src" hidden>{{ b.source }}</textarea>
+  {% if b.explain %}
+  <div class="code-explain">
+    <div class="code-explain-head"><svg class="ic"><use href="#i-bulb"/></svg> {{ b.explain.title }}</div>
+    {% if b.explain.summary_html %}<div class="prose">{{ b.explain.summary_html | safe }}</div>{% endif %}
+    {% if b.explain.lines %}
+    <ol class="line-notes">
+      {% for n in b.explain.lines %}<li data-note-for="{{ loop.index }}"><span class="note-num">{{ loop.index }}</span><div class="prose">{{ n.html | safe }}</div></li>{% endfor %}
+    </ol>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% for o in b.outputs %}
+  <div class="out out-{{ o.type }}{% if o.stream == 'stderr' %} out-stderr{% endif %}{% if o.collapsed %} is-collapsed{% endif %}">
+    <div class="out-label">{% if o.type == 'image' %}<svg class="ic"><use href="#i-image"/></svg> Plot output{% elif o.type == 'error' %}<svg class="ic"><use href="#i-alert"/></svg> Error raised{% elif o.type == 'html' %}<svg class="ic"><use href="#i-database"/></svg> Table output{% elif o.stream == 'stderr' %}<svg class="ic"><use href="#i-info"/></svg> Warnings / log{% else %}<svg class="ic"><use href="#i-terminal"/></svg> Output{% endif %}
+      {% if o.collapsed %}<button class="out-toggle" data-out-toggle>Show {{ o.lines }} lines</button>{% endif %}
+    </div>
+    {% if o.type == 'text' %}<pre class="out-text">{{ o.text }}</pre>
+    {% elif o.type == 'error' %}<div class="out-error-head"><strong>{{ o.ename }}</strong>{% if o.evalue %}: {{ o.evalue }}{% endif %}</div><pre class="out-text">{{ o.text }}</pre>
+    {% elif o.type == 'image' %}<div class="out-img"><img src="{{ o.src }}" loading="lazy" decoding="async" class="zoomable" alt="Plot produced by the code above"{% if o.w %} width="{{ o.w }}" height="{{ o.h }}"{% endif %}></div>
+    {% elif o.type == 'html' %}{{ o.html | safe }}
+    {% elif o.type == 'svg' %}<div class="out-img">{{ o.html | safe }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}
+
+{# ------------------------------------------------------------------ quiz #}
+{% macro quiz(b) %}
+<div class="quiz reveal" data-quiz>
+  <div class="quiz-head">
+    <span class="badge-lab"><svg class="ic"><use href="#i-grad"/></svg> Knowledge check</span>
+    <h4 class="widget-title">{{ b.title }}</h4>
+    <span class="quiz-score" data-quiz-score></span>
+  </div>
+  {% for q in b.questions %}
+  <div class="quiz-q" data-quiz-q data-answer="{{ q.answer }}">
+    <div class="quiz-qtext prose"><span class="quiz-n">{{ loop.index }}</span>{{ q.q_html | safe }}</div>
+    <div class="quiz-options">
+      {% for o in q.options %}<button class="opt" data-opt="{{ loop.index0 }}"><span class="opt-letter">{{ 'ABCDEFG'[loop.index0] }}</span><span>{{ o | safe }}</span></button>{% endfor %}
+    </div>
+    <div class="quiz-why prose" hidden>{{ q.why_html | safe }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}

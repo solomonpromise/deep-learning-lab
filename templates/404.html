@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Page not found — {{ course.short_title }}{% endblock %}
+{% block main %}
+<div class="plain-page center">
+  <header class="plain-hero">
+    <span class="eyebrow">404</span>
+    <h1>This page has not been trained yet</h1>
+    <p class="lead">The link may be out of date. Head back to the course map and pick up where you left off.</p>
+    <p><a class="btn" href="index.html"><svg class="ic"><use href="#i-home"/></svg> Course home</a></p>
+  </header>
+</div>
+{% endblock %}

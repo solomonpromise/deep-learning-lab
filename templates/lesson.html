@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% from "_blocks.html" import block, code_cell, quiz %}
+{% block title %}Lesson {{ lesson.id }} · {{ lesson.title }} — {{ course.short_title }}{% endblock %}
+{% block description %}Module {{ module.number }}: {{ module.title }} — Lesson {{ lesson.id }}: {{ lesson.title }}{% endblock %}
+{% block scripts %}
+<script defer src="{{ root }}static/js/lib/core.js?v={{ v }}"></script>
+{% for w in widgets %}<script defer src="{{ root }}static/js/widgets/{{ w }}.js?v={{ v }}"></script>
+{% endfor %}
+{% endblock %}
+
+{% block main %}
+<div class="lesson-layout" style="--mc: {{ module.color }}" data-lesson="{{ lesson.id }}">
+<article class="lesson" data-gloss-root>
+  <!-- ======================= hero -->
+  <header class="lesson-hero">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="{{ root }}index.html">Course</a><svg class="ic"><use href="#i-chevron-right"/></svg>
+      <a href="{{ root }}{{ module.url }}">Module {{ module.number }}</a><svg class="ic"><use href="#i-chevron-right"/></svg>
+      <span>Lesson {{ lesson.id }}</span>
+    </nav>
+    <div class="hero-kicker"><span class="mod-pill">Module {{ module.number }} · {{ module.title }}</span></div>
+    <h1 class="lesson-title"><span class="lesson-num">{{ lesson.id }}</span>{{ lesson.title_html | safe }}</h1>
+    {% if ex.summary_html %}<div class="lesson-summary prose">{{ ex.summary_html | safe }}</div>{% endif %}
+    <ul class="meta-chips">
+      <li><svg class="ic"><use href="#i-clock"/></svg> ~{{ minutes }} min</li>
+      <li><svg class="ic"><use href="#i-list-check"/></svg> {{ lesson.sections|length }} sections</li>
+      <li><svg class="ic"><use href="#i-code"/></svg> {{ lesson.code_cells }} code cells</li>
+      <li><svg class="ic"><use href="#i-image"/></svg> {{ lesson.figures }} figures</li>
+      {% if widgets %}<li class="chip-accent"><svg class="ic"><use href="#i-flask"/></svg> {{ widgets|length }} interactive lab{{ 's' if widgets|length != 1 }}</li>{% endif %}
+    </ul>
+    <div class="hero-actions">
+      <a class="btn" href="#start"><svg class="ic"><use href="#i-play"/></svg> Start the lesson</a>
+      <a class="btn btn-ghost" href="{{ notebook_url }}" download><svg class="ic"><use href="#i-download"/></svg> Download notebook</a>
+      {% if colab_url %}<a class="btn btn-ghost" href="{{ colab_url }}" target="_blank" rel="noopener"><svg class="ic"><use href="#i-rocket"/></svg> Open in Colab</a>{% endif %}
+    </div>
+    <div class="lesson-progress" data-lesson-progress><span class="bar"><span></span></span><span class="label">0% read</span></div>
+  </header>
+
+  {% if ex.big_picture %}<div class="big-picture">{{ block(ex.big_picture) }}</div>{% endif %}
+
+  <!-- ======================= before you start -->
+  <section class="lesson-start" id="start">
+    {% set pre = lesson.preamble %}
+    {% if pre.goal_html or pre.outcome_html %}
+    <div class="goal-grid">
+      {% if pre.goal_html %}<div class="goal-card"><div class="goal-head"><svg class="ic"><use href="#i-target"/></svg> Goal</div><div class="prose">{{ pre.goal_html | safe }}</div></div>{% endif %}
+      {% if pre.outcome_html %}<div class="goal-card outcome"><div class="goal-head"><svg class="ic"><use href="#i-flag"/></svg> Outcome</div><div class="prose">{{ pre.outcome_html | safe }}</div></div>{% endif %}
+    </div>
+    {% elif pre.goal_extra_html %}
+    <div class="goal-card wide"><div class="goal-head"><svg class="ic"><use href="#i-target"/></svg> Learning goal</div><div class="prose">{{ pre.goal_extra_html | safe }}</div></div>
+    {% endif %}
+
+    {% if pre.objectives %}
+    <div class="objectives">
+      <div class="objectives-head"><svg class="ic"><use href="#i-list-check"/></svg> By the end of this lesson you will be able to</div>
+      <ul class="obj-list">
+        {% for o in pre.objectives %}<li><span class="obj-check" aria-hidden="true"><svg class="ic"><use href="#i-check"/></svg></span><span>{{ o | safe }}</span></li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="info-grid">
+      {% if pre.dataset_html %}<div class="info-card"><div class="info-head"><svg class="ic"><use href="#i-database"/></svg> Data used in this lesson</div><div class="prose">{{ pre.dataset_html | safe }}</div></div>{% endif %}
+      {% if pre.runtime_html %}<div class="info-card"><div class="info-head"><svg class="ic"><use href="#i-clock"/></svg> Runtime budget</div><div class="prose">{{ pre.runtime_html | safe }}</div></div>{% endif %}
+    </div>
+
+    {% for part in pre.intro %}
+    {% if part.blocks %}
+    <div class="intro-part" {% if part.id %}id="{{ part.id }}"{% endif %}>
+      {% if part.title %}<h3 class="subhead">{{ part.title | md_inline | safe }}</h3>{% endif %}
+      {% for b in part.blocks %}{{ block(b) }}{% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% if pre.setup_blocks %}
+    <details class="setup-panel">
+      <summary><svg class="ic"><use href="#i-gear"/></svg> <strong>Setup</strong><span class="muted"> — imports, versions and device detection used by the notebook ({{ pre.setup_blocks|selectattr('kind','equalto','code')|list|length }} cells)</span><svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
+      <div class="setup-body">{% for b in pre.setup_blocks %}{{ block(b) }}{% endfor %}</div>
+    </details>
+    {% endif %}
+  </section>
+
+  <!-- ======================= sections -->
+  {% for s in lesson.sections %}
+  <section class="lsec kind-{{ s.kind }}" id="{{ s.id }}" data-section>
+    <div class="sec-head">
+      {% if s.num is not none %}<span class="sec-num">{{ s.num }}</span>{% elif s.kind == 'transition' %}<span class="sec-num sec-icon"><svg class="ic"><use href="#i-arrow-right"/></svg></span>{% else %}<span class="sec-num sec-icon"><svg class="ic"><use href="#i-flag"/></svg></span>{% endif %}
+      <h2>{{ s.title_html | safe }}</h2>
+    </div>
+    {% for b in s.blocks %}{{ block(b) }}{% endfor %}
+    {% if s.kind == 'transition' and next_l %}
+    <a class="next-card" href="{{ root }}{{ next_l.url }}">
+      <span class="next-kicker">Up next · Lesson {{ next_l.id }}</span>
+      <span class="next-title">{{ next_l.title }}</span>
+      <svg class="ic"><use href="#i-arrow-right"/></svg>
+    </a>
+    {% endif %}
+  </section>
+  {% endfor %}
+
+  <!-- ======================= wrap-up -->
+  {% if ex.takeaways or ex.quiz %}
+  <section class="lsec kind-wrap" id="wrap-up" data-section>
+    <div class="sec-head"><span class="sec-num sec-icon"><svg class="ic"><use href="#i-grad"/></svg></span><h2>Wrap-up</h2></div>
+    {% if ex.takeaways %}
+    <div class="takeaways">
+      <div class="takeaways-head"><svg class="ic"><use href="#i-sparkles"/></svg> Key takeaways</div>
+      <ol>{% for t in ex.takeaways %}<li>{{ t | safe }}</li>{% endfor %}</ol>
+    </div>
+    {% endif %}
+    {% if ex.quiz %}{{ quiz(ex.quiz) }}{% endif %}
+  </section>
+  {% endif %}
+
+  <div class="lesson-end">
+    <button class="btn btn-complete" data-complete="{{ lesson.id }}"><svg class="ic"><use href="#i-check"/></svg> <span>Mark lesson as complete</span></button>
+    <nav class="pager">
+      {% if prev_l %}<a class="pager-link prev" href="{{ root }}{{ prev_l.url }}"><span class="pager-k"><svg class="ic"><use href="#i-arrow-left"/></svg> Previous</span><span class="pager-t">{{ prev_l.id }} · {{ prev_l.title }}</span></a>{% else %}<span></span>{% endif %}
+      {% if next_l %}<a class="pager-link next" href="{{ root }}{{ next_l.url }}"><span class="pager-k">Next <svg class="ic"><use href="#i-arrow-right"/></svg></span><span class="pager-t">{{ next_l.id }} · {{ next_l.title }}</span></a>{% endif %}
+    </nav>
+  </div>
+</article>
+
+<!-- ======================= on this page -->
+<aside class="toc" aria-label="On this page">
+  <div class="toc-inner">
+    <div class="toc-title">On this page</div>
+    <ol class="toc-list" data-toc>
+      <li><a href="#start" data-toc-link="start"><span class="toc-n">·</span> Before you start</a></li>
+      {% for s in lesson.sections %}
+      <li><a href="#{{ s.id }}" data-toc-link="{{ s.id }}"><span class="toc-n">{{ s.num if s.num is not none else '·' }}</span> {{ s.title_html | safe }}</a>
+        {% if s.subs %}<ol class="toc-sub">{% for sub in s.subs %}<li><a href="#{{ sub.id }}">{{ sub.title | md_inline | safe }}</a></li>{% endfor %}</ol>{% endif %}
+      </li>
+      {% endfor %}
+      {% if ex.takeaways or ex.quiz %}<li><a href="#wrap-up" data-toc-link="wrap-up"><span class="toc-n">★</span> Wrap-up</a></li>{% endif %}
+    </ol>
+  </div>
+</aside>
+</div>
+{% endblock %}

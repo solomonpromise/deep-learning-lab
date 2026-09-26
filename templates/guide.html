@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}How to use this platform — {{ course.short_title }}{% endblock %}
+{% block main %}
+<div class="plain-page">
+  <header class="plain-hero">
+    <span class="eyebrow"><svg class="ic"><use href="#i-help"/></svg> Start here</span>
+    <h1>How to use this platform</h1>
+    <p class="lead">A two-minute tour of what is on every lesson page and how to get the most from it.</p>
+  </header>
+
+  <div class="guide-steps">
+    <div class="guide-step">
+      <span class="guide-n">1</span>
+      <div><h3>Read the lesson top to bottom</h3>
+      <p>Each lesson opens with its <strong>goal</strong>, what you will be able to do by the end, and the data it uses. Then it walks through numbered sections. The <strong>On this page</strong> panel on the right tracks where you are, and the bar under the top menu shows how far through the lesson you have read.</p></div>
+    </div>
+    <div class="guide-step">
+      <span class="guide-n">2</span>
+      <div><h3>Play with the interactive labs</h3>
+      <p>Boxes marked <span class="badge-lab inline"><svg class="ic"><use href="#i-flask"/></svg> Interactive</span> are live experiments that run in your browser. Move the sliders, press play, break things on purpose. Each one is placed exactly where the idea it demonstrates is explained.</p></div>
+    </div>
+    <div class="guide-step">
+      <span class="guide-n">3</span>
+      <div><h3>Answer the questions, then check yourself</h3>
+      <p>Question cards come in three flavours: <strong>Check your understanding</strong>, <strong>Pause &amp; think</strong> and <strong>Try it yourself</strong>. Press <em>Write my answer</em> to jot down your thinking (saved on this device only), then <em>Show explanation</em> to compare it with a full worked answer.</p></div>
+    </div>
+    <div class="guide-step">
+      <span class="guide-n">4</span>
+      <div><h3>Read the code and its output</h3>
+      <p>Every code cell from the notebook is here, with the output it actually produced. Some cells carry a <strong>line-by-line explanation</strong>: numbered markers on the code match the notes underneath. Long code and long outputs are folded; click to expand. The copy button copies the whole cell.</p></div>
+    </div>
+    <div class="guide-step">
+      <span class="guide-n">5</span>
+      <div><h3>Look up any term</h3>
+      <p>Words with a dotted underline have a definition. Hover (or tap on a phone) to read it. The <a href="glossary.html">glossary</a> lists them all.</p></div>
+    </div>
+    <div class="guide-step">
+      <span class="guide-n">6</span>
+      <div><h3>Run it yourself</h3>
+      <p>Every lesson has a <strong>Download notebook</strong> button. Open it in Jupyter, VS Code or Google Colab and run the cells. Reading builds understanding; running and changing the code is where it sticks.</p></div>
+    </div>
+    <div class="guide-step">
+      <span class="guide-n">7</span>
+      <div><h3>Track your progress</h3>
+      <p>Press <strong>Mark lesson as complete</strong> at the end of each lesson. Completed lessons get a tick in the sidebar and on the course map. Progress lives in this browser, so no account is needed.</p></div>
+    </div>
+  </div>
+
+  <div class="guide-keys">
+    <h3>Keyboard shortcuts</h3>
+    <ul>
+      <li><kbd>⌘</kbd> <kbd>K</kbd> or <kbd>/</kbd> — search</li>
+      <li><kbd>←</kbd> <kbd>→</kbd> with <kbd>Alt</kbd> — previous / next lesson</li>
+      <li><kbd>Esc</kbd> — close search, images and pop-ups</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

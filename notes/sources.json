@@ -1,0 +1,92 @@
+{
+  "1.1": {
+    "ignored_variants": [],
+    "sha": "3ed9e04a82ad92cc",
+    "source": "deep_learning-platform/../Day 1/Note_1_1_Where_ML_Runs_Out_Of_Road.ipynb"
+  },
+  "1.2": {
+    "ignored_variants": [],
+    "sha": "15bebe57a482cc37",
+    "source": "deep_learning-platform/../Day 1/Note_1_2_The_Learning_Mechanism.ipynb"
+  },
+  "1.3": {
+    "ignored_variants": [],
+    "sha": "89d3a6ceef071763",
+    "source": "deep_learning-platform/../Day 1/Note_1_3_Your_First_PyTorch_Network.ipynb"
+  },
+  "2.1": {
+    "ignored_variants": [],
+    "sha": "d493a621f3a582c5",
+    "source": "deep_learning-platform/../Day 2/2.1_Tensors_and_the_Shape_Contract.ipynb"
+  },
+  "2.2": {
+    "ignored_variants": [
+      "2.2_Dataset_and_DataLoader.ipynb"
+    ],
+    "sha": "fbbabf6ebed4b51b",
+    "source": "deep_learning-platform/../Day 2/2.2_Dataset_and_DataLoader_self_sufficient.ipynb"
+  },
+  "2.3": {
+    "ignored_variants": [
+      "2.3_Building_and_Training_an_MLP.ipynb"
+    ],
+    "sha": "6691e5aeb82ad575",
+    "source": "deep_learning-platform/../Day 2/2.3_Building_and_Training_an_MLP_self_sufficient.ipynb"
+  },
+  "2.4": {
+    "ignored_variants": [
+      "2.4_From_Notebook_to_Project.ipynb"
+    ],
+    "sha": "e60b95f3aceb6b6e",
+    "source": "deep_learning-platform/../Day 2/2.4_From_Notebook_to_Project_Updated.ipynb"
+  },
+  "3.1": {
+    "ignored_variants": [
+      "note_3_1_optimizers_and_learning_rate.ipynb"
+    ],
+    "sha": "42687bc7891e49da",
+    "source": "deep_learning-platform/../Day 3/note_3_1_optimizers_and_learning_rate_self_sufficient.ipynb"
+  },
+  "3.2": {
+    "ignored_variants": [
+      "note_3_2_overfitting_and_regularisation.ipynb"
+    ],
+    "sha": "b86f5b34e21dc643",
+    "source": "deep_learning-platform/../Day 3/note_3_2_overfitting_and_regularisation_self_sufficient.ipynb"
+  },
+  "3.3": {
+    "ignored_variants": [
+      "note_3_3_when_gradients_misbehave.ipynb"
+    ],
+    "sha": "53ab67fc33e4d7c6",
+    "source": "deep_learning-platform/../Day 3/note_3_3_when_gradients_misbehave_self_sufficient.ipynb"
+  },
+  "3.4": {
+    "ignored_variants": [
+      "note_3_4_the_diagnosis_clinic (1).ipynb",
+      "note_3_4_the_diagnosis_clinic.ipynb"
+    ],
+    "sha": "56b0b26480e7f2a2",
+    "source": "deep_learning-platform/../Day 3/note_3_4_the_diagnosis_clinic_self_sufficient.ipynb"
+  },
+  "4.1": {
+    "ignored_variants": [],
+    "sha": "ba7813b829addb6b",
+    "source": "deep_learning-platform/../Day 4/note_4_1_data_you_can_trust (1).ipynb"
+  },
+  "4.2": {
+    "ignored_variants": [],
+    "sha": "f9dede960446f025",
+    "source": "deep_learning-platform/../Day 4/note_4_2_experiments_you_can_reproduce.ipynb"
+  },
+  "4.3": {
+    "ignored_variants": [],
+    "sha": "014325fe6d107353",
+    "source": "deep_learning-platform/../Day 4/note_4_3_memory_batch_size_precision.ipynb"
+  },
+  "4.4": {
+    "ignored_variants": [],
+    "sha": "003c6e200dbc12ff",
+    "source": "deep_learning-platform/../Day 4/note_4_4_the_bake_off.ipynb"
+  }
+}

@@ -1,0 +1,662 @@
+# Teaching layer for Lesson 1.1 — Where Machine Learning Runs Out of Road
+# Anchors (after/before) are text snippets from the notebook; they survive re-exports.
+
+summary: |
+  Deep learning is not "a stronger model". The one real change is that **the description of each
+  example is learned from data instead of written by you**. This lesson shows the idea with three
+  experiments: a straight-line model that cannot solve a spiral, a hand-made fix that can,
+  and a small network that finds that fix on its own. Then comes an honest counter-example where
+  deep learning buys you nothing.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    after: "d6b7551a"
+    type: widget
+    name: pipeline-flow
+    title: "The two pipelines, animated"
+    intro: |
+      Both pipelines start from raw data and end in a prediction. The difference is **who creates
+      the description of the data in the middle**. Click a box to read what happens there, then
+      switch to *Where does the human work go?*
+    caption: |
+      In classical ML the data is transformed **once, by hand** (the colour change at *feature engineering*).
+      In deep learning it is transformed **gradually, by layers whose weights are learned** (the smooth colour shift).
+
+  - section: 1
+    after: "d6b7551a"
+    type: explainer
+    style: plain
+    title: "Two words this whole course depends on"
+    md: |
+      - A **feature** is a number that describes an example, such as *tenure in months*, *monthly charge*, or *radius from the centre*.
+        An **engineered feature** is one *a person* invented and wrote in code.
+      - A **representation** is the whole set of features used to describe an example. Deep learning's
+        promise is **representation learning**: the model builds its own useful features while it learns the task.
+
+      Keep one question in mind as you read: *who wrote the features, you or the model?*
+
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "Look at it for a moment before moving on"
+    type: explainer
+    style: why
+    title: "Why start with such a tiny, clean problem?"
+    md: |
+      Real datasets fail for many reasons: missing values, leakage, imbalance, bad labels. This dataset
+      removes **all** of them, so when a model fails here, only one explanation is left: *the model cannot
+      express the shape of the answer*. That makes it a perfect laboratory for one idea at a time.
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "You have been handed a straight ruler and asked to trace a coil"
+    type: explainer
+    style: math
+    title: "Why logistic regression can only draw a straight line"
+    md: |
+      Logistic regression turns a weighted sum into a probability:
+
+      $$p(\text{class 1}) = \sigma(w_1 x_1 + w_2 x_2 + b), \qquad \sigma(z) = \frac{1}{1 + e^{-z}}$$
+
+      It predicts class 1 when $p > 0.5$, which happens exactly when $w_1 x_1 + w_2 x_2 + b > 0$.
+      The border between the two predictions is therefore the set of points where
+
+      $$w_1 x_1 + w_2 x_2 + b = 0$$
+
+      and that is the equation of a **straight line**. Training can move and rotate the line (by changing
+      $w_1, w_2, b$), but it can never bend it. This is not a limit of the optimiser; it is what the model *is*.
+
+  - section: 3
+    after: "Before you run the next cell, commit to a number"
+    type: predict
+    mode: choice
+    prompt: "What **test accuracy** will a logistic regression reach on the raw spirals? (Half the points are in each class, so guessing gives 50%.)"
+    options: ["About 50% (a coin flip)", "About 60%", "About 80%", "About 99%"]
+    answer: 1
+    reveal: |
+      **About 60%: the recorded run gives 0.592.** Slightly better than a coin flip, because a line can still
+      catch a few more points of one arm on one side of the plane than the other. It cannot follow the arms,
+      so the other ~40% stay wrong however long you train.
+
+  - section: 3
+    after: "Around 0.59. Barely better than a coin flip"
+    type: explainer
+    style: remember
+    title: "A diagnostic instinct to keep for the whole course"
+    md: |
+      When a model performs badly, ask which of two very different situations you are in:
+
+      | | *The model failed* | *The model class cannot express the answer* |
+      |---|---|---|
+      | Symptoms | bugs, bad data, poor training | everything works; the result is still poor |
+      | Fix | debug, clean, tune | change the features **or** change the model family |
+
+      Here everything worked, so it is the second situation. Module 3 is full of cases where telling these apart saves hours.
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "Each point has a radius"
+    type: explainer
+    style: plain
+    title: "Radius, angle and the ‘aligned angle’ in plain English"
+    md: |
+      - **Radius** $r$ is the distance from the centre: $r=\sqrt{x_1^2+x_2^2}$ (Pythagoras).
+      - **Angle** $\theta$ is the direction you face when you look at the point from the centre.
+        `arctan2(x2, x1)` computes it and returns a value between $-\pi$ and $\pi$ (−180° to 180°).
+      - On a spiral, the angle keeps growing as you move outward. Subtracting $r \times (\text{revolutions}\times 2\pi)$ **cancels that twist**.
+        What is left, the *aligned angle* $\alpha$, is about $0$ for one arm and about $\pi$ (half a turn) for the other.
+      - Why feed $\sin\alpha$ and $\cos\alpha$ instead of $\alpha$? Angles wrap around: $179°$ and $-179°$ are neighbours but look far apart as numbers.
+        $(\cos\alpha, \sin\alpha)$ places the angle on a circle, so neighbours stay neighbours.
+
+  - section: 4
+    after: "This is unrolling the spiral into a straight strip"
+    type: widget
+    name: spiral-unroll
+    title: "Watch the spiral unroll"
+    intro: |
+      Drag the slider or press play. Every dot moves from its original $(x_1, x_2)$ position to its
+      $(r, \alpha)$ position. **No dot changes class.** Only the *description* changes, and in the new
+      description one straight line separates the arms.
+
+  - section: 4
+    after: "From 0.59 to 0.99"
+    type: compare
+    title: "Same model, different space"
+    items:
+      - title: "Raw space (x1, x2)"
+        tone: orange
+        icon: alert
+        md: "Logistic regression → **0.592**. The line has to cut through a coil."
+      - title: "Engineered space (r, sin α, cos α)"
+        tone: green
+        icon: check
+        md: "The *same* logistic regression → **0.992**. In this space the classes sit in two clean bands."
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    after: "Strip away any one of those and the approach starts to strain"
+    type: explainer
+    style: analogy
+    title: "Hand-made features are like a hand-drawn map"
+    md: |
+      A hand-drawn map of your own neighbourhood can be excellent: fast, precise, full of local knowledge.
+      But you can only draw it for places you already know, and it goes out of date when the roads change.
+      Representation learning is like a surveying machine: slower and hungrier for data, but it can map places nobody has described yet.
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "n_params = sum(w.size for w in net.coefs_)"
+    type: explainer
+    style: math
+    title: "Where do 4,417 parameters come from?"
+    md: |
+      A fully connected layer from $m$ inputs to $n$ outputs has $m \times n$ weights plus $n$ biases.
+
+      | Layer | Shape | Weights | Biases | Total |
+      |---|---|---|---|---|
+      | input → hidden 1 | 2 → 64 | 128 | 64 | **192** |
+      | hidden 1 → hidden 2 | 64 → 64 | 4,096 | 64 | **4,160** |
+      | hidden 2 → output | 64 → 1 | 64 | 1 | **65** |
+      | | | | | **4,417** |
+
+      Every one of these numbers was set by training, and none of them was written by you. Lesson 1.2 shows you
+      exactly how training adjusts them.
+
+  - section: 6
+    after: "The earlier layers are the feature engineering"
+    type: widget
+    name: spiral-lab
+    title: "Spiral Lab: train all three models yourself"
+    props: { model: network }
+    intro: |
+      This lab reproduces Sections 3, 4 and 6 in your browser. Pick a model, press **Train** and watch its
+      decision regions form (blue = predicts class 0, orange = predicts class 1, and the deeper the colour, the more confident the prediction).
+
+      **Experiments to try**
+      1. *Logistic regression* on raw coordinates: note the single straight seam.
+      2. *Logistic regression + your features*: near-perfect. Now drag **Move the centre** and train again.
+      3. *Neural network*: same offset, trains fine. Then open **Peek inside the network**.
+      4. Set **Points per class** to 25 and train the network. Compare train and test accuracy.
+    caption: |
+      Ringed dots are **test** points the model never trains on; the accuracy shown is measured on them.
+      Numbers differ a little from the notebook (different random seed and optimiser settings), but the pattern is the same: linear ≈ 60%, engineered ≈ 99%, network ≈ 95%+.
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "Both models get the same split, the same preprocessing, and a fair shot"
+    type: explainer
+    style: plain
+    title: "Meet the dataset: Telco Customer Churn"
+    md: |
+      Each row is one customer of a telecom company: contract type, tenure (months as a customer),
+      monthly charges, services used, payment method, and so on. The label `Churn` says whether they left.
+      **26.5%** of customers churned, so the classes are moderately imbalanced.
+
+      This is the most common shape of data in industry: a table whose columns were **designed by people** to be meaningful.
+
+  - section: 7
+    after: "gbdt_auc = roc_auc_score"
+    type: explainer
+    style: plain
+    title: "What is ROC-AUC, and why use it instead of accuracy?"
+    md: |
+      Both models output a *probability of churn* for every customer. **ROC-AUC** asks one question:
+      *if I pick one customer who churned and one who did not, how often does the model give the churner the higher score?*
+
+      - **1.0** = the model ranks every churner above every non-churner.
+      - **0.5** = no better than random ranking.
+
+      It does not depend on a threshold, and it is not fooled by imbalance the way accuracy is: with 26.5% churners,
+      predicting "nobody churns" already scores 73.5% accuracy but only 0.5 AUC.
+
+  - section: 7
+    after: "print(f\"{'model':<22}"
+    type: widget
+    name: results-bars
+    title: "The recorded result, side by side"
+    props:
+      metrics:
+        - title: "ROC-AUC on the test set"
+          note: "higher is better"
+          better: higher
+          digits: 4
+          min: 0.5
+          max: 0.86
+          rows:
+            - { label: "Gradient boosting", value: 0.8292, series: 0 }
+            - { label: "Neural network", value: 0.7739, series: 1 }
+        - title: "Training time in the recorded run"
+          note: "lower is better, and very machine-dependent"
+          better: lower
+          digits: 1
+          unit: " s"
+          rows:
+            - { label: "Gradient boosting", value: 2.8, series: 0 }
+            - { label: "Neural network", value: 2.0, series: 1 }
+      footnote: "The AUC axis starts at 0.5 (random ranking), so the bars show skill above chance."
+
+  - section: 7
+    after: "Gradient boosting wins on quality *and* costs roughly a tenth"
+    type: explainer
+    style: warning
+    title: "Read the timings with care"
+    md: |
+      The text says boosting costs about a tenth of the training time, but in the run recorded above boosting took
+      **2.8 s** and the network **2.0 s**. Timings depend heavily on the machine, library versions and one-off start-up
+      costs, so re-run it and you may see either order. The **quality** gap (0.829 vs 0.774 AUC) is the robust
+      finding, and it is the one to remember. Module 4 shows how to measure cost fairly.
+
+  - section: 7
+    after: "Deep learning pays off where the raw signal is high-dimensional"
+    type: widget
+    name: dl-or-not
+    title: "Rule of thumb: gradient boosting or a neural network?"
+    intro: "Describe a problem and see which way the heuristic from this section leans, and why."
+
+  # ------------------------------------------------------------------ §8
+  - section: 8
+    after: "Representation learning means the transformation"
+    type: explainer
+    style: plain
+    title: "The principle in plain English"
+    md: |
+      In classical ML **you** decide how to describe each example, and the algorithm learns only the final decision.
+      In deep learning the model learns **both** how to describe each example and how to decide, at the same time, using the same training signal.
+
+  # ------------------------------------------------------------------ §9
+  - section: 9
+    after: "mlp_unscaled = MLPClassifier"
+    type: explainer
+    style: warning
+    title: "Wait: in this run, the unscaled network scored higher"
+    md: |
+      Look closely at the output: standardised inputs gave **0.7739** AUC and raw inputs gave **0.7794**, so the
+      "damage" is *negative* (−0.0056). In this particular run, skipping the scaler did **not** hurt, which is the
+      opposite of what the paragraph below claims. Why?
+
+      1. The difference is tiny: 0.006 AUC is well within the run-to-run noise of a single split.
+      2. `MLPClassifier` trains with **Adam**, which gives every weight its own step size. That partly compensates for
+         badly scaled inputs. Module 3 (Lesson 3.1) explains exactly how.
+      3. The scaling problem is sharpest with **plain gradient descent**, which the interactive below simulates.
+
+      The general rule still stands: **standardise your inputs**. It makes training faster and more stable, and it
+      removes one way for a run to fail. Just don't expect this single experiment to prove it.
+
+  - section: 9
+    after: "Gradient descent takes steps that are the same size in every direction"
+    type: widget
+    name: scale-contours
+    title: "Why scale matters: gradient descent in a narrow valley"
+    intro: |
+      Each point on this plot is one setting of two model weights; the rings are **contours of the loss**, like height lines on a map.
+      If one input spans 0–72 and another 0–8,672, the loss is far steeper along the second weight. Gradient descent must
+      use a learning rate small enough for the steep direction, so it crawls along the gentle one.
+    caption: |
+      Try a large learning rate (above 1.0) with raw features to see the **zig-zag**, and above 2.0 to see it **diverge**.
+      Then press *Standardised*: the valley becomes a round bowl and the same algorithm arrives in a handful of steps.
+
+  - section: 9
+    after: "The work did not disappear. It changed shape"
+    type: compare
+    title: "Where the human work lives in a deep learning project"
+    items:
+      - { title: "Input scaling", tone: blue, icon: tune, md: "Put features on comparable scales before training." }
+      - { title: "Data quality & labels", tone: orange, icon: database, md: "Often the biggest lever on final performance (Module 8)." }
+      - { title: "Architecture", tone: violet, icon: layers, md: "Built-in assumptions, e.g. *nearby pixels are related* (convolution)." }
+      - { title: "Tokenisation & preprocessing", tone: aqua, icon: code, md: "Text tokens, audio sample rate, image size and augmentation." }
+      - { title: "Loss design", tone: green, icon: target, md: "What you optimise is what you get." }
+
+  # ------------------------------------------------------------------ §10
+  - section: 10
+    after: "A hand-designed feature, meeting reality"
+    type: widget
+    name: pixel-lab
+    title: "Pixel Lab: think like the model"
+    intro: |
+      **Tab 1:** pick a digit (or draw your own on the grid) and see the 64 numbers a model receives. Shift it by one
+      pixel and count how many numbers change. **Tab 2:** try to separate 3 from 8 with the "total ink" feature and find the best threshold.
+
+  - section: 10
+    after: "No one hand-writes that"
+    type: explainer
+    style: deep
+    title: "What were SIFT, HOG and Gabor filters?"
+    md: |
+      Before about 2012, computer vision ran on **hand-designed feature extractors**:
+
+      - **Gabor filters / wavelets**: fixed patterns that respond to edges and textures at particular orientations and scales.
+      - **SIFT** (Scale-Invariant Feature Transform): finds distinctive keypoints and describes the gradient directions around them, built to survive scaling and rotation.
+      - **HOG** (Histogram of Oriented Gradients): counts edge directions in small cells. It was famous for pedestrian detection.
+
+      These were brilliant pieces of engineering. In 2012 a convolutional network (AlexNet) trained on ImageNet beat them by a
+      wide margin, and its first-layer filters turned out to look strikingly like Gabor filters. **The network learned
+      the features people had spent decades designing, and then went further.**
+
+  # ------------------------------------------------------------------ §11
+  - section: 11
+    after: "This course is"
+    type: compare
+    title: "At a glance"
+    items:
+      - title: "This course is…"
+        tone: green
+        icon: check
+        md: |
+          - the **engineering layer** between classical ML and GenAI
+          - about taking a network or pretrained model from raw data to a **working, evaluated, deployable** system
+          - **hands-on**: 50–65% of your time writing, running, breaking and debugging code
+      - title: "This course is not…"
+        tone: red
+        icon: x
+        md: |
+          - a maths course (no proofs)
+          - a history course
+          - an LLM-applications course (retrieval and agents come in the GenAI module)
+          - a model-zoo tour
+
+  - section: 11
+    after: "keep a short log of every experiment"
+    type: explainer
+    style: tip
+    title: "Your experiment log template"
+    md: |
+      Copy this into a notes file and fill it in after every run, starting today:
+
+      ```text
+      Tried:    what I changed
+      Because:  the hypothesis I was testing
+      Saw:      the numbers / plots that came back
+      Learned:  what I now believe, and what I'd try next
+      ```
+
+answers:
+  "1-1":
+    - |
+      **Example answer.** *In a churn project I created “number of support calls in the last 30 days divided by tenure”.
+      It took domain knowledge: the business knew that frustrated new customers leave fastest.*
+
+      **Could a model discover it?** Only if two things were true: (1) it saw the **raw events** (the individual support
+      calls with timestamps) rather than an already-summarised table, and (2) it had **enough examples** to find the pattern
+      by itself. A network fed the raw event log could learn "recent calls matter more for new customers", but it would need
+      far more data than you needed to write the feature. That trade, *your knowledge versus the model's data*, runs through this whole lesson.
+  "2-1":
+    - |
+      Something like: **“Walk out from the centre. The label depends on which arm you are on. Each arm is a band that
+      winds around, so what matters is how far out you are *together with* which direction you're facing.”**
+
+      That rule is about **distance** (radius) and **direction** (angle), not about $x_1$ or $x_2$ on their own.
+      You automatically described the data in a *different coordinate system*, and that is exactly the insight
+      Section 4 turns into code.
+  "3-1":
+    - |
+      **The representation**, meaning the description of the data the model receives. Logistic regression is handed $(x_1, x_2)$, and in
+      that space the classes are not separable by any straight line. The mismatch is between the *model class* (straight lines)
+      and the *shape of the answer* (a coil). Nothing needs debugging; either the description or the model family must change.
+    - |
+      **No.** More data would fill in the spiral arms more densely, but the best straight line through a denser coil is still a
+      straight line through a coil, still about 60%. More data helps a model that is *able* to express the answer but lacks
+      evidence. It cannot give a model a capability it does not have. (This is sometimes called a problem of **bias**, not **variance**.)
+    - |
+      - **Linear SVM:** no better. It also draws one straight line (it just chooses it by a different criterion: the widest margin).
+      - **Decision tree:** it *can* do much better, because it isn't a single line. It chops the plane into many axis-aligned
+        rectangles and can approximate the coil with a staircase of them, given enough depth and data. That is a *different kind of answer*:
+        the tree gets flexibility by **changing the model family**, not by learning better features. Its boundary is jagged, needs many splits, and
+        generalises poorly between the arms, which is a hint of why learned smooth features are attractive.
+  "4-1":
+    - |
+      **Here, yes. In general, no.** The engineered version wins (0.99 vs 0.95) and is cheaper, faster and fully
+      interpretable. But it only exists because you **knew the generating process**. The better technique depends on the
+      situation: when you have that knowledge and the structure is simple, write the feature. When you don't (images, audio,
+      text), you can't. The honest comparison is not "features vs networks" but "*your knowledge* vs *the model's data*".
+    - |
+      **A lot:** that the data is a spiral, where its centre is, and exactly how many revolutions it makes (the `revolutions`
+      value is baked into the formula for $\alpha$). From the scatter plot alone you could guess *radius and angle matter* and
+      maybe estimate the number of turns by counting, but getting the exact "twist" parameter right would take trial and error.
+      In real problems you usually don't have the generating equations at all.
+    - |
+      **They quietly break.** `polar_features` measures radius and angle *from (0, 0)*. If the spiral is centred elsewhere,
+      $r$ and $\theta$ no longer describe position along the arm, $\alpha$ no longer lines up the arms, and the linear model's
+      accuracy collapses, **with no error message**. You can see this in the Spiral Lab by moving the centre. The network, by contrast,
+      simply re-learns from the new coordinates. Hand-made features encode your *assumptions*, and when the assumptions stop being true, the features fail silently.
+  "5-1":
+    - |
+      There is no single right number; the point is the *order of magnitude*. A radiologist learns to read chest X-rays over
+      **years** of training; a fraud analyst learns the telltale transaction patterns over **months**; a sommelier trains for **years**.
+      Representation learning tries to compress that apprenticeship into **training time on data**. That is why it needs so many
+      examples: it is learning, from scratch, what an expert learned from thousands of cases and a mentor.
+  "6-1":
+    - |
+      It depends on what the design review cares about, and a good answer names the deciding factors:
+
+      - **Stability of the data:** if the generating process could shift (new centre, different spirals), the network is more robust; the hand-made features fail silently.
+      - **Interpretability and cost:** the engineered model is tiny, fast and explainable. If those matter most and the process is fixed, defend it.
+      - **Maintenance:** who will update `polar_features` when the data changes? A learned representation updates by retraining.
+
+      A strong answer: *"Ship the engineered model if the data-generating process is known and stable. Otherwise ship the network, and monitor it."*
+    - |
+      **Flexibility.** Your three features are correct *for this exact spiral*. The network's ~4,400 parameters can represent a huge family of
+      curved boundaries, so it could just as well fit a spiral with a different centre, a different number of turns, or a completely different shape,
+      without anyone rewriting code. The price is that it needs more data to pin those parameters down, and it can **overfit** when data is scarce.
+    - |
+      With only 50 points, the network has far more parameters (~4,400) than examples, so it can **memorise** the training points: training accuracy
+      near 100%, test accuracy much lower, with a wiggly boundary that fits noise rather than the spiral. That gap between
+      train and test performance is **overfitting**, and it is why pretrained models (Module 7) matter: they bring a representation learned on huge data,
+      so you need fewer examples of your own. Try it in the Spiral Lab by setting *Points per class* to 25.
+  "7-1":
+    - |
+      **Build gradient boosting.** On curated tabular data it is usually as accurate or more accurate, trains quickly,
+      needs no feature scaling, has few hyperparameters, and gives feature importances you can show your manager on Friday.
+
+      **What would change the answer:** very large data (millions of rows), raw unstructured inputs attached to each
+      customer (call transcripts, clickstreams, images), a need to share one learned representation across many tasks,
+      or a proper bake-off (Module 4) in which the network actually wins.
+    - |
+      When the table isn't really "curated tabular data":
+
+      - columns hold **raw, high-dimensional signals** (text fields, sequences of events, embedded images);
+      - there are **very high-cardinality categories** (millions of user IDs) where learned embeddings shine;
+      - the dataset is **huge** and the relationships are subtle;
+      - you want to **combine** tabular data with other modalities in one model, or **transfer** knowledge from a pretrained model.
+    - |
+      **It weakens it a little, but not much.** Tuning can move each model by a few points, so a fair comparison needs:
+      the **same splits** (ideally several random splits or cross-validation), **equal tuning budgets** for both models,
+      the **same preprocessing information**, a report of **variance** across runs rather than one number, and a check of
+      **cost** (time, memory, complexity). Industry experience and published benchmarks agree with the direction of this result:
+      on medium-sized tabular data, tuned gradient boosting is usually at least as strong. Module 4's bake-off does it properly.
+  "8-1":
+    - |
+      **Example:** *"In older methods, a person decides how to describe each example and the algorithm only learns the final
+      decision. In deep learning, the system learns how to describe the examples at the same time as it learns the decision,
+      from the same data."*
+
+      If your version says *who* does the describing and *when* it is learned, you have the principle.
+  "9-1":
+    - |
+      Most practitioners would say **data quality and labelling**. In production, models usually fail because the data they see differs from
+      the training data (distribution shift), labels were noisy or inconsistent, or important cases were missing, not because the
+      architecture was wrong. Architecture and loss design matter, but a mediocre architecture on excellent data usually beats an excellent
+      architecture on poor data. Module 4 (data you can trust) and Module 8 (data engineering) are built around this. Keep your written
+      answer and compare it when you get there.
+  "10-1":
+    - |
+      Because **meaning comes from patterns, not positions**. Pixel (3, 4) is dark in a 7, a 2 *and* a shifted 1. The same digit written
+      slightly to the left, thicker, or slanted lights up completely different positions. Any single pixel is only weakly and unreliably
+      related to the label. The information is in the *relationships* between pixels (strokes, loops, corners), which no single number captures.
+      Try it in the Pixel Lab: a one-pixel shift changes many of the 64 numbers.
+    - |
+      Everything that depends on **fixed positions**. If digits can appear anywhere in the frame at any size, a pixel-position feature (or a
+      simple model that treats each pixel as a fixed column) sees an almost unrelated input for the same digit. You would need features that
+      are **invariant** to translation and scale, which is exactly what hand-engineered vision systems (SIFT, HOG) spent decades trying to build,
+      and what convolutional networks build in by design (Module 5 discusses CNNs).
+    - |
+      It has **data and a training signal**: thousands of labelled examples, plus a loss function whose gradient says, for every one
+      of its parameters, which small change would reduce the error. It doesn't need to *understand* strokes and loops; it only needs to keep
+      nudging parameters in the direction that helps. With enough examples, useful detectors for strokes and loops emerge because they reduce the loss.
+      You have intuition but no way to turn 64 numbers into rules by hand. The network has no intuition, but it can search a huge space of
+      functions guided by the gradient, and the next lesson shows exactly how.
+  "12-1":
+    - |
+      Logistic regression can only draw **one straight line** (its decision boundary is $w_1x_1 + w_2x_2 + b = 0$), and no straight line
+      separates two interleaved spirals. It wasn't a bug because the data, labels, code and optimiser all worked perfectly: the task was
+      simply outside what the **model class** can express.
+    - |
+      A **learned parameter** is a number *inside* the model whose value is set by training, for example the 4,417 weights and biases of the network.
+      An **engineered feature** is a number *describing the data* whose formula a person wrote, like $r$, $\sin\alpha$, $\cos\alpha$.
+      In deep learning, the early layers' parameters effectively *become* the features: learned rather than written.
+    - |
+      **Example:** a churn or credit-risk model on a curated table of ~10,000 customers with meaningful columns, a tight deadline,
+      and a requirement to explain predictions to the business. Gradient boosting is typically as accurate or more accurate
+      (0.829 vs 0.774 AUC in this lesson), cheaper, needs no scaling, has fewer knobs and gives feature importances.
+    - |
+      It **moves up a level**, into input scaling and normalisation, data quality and labelling, architecture choice (built-in assumptions such as
+      convolution or attention), tokenisation and other preprocessing, loss design, and evaluation. The work doesn't disappear; it changes shape.
+
+explain:
+  - cell: "def make_spirals"
+    summary: |
+      Builds the dataset: two spiral arms, 500 points each, with a little noise. It uses the idea that a spiral is a circle
+      whose radius grows as you go round it.
+    lines:
+      - match: "rng = np.random.default_rng(seed)"
+        note: "A seeded random generator: the same seed gives exactly the same dataset every time (reproducibility)."
+      - match: "t = np.sqrt(rng.random(n_per_class))"
+        note: "`t` is how far along the arm each point is, in radians. The square root spreads points evenly by *area*, so the centre isn't overcrowded."
+      - match: "r = t / (revolutions"
+        note: "Radius grows in proportion to `t`, from 0 at the centre to 1 at the outer end. This is what makes it a spiral."
+      - match: "theta = t + c * np.pi"
+        note: "The angle. Class 1 (`c = 1`) is rotated by π (half a turn), so its arm sits *between* the turns of class 0's arm."
+      - match: "x1 = r * np.cos(theta)"
+        note: "Polar → Cartesian: $x_1 = r\\cos\\theta$, $x_2 = r\\sin\\theta$, plus Gaussian noise with standard deviation `noise`."
+      - match: "perm = rng.permutation(len(y))"
+        note: "Shuffles the rows so the two classes are mixed together. Good practice before any splitting."
+
+  - cell: "def plot_boundary"
+    summary: |
+      Visualises what a model has learned: it asks the model for a prediction at every point of a fine 300×300 grid covering the
+      plot, shades the grid by the predicted class, and draws the real data on top.
+    lines:
+      - match: "np.meshgrid"
+        note: "Creates the grid of (x1, x2) coordinates, 90,000 points in total."
+      - match: "Z = model.predict"
+        note: "Predicts a class for every grid point. If the model was trained on engineered features, `transform` converts the grid points first, so the model sees what it saw during training."
+      - match: "ax.contourf"
+        note: "Colours the regions, which makes the decision boundary visible."
+
+  - cell: "def polar_features"
+    summary: "Your hand-written representation: keeps x1 and x2 and adds three new columns that encode the spiral geometry."
+    lines:
+      - match: "r = np.sqrt"
+        note: "Distance from the centre, $\\sqrt{x_1^2 + x_2^2}$. It assumes the centre is (0, 0)!"
+      - match: "theta = np.arctan2"
+        note: "Direction from the centre, in radians (−π to π)."
+      - match: "alpha = theta - r"
+        note: "Removes the twist that the radius explains, leaving roughly 0 for one arm and π for the other."
+      - match: "return np.column_stack"
+        note: "Five columns go to the linear model: x1, x2, r, sin α, cos α."
+
+  - cell: "net = MLPClassifier("
+    summary: "A small neural network from scikit-learn. It gets only the raw `X_train` (x1, x2), with no engineered features."
+    lines:
+      - match: "hidden_layer_sizes=(64, 64)"
+        note: "Two hidden layers of 64 units each. These layers will learn the features."
+      - match: "activation=\"relu\""
+        note: "ReLU, $\\max(0, z)$, is the non-linearity that lets the network bend its boundary. Lesson 1.2 shows why it is essential."
+      - match: "learning_rate_init=0.01"
+        note: "Step size for the optimiser (Adam). Module 3 is about choosing it."
+      - match: "max_iter=6000"
+        note: "Upper limit on training passes (epochs) over the data."
+
+  - cell: "URLS = ["
+    summary: "Downloads the Telco churn CSV, trying a second mirror if the first fails, and stops with a clear error if neither works."
+
+  - cell: "churn[\"TotalCharges\"] = pd.to_numeric"
+    summary: "Turns the raw table into numbers a model can use."
+    lines:
+      - match: "pd.to_numeric"
+        note: "`TotalCharges` arrives as text; brand-new customers have a blank. `errors=\"coerce\"` turns blanks into NaN, then `fillna(0.0)` sets them to 0."
+      - match: "y_churn = "
+        note: "The label: 1 if the customer churned (`\"Yes\"`), else 0."
+      - match: "pd.get_dummies"
+        note: "**One-hot encoding**: every categorical column becomes several 0/1 columns, one per category. `drop_first=True` drops one redundant column per category. The ID column is dropped because it carries no signal."
+
+  - cell: "gbdt = HistGradientBoostingClassifier"
+    summary: "Trains gradient-boosted trees and scores them by ROC-AUC on the test set."
+    lines:
+      - match: "HistGradientBoostingClassifier(random_state=0)"
+        note: "Gradient boosting builds many small decision trees, each correcting the errors of the previous ones. The *Hist* version bins features first, which makes it fast. It uses default settings, with no tuning."
+      - match: "predict_proba(Xc_test)[:, 1]"
+        note: "Probability of class 1 (churn) for every test customer; AUC is computed from these scores."
+
+  - cell: "scaler = StandardScaler().fit(Xc_train)"
+    summary: "The network needs standardised inputs. The scaler learns each column's mean and standard deviation **from the training set only**, then applies them to both sets."
+    lines:
+      - match: "StandardScaler().fit(Xc_train)"
+        note: "Fit on train only. Fitting on the test set would leak information about it (Module 4, Lesson 4.1)."
+      - match: "hidden_layer_sizes=(64, 32)"
+        note: "Two hidden layers, 64 then 32 units."
+
+  - cell: "ink = digits.data.mean(axis=1)"
+    summary: "Tries the most natural hand-made feature, total ink, to separate 3 from 8, then measures how well a simple threshold on it works."
+    lines:
+      - match: "ink = digits.data.mean(axis=1)"
+        note: "One number per image: the average of its 64 pixel values."
+      - match: "thresh = ink_38.mean()"
+        note: "A simple rule: call it an 8 if it has more ink than average, otherwise a 3."
+
+takeaways:
+  - "A model's quality ceiling is set by its **representation**: logistic regression scored 0.59 on raw spirals and 0.99 on the right features, with the model itself unchanged."
+  - "**Feature engineering** works brilliantly when you can visualise the data, know how it was generated, and the structure is simple and stable. Hand-made features fail *silently* when their assumptions break."
+  - "**Representation learning**: a network's early layers learn the features from data, jointly with the task; the last layer is essentially a logistic regression on top."
+  - "Deep learning pays off on **high-dimensional, redundant, raw signals** (pixels, audio, text). On curated tabular data, **gradient boosting** is often better and cheaper (0.829 vs 0.774 AUC here)."
+  - "The human work doesn't vanish. It moves to **scaling, data quality, architecture, preprocessing and loss design**."
+  - "Learned representations can be reused. That is **transfer learning**, the basis of every pretrained model later in the course."
+
+quiz:
+  - q: "Logistic regression scores 0.59 on the raw spirals. What is the best explanation?"
+    options:
+      - "The optimiser did not converge"
+      - "Its decision boundary is a straight line, and no straight line separates the spirals"
+      - "There is not enough training data"
+      - "The labels are noisy"
+    answer: 1
+    why: "Everything worked; the model class simply cannot express a curved boundary. More data or more training would not fix that."
+  - q: "What changed between the 0.59 run and the 0.99 run?"
+    options:
+      - "A more powerful model"
+      - "More training epochs"
+      - "The features the same model received"
+      - "A different train/test split"
+    answer: 2
+    why: "Same logistic regression, new description of the data: $r$, $\\sin\\alpha$, $\\cos\\alpha$. The limitation was in the representation."
+  - q: "In the trained network, what do the hidden layers do?"
+    options:
+      - "Store the training examples"
+      - "Build useful intermediate features from the raw inputs, learned from data"
+      - "Choose the learning rate"
+      - "Standardise the inputs"
+    answer: 1
+    why: "The earlier layers are the feature engineering, fitted rather than written. The output layer is essentially a logistic regression on top."
+  - q: "You have 8,000 rows of curated customer data and need an explainable model by Friday. The best first choice is usually…"
+    options:
+      - "A deep neural network"
+      - "Gradient-boosted trees"
+      - "A convolutional network"
+      - "Hand-writing polar features"
+    answer: 1
+    why: "On medium-sized curated tabular data, gradient boosting is typically as accurate or better, faster to build and easier to explain."
+  - q: "Why does the pixel at one fixed position carry little information about which digit is drawn?"
+    options:
+      - "Pixels are too small"
+      - "Meaning lives in relationships between pixels, which shift when the digit moves"
+      - "The images are black and white"
+      - "There are only 64 pixels"
+    answer: 1
+    why: "A one-pixel shift changes many pixel values without changing the digit. Learned features capture the patterns (strokes, loops) instead."
+  - q: "Which of these is still a human engineering decision in deep learning?"
+    options:
+      - "The values of the weights"
+      - "The architecture and the loss function"
+      - "The gradients"
+      - "The hidden-layer activations"
+    answer: 1
+    why: "Weights, gradients and activations are computed. The architecture, the loss, the data and its preprocessing are chosen by you."

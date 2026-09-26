@@ -1,0 +1,180 @@
+# Glossary — plain-English definitions shown on hover in every lesson.
+# term: the display name; aliases: other spellings matched in the text (case-insensitive).
+# Keep definitions to 1–3 sentences. Markdown `code` and **bold** are allowed.
+
+- term: Activation function
+  aliases: [activation functions, non-linearity, nonlinearity]
+  def: A simple non-linear function (such as ReLU, sigmoid or tanh) applied to each neuron's weighted sum. Without it, stacked layers collapse into a single linear model.
+- term: Adam
+  aliases: [AdamW]
+  def: A popular optimizer that gives every parameter its own adaptive step size, using running averages of recent gradients and their squares. AdamW is Adam with weight decay applied correctly.
+- term: Architecture
+  def: The design of a network — which layers, how many, how wide, and how they connect. It encodes built-in assumptions about the data.
+- term: Backpropagation
+  aliases: [backprop, backward pass]
+  def: The algorithm that computes the gradient of the loss with respect to every parameter, by applying the chain rule backwards through the computational graph. It assigns "credit" or "blame" to each parameter.
+- term: Baseline
+  aliases: [baselines]
+  def: A simple reference result (e.g. always predicting the majority class, or a logistic regression) that any serious model must beat to be worth its cost.
+- term: Batch
+  aliases: [mini-batch, minibatch, batch size]
+  def: A small group of training examples processed together in one forward and backward pass. The batch size is how many examples it contains.
+- term: Bias (parameter)
+  aliases: [bias term, biases]
+  def: A learned number added to a neuron's weighted sum, letting it shift its output independently of the inputs — like the intercept in linear regression.
+- term: Broadcasting
+  def: The rule that lets tensors of different shapes be combined element-wise by virtually stretching size-1 dimensions. Powerful, and a source of silent bugs when shapes are not what you think.
+- term: Checkpoint
+  aliases: [checkpoints, checkpointing]
+  def: A saved snapshot of training — model weights, optimizer state, epoch and config — from which you can resume or reproduce a run.
+- term: Class imbalance
+  aliases: [imbalanced, imbalanced classification]
+  def: When one class is much rarer than another (e.g. 11.7% positives). Plain accuracy becomes misleading, so metrics like ROC-AUC and average precision are used.
+- term: Computational graph
+  def: The record of every operation used to compute the loss from the inputs and parameters. Backpropagation walks it backwards to compute gradients.
+- term: CrossEntropyLoss
+  aliases: [cross-entropy, cross entropy]
+  def: The standard loss for classification. It heavily penalises confident wrong predictions and expects integer class labels (`long`) in PyTorch.
+- term: DataLoader
+  def: A PyTorch utility that takes a Dataset and serves shuffled mini-batches, optionally in parallel worker processes.
+- term: Dataset (PyTorch)
+  aliases: [torch Dataset, Dataset protocol, Dataset class]
+  def: In PyTorch, an object that knows its length (`__len__`) and how to return one example (`__getitem__`).
+- term: Decision boundary
+  aliases: [decision boundaries]
+  def: The border in input space where a classifier's prediction switches from one class to another.
+- term: Distribution shift
+  aliases: [covariate shift, label shift, data drift]
+  def: When the data a model sees in use differs from the data it was trained and validated on. Covariate shift changes the inputs; label shift changes how often each outcome occurs.
+- term: dtype
+  def: A tensor's data type, such as `float32`, `float16` or `int64` (`long`). Layers and loss functions expect specific dtypes.
+- term: Dropout
+  def: A regulariser that randomly zeroes a fraction of activations during training (only), forcing the network not to rely on any single unit.
+- term: Early stopping
+  def: Stopping training (and keeping the best checkpoint) when validation performance stops improving, to avoid overfitting.
+- term: Embedding
+  aliases: [embeddings]
+  def: A learned vector of numbers that represents an item (a word, a user, an image) so that similar items get similar vectors.
+- term: Engineered feature
+  aliases: [engineered features, hand-engineered features, hand-made features]
+  def: A feature whose formula a person invented and wrote in code, using domain knowledge — for example a ratio or a log transform.
+- term: Epoch
+  aliases: [epochs]
+  def: One complete pass over the whole training set.
+- term: Feature engineering
+  def: The human work of inventing and computing input columns that make a problem easier for a model — the core skill of classical ML.
+- term: Forward pass
+  aliases: [forward propagation]
+  def: Running inputs through the network layer by layer to produce a prediction (and then the loss).
+- term: Gradient
+  aliases: [gradients]
+  def: For each parameter, how much the loss would change if that parameter were nudged slightly. It points in the direction of steepest increase of the loss.
+- term: Gradient boosting
+  aliases: [gradient-boosted trees, GBDT, HistGradientBoosting, HistGradientBoostingClassifier, XGBoost, LightGBM]
+  def: An ensemble of many small decision trees, each trained to correct the errors of the ones before it. A very strong default for tabular data.
+- term: Gradient clipping
+  aliases: [clipping]
+  def: Capping the size of the gradient before the update step, to stop a single huge gradient from wrecking training.
+- term: Gradient descent
+  def: The core learning rule — repeatedly nudge every parameter a small step in the direction that reduces the loss (opposite the gradient).
+- term: Hidden layer
+  aliases: [hidden layers, hidden units, hidden unit]
+  def: A layer between the input and the output. Its units compute intermediate features that are learned rather than written.
+- term: Hyperparameter
+  aliases: [hyperparameters]
+  def: A setting chosen before training rather than learned — learning rate, batch size, number of layers, dropout rate.
+- term: Inductive bias
+  aliases: [inductive biases]
+  def: Assumptions built into a model's design, e.g. convolution assumes nearby pixels are related; attention lets any token relate to any other.
+- term: Learning rate
+  def: The step size used when updating parameters. Too small and training crawls; too large and it oscillates or diverges.
+- term: Leakage
+  aliases: [target leakage, data leakage, target leak]
+  def: When information that would not be available at prediction time sneaks into training (e.g. call `duration` known only after the call), making scores look better than reality.
+- term: Linear model
+  def: A model whose prediction is a weighted sum of its inputs plus a bias. For classification its decision boundary is a straight line (or flat plane).
+- term: Logistic regression
+  def: A linear classifier that passes a weighted sum of the inputs through a sigmoid to output a probability. Its decision boundary is a straight line.
+- term: Logit
+  aliases: [logits]
+  def: The raw, unbounded output of a classifier before the sigmoid or softmax turns it into a probability.
+- term: Loss function
+  aliases: [loss functions]
+  def: A single number measuring how wrong the model's predictions are. Training tries to make it as small as possible.
+- term: Mixed precision
+  def: Training with some operations in 16-bit floating point (fp16/bf16) to save memory and time, while keeping sensitive parts in 32-bit.
+- term: MLP
+  aliases: [multilayer perceptron, multi-layer perceptron, MLPClassifier]
+  def: A multilayer perceptron — a feed-forward network of fully connected (Linear) layers with non-linear activations between them.
+- term: Momentum
+  def: An optimizer trick that keeps a running "velocity" of past gradients, smoothing out zig-zags and speeding progress along consistent directions.
+- term: nn.Module
+  def: The base class for every PyTorch model and layer. It registers parameters and sub-modules and defines `forward()`.
+- term: Normalisation
+  aliases: [normalization, BatchNorm, LayerNorm, batch normalisation, layer normalisation]
+  def: Layers that rescale activations to a stable range during training, making deep networks easier to optimise.
+- term: One-hot encoding
+  aliases: [one-hot, get_dummies]
+  def: Turning a categorical column into several 0/1 columns, one per category, so a model can use it numerically.
+- term: Optimizer
+  aliases: [optimiser, optimizers, optimisers]
+  def: The rule that turns gradients into parameter updates — SGD, momentum, Adam, AdamW. Called with `optimizer.step()` in PyTorch.
+- term: Overfitting
+  aliases: [overfit, overfits]
+  def: When a model fits the training data (including its noise) so closely that it performs worse on new data. The gap between training and validation scores reveals it.
+- term: Parameter
+  aliases: [parameters, learned parameter, learned parameters, trainable parameters]
+  def: A number inside the model that training is allowed to change — usually a weight or a bias.
+- term: Pretraining
+  aliases: [pretrained, pre-trained]
+  def: Training a model on a large, general dataset first, so that its learned representation can be reused for other tasks.
+- term: Regularisation
+  aliases: [regularization, regulariser, regularizer]
+  def: Any technique that discourages overfitting — smaller models, weight decay, dropout, early stopping, more data.
+- term: ReLU
+  def: The activation max(0, z) — passes positive values through and turns negatives into zero. Cheap, and the default in most networks.
+- term: Representation
+  aliases: [representations]
+  def: The set of numbers used to describe an example. It can be written by hand (engineered features) or learned by a network.
+- term: Representation learning
+  def: Learning the useful description of the data (the features) from the data itself, jointly with the task, instead of specifying it by hand.
+- term: ROC-AUC
+  aliases: [AUC, ROC AUC]
+  def: The probability that the model scores a random positive example above a random negative one. 1.0 = perfect ranking, 0.5 = random. Robust to class imbalance.
+- term: Seed
+  aliases: [random seed, seeds]
+  def: The starting number for a random number generator. Fixing it makes random choices (splits, initial weights, shuffling) repeatable.
+- term: SGD
+  aliases: [stochastic gradient descent]
+  def: Stochastic gradient descent — gradient descent using the gradient from one mini-batch at a time instead of the full dataset.
+- term: Sigmoid
+  def: The S-shaped function σ(z) = 1 / (1 + e^(−z)) that squashes any number into a probability between 0 and 1.
+- term: Standardisation
+  aliases: [standardization, StandardScaler, standardise, standardised, standardize, feature scaling]
+  def: Rescaling each feature to mean 0 and standard deviation 1, using statistics computed on the training set only.
+- term: Tensor
+  aliases: [tensors]
+  def: PyTorch's multi-dimensional array — like a NumPy array, plus a device (CPU/GPU) and the ability to track gradients.
+- term: Test set
+  def: Data held back until the very end to give one honest, final estimate of performance. Never used for decisions during development.
+- term: Tokenisation
+  aliases: [tokenization, tokenizer, tokeniser, tokens]
+  def: Splitting text into the units (tokens) a language model processes, and mapping each to an integer ID.
+- term: Transfer learning
+  def: Reusing a representation learned on one task or dataset as the starting point for another — the reason pretrained models are so useful.
+- term: Underfitting
+  aliases: [underfit]
+  def: When a model is too simple or too constrained to capture the pattern, so it performs poorly even on the training data.
+- term: Validation set
+  aliases: [validation split, validation data]
+  def: Data held out from training and used to make decisions — choosing hyperparameters, early stopping, comparing models.
+- term: Vanishing gradients
+  aliases: [vanishing gradient, exploding gradients, exploding gradient]
+  def: When gradients shrink (vanish) or grow (explode) as they pass back through many layers, so early layers learn far too slowly or training blows up.
+- term: VRAM
+  def: The memory on a GPU. Weights, gradients, optimizer state and activations must all fit in it, or training fails with an out-of-memory error.
+- term: Weight decay
+  def: A regulariser that shrinks every weight slightly towards zero at each step, discouraging overly large weights.
+- term: Weights
+  aliases: [weight matrix]
+  def: The learned multipliers on a layer's inputs. Together with biases they are the model's parameters.

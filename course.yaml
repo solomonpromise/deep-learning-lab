@@ -1,0 +1,120 @@
+# ---------------------------------------------------------------------------
+# Course definition for the Deep Learning learning platform.
+#
+# Modules listed here always appear on the course map. A module lights up
+# automatically as soon as at least one lesson notebook for it exists in
+# notes/module-N/ (run `make update` after adding notebooks to a "Day N" folder).
+# ---------------------------------------------------------------------------
+
+course:
+  title: Modern Deep Learning & AI Engineering
+  short_title: Deep Learning Lab
+  tagline: From your first neuron to production-grade models — explained, visualised and hands-on.
+  description: >
+    A ten-module engineering course that takes you from classical machine learning
+    to training, debugging, fine-tuning, evaluating and serving modern neural networks.
+    Every lesson combines the full teaching notes with diagrams, animations and
+    interactive labs you can play with in the browser.
+  prerequisites: [Python, Data science, Machine learning]
+  hours: 35
+  hands_on: "50–60%"
+  followed_by: "Generative AI (10.5 h) and the Capstone (9 h)"
+  # Set this once the site lives on GitHub (e.g. "your-user/deep-learning-platform")
+  # to show "Open in Colab" buttons on every lesson.
+  github_repo: "solomonpromise/deep-learning-lab"
+  github_branch: main
+
+# Words used in the original notebooks → words used on the platform.
+# Applied to prose and code comments (never to executable code).
+terminology:
+  - ['\b[Oo]n [Dd]ays? (\d+)', 'in Module \1']
+  - ['\bDays (\d+)', 'Modules \1']
+  - ['\bDay (\d+)', 'Module \1']
+  - ['\bday (\d+)', 'module \1']
+  - ['\bNotes (\d+\.\d+)', 'Lessons \1']
+  - ['\bNote (\d+\.\d+)', 'Lesson \1']
+  - ['\bnote (\d+\.\d+)', 'lesson \1']
+  - ['\bEnd-of-day\b', 'End-of-module']
+  - ['\bend-of-day\b', 'end-of-module']
+  - ['\bthe next nine days\b', 'the next nine modules']
+  - ['\bthis note\b', 'this lesson']
+  - ['\bThis note\b', 'This lesson']
+  - ['\bthe next note\b', 'the next lesson']
+  - ['\bthe previous note\b', 'the previous lesson']
+  - ['\bearlier notes\b', 'earlier lessons']
+  - ['\bthese notes\b', 'these lessons']
+  - ['\bToday we\b', 'In this lesson we']
+  - ['\bDay’s\b', 'Module’s']
+
+sources:
+  # Folders (relative to this file) that `make sync` scans for lesson notebooks.
+  folders: ['../Day *', '../Module *']
+  # When a lesson exists in several versions, prefer files whose name contains
+  # one of these words (first match wins); otherwise the newest file is used.
+  prefer: [self_sufficient, updated]
+  # Lessons whose notebook in notes/ has been hand-curated and must not be
+  # overwritten by `make sync`.
+  locked: []
+
+modules:
+  - number: 1
+    title: From Machine Learning to Deep Learning
+    question: What changes when models learn representations from raw data?
+    topics: [ML vs DL pipelines, Anatomy of a neuron, Forward propagation, Loss, Backpropagation, Gradient descent]
+    hands_on: A first PyTorch network, trained until you can watch the loss fall.
+    icon: spark
+  - number: 2
+    title: "PyTorch: Building Neural Networks"
+    question: How do I actually build a deep learning model?
+    topics: [Tensors, Shape / dtype / device, Broadcasting, nn.Module, Dataset & DataLoader, Training & validation loops]
+    hands_on: An MLP on tabular data, written without fit().
+    engineering: Virtual environments, dependencies, Git/GitHub, project structure.
+    icon: blocks
+  - number: 3
+    title: Training Dynamics & Optimization
+    question: Why does a network learn well, badly, or not at all?
+    topics: [SGD, Momentum, Adam & AdamW, Learning-rate schedules, Overfitting, Dropout, Weight decay, Early stopping, Exploding & vanishing gradients]
+    hands_on: Diagnosing learning curves and fixing deliberately broken experiments.
+    icon: pulse
+  - number: 4
+    title: Deep Learning Engineering
+    question: How do I run deep learning experiments professionally?
+    topics: [Splits & leakage, Class imbalance, Distribution shift, Seeds & configs, Checkpoints & tracking, GPU memory, Mixed precision]
+    hands_on: A gradient-boosting vs neural-network bake-off — choose on constraints, not hype.
+    icon: gear
+  - number: 5
+    title: Representation Learning & Embeddings
+    question: How do networks learn useful representations?
+    topics: [Encoders, Embeddings, Cosine similarity, Self-supervised learning, Contrastive learning, CLIP]
+    hands_on: Create embeddings, run similarity search, inspect embedding neighbourhoods.
+    icon: layers
+  - number: 6
+    title: Transformers
+    question: How does a Transformer actually work?
+    topics: [Tokenization, Positional information, Q/K/V, Self-attention, Multi-head attention, Transformer block, Encoder vs decoder]
+    hands_on: Implement simplified self-attention by hand.
+    icon: attention
+  - number: 7
+    title: Pretrained Models & Hugging Face
+    question: How do engineers leverage models that are already trained?
+    topics: [Pretraining vs fine-tuning, Transfer learning, Hugging Face Hub, Transformers & Datasets, Tokenizers, PEFT, Model cards]
+    hands_on: Fine-tune a pretrained encoder end to end, from loading to inference.
+    icon: cloud
+  - number: 8
+    title: Efficient Fine-Tuning & Data Engineering
+    question: How do we adapt large models without updating every parameter?
+    topics: [Adapters, LoRA, QLoRA, SFT, Data quality, Contamination, Synthetic data, Catastrophic forgetting]
+    hands_on: LoRA / QLoRA adaptation, with a LoRA-only fallback for Mac.
+    icon: tune
+  - number: 9
+    title: Evaluation, Inference & Model Economics
+    question: When is a model good enough to use?
+    topics: [Evaluation design, Calibration, LLM-as-judge, Error analysis, Latency & throughput, KV cache, Quantization, vLLM serving]
+    hands_on: Structured evaluation plus hands-on vLLM serving and cost per request.
+    icon: gauge
+  - number: 10
+    title: Keras 3 / TensorFlow & Model Engineering
+    question: Does the syntax change the concepts?
+    topics: [Keras 3 with TensorFlow, PyTorch → Keras mapping, Professional repo structure, The 12-part README]
+    hands_on: Recreate an earlier model in Keras, then ship an end-to-end project.
+    icon: rocket

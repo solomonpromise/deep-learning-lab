@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Glossary — {{ course.short_title }}{% endblock %}
+{% block main %}
+<div class="plain-page">
+  <header class="plain-hero">
+    <span class="eyebrow"><svg class="ic"><use href="#i-book"/></svg> Reference</span>
+    <h1>Glossary</h1>
+    <p class="lead">Every technical term used in the lessons, in plain English. Inside a lesson, hover or tap any <span class="term demo">underlined term</span> to see its definition without leaving the page.</p>
+    <input class="gloss-filter" type="search" placeholder="Filter terms…" data-gloss-filter>
+    <nav class="alpha" aria-label="Jump to letter">
+      {% for letter in entries|map(attribute='term')|map('first')|map('upper')|unique %}<a href="#letter-{{ letter }}">{{ letter }}</a>{% endfor %}
+    </nav>
+  </header>
+  <dl class="gloss-list">
+    {% set ns = namespace(letter='') %}
+    {% for e in entries %}
+    {% set L = e.term[0]|upper %}
+    {% if L != ns.letter %}{% set ns.letter = L %}<div class="gloss-letter" id="letter-{{ L }}">{{ L }}</div>{% endif %}
+    <div class="gloss-item" id="{{ e.key }}" data-gloss-item="{{ e.term|lower }} {{ e.def_text|lower }}">
+      <dt>{{ e.term }}</dt>
+      <dd>{{ e.def_html | safe }}
+        {% if used_in is defined and used_in.get(e.key) %}
+        <div class="gloss-used">Used in: {% for label, url in used_in[e.key][:6] %}<a href="{{ url }}">{{ label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</div>
+        {% endif %}
+      </dd>
+    </div>
+    {% endfor %}
+  </dl>
+</div>
+{% endblock %}
