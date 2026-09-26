@@ -193,3 +193,7 @@
 
 /* ------------------------------------------------------------------ lr-schedules */
 .lrs-code { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; font-size: .74rem; }
+
+/* ------------------------------------------------------------------ dropout-lab */
+.do-outs { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: .8rem; }
+.do-outs code { font-family: var(--mono); }

@@ -111,7 +111,9 @@ class Builder:
             assets[lid] = store
             store.write()
             print(f"  ✓ {lid}  {lesson.title}  ({len(lesson.sections)} sections, "
-                  f"{len(store.files)} images{', enriched' if data else ''})")
+                  f"{len(store.files)} images"
+                  + (f", {len(lesson.image_prompts)} image prompt(s) hidden" if lesson.image_prompts else "")
+                  + f"{', enriched' if data else ''})")
 
         # ---- navigation model
         nav = []

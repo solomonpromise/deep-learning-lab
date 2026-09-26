@@ -234,8 +234,11 @@ def postprocess_html(fragment: str) -> str:
 
 
 # =========================================================== outputs
+IPYTHON_NOISE = re.compile(r"^The history saving thread hit an unexpected error.*(?:\n|$)", re.M)
+
+
 def _stream_text(text: str) -> str:
-    text = strip_ansi(text)
+    text = IPYTHON_NOISE.sub("", strip_ansi(text))
     # emulate carriage returns (progress bars)
     lines = []
     for line in text.split("\n"):
