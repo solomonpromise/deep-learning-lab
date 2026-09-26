@@ -13,10 +13,9 @@ MODEL = "qwen/qwen3.8-27b"
 REASONING_EFFORT = "low"
 MAX_TOKENS = "1400"
 
-# Optional: per-visitor rate limit (20 questions per minute per IP).
-# [[ratelimits]]
-# name = "RATE_LIMITER"
-# namespace_id = "1001"
-#   [ratelimits.simple]
-#   limit = 20
-#   period = 60
+# Per-visitor rate limit: 20 questions per minute per IP address (counted per Cloudflare location).
+# worker.js reads it as env.RATE_LIMITER and answers 429 when a visitor goes over. `period` must be 10 or 60.
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }
