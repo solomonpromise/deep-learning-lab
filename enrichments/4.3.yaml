@@ -1,0 +1,614 @@
+# Teaching layer for Lesson 4.3 — Memory, Batch Size and Precision
+# The notebook is the author's current version (not locked). Its two IMAGE placeholders are hidden by the build and
+# replaced here by SVG figures; a third figure shows the three number formats bit by bit.
+# The claims in the Section 6 and Section 7 notes were checked by rerunning the lesson's own functions, verbatim, on
+# synthetic data of the same shape with PyTorch 2.14.
+
+summary: |
+  Will this run fit in the memory you have? You count bytes: every number costs 4 bytes in fp32, gradients add one more
+  copy of the model, and AdamW adds two, so **training with AdamW needs about four times the model's own memory** before a
+  single activation. You estimate a 7-billion-parameter model three ways, read fp32, fp16 and bf16 as a trade between range
+  and precision, and see why only fp16 needs a loss scaler. Activations are the one term that grows with the batch; speed
+  stops improving past a batch size that belongs to the machine; gradient accumulation gets the big batch back in small
+  memory. Autocast belongs around the forward pass. Finally, a recovery ladder for real out-of-memory errors and a playbook
+  that tries the free fixes first.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    before: "def build_mlp(n_inputs=50, hidden=(64, 32)):"
+    type: predict
+    mode: choice
+    prompt: "The Day 3 network has 5,377 weights, which take **21,508 bytes** in fp32. After one AdamW step, how many bytes do the weights, their gradients and AdamW's state take **together**?"
+    options: ["About 21,500 (just the weights)", "About 43,000", "About 86,000", "About 172,000"]
+    answer: 2
+    reveal: |
+      **86,056 bytes, four times the weights.** Weights 21,508, gradients 21,508 (one per weight), and AdamW's two running
+      averages 43,016, plus 24 bytes for a step counter on each of the six parameter tensors. Nothing here depends on the
+      batch: that is the next section's job.
+
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    after: "Same, with fp16 weights: 52 GB"
+    type: explainer
+    style: warning
+    title: "What the 52 GB row assumes, and what mixed precision really costs"
+    md: |
+      `training_memory(..., precision="fp16")` puts **everything** in 2 bytes: weights, gradients and both AdamW averages. That is
+      *pure* 16-bit training. It is not what `torch.autocast` does, and it is not what "mixed precision" usually means, for the
+      reason Section 3 shows: a bf16 weight near 1.0 cannot move by less than about 0.004, so a typical AdamW step of 0.001
+      rounds away. Real runs keep a full-precision copy of the weights and of the optimizer state.
+
+      | 7B model, AdamW | bytes per weight | total |
+      |---|---|---|
+      | fp32 (the lesson's row) | 4 weights + 4 gradients + 8 averages = **16** | **104 GB** |
+      | mixed precision, standard accounting | 2 weights + 2 gradients + 4 fp32 master copy + 8 averages = **16** | **104 GB** |
+      | PyTorch `autocast` | 4 + 4 + 8, plus 2 for 16-bit working copies made during each step | **104 GB**, up to 117 GB during a step |
+      | pure 16-bit (the lesson's "fp16 weights" row) | 2 + 2 + 4 = **8** | **52 GB** |
+
+      So mixed precision leaves the model-state memory where it was. What it shrinks is the **activations**, and on hardware
+      with 16-bit units it is faster. Getting a full fine-tune below 104 GB takes other tools: 8-bit optimizer state
+      (bitsandbytes), sharding the state across several GPUs (ZeRO, FSDP), or not training most of the weights (LoRA). The
+      "standard accounting" row is the one in the ZeRO paper (Rajbhandari et al., 2020).
+
+      The LoRA row is fine as an estimate: frozen weights need no master copy, since they never change.
+
+  - section: 2
+    after: "This table is also how you answer"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stacked bars: a 7B model needs 13 GB for fp16 inference, 26 GB for fp32 inference, 52 GB to train with SGD and 104 GB to train with AdamW" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">Why training costs about four times inference</text><text x="360" y="46" text-anchor="middle" style="fill:var(--ink-3);font-size:12px;font-weight:600">one 7-billion-parameter model, before a single activation is stored</text><line x1="70" y1="376.0" x2="540" y2="376.0" style="stroke:var(--line);stroke-width:1"/><text x="62" y="380.0" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">0</text><line x1="70" y1="326.5" x2="540" y2="326.5" style="stroke:var(--line);stroke-width:1"/><text x="62" y="330.54545454545456" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">20</text><line x1="70" y1="277.1" x2="540" y2="277.1" style="stroke:var(--line);stroke-width:1"/><text x="62" y="281.0909090909091" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">40</text><line x1="70" y1="227.6" x2="540" y2="227.6" style="stroke:var(--line);stroke-width:1"/><text x="62" y="231.63636363636363" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">60</text><line x1="70" y1="178.2" x2="540" y2="178.2" style="stroke:var(--line);stroke-width:1"/><text x="62" y="182.1818181818182" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">80</text><line x1="70" y1="128.7" x2="540" y2="128.7" style="stroke:var(--line);stroke-width:1"/><text x="62" y="132.72727272727272" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">100</text><text x="22" y="240.0" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:700">GB</text><rect x="91.8" y="344.8" width="74" height="31.2" rx="3" style="fill:var(--c0)"/><text x="128.75" y="363.87965289029205" text-anchor="middle" style="fill:var(--surface);font-size:11.5px;font-weight:800">13.0</text><text x="128.75" y="336.75930578058416" text-anchor="middle" style="fill:var(--ink);font-size:12.5px;font-weight:800">13 GB</text><text x="128.75" y="394" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">inference</text><text x="128.75" y="409" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">fp16</text><rect x="209.2" y="312.5" width="74" height="63.5" rx="3" style="fill:var(--c0)"/><text x="246.25" y="347.75930578058416" text-anchor="middle" style="fill:var(--surface);font-size:11.5px;font-weight:800">26.1</text><text x="246.25" y="304.5186115611683" text-anchor="middle" style="fill:var(--ink);font-size:12.5px;font-weight:800">26 GB</text><text x="246.25" y="394" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">inference</text><text x="246.25" y="409" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">fp32</text><rect x="326.8" y="312.5" width="74" height="63.5" rx="3" style="fill:var(--c0)"/><text x="363.75" y="347.75930578058416" text-anchor="middle" style="fill:var(--surface);font-size:11.5px;font-weight:800">26.1</text><rect x="326.8" y="248.0" width="74" height="63.5" rx="3" style="fill:var(--c1)"/><text x="363.75" y="283.27791734175247" text-anchor="middle" style="fill:var(--surface);font-size:11.5px;font-weight:800">26.1</text><text x="363.75" y="240.03722312233666" text-anchor="middle" style="fill:var(--ink);font-size:12.5px;font-weight:800">52 GB</text><text x="363.75" y="394" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">training</text><text x="363.75" y="409" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">fp32 + SGD</text><rect x="444.2" y="312.5" width="74" height="63.5" rx="3" style="fill:var(--c0)"/><text x="481.25" y="347.75930578058416" text-anchor="middle" style="fill:var(--surface);font-size:11.5px;font-weight:800">26.1</text><rect x="444.2" y="248.0" width="74" height="63.5" rx="3" style="fill:var(--c1)"/><text x="481.25" y="283.27791734175247" text-anchor="middle" style="fill:var(--surface);font-size:11.5px;font-weight:800">26.1</text><rect x="444.2" y="183.6" width="74" height="63.5" rx="3" style="fill:var(--violet)"/><text x="481.25" y="218.7965289029208" text-anchor="middle" style="fill:var(--surface);font-size:11.5px;font-weight:800">26.1</text><rect x="444.2" y="119.1" width="74" height="63.5" rx="3" style="fill:var(--aqua)"/><text x="481.25" y="154.31514046408915" text-anchor="middle" style="fill:var(--surface);font-size:11.5px;font-weight:800">26.1</text><text x="481.25" y="111.07444624467331" text-anchor="middle" style="fill:var(--ink);font-size:12.5px;font-weight:800">104 GB</text><text x="481.25" y="394" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">training</text><text x="481.25" y="409" text-anchor="middle" style="fill:var(--ink-3);font-size:11px;font-weight:600">fp32 + AdamW</text><line x1="70" y1="338.9" x2="546" y2="338.9" style="stroke:var(--red);stroke-width:1.6;stroke-dasharray:6 4"/><text x="550" y="342.9090909090909" text-anchor="start" style="fill:var(--red);font-size:11px;font-weight:700">free Colab T4, ~15 GB</text><line x1="70" y1="316.7" x2="546" y2="316.7" style="stroke:var(--red);stroke-width:1.6;stroke-dasharray:6 4"/><text x="550" y="320.6545454545454" text-anchor="start" style="fill:var(--red);font-size:11px;font-weight:700">consumer GPU, 24 GB</text><line x1="70" y1="178.2" x2="546" y2="178.2" style="stroke:var(--red);stroke-width:1.6;stroke-dasharray:6 4"/><text x="550" y="182.1818181818182" text-anchor="start" style="fill:var(--red);font-size:11px;font-weight:700">A100 / H100, 80 GB</text><rect x="100" y="70" width="12" height="12" rx="3" style="fill:var(--c0)"/><text x="118" y="80" text-anchor="start" style="fill:var(--ink);font-size:12px;font-weight:700">weights</text><rect x="186" y="70" width="12" height="12" rx="3" style="fill:var(--c1)"/><text x="204" y="80" text-anchor="start" style="fill:var(--ink);font-size:12px;font-weight:700">gradients</text><rect x="286" y="70" width="12" height="12" rx="3" style="fill:var(--violet)"/><text x="304" y="80" text-anchor="start" style="fill:var(--ink);font-size:12px;font-weight:700">average 1</text><text x="382" y="80" text-anchor="start" style="fill:var(--ink-3);font-size:10.5px;font-weight:600;font-family:JetBrains Mono,monospace">exp_avg</text><rect x="442" y="70" width="12" height="12" rx="3" style="fill:var(--aqua)"/><text x="460" y="80" text-anchor="start" style="fill:var(--ink);font-size:12px;font-weight:700">average 2</text><text x="538" y="80" text-anchor="start" style="fill:var(--ink-3);font-size:10.5px;font-weight:600;font-family:JetBrains Mono,monospace">exp_avg_sq</text></svg>
+    caption: "The four bars for one 7B model, from the lesson's function. Only fp16 inference fits under the free Colab line; full fp32 training with AdamW needs more than one 80 GB card before a single activation."
+
+  - section: 2
+    after: "This table is also how you answer"
+    type: widget
+    name: memory-planner
+    title: "Memory planner: will it fit?"
+    intro: |
+      The lesson's arithmetic, extended to activations. Start on **7B · AdamW · fp32**, then switch to **mixed**: the total does
+      not fall. Then lower the **share of weights trained** to 0.2% (the LoRA row) and try **4-bit frozen**. For the two small
+      networks, activations use the lesson's measured bytes per row; for BERT-base and the 7B model they are a standard
+      estimate for GPT-style blocks (Korthikanti et al., 2022), so treat them as rough.
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "`torch.finfo` reports both."
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 348" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bit layouts: fp32 has 1 sign, 8 exponent and 23 fraction bits; fp16 has 1, 5 and 10; bf16 has 1, 8 and 7" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="26" text-anchor="middle" style="fill:var(--ink);font-size:15.5px;font-weight:800">Where the bits go: range from the exponent, precision from the fraction</text><text x="82" y="80" text-anchor="end" style="fill:var(--ink);font-size:14px;font-weight:800">fp32</text><text x="82" y="95" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">4 bytes</text><rect x="96" y="66" width="15" height="24" rx="3" style="fill:var(--red);fill-opacity:.9"/><rect x="113" y="66" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="130" y="66" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="147" y="66" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="164" y="66" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="181" y="66" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="198" y="66" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="215" y="66" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="232" y="66" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="249" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="266" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="283" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="300" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="317" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="334" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="351" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="368" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="385" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="402" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="419" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="436" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="453" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="470" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="487" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="504" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="521" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="538" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="555" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="572" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="589" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="606" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="623" y="66" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><text x="180.0" y="60" text-anchor="middle" style="fill:var(--c0);font-size:10.5px;font-weight:800">8 exponent bits</text><text x="443.5" y="60" text-anchor="middle" style="fill:var(--c1);font-size:10.5px;font-weight:800">23 fraction bits</text><text x="96" y="110" text-anchor="start" style="fill:var(--ink-2);font-size:11.5px;font-weight:600">largest 3.4e38 · smallest normal 1.2e-38 · step near 1.0: 1.2e-7</text><text x="82" y="158" text-anchor="end" style="fill:var(--ink);font-size:14px;font-weight:800">fp16</text><text x="82" y="173" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">2 bytes</text><rect x="96" y="144" width="15" height="24" rx="3" style="fill:var(--red);fill-opacity:.9"/><rect x="113" y="144" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="130" y="144" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="147" y="144" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="164" y="144" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="181" y="144" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="198" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="215" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="232" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="249" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="266" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="283" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="300" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="317" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="334" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="351" y="144" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><text x="154.5" y="138" text-anchor="middle" style="fill:var(--c0);font-size:10.5px;font-weight:800">5 exponent bits</text><text x="282.0" y="138" text-anchor="middle" style="fill:var(--c1);font-size:10.5px;font-weight:800">10 fraction bits</text><text x="96" y="188" text-anchor="start" style="fill:var(--ink-2);font-size:11.5px;font-weight:600">largest 65,504 · smallest normal 6.1e-5 · step near 1.0: 9.8e-4</text><text x="82" y="236" text-anchor="end" style="fill:var(--ink);font-size:14px;font-weight:800">bf16</text><text x="82" y="251" text-anchor="end" style="fill:var(--ink-3);font-size:10.5px;font-weight:600">2 bytes</text><rect x="96" y="222" width="15" height="24" rx="3" style="fill:var(--red);fill-opacity:.9"/><rect x="113" y="222" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="130" y="222" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="147" y="222" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="164" y="222" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="181" y="222" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="198" y="222" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="215" y="222" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="232" y="222" width="15" height="24" rx="3" style="fill:var(--c0);fill-opacity:.9"/><rect x="249" y="222" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="266" y="222" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="283" y="222" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="300" y="222" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="317" y="222" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="334" y="222" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><rect x="351" y="222" width="15" height="24" rx="3" style="fill:var(--c1);fill-opacity:.9"/><text x="180.0" y="216" text-anchor="middle" style="fill:var(--c0);font-size:10.5px;font-weight:800">8 exponent bits</text><text x="307.5" y="216" text-anchor="middle" style="fill:var(--c1);font-size:10.5px;font-weight:800">7 fraction bits</text><text x="96" y="266" text-anchor="start" style="fill:var(--ink-2);font-size:11.5px;font-weight:600">largest 3.4e38 · smallest normal 1.2e-38 · step near 1.0: 7.8e-3</text><rect x="96" y="296" width="12" height="12" rx="3" style="fill:var(--red)"/><text x="114" y="306" text-anchor="start" style="fill:var(--ink-2);font-size:11.5px;font-weight:700">sign</text><rect x="166" y="296" width="12" height="12" rx="3" style="fill:var(--c0)"/><text x="184" y="306" text-anchor="start" style="fill:var(--ink-2);font-size:11.5px;font-weight:700">exponent: how big or small (range)</text><rect x="426" y="296" width="12" height="12" rx="3" style="fill:var(--c1)"/><text x="444" y="306" text-anchor="start" style="fill:var(--ink-2);font-size:11.5px;font-weight:700">fraction: how fine (precision)</text><text x="360" y="334" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">bf16 is fp32 with the last 16 fraction bits cut off: the same range, far less precision</text></svg>
+    caption: "Each format splits its bits between an exponent (range) and a fraction (precision). bf16 keeps fp32's eight exponent bits, so it keeps fp32's range."
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "trades this memory for time"
+    type: explainer
+    style: deep
+    title: "What the hook counts, and what autograd actually keeps"
+    md: |
+      The hook adds up **every layer's output**: for the wide network, 1,024 + 1,024 + 1,024 + 1,024 + 1 numbers per row, which is
+      the 16,388 bytes in the table. Autograd keeps less. Each `Linear` saves its **input** and each `ReLU` saves its **output**, and
+      those are the same tensor, while the `Linear` outputs before each ReLU are freed as soon as the ReLU has used them. Counting
+      what autograd saves, with `torch.autograd.graph.saved_tensors_hooks`, gives:
+
+      | wide network, per row | fp32 | under bf16 `autocast` |
+      |---|---|---|
+      | the hook's count | 16,388 bytes | |
+      | kept for the backward pass | **8,400 bytes** (the 50 inputs, two ReLU outputs, the logit and the label) | about **4,200 bytes** |
+      | 16-bit copies of the weights kept for the backward pass | none | about **2.1 MB**, whatever the batch |
+
+      Three consequences. The hook's figure is an upper bound on what is stored, here about twice the truth, though the freed
+      tensors still count briefly toward the peak. The rule that matters survives: stored activations are still exactly linear in
+      batch size. And autocast's saving is not free: at batch 256 its weight copies (2.1 MB) outweigh the activations it saved
+      (1.1 MB), so for this network mixed precision only saves memory above a batch of roughly 500.
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "Forgetting to divide"
+    type: explainer
+    style: warning
+    title: "With AdamW, forgetting to divide hides itself"
+    md: |
+      "Behaves exactly like a four-times learning rate" is true for **SGD**. It is not true for the optimizer this lesson uses.
+      Forty steps, each accumulated over 8 small batches, once dividing by 8 and once forgetting to:
+
+      | optimizer | largest difference between the two runs' weights | final loss, divided vs not |
+      |---|---|---|
+      | SGD, lr 0.05 | 0.61 | 0.667 vs 0.226: in effect an 8× learning rate |
+      | AdamW, lr 1e-3 | 0.005 | 0.4922 vs 0.4922 |
+
+      Adam divides each gradient by the square root of its own running average of squared gradients, so multiplying every
+      gradient by 8 multiplies both by 8 and cancels, apart from the tiny `eps` in the denominator. The bug is silent, which is its
+      own danger: it comes back the day you switch to SGD, add gradient clipping (`clip_grad_norm_(..., 1.0)` then trips eight
+      times too early), or compare logged gradient norms between runs. Divide anyway.
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "So this is not a precision problem at all"
+    type: explainer
+    style: warning
+    title: "What really went stale: the scores, not the training"
+    md: |
+      Rerunning `train_bank` exactly as written, on synthetic data of the same shape, and printing **every** epoch's validation
+      score instead of only the best shows something more specific than "part of the network is training on stale values":
+
+      | mode | validation AUC, epochs 1, 2, 3 … 10 | the model scored after the block |
+      |---|---|---|
+      | `"fp32"` | 0.8904, 0.9564, 0.9706 … 0.9736 | 0.9736 |
+      | `"whole"` | **0.8903, 0.8903, 0.8903 … 0.8903** | **0.9736** |
+      | `"whole"`, `cache_enabled=False` | 0.8903, 0.9563, 0.9706 … 0.9736 | 0.9736 |
+
+      1. **The training never ran in bf16.** In `"whole"` mode the inner block is `autocast(enabled=False)`, which switches
+         autocast *off* for the forward pass even inside the outer block. The model trained normally.
+      2. **The scoring froze.** The first `validation_auc()` call was the first forward pass under autocast, so it filled the cache
+         with bf16 copies of the weights as they stood after epoch 1. Every later call reused them and got the same score, so
+         `best` never moved. The lesson's **0.7584 is its model's validation AUC after one epoch**, reported ten times.
+      3. **The backward passes and the scoring ran inside the block**, where autocast picks bf16 for the scoring's matrix
+         multiplications and for some of the backward pass's (PyTorch's documentation advises against backward passes under
+         autocast). That is why the cache-off run lands at 0.7848 rather than 0.7847: slightly different arithmetic, same quality.
+
+      When the training forward pass is also inside a long block, training freezes too: every step computes its gradient at the
+      weights of the very first step. On the synthetic data that version scored the *untrained* network's 0.5085 at every epoch,
+      the same kind of number as the earlier draft's 0.4079.
+
+      The advice stands, and the danger is worse than a lost 0.026: nothing warned that the score used to pick the best epoch,
+      stop early or report the result had stopped measuring the model.
+
+  # ------------------------------------------------------------------ §8
+  - section: 8
+    after: "A caught error can keep your memory alive"
+    type: explainer
+    style: tip
+    title: "Clean up after the `except`, not inside it"
+    md: |
+      `largest_batch_that_fits` calls `gc.collect()` and `torch.cuda.empty_cache()` **inside** the `except` block, which is exactly
+      where the traceback described above is still alive, holding the failed attempt's frame and its tensors. PyTorch's own FAQ
+      ("My out of memory exception handler can't allocate memory") gives the fix: leave the handler first, then clean up.
+
+      ```python
+      def largest_batch_that_fits(attempt, start, smallest=1, errors=OUT_OF_MEMORY):
+          size, log = start, []
+          while size >= smallest:
+              try:
+                  attempt(size)
+              except errors:
+                  log.append((size, "out of memory"))
+              else:
+                  log.append((size, "fits"))
+                  return size, log
+              gc.collect()                          # outside the handler: the traceback is gone
+              if torch.cuda.is_available():
+                  torch.cuda.empty_cache()
+              size //= 2
+          return None, log
+      ```
+
+      It produces the same log with `pretend_gpu`. The original still works inside one process, because the tensors are freed
+      once the handler exits and PyTorch reuses them for the next attempt, but its `empty_cache()` cannot hand them back to the
+      driver. The GPU cell below has the same pattern.
+
+  # ------------------------------------------------------------------ §10
+  - section: 10
+    after: "Work down the list"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 588" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The out-of-memory ladder: free fixes first, then cheap ones, then changes to the model, and new hardware last" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="28" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">The out-of-memory ladder: work top to bottom</text><rect x="96" y="50" width="560" height="158" rx="12" style="fill:var(--green-soft);stroke:var(--green);stroke-width:1.5"/><text x="112" y="74" text-anchor="start" style="fill:var(--ink);font-size:14px;font-weight:800">Tier 0 · free  ·  changes nothing about the model</text><text x="112" y="92" text-anchor="start" style="fill:var(--ink-3);font-size:11.5px;font-weight:700">costs you: nothing</text><circle cx="126" cy="114" r="9" style="fill:var(--green)"/><text x="126" y="118" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">1</text><text x="144" y="118" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Restart the kernel or the process</text><circle cx="126" cy="138" r="9" style="fill:var(--green)"/><text x="126" y="142" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">2</text><text x="144" y="142" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Append loss.item(), never loss</text><circle cx="126" cy="162" r="9" style="fill:var(--green)"/><text x="126" y="166" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">3</text><text x="144" y="166" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Score inside torch.no_grad()</text><circle cx="126" cy="186" r="9" style="fill:var(--green)"/><text x="126" y="190" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">4</text><text x="144" y="190" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">del, then gc.collect(), then empty_cache()</text><rect x="96" y="220" width="560" height="158" rx="12" style="fill:var(--yellow-soft);stroke:var(--yellow);stroke-width:1.5"/><text x="112" y="244" text-anchor="start" style="fill:var(--ink);font-size:14px;font-weight:800">Tier 1 · cheap  ·  changes the run, not the model</text><text x="112" y="262" text-anchor="start" style="fill:var(--ink-3);font-size:11.5px;font-weight:700">costs you: some speed, and maybe a re-tuned learning rate</text><circle cx="126" cy="284" r="9" style="fill:var(--yellow)"/><text x="126" y="288" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">5</text><text x="144" y="288" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Halve the batch size (the ladder)</text><circle cx="126" cy="308" r="9" style="fill:var(--yellow)"/><text x="126" y="312" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">6</text><text x="144" y="312" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Gradient accumulation to get it back</text><circle cx="126" cy="332" r="9" style="fill:var(--yellow)"/><text x="126" y="336" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">7</text><text x="144" y="336" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Mixed precision: halves the activations</text><circle cx="126" cy="356" r="9" style="fill:var(--yellow)"/><text x="126" y="360" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">8</text><text x="144" y="360" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Shorter sequences, for text</text><rect x="96" y="390" width="560" height="134" rx="12" style="fill:var(--red-soft);stroke:var(--red);stroke-width:1.5"/><text x="112" y="414" text-anchor="start" style="fill:var(--ink);font-size:14px;font-weight:800">Tier 2 · changes the computation or the model</text><text x="112" y="432" text-anchor="start" style="fill:var(--ink-3);font-size:11.5px;font-weight:700">costs you: time, accuracy or money</text><circle cx="126" cy="454" r="9" style="fill:var(--red)"/><text x="126" y="458" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">9</text><text x="144" y="458" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Gradient checkpointing (about 30% slower)</text><circle cx="126" cy="478" r="9" style="fill:var(--red)"/><text x="126" y="482" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">10</text><text x="144" y="482" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Freeze most of the model: LoRA</text><circle cx="126" cy="502" r="9" style="fill:var(--red)"/><text x="126" y="506" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">11</text><text x="144" y="506" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Quantise the frozen weights: QLoRA</text><rect x="186" y="540" width="380" height="36" rx="10" style="fill:none;stroke:var(--ink-3);stroke-width:1.4;stroke-dasharray:6 5"/><text x="376.0" y="563" text-anchor="middle" style="fill:var(--ink-3);font-size:12.5px;font-weight:700">12  A smaller model, or a bigger GPU: last, not first</text><line x1="52" y1="58" x2="52" y2="556" style="stroke:var(--ink-2);stroke-width:2"/><path d="M 45 554 L 52 566 L 59 554 z" style="fill:var(--ink-2)"/><text x="0" y="0" transform="translate(40 312.0) rotate(-90)" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:700">cost to you rises</text><text x="0" y="0" transform="translate(686 312.0) rotate(90)" text-anchor="middle" style="fill:var(--ink-3);font-size:11.5px;font-weight:700">stop at the first fix that works</text></svg>
+    caption: "Stop at the first rung that works. The four free fixes solve more real failures than their position suggests."
+
+answers:
+  "1-1":
+    - |
+      **Two times:** one copy of the weights and one of the gradients. Plain SGD keeps no state between steps (the update is just
+      `weight -= lr * gradient`). Add momentum and it becomes three times, because momentum keeps one running average per weight.
+    - |
+      Inference needs the **weights** and the **activations**, and the activations only briefly: under `torch.no_grad()` there is no
+      backward pass to feed, so each layer's output can be freed as soon as the next layer has used it. It needs **no gradients and
+      no optimizer state**. That is why the "inference only" row in Section 2 is just the weights. (A language model generating text
+      adds one more term, the key-value cache, which grows with the length of the context: Day 9.)
+  "2-1":
+    - |
+      110 million weights × (4 + 4 + 8) bytes = 1.76 billion bytes, about **1.64 GB**, the value in the table's BERT-base row. That
+      is before activations, and for BERT they dominate: by the standard estimate one 512-token sequence keeps roughly a third of a GB of
+      activations in 16-bit, so a batch of 32 long sequences needs far more memory for activations than for the model. The
+      memory planner above shows both terms.
+    - |
+      Because the adapters are not what fills the memory. Of the row's 13.12 GB, **13.04 GB is the frozen model itself**, which
+      needs no gradient and no optimizer state but still has to sit in memory. The adapters' gradients and AdamW state are 0.08 GB,
+      so halving the adapters saves at most 0.04 GB. The only way down is to store the frozen weights in fewer bits, which is QLoRA
+      (4 bits: about 3.3 GB for 7B). One simplification: the function treats the adapters as a share of the existing weights, while
+      real LoRA adds new ones, usually kept in fp32. At this size that is still well under 0.3 GB.
+  "3-1":
+    - |
+      Because the scaler fixes a **range** problem, and only fp16 has one. fp16 spends 5 bits on the exponent, so its smallest normal
+      number is about 0.00006 (a few coarser "subnormal" values reach 0.00000006), and many gradients are smaller than that: they
+      become exactly zero. Multiplying the loss by 65,536 moves them into range. bf16 spends 8 bits on the exponent, like fp32, so it
+      reaches down to about 1e-38. Small gradients survive, only less precisely, and there is nothing to scale.
+    - |
+      Because the weights are not stored in bf16. `autocast` keeps the weights, and AdamW keeps its averages, in fp32; bf16 is only
+      used for the matrix multiplications inside the forward pass. There, a rounding error of about 0.4% per number is small next to
+      the noise of a mini-batch gradient, and it averages out across thousands of products. It would **not** be harmless if the
+      weights themselves were bf16: `1.0 + 0.001` in bf16 is still 1.0, and `0.05 + 0.00002` (a typical fine-tuning step) is still
+      0.05. Updates that small would vanish, which is why a full-precision master copy exists.
+  "4-1":
+    - |
+      The **activations** doubled, because they are linear in batch size. The **weights, gradients and optimizer state** did not
+      change: they depend on the model and the optimizer, not on how many rows go through. So the fix is on the activation side:
+      batch 64 with two accumulation steps, mixed precision, or gradient checkpointing.
+    - |
+      Because in a Transformer every **token** is processed like a row: a batch of 8 sequences of 1,000 tokens stores activations for
+      8,000 positions, so doubling the length doubles that part, just like doubling the batch. On top of that, attention compares
+      every token with every other: each head stores a sequence × sequence table of scores, which grows with the **square** of the
+      length. By the standard estimate for a 7B-sized model, that quadratic part overtakes everything else at about 870 tokens.
+      Memory-efficient attention (FlashAttention) avoids storing those tables, which is a large part of why long contexts became
+      trainable.
+  "5-1":
+    - |
+      Each step has two costs: a **fixed** part (the Python loop, launching the work, and an AdamW update over all 1.1 million
+      weights, whatever the batch) and a **per-row** part (the matrix multiplications). At batch 16 the fixed part dominates, so
+      doubling the batch nearly doubles throughput. Once the per-row work dominates, the arithmetic units are already busy, time per
+      step grows in step with the batch, and rows per second level off at what the hardware can compute. This run used a single
+      CPU thread, which fills up early; a GPU has thousands of parallel units and keeps improving to much larger batches. (Here the
+      last step still gained about 6%: 17,629 to 18,729 rows per second.)
+    - |
+      A smaller batch gives a noisier gradient, so the same learning rate takes relatively bolder steps. Consider **lowering it**:
+      the linear-scaling rule for SGD (Goyal et al., 2017) halves the rate with the batch, and for Adam a gentler square-root rule
+      (about 0.7×) is a common starting point. The cleanest option is often to keep the effective batch with **gradient
+      accumulation** (Section 6) and leave the learning rate alone. Either way these are heuristics: check the validation curve.
+  "6-1":
+    - |
+      With **SGD**, the gradients are 8 times too large, so it behaves like an 8-times learning rate: a noisier curve, spikes, possibly
+      divergence (Note 3.4, Case 1). With **Adam or AdamW**, almost nothing happens, because Adam normalises each gradient by its own
+      running size and a constant factor cancels (see the note above). The curve you log also depends on what you log: add up the
+      undivided small-batch losses and the reported loss is 8 times too big even though the training is fine.
+    - |
+      **Time:** the same rows go through, but in smaller pieces, so each row costs more. On the machine that built the notebook, batch
+      64 ran at 8,832 rows per second against 16,154 for batch 256, so four accumulated batches of 64 take nearly twice as long as one
+      of 256. **Memory:** activations follow the small batch (49,408 bytes instead of 197,632); weights, gradients and optimizer
+      state are unchanged, since the gradients accumulate in the same `.grad` tensors. **Result:** the same as the big batch, up to
+      rounding (7.45e-09), except for BatchNorm and anything averaged per batch. It is *not* the same as training on small batches
+      without accumulating, which takes four times as many, noisier steps.
+  "7-1":
+    - |
+      The **activations**: the tensors kept for the backward pass are bf16, half the bytes. Measured on the wide network, about 4,200
+      bytes per row instead of 8,400. Weights, gradients and the optimizer state stay fp32. One addition people forget: autocast
+      also keeps **16-bit copies of the weights** for the backward pass (about 2.1 MB for the wide network), so at small batches it
+      can use more memory than fp32. Its saving grows with the batch and, for text, with the sequence length.
+    - |
+      Because the arithmetic is different. bf16 keeps only 2 to 3 significant digits, so every matrix multiplication rounds
+      differently, the gradients differ slightly, and the differences compound over thousands of steps into a different path.
+      Different kernels also add numbers in a different order. The two runs are not Level 1 repeats of each other (Note 4.2); each is
+      repeatable on its own, and the difference is explained by the record, as long as precision is one of the settings. Judge the gap
+      against the noise floor: here fp32 and forward-only bf16 agreed to four decimals (0.7847), which is luck at this size, not a
+      guarantee.
+  "8-1":
+    - |
+      Because PyTorch did not give the memory back to the driver. When a tensor dies, its block returns to PyTorch's own **cache**,
+      ready for the next tensor, and `nvidia-smi` reports what the process has reserved (plus a few hundred MB for the CUDA context),
+      not what tensors are using. `torch.cuda.empty_cache()` releases the unused cached blocks. And if anything else still refers to
+      the tensor (another variable, a list, a traceback, or a notebook's output history such as `_` or `Out[12]`), `del` removed only
+      one name and the tensor has not been freed at all.
+    - |
+      Any three of these:
+      - **another process** is holding GPU memory: a second notebook kernel, an earlier run that never exited, another user (check
+        `nvidia-smi`);
+      - **your own process** holds more than yesterday: tensors from earlier cells, a caught out-of-memory traceback, losses appended
+        with their graphs (restart the kernel);
+      - **the inputs got bigger**: a data change, longer sequences or images, padding to the longest item in a batch when one very
+        long example arrives;
+      - **the hardware changed**: Colab gave you a different GPU, with less memory;
+      - **the software changed**: a library update with different kernels or workspace sizes, or `cudnn.benchmark` choosing a
+        hungrier algorithm; long runs can also fragment the cache.
+
+explain:
+  - cell: "def build_mlp(n_inputs=50, hidden=(64, 32)):"
+    title: "Counting the first three kinds of tensor"
+    lines:
+      - match: "loss_function(model(batch_x), batch_y).backward()    # creates the gradients"
+        note: "`.grad` does not exist until the first backward pass; before it, every `p.grad` is `None`."
+      - match: "optimizer.step()                                     # creates the optimizer state"
+        note: "AdamW creates `exp_avg` and `exp_avg_sq` lazily, on the first step. Before it, `optimizer.state` is empty."
+      - match: "return sum(t.numel() * t.element_size() for t in tensors if torch.is_tensor(t))"
+        note: "Section 1's multiplication, summed. `torch.is_tensor` skips anything that is not a tensor."
+      - match: "state_bytes = total_bytes([v for entry in optimizer.state.values() for v in entry.values()])"
+        note: "`step` is a 4-byte tensor too, one per parameter tensor: six of them are the 24 bytes the Section 2 estimate misses."
+
+  - cell: "def training_memory(n_parameters, precision=\"fp32\""
+    title: "Estimating before running"
+    lines:
+      - match: "trainable = 0.0                       # no backward pass, so no gradients at all"
+        note: "Inference overrides whatever share was passed: nothing is trained."
+      - match: "state = n_parameters * trainable * OPTIMIZER_COPIES[optimizer] * size"
+        note: "The optimizer state is counted in the same format as the weights: exact for fp32, an assumption for the fp16 rows."
+
+  - cell: "def activation_bytes(model, batch_size, n_inputs=50):"
+    title: "Measuring activations with hooks"
+    lines:
+      - match: "running_total.append(module_output.numel() * module_output.element_size())"
+        note: "Called after each layer's forward pass with its input and output; only the output's size is recorded."
+      - match: "handles = [layer.register_forward_hook(record) for layer in model]"
+        note: "Iterating an `nn.Sequential` gives its layers in order. Each registration returns a handle for removing it later."
+      - match: "with torch.no_grad():"
+        note: "Only the sizes are needed, so no graph is built. The count covers every layer output, more than autograd keeps."
+      - match: "handle.remove()                 # always remove hooks, or they fire forever"
+        note: "A forgotten hook runs on every later forward pass and keeps growing `running_total` through its closure."
+
+  - cell: "def throughput(model, batch_size, n_inputs=50, seconds=1.0):"
+    title: "Measuring throughput"
+    lines:
+      - match: "for _ in range(3):"
+        note: "Warm-up: the first steps pay one-off costs (memory allocation, choosing kernels) and would drag the average down."
+      - match: "while time.perf_counter() - started < seconds:"
+        note: "A fixed time budget rather than a fixed number of steps, so small and large batches are timed equally long."
+      - match: "steps += batch_size"
+        note: "Despite its name, `steps` counts **rows**: the function returns rows per second."
+
+  - cell: "one_big_batch = build_mlp()"
+    title: "Proving accumulation matches the big batch"
+    lines:
+      - match: "accumulated.load_state_dict(one_big_batch.state_dict())      # identical starting weights"
+        note: "Two separate models with the same starting weights, so any gradient difference comes from the batching alone."
+      - match: "(loss_function(accumulated(small_x), small_y) / 4).backward()"
+        note: "`.backward()` adds into `.grad` and nothing zeroes it between the four calls. Dividing by 4 turns four averages into one."
+
+  - cell: "def timed_steps(use_autocast, seconds=2.0, batch_size=1024):"
+    title: "Timing mixed precision"
+    lines:
+      - match: "with torch.autocast(\"cpu\", dtype=torch.bfloat16, enabled=use_autocast):"
+        note: "One code path for both runs: `enabled=False` makes the block do nothing."
+      - match: "loss_function(output.float(), targets).backward()"
+        note: "Loss and backward pass outside the block, as PyTorch recommends. `.float()` brings the bf16 output back to fp32."
+      - match: "steps += 1"
+        note: "Here `steps` really counts steps, so the result is steps per second at a fixed batch of 1,024."
+
+  - cell: "def train_bank(mode=\"fp32\", epochs=10, cache_enabled=True, seed=42):"
+    title: "Three places to put autocast"
+    lines:
+      - match: "with torch.autocast(\"cpu\", dtype=torch.bfloat16, enabled=(mode == \"forward\")):"
+        note: "In `\"whole\"` mode this is `enabled=False`, which switches autocast **off** here even inside the outer block: training runs in fp32."
+      - match: "probabilities = torch.sigmoid(model(val_inputs).float()).numpy().ravel()"
+        note: "In `\"whole\"` mode, the only forward pass under autocast: the first call fills the weight cache and every later call reuses it."
+      - match: "with torch.autocast(\"cpu\", dtype=torch.bfloat16, cache_enabled=cache_enabled):"
+        note: "Everything inside shares one weight cache, emptied only when the block exits after the last epoch."
+
+  - cell: "def largest_batch_that_fits(attempt, start, smallest=1, errors=OUT_OF_MEMORY):"
+    title: "The recovery ladder"
+    lines:
+      - match: "OUT_OF_MEMORY = (torch.OutOfMemoryError, torch.cuda.OutOfMemoryError)"
+        note: "In current PyTorch these two names are the same class; listing both does no harm."
+      - match: "except errors:"
+        note: "Any other exception still propagates: only running out of memory is worth a smaller batch."
+      - match: "gc.collect()                                  # let Python release the tensors"
+        note: "Runs while the traceback is still alive; see the note above for moving it outside the handler."
+      - match: "size //= 2"
+        note: "Halve and retry: step 5 of the playbook in Section 10."
+
+  - cell: "free_at_start, _ = torch.cuda.mem_get_info()"
+    title: "Running out on purpose"
+    lines:
+      - match: "blocks.append(torch.empty(int(512 * MB // 4), dtype=torch.float32, device=\"cuda\"))"
+        note: "512 MB of float32 is 512 × 2²⁰ / 4 numbers. `torch.empty` reserves memory without writing to it."
+      - match: "del blocks                                        # the recovery, in order"
+        note: "Outside the `except`, so nothing else still refers to the blocks: `del`, collect, then hand the cache back."
+
+  - cell: "amp_model = build_mlp(hidden=(1024, 1024)).cuda()"
+    title: "fp16 with a loss scaler"
+    lines:
+      - match: "scaler.scale(loss).backward()      # multiply the loss up, then go backward"
+        note: "The backward pass runs outside the autocast block, on the scaled loss."
+      - match: "scaler.step(amp_optimizer)         # divide the gradients back down, then step"
+        note: "Unscales the gradients and skips the step if any is `inf` or `NaN`."
+      - match: "scaler.update()                    # adjust the multiplier for next time"
+        note: "Halves the scale after an overflow and slowly raises it again after a run of clean steps."
+
+  - cell: "if DEVICE.type != \"mps\":"
+    title: "Apple Silicon"
+    lines:
+      - match: "torch.mps.synchronize()                 # wait for the GPU to actually finish"
+        note: "MPS work is queued asynchronously: without waiting, memory figures and timings describe work not yet done."
+
+takeaways:
+  - "Training with AdamW needs about four times the model's memory before activations: weights, gradients and two running averages, 16 bytes per weight in fp32."
+  - "Estimate before running: parameters × bytes per number × copies. Running a 7B model (13 GB in fp16) and training it (104 GB) sit on opposite sides of a hardware line."
+  - "Mixed precision keeps an fp32 master copy, so it does not shrink weights, gradients or optimizer state. It shrinks activations, and on the right hardware it is faster."
+  - "Precision trades range against fineness. bf16 keeps fp32's range and needs no loss scaler; fp16's narrow range makes small gradients vanish without one."
+  - "Activations are the batch-dependent term, linear in batch size. Halve the batch first, and use gradient accumulation (dividing each loss) to get the effective batch back."
+  - "Put autocast around the forward pass only. Around the whole loop, its weight cache froze every validation score at epoch 1 while the model kept training, and nothing warned."
+  - "Work an out-of-memory error from the cheap end: restart, stop keeping graphs alive, `no_grad` for scoring, then batch size and accumulation, then checkpointing and freezing. Clean up outside the `except`."
+
+quiz:
+  - q: "A model has 1 million weights. Roughly how much memory do weights, gradients and AdamW state take in fp32?"
+    options: ["4 MB", "8 MB", "16 MB", "32 MB"]
+    answer: 2
+    why: "4 bytes × (1 weight + 1 gradient + 2 averages) = 16 bytes per weight."
+  - q: "You switch a 7B AdamW fine-tune from fp32 to standard mixed precision. What happens to weights + gradients + optimizer state?"
+    options: ["Halves, to 52 GB", "Stays about 104 GB: the fp32 master copy and averages remain", "Quarters", "Doubles"]
+    answer: 1
+    why: "2 + 2 + 4 + 8 = 16 bytes per weight, the same as fp32. The saving is in the activations."
+  - q: "Why does fp16 training need a loss scaler while bf16 does not?"
+    options: ["fp16 is less precise", "fp16's range is narrow, so small gradients underflow to zero; bf16 has fp32's range", "bf16 uses more bytes", "fp16 cannot represent negative numbers"]
+    answer: 1
+    why: "The scaler is a range fix: it lifts small gradients above fp16's floor, then divides them back."
+  - q: "A model fits at batch 64 and not at batch 128. Which memory term changed?"
+    options: ["Weights", "Gradients", "Optimizer state", "Activations"]
+    answer: 3
+    why: "The other three depend only on the model and the optimizer."
+  - q: "You accumulate over 8 small batches with AdamW and forget to divide each loss by 8. What happens?"
+    options: ["Training diverges", "Almost nothing: Adam's normalisation cancels a constant factor, so the bug stays hidden", "The gradients become 8 times smaller", "Memory use grows 8 times"]
+    answer: 1
+    why: "With SGD it would act like an 8× learning rate. Divide anyway: clipping or a switch of optimizer brings the bug back."
+  - q: "In the lesson's \"whole\" mode, every validation score after epoch 1 was identical. Why?"
+    options: ["The model stopped training", "Autocast's weight cache kept the bf16 copies made at the first validation, so later validations scored the epoch-1 weights", "bf16 rounded every score to the same value", "The learning rate reached zero"]
+    answer: 1
+    why: "The model trained in fp32 throughout; only its measurement was frozen. Keep autocast around the forward pass."
+  - q: "`del big_tensor` runs, but `nvidia-smi` still shows the memory in use. Most likely?"
+    options: ["A memory leak in PyTorch", "PyTorch keeps freed blocks in its own cache for reuse; `empty_cache()` returns them to the driver", "The GPU is broken", "`del` does nothing in Python"]
+    answer: 1
+    why: "Inside your process the cache is a feature. Also check nothing else still refers to the tensor."
+
+docstrings:
+  build_mlp: |
+    Build the Day 3 network: inputs, then ``Linear → ReLU`` per hidden layer, then one output.
+
+    Args:
+        n_inputs: Number of input features.
+        hidden: Width of each hidden layer, in order. ``(1024, 1024)`` gives the lesson's
+            "wide network" of 1,102,849 parameters.
+
+    Returns:
+        An ``nn.Sequential`` producing one logit per row, with PyTorch's default
+        initialisation (seed it first for repeatable weights).
+  total_bytes: |
+    Add up the memory held by a collection of tensors.
+
+    Args:
+        tensors: Any iterable, such as ``model.parameters()``, a list of gradients, or the
+            values of an optimizer's state. Items that are not tensors are skipped.
+
+    Returns:
+        The total size in bytes: the number of elements times the bytes per element,
+        summed over every tensor.
+  training_memory: |
+    Estimate the bytes for weights, gradients and optimizer state, before running anything.
+
+    Activations are not included (Section 4). Every term uses the same number format, so
+    the fp16 rows describe pure 16-bit training; standard mixed precision keeps an fp32
+    master copy and fp32 optimizer state instead.
+
+    Args:
+        n_parameters: How many weights the model has.
+        precision: A key of ``BYTES_PER_NUMBER``: ``"fp32"``, ``"fp16"``, ``"bf16"`` or
+            ``"int8"``.
+        optimizer: A key of ``OPTIMIZER_COPIES``. ``"none (inference)"`` also forces
+            ``trainable`` to 0, since nothing is trained.
+        trainable: The share of weights being trained, from 0 to 1. Frozen weights still
+            count toward ``"weights"`` but need no gradient or optimizer state.
+
+    Returns:
+        A dict of bytes with keys ``"weights"``, ``"gradients"``, ``"optimizer state"`` and
+        ``"total"``.
+  activation_bytes: |
+    Measure the bytes of every layer output in one forward pass.
+
+    Registers a forward hook on each layer, runs one random batch under
+    ``torch.no_grad()``, then removes the hooks. The count covers every layer's output,
+    which is an upper bound on what autograd keeps for the backward pass.
+
+    Args:
+        model: An ``nn.Sequential`` (its layers are hooked one by one).
+        batch_size: Rows in the random batch.
+        n_inputs: Features per row.
+
+    Returns:
+        The total bytes of all layer outputs for that batch.
+  activation_bytes.record: |
+    Forward hook: add the size of one layer's output to the running total.
+
+    Args:
+        module: The layer that just ran (unused).
+        module_input: The layer's inputs (unused).
+        module_output: The layer's output tensor, whose bytes are recorded.
+  throughput: |
+    Measure training throughput, in rows per second, for one batch size on this machine.
+
+    Runs three warm-up steps, then as many AdamW steps as fit in ``seconds`` on one fixed
+    random batch. Creates a fresh optimizer but trains the model passed in, so its weights
+    change.
+
+    Args:
+        model: The network to time; its first layer must take ``n_inputs`` features.
+        batch_size: Rows per step.
+        n_inputs: Features per row.
+        seconds: How long to time for.
+
+    Returns:
+        Rows processed per second (the variable ``steps`` counts rows).
+  throughput.one_step: |
+    Take one full training step: zero the gradients, forward, backward, update.
+  timed_steps: |
+    Measure training steps per second on the wide network, with or without bf16 autocast.
+
+    Builds a fresh seeded ``(1024, 1024)`` network and puts ``torch.autocast`` around the
+    forward pass only, which is the recommended placement.
+
+    Args:
+        use_autocast: Run the forward pass in bf16 under ``torch.autocast`` on the CPU.
+        seconds: How long to time for, after three warm-up steps.
+        batch_size: Rows per step.
+
+    Returns:
+        Steps per second on this machine.
+  timed_steps.one_step: |
+    Take one training step, with the forward pass inside the (possibly disabled) autocast block.
+  load_bank_marketing: |
+    Download Bank Marketing if needed and return its inputs and label.
+
+    ``duration`` is dropped because a call's length is only known after the call.
+
+    Args:
+        path: Where the CSV is (or will be) stored.
+
+    Returns:
+        A tuple ``(X, y)``: the 15-column input DataFrame and a float32 label array
+        (1 = subscribed).
+
+    Raises:
+        urllib.error.URLError: If the file is missing and UCI cannot be reached.
+  train_bank: |
+    Train the Day 3 network on Bank Marketing with autocast in one of three places.
+
+    Uses the global ``train_inputs``, ``train_targets``, ``val_inputs`` and ``val_targets``,
+    AdamW at 1e-3 and shuffled batches of 256.
+
+    Args:
+        mode: ``"fp32"`` (no autocast), ``"forward"`` (bf16 autocast around each forward
+            pass, the recommended placement) or ``"whole"`` (one autocast block around the
+            whole loop, the mistake). In ``"whole"`` mode the training forward pass runs in
+            fp32 and only the validation scoring runs under autocast.
+        epochs: Passes over the training rows.
+        cache_enabled: Autocast's weight cache, used by ``"whole"`` mode only.
+        seed: Seeds the weights and the shuffling.
+
+    Returns:
+        The best validation ROC-AUC seen after any epoch.
+  train_bank.one_epoch: |
+    Train for one pass over the training rows.
+  train_bank.validation_auc: |
+    Score the current model on the validation rows.
+
+    Returns:
+        Validation ROC-AUC, computed from fp32 probabilities.
+  largest_batch_that_fits: |
+    Find the largest batch that runs without an out-of-memory error, halving from ``start``.
+
+    After each failure it collects garbage and, on an NVIDIA GPU, empties PyTorch's cache
+    before retrying.
+
+    Args:
+        attempt: A function taking a batch size; it raises one of ``errors`` when the batch
+            does not fit.
+        start: The first (largest) batch size to try.
+        smallest: Give up below this size.
+        errors: The exception types that mean "out of memory". Anything else propagates.
+
+    Returns:
+        A tuple ``(size, log)``: the first size that fitted (or ``None``) and a list of
+        ``(size, outcome)`` pairs, one per attempt.
+  PretendOutOfMemory: |
+    Stands in for a real out-of-memory error, so the ladder can be tested without a GPU.
+  pretend_gpu: |
+    Pretend to run a training step on a GPU that fits ``limit`` rows.
+
+    Args:
+        batch_size: The batch size being attempted.
+        limit: The largest batch this pretend GPU can hold.
+
+    Raises:
+        PretendOutOfMemory: If ``batch_size`` is larger than ``limit``.
+  one_gpu_step: |
+    Take one AdamW step on the GPU model with a random batch of the given size.
+
+    Args:
+        batch_size: Rows in the random batch.
+
+    Raises:
+        torch.OutOfMemoryError: If the step does not fit in GPU memory.

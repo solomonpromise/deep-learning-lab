@@ -197,3 +197,8 @@
 /* ------------------------------------------------------------------ dropout-lab */
 .do-outs { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: .8rem; }
 .do-outs code { font-family: var(--mono); }
+
+/* ------------------------------------------------------------------ memory-planner */
+.mp-field { display: grid; gap: 6px; min-width: 0; }
+.mp-line { font-size: .85rem; color: var(--ink-2); line-height: 1.5; }
+.mp-line strong { color: var(--ink); }
