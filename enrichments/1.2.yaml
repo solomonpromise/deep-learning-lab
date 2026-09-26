@@ -1,0 +1,465 @@
+# Teaching layer for Lesson 1.2 — The Learning Mechanism, Traced By Hand
+
+summary: |
+  You become the optimiser. With a network of just **nine numbers** and four training examples, you compute
+  the forward pass, the loss, every gradient and one parameter update, all by hand. Then PyTorch reproduces
+  your arithmetic exactly. After this lesson, `loss.backward()` is no longer magic: it is five steps you have done yourself.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    after: "Second, it passes that sum through an"
+    type: explainer
+    style: analogy
+    title: "A neuron is a tiny committee vote"
+    md: |
+      Each input is a committee member's opinion; each **weight** is how much the chair trusts that member
+      (negative weight = "do the opposite of what they say"). The **bias** is the chair's own leaning before anyone speaks.
+      The weighted sum $z$ is the tally. The **activation** decides what to announce: ReLU says *"if the tally is negative, say nothing (0); otherwise report it"*.
+
+  - section: 1
+    after: "44fdcb32"
+    type: widget
+    name: neuron-playground
+    title: "One neuron, every knob"
+    intro: |
+      Move the inputs, weights and bias and watch $z$ and the activation change. The right-hand plot shows what this neuron outputs
+      for **every** possible input: a single neuron always splits the plane with a straight line (dashed). Try ReLU with a negative $z$.
+
+  # ------------------------------------------------------------------ §2
+  - section: 2
+    before: "count_params([784, 512, 256, 10])"
+    type: predict
+    mode: choice
+    prompt: "A network with layers `[784, 512, 256, 10]` classifies 28×28 images. Roughly how many parameters does it have?"
+    options: ["About 5,000", "About 535,000", "About 5 million", "About 50 million"]
+    answer: 1
+    reveal: |
+      **535,818.** Layer by layer: $784\times512+512 = 401{,}920$, then $512\times256+256 = 131{,}328$, then $256\times10+10 = 2{,}570$.
+      The **first layer dominates** (75% of all parameters) because it multiplies the two largest numbers: 784 inputs × 512 units.
+      That is typical: the widest connections, usually where raw inputs enter, hold most of the parameters.
+
+  - section: 2
+    after: "count_params([2, 64, 32,16,8, 1])"
+    type: explainer
+    style: warning
+    title: "Note: this is not the spiral network from Lesson 1.1"
+    md: |
+      The printout labels `[2, 64, 32, 16, 8, 1]` as "the spiral network from Lesson 1.1", but that network was
+      `hidden_layer_sizes=(64, 64)`, i.e. `[2, 64, 64, 1]` with **4,417** parameters (the cell just above computes exactly that).
+      The deeper, narrower network here has **2,945**. It is a nice illustration anyway: a deeper network can have *fewer* parameters than a wider one.
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "Do this by hand before running the next cell"
+    type: explainer
+    style: warning
+    title: "Small typo in the paragraph above"
+    md: |
+      The text says hidden neuron 2 has bias $-0.10$, but the code (and the worked sum right after it) uses **$-0.15$**:
+      `b1 = [[0.10, -0.15]]`. With $-0.15$ you get $z_2 = -0.10 - 0.80 - 0.15 = -1.05$, which matches `Z1[0]`.
+
+  - section: 3
+    after: "Z1 = X @ W1 + b1        # (4,2)"
+    type: explainer
+    style: code
+    title: "Why `X @ W1` computes all eight hidden values at once"
+    md: |
+      `X` is 4×2 (4 examples, 2 features) and `W1` is 2×2 (2 inputs → 2 hidden neurons). Matrix multiplication gives a 4×2 result:
+      **row = example, column = hidden neuron**. Entry $(k, j)$ is exactly the weighted sum $x_{k1}w_{1j} + x_{k2}w_{2j}$ you computed by hand.
+      Adding `b1` (shape 1×2) uses **broadcasting**: the same two biases are added to every row. One line, all examples, and that is why GPUs matter.
+
+  - section: 3
+    after: "print(\"Z1 (pre-activation, hidden layer)"
+    type: widget
+    name: tiny-net
+    title: "Be the optimiser: the lesson's network, live"
+    props: { mode: forward }
+    intro: |
+      This is the exact network and data from this section. **Forward** traces one example through the network with every
+      multiplication shown. The other tabs are the rest of the lesson: **Backward** (Section 8), **Update** (Section 9) and **Train** (Section 10).
+      Dashed grey circles are neurons that ReLU has switched off for this example.
+
+  - section: 3
+    after: "Why do all four examples go through at once?"
+    type: compare
+    title: "Two activations, two jobs"
+    items:
+      - title: "Hidden layers → ReLU"
+        tone: blue
+        icon: layers
+        md: "Only needs to be **non-linear**. ReLU is cheap to compute, and its gradient is exactly 1 wherever it is active, so gradients pass through undamped."
+      - title: "Output layer → sigmoid"
+        tone: orange
+        icon: target
+        md: "Must produce a **probability** between 0 and 1 for a binary label, so it squashes $z$ with $\\sigma(z)=1/(1+e^{-z})$."
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "Identical to floating-point precision"
+    type: widget
+    name: relu-bends
+    title: "Stack linear layers or add ReLU: see the difference"
+    intro: |
+      A network with one input $x$, a hidden layer of units, and one output. Switch between **No activation** and **ReLU**, add units and
+      re-randomise the weights. Without an activation, the output is *always* a straight line.
+
+  # ------------------------------------------------------------------ §5
+  - section: 5
+    after: "That gives gradient descent a useful, smoothly changing number"
+    type: widget
+    name: loss-vs-accuracy
+    title: "Why we train on loss, not accuracy"
+    intro: "**Tab 1** turns one weight and compares accuracy (steps) with loss (smooth). **Tab 2** lets you feel the cross-entropy penalty for right, wrong and confidently wrong predictions."
+
+  - section: 5
+    after: "The per-example losses show where the model is hurting most"
+    type: explainer
+    style: math
+    title: "Checking example 4's loss by hand"
+    md: |
+      Example 4 has true label $y=0$ and prediction $\hat y = 0.5498$. With $y=0$ only the second term of BCE survives:
+
+      $$\ell_4 = -\log(1-\hat y) = -\log(0.4502) = 0.7981$$
+
+      The four per-example losses are $0.5825, 0.3412, 0.6256, 0.7981$, and their mean is $0.5869$, the lesson's loss.
+
+  # ------------------------------------------------------------------ §6
+  - section: 6
+    after: "estimated slope dL/dW2[0,0]"
+    type: widget
+    name: slope-probe
+    title: "A gradient is a local slope"
+    intro: |
+      The curve is the **real loss** of this network as you change just one weight, $v_1 = $ `W2[0,0]`, holding the other eight fixed.
+      The orange tangent is the true slope; the violet secant is the finite-difference estimate for your chosen $\epsilon$. Take a few gradient steps.
+
+  - section: 6
+    after: "So why not just use numerical gradients?"
+    type: compare
+    title: "Two ways to get every gradient"
+    items:
+      - title: "Finite differences"
+        tone: orange
+        icon: alert
+        md: "Nudge each parameter, re-run the forward pass. Cost: **one extra forward pass per parameter**. 9 → fine. 1 billion → impossible. Use it to *check* gradients."
+      - title: "Backpropagation"
+        tone: green
+        icon: check
+        md: "One forward pass + **one backward pass** gives *all* gradients at once, via the chain rule. The reason deep learning is feasible at all."
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "Sensitivities multiply along the chain"
+    type: explainer
+    style: math
+    title: "The chain rule with actual numbers"
+    md: |
+      Suppose nudging a weight $w$ by 0.01 raises an activation $A$ by 0.03 (so $\partial A/\partial w = 3$), and raising $A$ by 0.03 raises the loss by 0.06
+      (so $\partial L/\partial A = 2$). Then nudging $w$ by 0.01 raises the loss by 0.06:
+
+      $$\frac{\partial L}{\partial w} = \frac{\partial L}{\partial A}\cdot\frac{\partial A}{\partial w} = 2 \times 3 = 6$$
+
+      A deep network is just a longer chain. Backpropagation multiplies these local rates from the loss backwards, reusing each product as it goes.
+
+  # ------------------------------------------------------------------ §8
+  - section: 8
+    after: "Now, let’s walk backwards"
+    type: explainer
+    style: deep
+    title: "Where “prediction minus truth” comes from (optional derivation)"
+    md: |
+      For one example, $L = -[y\log\hat y + (1-y)\log(1-\hat y)]$ with $\hat y = \sigma(z)$.
+
+      1. Derivative of the loss with respect to the prediction: $\dfrac{\partial L}{\partial \hat y} = -\dfrac{y}{\hat y} + \dfrac{1-y}{1-\hat y} = \dfrac{\hat y - y}{\hat y(1-\hat y)}$
+      2. Derivative of the sigmoid: $\dfrac{\partial \hat y}{\partial z} = \hat y(1-\hat y)$
+      3. Chain rule, multiply them: the $\hat y(1-\hat y)$ terms cancel, so $\dfrac{\partial L}{\partial z} = \hat y - y$.
+
+      Averaging over $N$ examples divides by $N$. That clean cancellation is why sigmoid + BCE (and softmax + cross-entropy) are the standard pairing.
+
+  - section: 8
+    after: "They agree. You now have the same nine numbers"
+    type: widget
+    name: tiny-net
+    title: "Walk the backward pass step by step"
+    props: { mode: backward }
+    intro: "Press **Next** to move backwards through the five steps of the code above. Edge colours switch to gradients: **red** means increasing that weight would raise the loss, **blue** means it would lower it."
+
+  # ------------------------------------------------------------------ §9
+  - section: 9
+    after: "Before running the cell, predict the outcome"
+    type: predict
+    mode: choice
+    prompt: "The loss is currently **0.5869**. After one update with learning rate η = 0.5, the loss will…"
+    options: ["go down", "go up", "stay exactly the same"]
+    answer: 0
+    reveal: |
+      **It goes down, to 0.5593.** Every parameter moved a small step *against* its own gradient, which is locally the direction of steepest
+      decrease. (The paragraph above quotes 0.5845 as the starting loss; the computed value is **0.586856**, a small typo.)
+
+  - section: 9
+    after: "improvement:        {loss_before"
+    type: widget
+    name: tiny-net
+    title: "Apply the update yourself"
+    props: { mode: update }
+    intro: "Press **Apply one update** with η = 0.5 to reproduce this cell. Then press it again, and again: each press is one training step. Then try η = 8."
+
+  # ------------------------------------------------------------------ §10
+  - section: 10
+    after: "One caveat, stated now so it does not become a bad habit"
+    type: widget
+    name: tiny-net
+    title: "Train it: 300 steps in your browser"
+    props: { mode: train }
+    intro: "Try η = 0.01, 0.5 and 8. This lab starts from the lesson's hand-picked weights (Section 3), while the notebook's `train()` starts from random weights, so the curves differ in detail but show the same three behaviours."
+
+  # ------------------------------------------------------------------ §11
+  - section: 11
+    after: "Three failure modes, three signatures"
+    type: widget
+    name: lr-explorer
+    title: "Step size on a loss curve"
+    intro: "A ball rolls downhill by gradient descent, $w \\leftarrow w - \\eta\\,\\partial L/\\partial w$. Use the presets, then find the exact learning rate where it starts to oscillate, and where it diverges."
+
+  # ------------------------------------------------------------------ §12
+  - section: 12
+    after: "Zero difference, to the last bit"
+    type: explainer
+    style: why
+    title: "Why the match is exact, not approximate"
+    md: |
+      The finite-difference check in Section 8 matched to about $10^{-6}$, because nudging by $\epsilon$ is an *approximation*.
+      PyTorch's autograd applies the **same exact derivative formulas** you used (in the same floating-point precision, float64 here),
+      so the results agree to the last bit. Autograd is not approximating anything; it is doing your five-step bookkeeping automatically.
+
+answers:
+  "1-1":
+    - |
+      Without a bias, $z = w_1x_1 + w_2x_2$ is always **0 when the input is 0**, so the neuron's switching line $z=0$ must pass through the **origin**.
+      It can rotate the line but never shift it. It cannot represent "fire only when $x_1 > 2$", or produce a non-zero output for an all-zero input.
+      The bias is the intercept, the neuron's own threshold. Try it in the playground: moving **b** slides the dashed line.
+    - |
+      **Their weights (and biases).** Each neuron has its own weight vector, so it computes a different weighted sum of the same inputs, much like two people
+      scoring the same exam with different marking schemes. This is also why weights are initialised *randomly*: if two neurons started with identical weights they would
+      receive identical gradients and stay identical forever (the **symmetry problem**).
+    - |
+      A parameter describes **the function** the model computes. The learning rate describes **how training moves** through parameter space; it is not part of the model at all.
+      If you learned it by naive gradient descent on the training loss, you would chase whatever makes the *next step* look best, which is unstable (it tends to grow until training diverges)
+      and ignores what we actually care about: good results on **validation** data. So we choose it by experiment (Module 3's LR range test), or let an optimiser like Adam adapt the
+      *effective* step per parameter around a learning rate we still set. (Research on "hypergradients" does learn learning rates, but carefully and on a different signal.)
+  "2-1":
+    - |
+      **535,818 parameters.** The first layer, $784\times512 + 512 = 401{,}920$, is about **75%** of the total, because it connects the most inputs (784 pixels) to the widest layer (512 units),
+      and a fully connected layer's cost is the *product* of its two sizes. That is why the first layer on raw inputs is usually the most expensive, and why architectures like
+      convolutions (which share a small set of weights across the image) were invented.
+  "3-1":
+    - |
+      **Only the batch dimension changes.** `X` becomes 5×2, `Z1`/`A1` become 5×2, `Z2`/`A2` become 5×1 and `y` becomes 5×1.
+      **The parameters stay fixed:** `W1` (2×2), `b1` (1×2), `W2` (2×1), `b2` (1×1). The model's size never depends on how many examples you feed it.
+    - |
+      Looking at `A1`, column 2 (hidden neuron 2) is `[0, 0, 0.85, 0]`. It outputs zero for **examples 1, 2 and 4** and is active only for **example 3** ($z=0.85$).
+      That is why its gradients in Section 6 are small: it only takes part in one of the four predictions.
+    - |
+      If every **weight** is zero but the biases stay: `A1 = relu(b1) = [0.10, 0]` for every example, then $z_2 = 0 + b_2 = 0.2$, so **every prediction is $\sigma(0.2) = 0.5498$**.
+      If the biases are zero too, every prediction is $\sigma(0) = 0.5$. Either way the model outputs the **same value for every input**; it ignores the data completely.
+      (And with all-zero weights, gradient descent struggles to break the tie, which is another reason we initialise randomly.)
+  "4-1":
+    - |
+      *"Two linear layers multiply out to one linear layer, $(XW_1)W_2 = X(W_1W_2)$, so without an activation in between, extra depth adds parameters but no new ability."*
+    - |
+      **No.** The input is exactly 0 essentially never with real-valued data, and when it is, frameworks simply pick a value for the derivative: PyTorch uses **0** at $z = 0$
+      (the gradient is `1` where $z > 0$, else `0`). Mathematically this is a valid **subgradient**, and in practice gradient descent works perfectly well with it.
+    - |
+      **Nothing, from then on.** Its output is 0 on every example, so its local derivative is 0 on every example: no gradient reaches its incoming weights and bias,
+      so they never change and the neuron stays "dead". It contributes nothing and cannot recover by itself. Causes include large learning rates and bad initialisation;
+      Module 3 (Lesson 3.3) shows how to detect and prevent it.
+  "5-1":
+    - |
+      **Zero** (in the limit). A perfect, fully confident prediction gives $-\log(1) = 0$ for every example. In code, the clipping makes predictions at most $1-10^{-12}$,
+      so the loss comes out as about $10^{-12}$: effectively 0.
+    - |
+      Because $\log(0) = -\infty$. A prediction of exactly 0 for a positive example (or exactly 1 for a negative one) would make the loss **infinite**, and then the gradients
+      and every parameter would become `inf`/`NaN` and training would be ruined. In float arithmetic a sigmoid can round to exactly 0.0 or 1.0 for large $|z|$, so this really happens.
+      Clipping keeps the loss finite. (PyTorch's `BCEWithLogitsLoss` avoids the problem more elegantly; see Section 12.)
+    - |
+      **Yes.** The same number of predictions are on the right side of 0.5, but they are **more confident when right and/or less confident when wrong**, so the probabilities are better.
+      That matters: well-ranked, well-calibrated probabilities are what you need for thresholds, costs and decisions (Module 4). Accuracy is too coarse to see this improvement; loss sees it.
+  "6-1":
+    - |
+      It balances two errors. **Too large** (say 0.5): the secant averages the slope over a wide range, so curvature makes the estimate wrong (*truncation error*; drag ε up in the slope probe and watch the violet line tilt away).
+      **Too small** (say $10^{-14}$): $L(w+\epsilon)$ and $L(w)$ become almost identical, and subtracting two nearly equal floating-point numbers loses most of the significant digits (*round-off error*).
+      Around $10^{-5}$ to $10^{-7}$ is the sweet spot for float64. (A *central* difference, $[L(w+\epsilon)-L(w-\epsilon)]/2\epsilon$, is even more accurate.)
+    - |
+      **`b1[0]`, the bias of hidden neuron 1, at −0.1278** (then `W1[0,0]` at −0.1145). Right now the loss is **most sensitive** to it: one unit of change there moves the loss the most.
+      It makes sense: neuron 1 is active on examples 1 and 2, both of which have label 1 and are under-predicted. Raising its bias raises its output on both, pushing both predictions towards 1.
+    - |
+      **Not necessarily.** A zero gradient only means the loss is locally *flat* in that direction. It could be a minimum, but also a maximum, a saddle point, or a flat region.
+      A dead ReLU neuron has zero gradients on all its weights while being far from useful. A zero gradient says "a tiny nudge won't help right here", nothing more.
+  "7-1":
+    - |
+      Every node needs the values it received during the forward pass to compute its local derivative: the input `X` (for $\partial/\partial W_1$), the pre-activations `Z1`
+      or at least the ReLU on/off mask (for the ReLU step), the hidden activations `A1` (for $\partial/\partial W_2$), the prediction $\hat y$ and the label $y$ (for the output gradient),
+      plus the weights themselves (`W2` is needed to send the error back). **All intermediate activations for the whole batch must stay in memory until the backward pass has used them.**
+      That is why training needs far more memory than inference, and why memory grows with batch size (Module 4, Lesson 4.3).
+  "8-1":
+    - |
+      $dZ_2 = (\hat y - y)/4 = [-0.1104,\ -0.0723,\ 0.1163,\ 0.1375]$ and column 0 of `A1` is $[0.05,\ 1.0,\ 0,\ 0]$. So
+
+      $$dW_2[0,0] = 0.05(-0.1104) + 1.0(-0.0723) + 0 + 0 = -0.0055 - 0.0723 = -0.0778$$
+
+      Yes, it matches. Notice that examples 3 and 4 contribute nothing: hidden neuron 1 was off for them.
+    - |
+      A bias adds the **same** amount to every example's $z$, so $\partial z_k/\partial b = 1$ for every example $k$, and its gradient is simply the **sum of the errors**.
+      A weight's effect on example $k$ is scaled by that example's input to it, so its gradient is a **weighted sum** $\sum_k a_k \cdot dz_k$, which for all weights at once is the
+      matrix product `A1.T @ dZ2`. Both are sums over examples; the weight's version weights each example by its activation.
+    - |
+      Multiply 50 factors of 0.5: $0.5^{50} \approx 8.9 \times 10^{-16}$. The gradient reaching layer 1 is essentially **zero**, so the early layers barely learn: the
+      **vanishing gradient** problem. Fixes you will meet: ReLU-family activations (derivative 1 when active), careful initialisation, normalisation layers and
+      **residual connections** that give gradients a shortcut (Lesson 3.3), which are exactly what makes Transformers trainable (Module 6).
+  "9-1":
+    - |
+      Hidden neuron 2's parameters (`W1[:,1]` and `b1[1]`) moved only about **0.023** each, because their gradients were small (±0.0465). Neuron 2 was active on just **one** of the four
+      examples, so it had little responsibility for the loss. `W1[1,0]` also moved less than `W1[0,0]`, because its input values are smaller on the examples where neuron 1 fires.
+      A parameter moves in proportion to its gradient, and its gradient reflects how much it contributed.
+    - |
+      **No.** Recomputed: one step with η = 5 gives loss **0.400** (better than η = 0.5's 0.559, but nowhere near "ten times" the improvement), with η = 8 it is **0.412**, and with η = 50 the loss
+      explodes to **6.9**. The gradient is a straight-line approximation that is only accurate *near* the current point, so a bigger step travels further along a line
+      that increasingly misdescribes the real, curved loss surface. Past a point, bigger steps overshoot and make things worse.
+    - |
+      Because the loss surface **curves**. The gradient tells you the slope *here*, like the view from where you stand on a hillside. A large step assumes the ground keeps sloping the same way
+      for a long distance. If the valley floor is close, you overshoot it and land higher up the opposite side (see the learning-rate explorer in Section 11).
+  "10-1":
+    - |
+      With `lr=0.01` the loss falls from **0.664 to only 0.544** after 300 epochs, a gentle, almost straight downward slope, and accuracy stays at 75%.
+      From 300 epochs alone you could not tell whether the model was fine-but-slow or stuck. The giveaway is that the curve is **still sloping down** at the end:
+      a model that has converged goes flat. Training longer (or raising the learning rate) would reveal it.
+    - |
+      With `lr=5.0` the loss drops at first (its minimum is 0.44), then **gets stuck at 0.477** with 75% accuracy, the same as `lr=8.0`. The big early steps overshoot,
+      and one likely consequence is that a ReLU neuron is knocked into the "dead" region (always off), from which it never recovers. That is Section 9's warning made real:
+      the gradient is only locally accurate, and a huge step can land somewhere bad from which small gradients can't escape.
+    - |
+      Different seeds give different **random initial weights**, so training takes a different path and ends at a different point: final losses of 0.013, 0.011, 0.010, 0.003 and 0.013
+      for seeds 0, 1, 2, 3 and 7. Implication: **a single run is one sample, not the truth.** Report results over several seeds (mean ± spread), and fix the seed when you need a
+      run to be reproducible. Module 4 (Lesson 4.2) is built on this.
+  "11-1":
+    - |
+      Look at the **end of the curve** and experiment. *LR too small:* the loss is still decreasing steadily at the end (it hasn't flattened), and raising the LR speeds it up.
+      *Model lacks capacity:* the loss flattens early at a disappointing value, and training longer or raising the LR doesn't lower it, while a *bigger* model does.
+      A classic test: try to **overfit a tiny subset** (say 20 examples). A model with enough capacity and a working setup should drive that loss towards 0.
+    - |
+      **Early**, the parameters are far from any good solution and gradients are large and informative, so big steps make fast progress (and can hop over small bumps).
+      **Later**, you're near a minimum in a narrower valley, so big steps bounce from wall to wall and never settle. Small steps let you settle into the bottom.
+      Hence **learning-rate schedules**: warm up, then decay (Lesson 3.1).
+    - |
+      NaN appears when a number overflows to infinity and then meets another infinity or zero in an undefined way. Pushing the learning rate far higher (e.g. η = 1000), un-standardised inputs
+      with huge values, or a deeper network where updates compound can make weights and logits enormous. `np.exp(-z)` then overflows, the sigmoid rounds to exactly 0 or 1,
+      the log of 0 gives −∞, and $\infty - \infty$ or $0 \times \infty$ gives **NaN**. After that, every update spreads NaN to every parameter.
+  "12-1":
+    - |
+      Applying the sigmoid first can **round** a very confident prediction to exactly 0.0 or 1.0 in floating point, and then $\log(0) = -\infty$.
+      `binary_cross_entropy_with_logits` never forms the probability. It uses an algebraically equivalent formula on the logit $z$ directly,
+      $\ell = \max(z,0) - zy + \log(1 + e^{-|z|})$, which never takes the log of zero or overflows an exponential. It is also slightly faster, and its gradient is exactly $\sigma(z) - y$.
+    - |
+      Calling `backward()` twice on the **same** graph raises an error, because PyTorch frees the graph's saved values after the first backward pass (unless you pass `retain_graph=True`).
+      If you *rebuild* the graph (run the forward pass again) and call `backward()` again without clearing, the new gradients are **added** to the old ones: `.grad` would hold **twice**
+      the correct gradient. PyTorch accumulates gradients by design (useful for gradient accumulation, Lesson 4.3), which is why every training loop calls `optimizer.zero_grad()`.
+    - |
+      **PyTorch's developers.** Every built-in operation ships with its derivative rule. For ReLU it is "pass the gradient where the input was positive, else 0" (`threshold_backward`).
+      The rules are declared in PyTorch's source (`tools/autograd/derivatives.yaml`) and compiled into the C++ autograd engine. When your forward pass calls `torch.relu`,
+      autograd records that node, and during `.backward()` it calls that node's backward function. If you write a custom operation, you supply the rule yourself (`torch.autograd.Function`).
+  "13-1":
+    - "Accuracy is **piecewise constant**: tiny parameter changes usually don't change it at all, so its gradient is zero almost everywhere and undefined at the jumps. Gradient descent needs a **smooth, differentiable** signal of *how* wrong the model is, and that is the loss."
+    - "It passes the gradient through ReLU: wherever a hidden neuron was **active** ($z>0$) the gradient flows through unchanged; wherever it was **off** the gradient is set to **zero**. Inactive neurons receive no blame and no update for that example."
+    - "Because it was **switched off** (ReLU output 0) on three of the four examples. For those examples it contributed nothing to the prediction, so by credit assignment it receives no share of their error. Its gradients come only from example 3, which is why they were small."
+    - "**Forward** (compute predictions and the loss), **backward** (compute every gradient), **update** (move each parameter a small step against its gradient, scaled by the learning rate). Then repeat."
+
+explain:
+  - cell: "def count_params(layer_sizes)"
+    summary: "Counts the parameters of a fully connected network from its layer widths and prints a table, one row per layer."
+    lines:
+      - match: "for i in range(len(layer_sizes) - 1):"
+        note: "A network with widths `[a, b, c]` has **two** layers of connections: a→b and b→c."
+      - match: "w, b = n_in * n_out, n_out"
+        note: "Every input connects to every output (`n_in × n_out` weights), and each output neuron has one bias."
+
+  - cell: "N = len(X)"
+    title: "The backward pass, line by line"
+    summary: "Exactly the chain rule, applied from the loss backwards. Each line reuses the result of the line before it, which is why backprop is cheap."
+    lines:
+      - match: "dZ2 = (A2 - y) / N"
+        note: "Gradient at the output pre-activation: prediction minus truth, averaged (the sigmoid+BCE cancellation)."
+      - match: "dW2 = A1.T @ dZ2"
+        note: "Each output weight's gradient = the hidden activation it multiplied × the output error, summed over examples."
+      - match: "db2 = dZ2.sum"
+        note: "The bias affects every example equally, so its gradient is the sum of the output errors."
+      - match: "dA1 = dZ2 @ W2.T"
+        note: "Send the error back to each hidden neuron in proportion to its outgoing weight. This is the credit-assignment step."
+      - match: "dZ1 = dA1 * (Z1 > 0)"
+        note: "ReLU's derivative is 1 where the neuron was active and 0 where it was off, so the error is blocked at inactive neurons."
+      - match: "dW1 = X.T @ dZ1"
+        note: "Same pattern as `dW2`: input × error at the layer it feeds, summed over examples."
+
+  - cell: "def train(X, y, lr=0.5"
+    title: "A complete training loop in plain NumPy"
+    summary: "Structurally identical to every PyTorch training loop you will write: initialise, then repeat forward → loss → backward → update."
+    lines:
+      - match: "W1 = rng.normal(0, 0.5, (2, 2))"
+        note: "Small **random** weights (standard deviation 0.5) break the symmetry between neurons. Biases can start at zero."
+      - match: "history.append(loss)"
+        note: "Recording the loss every epoch gives the loss curve: your main diagnostic."
+      - match: "dZ1 = (dZ2 @ W2.T) * (Z1 > 0)"
+        note: "Steps 3 and 4 of the backward pass combined into one line."
+      - match: "W1 -= lr * dW1"
+        note: "The update: every parameter steps against its gradient. `-=` modifies the array in place."
+
+  - cell: "import torch.nn.functional as F"
+    title: "The same computation in PyTorch"
+    summary: "Same data and weights, now as tensors. `requires_grad=True` tells autograd to record every operation on these tensors so it can differentiate the loss later."
+    lines:
+      - match: "tW1 = torch.tensor(W1, requires_grad=True)"
+        note: "Parameters are the tensors we want gradients for. The data (`tX`, `ty`) doesn't need them."
+      - match: "tloss = F.binary_cross_entropy_with_logits"
+        note: "Takes the raw logit `tZ2`, not a probability: sigmoid + BCE fused into one numerically stable operation."
+      - match: "tloss.backward()"
+        note: "Walks the recorded graph backwards and fills `.grad` for every tensor with `requires_grad=True`: all of Section 8 in one call."
+
+takeaways:
+  - "A neuron = **weighted sum + bias**, then an **activation**. Parameters (weights, biases) are learned; hyperparameters (learning rate, widths, epochs) are chosen by you."
+  - "Parameter count of a dense layer = inputs × outputs + outputs. The first layer on raw inputs usually dominates."
+  - "**Without a non-linearity, depth is worthless**: stacked linear layers collapse into one. ReLU's clipping makes the composition irreducible."
+  - "We train on a **differentiable loss** (binary cross-entropy), not accuracy. Confident-and-wrong predictions are punished hardest."
+  - "A **gradient** is a local slope: its sign says which way to move a parameter, its size how sensitive the loss is to it."
+  - "**Backpropagation is credit assignment through the computational graph**: one backward pass gets every gradient via the chain rule. Inactive ReLU neurons receive no blame."
+  - "Training = **forward → backward → update**, repeated. The **learning rate** decides whether that crawls, converges or diverges."
+  - "`loss.backward()` computes exactly what you did by hand, to the last bit."
+
+quiz:
+  - q: "How many parameters does a fully connected network with widths `[3, 4, 2]` have?"
+    options: ["9", "20", "26", "24"]
+    answer: 2
+    why: "Layer 1: 3×4 + 4 = 16. Layer 2: 4×2 + 2 = 10. Total 26."
+  - q: "Why is an activation function between layers essential?"
+    options: ["It speeds up training", "Without it, stacked linear layers collapse into a single linear layer", "It prevents overfitting", "It normalises the inputs"]
+    answer: 1
+    why: "$(XW_1+b_1)W_2+b_2 = X(W_1W_2) + (b_1W_2+b_2)$: one linear layer, however deep."
+  - q: "A ReLU neuron has pre-activation $z = -0.7$ for an example. What gradient flows back through it for that example?"
+    options: ["−0.7", "0", "1", "It depends on the learning rate"]
+    answer: 1
+    why: "ReLU's derivative is 0 for negative inputs: the switch is off, so no gradient passes and its incoming weights get no update from this example."
+  - q: "The gradient of the loss with respect to a weight is −0.2. Plain gradient descent will…"
+    options: ["decrease the weight", "increase the weight", "leave it unchanged", "set it to zero"]
+    answer: 1
+    why: "$w \\leftarrow w - \\eta(-0.2) = w + 0.2\\eta$. A negative slope means increasing the weight lowers the loss."
+  - q: "For sigmoid output + binary cross-entropy, the gradient at the output pre-activation for one example is…"
+    options: ["$y - \\hat y$", "$\\hat y - y$", "$\\hat y(1-\\hat y)$", "$\\log \\hat y$"]
+    answer: 1
+    why: "The sigmoid's derivative cancels the log terms, leaving *prediction minus truth* (divided by $N$ when averaged)."
+  - q: "Why is backpropagation preferred to finite differences for training?"
+    options: ["It is more accurate", "It gets all gradients for about the cost of one forward + one backward pass", "It doesn't need a loss function", "It works without a learning rate"]
+    answer: 1
+    why: "Finite differences need one extra forward pass per parameter, which is impossible for millions or billions of parameters. They are still useful for *checking* gradients."
+  - q: "Your loss curve oscillates wildly and then shoots up. The most likely culprit is…"
+    options: ["Learning rate too small", "Learning rate too large", "Too few parameters", "Too much data"]
+    answer: 1
+    why: "Steps overshoot the valley and land higher on the other side, which is the too-large-learning-rate signature."

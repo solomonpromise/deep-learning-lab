@@ -110,8 +110,9 @@ def is_shell_cell(src: str) -> bool:
 
 # =========================================================== markdown
 class MarkdownRenderer:
-    def __init__(self, terminology: Terminology):
+    def __init__(self, terminology: Terminology, fixes: list | None = None):
         self.term = terminology
+        self.fixes = [(re.compile(a), b) for a, b in (fixes or [])]
         self.md = MarkdownIt("commonmark", {"html": True, "typographer": True}).enable(["table", "strikethrough"])
         self.md.options["highlight"] = self._highlight
 
@@ -125,6 +126,8 @@ class MarkdownRenderer:
     def render(self, text: str, attachments: dict | None = None, assets: AssetStore | None = None,
                root: str = "") -> str:
         text = strip_anchor_tags(text)
+        for pat, rep in self.fixes:
+            text = pat.sub(rep, text)
         stash = MathStash()
         text = map_prose(text, lambda s: stash.protect(self.term.apply(s)))
         if attachments and assets:

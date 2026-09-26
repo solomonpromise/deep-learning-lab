@@ -60,7 +60,7 @@ class Builder:
         self.dist = dist
         self.cfg = yaml.safe_load((ROOT / "course.yaml").read_text(encoding="utf-8"))
         self.term = Terminology(self.cfg.get("terminology", []))
-        self.renderer = MarkdownRenderer(self.term)
+        self.renderer = MarkdownRenderer(self.term, self.cfg.get("markdown_fixes", []))
         self.parser = LessonParser(self.renderer, self.term)
         self.enricher = Enricher(self.renderer)
         self.glossary = Glossary(ROOT / "glossary.yaml")

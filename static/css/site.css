@@ -852,3 +852,11 @@ a.path-card:hover { color: var(--ink); transform: translateY(-2px); box-shadow: 
   .tutor-panel { right: 0; bottom: 0; width: 100vw; height: calc(100vh - var(--topbar-h)); border-radius: 20px 20px 0 0; }
 }
 @media print { .tutor-fab, .tutor-panel, .tutor-select { display: none !important; } }
+
+/* collapsible notes written inside notebooks (<details>) */
+.prose details { margin: 1.2em 0; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 0 18px; }
+.prose details > summary { cursor: pointer; padding: 12px 0; font-weight: 650; list-style: none; display: flex; align-items: center; gap: 8px; }
+.prose details > summary::-webkit-details-marker { display: none; }
+.prose details > summary::before { content: "▸"; color: var(--mc); transition: transform .2s; }
+.prose details[open] > summary::before { transform: rotate(90deg); }
+.prose details[open] { padding-bottom: 12px; }

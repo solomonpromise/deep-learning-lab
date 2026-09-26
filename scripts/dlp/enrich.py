@@ -42,6 +42,12 @@ class Enricher:
     def md(self, text: str | None) -> str:
         return self.r.render(text or "") if text else ""
 
+    def inline(self, text) -> str:
+        """Markdown (with math) for short strings; unwraps a single paragraph."""
+        html = self.r.render(str(text))
+        m = re.fullmatch(r"\s*<p>(.*)</p>\s*", html, re.S)
+        return m.group(1) if m and "<p>" not in m.group(1) else html
+
     def warn(self, lesson: Lesson, msg: str) -> None:
         self.warnings.append(f"[{lesson.id}] {msg}")
 
@@ -54,7 +60,7 @@ class Enricher:
         extras = {
             "summary_html": self.md(data.get("summary")),
             "big_picture": self._insert_block(data["big_picture"]) if data.get("big_picture") else None,
-            "takeaways": [inline_md(t) if "\n" not in t else self.md(t) for t in data.get("takeaways", [])],
+            "takeaways": [self.inline(t) for t in data.get("takeaways", [])],
             "quiz": self._quiz_block({"questions": data.get("quiz", [])}) if data.get("quiz") else None,
             "widgets": set(),
         }
@@ -119,7 +125,7 @@ class Enricher:
                     "src": item.get("title", "")}
         if t == "predict":
             return {"kind": "predict", "prompt_html": self.md(item.get("prompt")),
-                    "mode": item.get("mode", "choice"), "options": [inline_md(o) for o in item.get("options", [])],
+                    "mode": item.get("mode", "choice"), "options": [self.inline(o) for o in item.get("options", [])],
                     "answer": item.get("answer"), "unit": item.get("unit", ""),
                     "tolerance": item.get("tolerance", 0), "min": item.get("min", 0), "max": item.get("max", 1),
                     "step": item.get("step", 0.01),
@@ -139,6 +145,13 @@ class Enricher:
                     "caption_html": self.md(item.get("caption")), "src": item.get("caption", "")}
         if t == "quiz":
             return self._quiz_block(item)
+        if t == "questions":
+            # a question card that is not in the notebook (e.g. restored from another version)
+            items = [{"html": inline_md(q["q"]) if "\n" not in q["q"] else self.md(q["q"]), "text": q["q"],
+                      "answer_html": self.md(q.get("a"))} for q in item.get("items", [])]
+            return {"kind": "questions", "qtype": item.get("qtype", "check"),
+                    "label": item.get("label", "Check your understanding"), "intro_html": self.md(item.get("intro")) if item.get("intro") else "",
+                    "items": items, "id": item.get("id", ""), "src": item.get("label", "")}
         if t == "html":
             return {"kind": "raw", "html": item.get("html", ""), "src": ""}
         raise EnrichmentError(f"unknown insert type {t!r}")
@@ -146,7 +159,7 @@ class Enricher:
     def _quiz_block(self, item: dict) -> dict:
         qs = []
         for q in item.get("questions", []):
-            qs.append({"q_html": self.md(q["q"]), "options": [inline_md(str(o)) for o in q["options"]],
+            qs.append({"q_html": self.md(q["q"]), "options": [self.inline(o) for o in q["options"]],
                        "answer": int(q["answer"]), "why_html": self.md(q.get("why"))})
         return {"kind": "quiz", "title": item.get("title", "Quick check"), "questions": qs, "src": ""}
 

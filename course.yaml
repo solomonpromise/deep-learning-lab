@@ -58,6 +58,10 @@ terminology:
   - ['\bToday we\b', 'In this lesson we']
   - ['\bDay’s\b', 'Module’s']
 
+# Small repairs applied to notebook markdown before rendering: [regex, replacement].
+markdown_fixes:
+  - ['</detials>', '</details>']
+
 sources:
   # Folders (relative to this file) that `make sync` scans for lesson notebooks.
   folders: ['../Day *', '../Module *']

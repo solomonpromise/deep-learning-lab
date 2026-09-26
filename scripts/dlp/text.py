@@ -63,6 +63,8 @@ def map_prose(text: str, fn) -> str:
 
 # ----------------------------------------------------------------- math
 DISPLAY_MATH = re.compile(r"\$\$(.+?)\$\$", re.S)
+BRACKET_DISPLAY = re.compile(r"\\\[(.+?)\\\]", re.S)      # \[ ... \]
+PAREN_INLINE = re.compile(r"\\\((.+?)\\\)")                 # \( ... \)
 INLINE_MATH = re.compile(r"(?<![\\$\w])\$(?=[^\s$])((?:\\\$|[^$\n])+?)(?<=[^\s\\])\$(?![\d$])")
 
 
@@ -77,6 +79,8 @@ class MathStash:
         return f"MATHPH{len(self.items) - 1}XEND"
 
     def protect(self, prose: str) -> str:
+        prose = BRACKET_DISPLAY.sub(lambda m: self._put(m.group(1), True), prose)
+        prose = PAREN_INLINE.sub(lambda m: self._put(m.group(1), False), prose)
         prose = DISPLAY_MATH.sub(lambda m: self._put(m.group(1), True), prose)
         prose = INLINE_MATH.sub(lambda m: self._put(m.group(1), False), prose)
         return prose
