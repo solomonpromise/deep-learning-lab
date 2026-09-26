@@ -3,8 +3,10 @@
      1. Course proxy  (course.yaml → tutor.endpoint): the API key lives on the server, never in this page.
      2. Personal key  : a learner pastes their own Groq key; it is stored only in this browser
                         and sent only to api.groq.com.
-   The tutor always receives the current lesson, the section being read, and (when relevant)
-   the question, the learner's own answer and the course's reference answer. */
+   The tutor always receives the current lesson, the section being read, an outline of the whole
+   course (static/course-map.js, written by the build) and, for any other lesson or module the learner
+   mentions ("Module 2", "Lesson 3.4", "day 4"), that lesson's summary, objectives and sections.
+   From a question card it also gets the question, the learner's answer and the reference answer. */
 (function () {
   'use strict';
   var cfgEl = document.getElementById('dlp-tutor-config');
@@ -16,7 +18,10 @@
   var store = (window.DLP && window.DLP.store) || { get: function (k, d) { return d; }, set: function () {} };
   var GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
   var lesson = (function () { var el = document.getElementById('dlp-lesson-ctx'); try { return el ? JSON.parse(el.textContent) : null; } catch (e) { return null; } })();
-  var chatKey = 'tutor:chat:' + (lesson ? lesson.id : 'general');
+  var pageModule = lesson ? lesson.module : (function () { var el = document.getElementById('dlp-module-ctx'); try { return el ? JSON.parse(el.textContent).module : null; } catch (e) { return null; } })();
+  var chatKey = 'tutor:chat:' + (lesson ? lesson.id : pageModule ? 'module-' + pageModule : 'general');
+  var selfSrc = (document.currentScript && document.currentScript.src) || ($('script[src*="static/js/tutor.js"]') || {}).src || '';
+  var siteRoot = selfSrc.replace(/static\/js\/tutor\.js.*$/, ''), assetVersion = (selfSrc.match(/\?v=[^&#]*/) || [''])[0];
   var history = sessionGet(chatKey, []);
   var busy = false, controller = null, libsReady = false;
 
@@ -67,7 +72,7 @@
   function autosize() { input.style.height = 'auto'; input.style.height = Math.min(160, input.scrollHeight) + 'px'; }
   function toggle(open) {
     panel.hidden = !open; fab.hidden = open; document.body.classList.toggle('tutor-open', open);
-    if (open) { loadLibs(function () { render(); }); updateContext(); setTimeout(function () { input.focus(); }, 30); }
+    if (open) { loadLibs(function () { render(); }); loadCourse(function () {}); updateContext(); setTimeout(function () { input.focus(); }, 30); }
   }
 
   var QUICK = [
@@ -93,7 +98,7 @@
     secs.forEach(function (s) { if (s.getBoundingClientRect().top < line) cur = s; });
     return cur || secs[0] || null;
   }
-  function sectionInfo() {
+  function sectionInfo(limit) {
     var s = currentSection();
     if (!s) return null;
     var h = s.id === 'start' ? null : $('h2', s);
@@ -101,23 +106,93 @@
     $$('.widget, .code-cell pre, .qactions, textarea, script, .qanswer', clone).forEach(function (n) { n.remove(); });
     var text = (clone.innerText || clone.textContent || '').replace(/\n{3,}/g, '\n\n').trim();
     var num = $('.sec-num', s);
-    return { id: s.id, title: h ? h.textContent.trim() : 'Before you start', num: num ? num.textContent.trim() : '', text: text.slice(0, 9000) };
+    return { id: s.id, title: h ? h.textContent.trim() : 'Before you start', num: num ? num.textContent.trim() : '', text: text.slice(0, limit || 9000) };
   }
   function updateContext() {
     var si = sectionInfo();
     ctxEl.innerHTML = lesson
       ? icon('book') + ' <span>Lesson ' + esc(lesson.id) + (si ? ' · ' + esc(si.num ? '§' + si.num + ' ' : '') + esc(si.title) : '') + '</span>'
-      : icon('book') + ' <span>General course questions</span>';
+      : icon('book') + ' <span>' + (pageModule ? 'Module ' + esc(pageModule) + ' overview' : 'General course questions') + '</span>';
   }
   window.addEventListener('scroll', function () { if (!panel.hidden) updateContext(); }, { passive: true });
 
-  function systemPrompt(extra) {
+  /* ------------------------------------------------------------ the rest of the course */
+  var courseWaiters = null;
+  function loadCourse(cb) {
+    if (window.DLP_COURSE || !siteRoot) return cb();
+    if (courseWaiters) { courseWaiters.push(cb); return; }
+    courseWaiters = [cb];
+    var s = document.createElement('script');
+    s.src = siteRoot + 'static/course-map.js' + assetVersion;
+    s.onload = s.onerror = function () { var w = courseWaiters; courseWaiters = null; w.forEach(function (f) { f(); }); };
+    document.head.appendChild(s);
+  }
+  var NUMBER_WORDS = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+    first: 1, second: 2, third: 3, fourth: 4, fifth: 5, sixth: 6, seventh: 7, eighth: 8, ninth: 9, tenth: 10 };
+  function findLesson(id) {
+    var found = null;
+    (window.DLP_COURSE ? window.DLP_COURSE.modules : []).forEach(function (m) { m.lessons.forEach(function (l) { if (l.id === id) found = l; }); });
+    return found;
+  }
+  function findModule(n) {
+    return (window.DLP_COURSE ? window.DLP_COURSE.modules : []).filter(function (m) { return m.number === n; })[0] || null;
+  }
+  // Modules and lessons named in the learner's recent messages: "Module 2", "day four", "Lesson 3.4", "note 4.2", "2.3".
+  function mentioned(texts) {
+    var mods = [], ids = [], text = texts.join('\n').toLowerCase(), m;
+    var modRe = /\b(?:module|day)s?\s+(?:no\.?\s*)?(\d{1,2}|[a-z]+)\b/g;
+    while ((m = modRe.exec(text))) {
+      var n = /^\d+$/.test(m[1]) ? +m[1] : NUMBER_WORDS[m[1]];
+      if (n && findModule(n) && mods.indexOf(n) < 0) mods.push(n);
+    }
+    var idRe = /(^|[^\d.])(\d{1,2})\.(\d{1,2})(?![\d.])/g;
+    while ((m = idRe.exec(text))) {
+      var id = +m[2] + '.' + +m[3];
+      if (findLesson(id) && ids.indexOf(id) < 0) ids.push(id);
+    }
+    return { modules: mods, lessons: ids };
+  }
+  function lessonNotes(l) {
+    var t = '### Lesson ' + l.id + ': ' + l.title + ' (' + siteRoot + l.url + ')';
+    if (l.summary) t += '\nSummary: ' + l.summary.slice(0, 900);
+    if (l.objectives && l.objectives.length) t += '\nObjectives: ' + l.objectives.map(function (o) { return o.replace(/[;.,\s]+$/, ''); }).join('; ').slice(0, 700);
+    if (l.sections && l.sections.length) t += '\nSections: ' + l.sections.map(function (x, i) { return (i + 1) + '. ' + x; }).join('; ').slice(0, 600);
+    return t;
+  }
+  function courseOutline() {
+    if (!window.DLP_COURSE) return '';
+    return '# Course outline: every module and lesson on this site\n' + window.DLP_COURSE.modules.map(function (m) {
+      if (!m.available) return 'Module ' + m.number + ': ' + m.title + ' (not published on the site yet)';
+      return 'Module ' + m.number + ': ' + m.title + '\n' + m.lessons.map(function (l) {
+        return '  ' + l.id + ' ' + l.title + ' (' + siteRoot + l.url + ')' + (lesson && lesson.id === l.id ? '  <- the learner is reading this lesson' : '');
+      }).join('\n');
+    }).join('\n');
+  }
+  function mentionedNotes(texts) {
+    if (!window.DLP_COURSE) return '';
+    var ref = mentioned(texts), parts = [], used = {};
+    if (!lesson && pageModule && ref.modules.indexOf(pageModule) < 0) ref.modules.unshift(pageModule);
+    ref.modules.forEach(function (n) {
+      var m = findModule(n);
+      if (!m.available) { parts.push('## Module ' + n + ': ' + m.title + '\nNot published on the site yet; only its title is known.'); return; }
+      parts.push('## Module ' + n + ': ' + m.title + '\n' + m.lessons.map(function (l) { used[l.id] = true; return lessonNotes(l); }).join('\n\n'));
+    });
+    ref.lessons.forEach(function (id) {
+      if (used[id] || (lesson && lesson.id === id)) return;
+      parts.push(lessonNotes(findLesson(id)));
+    });
+    var text = parts.join('\n\n');
+    return text ? '# Notes on the parts of the course the learner mentioned\n' + text.slice(0, 9000) : '';
+  }
+
+  function systemPrompt(extra, texts) {
     var p = [
       'You are the friendly, precise AI tutor of the course "' + (CFG.course || 'Modern Deep Learning & AI Engineering') + '".',
       'Learners already know Python, data science and classical machine learning; this course teaches deep learning engineering with PyTorch.',
       'How to teach: plain English first, then the precise term; short paragraphs; concrete numbers and tiny examples; PyTorch for code; LaTeX between $...$ for maths.',
       'Keep answers focused (usually under 250 words) unless the learner asks for more. Use markdown. End with a quick check question when it helps learning.',
       'Ground your answers in the lesson context below. Do not invent results that the lesson does not show; if something is uncertain, say so.',
+      'You can also see an outline of the whole course, and notes on any other module or lesson the learner mentions. Use them for questions about other parts of the course: say which lesson covers the topic, summarise it from the notes, and link to it. Never tell the learner you cannot see other modules or lessons. If they need more detail than the notes give, say so and suggest opening that lesson, where you will see its full text. For a module marked as not published yet, say only what its title tells you.',
       'If asked something outside the course, answer briefly and connect it back to deep learning.',
       'When checking a learner\'s answer: say what is right, what is missing or wrong, and give a hint toward the reference answer rather than simply pasting it.'
     ].join('\n');
@@ -126,7 +201,11 @@
       if (lesson.summary) p += '\nSummary: ' + lesson.summary;
       if (lesson.objectives && lesson.objectives.length) p += '\nObjectives:\n- ' + lesson.objectives.join('\n- ');
     }
-    var si = sectionInfo();
+    else if (pageModule) p += '\n\n# The learner is on the overview page of Module ' + pageModule + '.';
+    var outline = courseOutline(), notes = mentionedNotes(texts || []);
+    if (outline) p += '\n\n' + outline;
+    if (notes) p += '\n\n' + notes;
+    var si = lesson ? sectionInfo(notes ? 3500 : 9000) : null;
     if (si && si.text) p += '\n\n# Section the learner is reading: ' + (si.num ? si.num + '. ' : '') + si.title + '\n' + si.text;
     if (extra) p += '\n\n' + extra;
     return p;
@@ -144,7 +223,9 @@
     history.push(reply);
     render();
     busy = true; setBusy(true);
-    var messages = [{ role: 'system', content: systemPrompt(opts.extra) }].concat(
+    var recent = history.filter(function (m) { return m.role === 'user'; }).slice(-3).map(function (m) { return m.content; });
+    loadCourse(function () {
+    var messages = [{ role: 'system', content: systemPrompt(opts.extra, recent) }].concat(
       history.slice(0, -1).slice(-12).map(function (m) { return { role: m.role, content: m.content }; }));
     stream(messages, function (delta) { reply.content += delta; renderLast(); },
       function (err) {
@@ -153,6 +234,7 @@
         if (!reply.content) reply.content = '⚠️ No answer came back. Please try again.';
         sessionSet(chatKey, history); render();
       });
+    });
   }
 
   function stream(messages, onDelta, onDone) {
@@ -244,7 +326,7 @@
       var hello = document.createElement('div');
       hello.className = 'tutor-hello';
       hello.innerHTML = connected()
-        ? '<p><strong>Hi! I\'m your tutor for this course.</strong></p><p>I can see the lesson and the section you\'re reading. Ask me anything, or start with one of the suggestions below.</p><p class="muted">Tip: select any text in the lesson and press <em>Ask tutor</em>. Question cards also have an <em>Ask the tutor</em> button that can check your written answer.</p>'
+        ? '<p><strong>Hi! I\'m your tutor for this course.</strong></p><p>I can see ' + (lesson ? 'the lesson and the section you\'re reading, plus ' : '') + 'an outline of the whole course. Ask me anything, including about other modules and lessons, or start with one of the suggestions below.</p><p class="muted">Tip: select any text in the lesson and press <em>Ask tutor</em>. Question cards also have an <em>Ask the tutor</em> button that can check your written answer.</p>'
         : notConnectedHtml();
       body.appendChild(hello);
       wireKeyForm(hello);

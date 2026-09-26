@@ -144,6 +144,10 @@ class Builder:
                   "tutor_js": json.dumps(tutor).replace("</", "<\\/")}
 
         # ---- pages
+        def strip(html):
+            text = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html or "")).strip()
+            return re.sub(r"([(\[]) ", r"\1", re.sub(r" ([,.;:!?)\]])", r"\1", text))
+
         self._page("home.html", "index.html", root="", page="home", **common)
         self._page("glossary.html", "glossary.html", root="", page="glossary",
                    entries=sorted(self.glossary.entries, key=lambda e: e["term"].lower()), **common)
@@ -170,7 +174,6 @@ class Builder:
                     colab = (f"https://colab.research.google.com/github/{repo}/blob/{branch}/"
                              f"notes/module-{l.module}/lesson-{l.id}.ipynb")
                 url = f"module-{l.module}/{l.slug}.html"
-                strip = lambda h: re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", h or "")).strip()
                 lesson_ctx = json.dumps({
                     "id": l.id, "module": l.module, "module_title": m["title"], "title": l.title,
                     "summary": strip(extras[l.id]["summary_html"]) or strip(l.preamble.get("goal_html")),
@@ -195,6 +198,20 @@ class Builder:
                                 "x": e["def_text"]})
         (self.dist / "static" / "search-index.js").write_text(
             "window.DLP_SEARCH=" + json.dumps(search_docs, ensure_ascii=False, separators=(",", ":")) + ";",
+            encoding="utf-8")
+        # the tutor's map of the whole course, so it can answer about lessons other than the open one
+        by_id = {l.id: l for l in lessons}
+        course_map = {"modules": [{
+            "number": m["number"], "title": m["title"], "available": m["available"],
+            "lessons": [{
+                "id": le["id"], "title": le["title"], "url": le["url"],
+                "summary": strip(extras[le["id"]]["summary_html"]) or strip(by_id[le["id"]].preamble.get("goal_html")),
+                "objectives": [strip(o) for o in by_id[le["id"]].preamble["objectives"]],
+                "sections": [s.title for s in by_id[le["id"]].sections if s.kind == "section"],
+            } for le in m["lessons"]],
+        } for m in nav]}
+        (self.dist / "static" / "course-map.js").write_text(
+            "window.DLP_COURSE=" + json.dumps(course_map, ensure_ascii=False, separators=(",", ":")) + ";",
             encoding="utf-8")
         (self.dist / ".nojekyll").write_text("")
         self._page("404.html", "404.html", root="", page="404", **common)

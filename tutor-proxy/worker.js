@@ -46,7 +46,7 @@ export default {
     let messages = Array.isArray(body.messages) ? body.messages : [];
     let context = '';
     if (messages[0] && messages[0].role === 'system') {
-      context = String(messages[0].content || '').slice(0, 16000);
+      context = String(messages[0].content || '').slice(0, 24000);   // lesson, section and course outline
       messages = messages.slice(1);
     }
     messages = messages
