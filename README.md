@@ -167,6 +167,8 @@ docstrings:
     ...
 ```
 
+- A docstring in the notebook that starts with "Placeholder" marks a stub the notebook replaces further down; it is
+  kept as written, and only the real definition takes the docstring from the enrichment file.
 - `make defs L=2.2` lists every function/class in a lesson with its docstring status.
 - The build **warns** about any definition with no docstring, or with a one-line docstring despite taking arguments.
 - For new modules, `GROQ_API_KEY=gsk_... make docstrings L=5.1` drafts the missing ones with the AI model into
