@@ -1,0 +1,499 @@
+# Teaching layer for Lesson 3.4 — The Diagnosis Clinic
+# The notebook is the author's current version (not locked). Its two image prompts are hidden by the build and
+# replaced here by SVG figures drawn from the notebook's own gallery curves.
+
+summary: |
+  Lessons 3.1–3.3 gave you three kinds of evidence; this clinic turns them into a **procedure**: observe, compare with a reference,
+  hypothesise, test, intervene, verify. You learn six curve shapes, a config-driven harness that records losses, metrics, prediction
+  summaries and gradient profiles for every run, and a **protocol ordered by cost** (free checks first, retraining last). Then six broken
+  experiments: learning rate too high and too low, over-regularised, a leaked validation split, a bad initialisation, and the one that
+  passes every check and is still unusable, because a feature does not exist yet when the prediction is made. Two mysteries without an
+  answer key, and a one-page experiment record, finish Module 3.
+
+inserts:
+  # ------------------------------------------------------------------ §1
+  - section: 1
+    after: "should trigger an investigation into *why* before it triggers celebration"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Six loss-curve shapes with a one-word verdict each" style="font-family:Inter,system-ui,sans-serif"><text x="360.0" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">Read the curve, then check the metric</text><rect x="20" y="48" width="220" height="104" rx="10" style="fill:var(--surface-2);stroke:var(--line)"/><polyline points="30.0,61.9 35.1,74.2 40.3,84.7 45.4,93.5 50.5,100.9 55.6,107.3 60.8,112.6 65.9,117.1 71.0,121.0 76.2,124.2 81.3,127.0 86.4,129.3 91.5,131.3 96.7,132.9 101.8,134.3 106.9,135.5 112.1,136.5 117.2,137.4 122.3,138.1 127.4,138.7 132.6,139.3 137.7,139.7 142.8,140.1 147.9,140.4 153.1,140.7 158.2,140.9 163.3,141.1 168.5,141.2 173.6,141.4 178.7,141.5 183.8,141.6 189.0,141.7 194.1,141.7 199.2,141.8 204.4,141.8 209.5,141.9 214.6,141.9 219.7,142.0 224.9,142.0 230.0,142.0" style="fill:none;stroke:var(--c0);stroke-width:2;stroke-linejoin:round"/><polyline points="30.0,58.0 35.1,69.1 40.3,78.6 45.4,86.6 50.5,93.4 55.6,99.1 60.8,103.9 65.9,108.0 71.0,111.4 76.2,114.3 81.3,116.8 86.4,118.8 91.5,120.5 96.7,122.0 101.8,123.2 106.9,124.2 112.1,125.0 117.2,125.7 122.3,126.3 127.4,126.8 132.6,127.2 137.7,127.5 142.8,127.7 147.9,128.0 153.1,128.1 158.2,128.2 163.3,128.3 168.5,128.4 173.6,128.5 178.7,128.5 183.8,128.5 189.0,128.5 194.1,128.5 199.2,128.5 204.4,128.5 209.5,128.4 214.6,128.4 219.7,128.3 224.9,128.3 230.0,128.3" style="fill:none;stroke:var(--c1);stroke-width:2;stroke-linejoin:round"/><text x="22" y="42" style="fill:var(--ink-3);font-size:12px;font-weight:700">A</text><text x="130.0" y="182" text-anchor="middle" style="fill:var(--ink);font-size:21px;font-weight:800;letter-spacing:.04em">HEALTHY</text><text x="130.0" y="202" text-anchor="middle" style="fill:var(--ink-2);font-size:12.5px">metric agrees with the loss</text><rect x="253" y="48" width="220" height="104" rx="10" style="fill:var(--surface-2);stroke:var(--line)"/><polyline points="263.0,105.7 268.1,112.3 273.3,117.7 278.4,122.1 283.5,125.7 288.6,128.7 293.8,131.1 298.9,133.1 304.0,134.7 309.2,136.0 314.3,137.1 319.4,138.0 324.5,138.7 329.7,139.3 334.8,139.8 339.9,140.2 345.1,140.5 350.2,140.8 355.3,141.0 360.4,141.2 365.6,141.4 370.7,141.5 375.8,141.6 380.9,141.7 386.1,141.7 391.2,141.8 396.3,141.8 401.5,141.9 406.6,141.9 411.7,141.9 416.8,141.9 422.0,141.9 427.1,142.0 432.2,142.0 437.4,142.0 442.5,142.0 447.6,142.0 452.7,142.0 457.9,142.0 463.0,142.0" style="fill:none;stroke:var(--c0);stroke-width:2;stroke-linejoin:round"/><polyline points="263.0,99.9 268.1,103.8 273.3,106.2 278.4,107.5 283.5,107.9 288.6,107.8 293.8,107.3 298.9,106.4 304.0,105.4 309.2,104.2 314.3,102.9 319.4,101.5 324.5,100.1 329.7,98.6 334.8,97.1 339.9,95.6 345.1,94.1 350.2,92.5 355.3,91.0 360.4,89.4 365.6,87.9 370.7,86.3 375.8,84.7 380.9,83.2 386.1,81.6 391.2,80.0 396.3,78.4 401.5,76.9 406.6,75.3 411.7,73.7 416.8,72.2 422.0,70.6 427.1,69.0 432.2,67.4 437.4,65.9 442.5,64.3 447.6,62.7 452.7,61.1 457.9,59.6 463.0,58.0" style="fill:none;stroke:var(--c1);stroke-width:2;stroke-linejoin:round"/><text x="255" y="42" style="fill:var(--ink-3);font-size:12px;font-weight:700">B</text><text x="363.0" y="182" text-anchor="middle" style="fill:var(--ink);font-size:21px;font-weight:800;letter-spacing:.04em">OVERFIT</text><text x="363.0" y="202" text-anchor="middle" style="fill:var(--ink-2);font-size:12.5px">keep the best epoch</text><rect x="486" y="48" width="220" height="104" rx="10" style="fill:var(--surface-2);stroke:var(--line)"/><polyline points="496.0,58.1 501.1,60.3 506.3,62.4 511.4,64.6 516.5,66.7 521.6,68.9 526.8,71.0 531.9,73.2 537.0,75.3 542.2,77.5 547.3,79.6 552.4,81.8 557.5,83.9 562.7,86.1 567.8,88.2 572.9,90.4 578.1,92.5 583.2,94.7 588.3,96.8 593.4,99.0 598.6,101.1 603.7,103.3 608.8,105.4 613.9,107.6 619.1,109.7 624.2,111.9 629.3,114.0 634.5,116.2 639.6,118.3 644.7,120.5 649.8,122.6 655.0,124.8 660.1,126.9 665.2,129.1 670.4,131.2 675.5,133.4 680.6,135.5 685.7,137.7 690.9,139.8 696.0,142.0" style="fill:none;stroke:var(--c0);stroke-width:2;stroke-linejoin:round"/><polyline points="496.0,58.0 501.1,60.0 506.3,62.0 511.4,64.0 516.5,66.0 521.6,68.0 526.8,70.0 531.9,72.0 537.0,74.1 542.2,76.1 547.3,78.1 552.4,80.1 557.5,82.1 562.7,84.1 567.8,86.1 572.9,88.1 578.1,90.1 583.2,92.1 588.3,94.1 593.4,96.1 598.6,98.1 603.7,100.1 608.8,102.2 613.9,104.2 619.1,106.2 624.2,108.2 629.3,110.2 634.5,112.2 639.6,114.2 644.7,116.2 649.8,118.2 655.0,120.2 660.1,122.2 665.2,124.2 670.4,126.2 675.5,128.2 680.6,130.2 685.7,132.3 690.9,134.3 696.0,136.3" style="fill:none;stroke:var(--c1);stroke-width:2;stroke-linejoin:round"/><text x="488" y="42" style="fill:var(--ink-3);font-size:12px;font-weight:700">C</text><text x="596.0" y="182" text-anchor="middle" style="fill:var(--ink);font-size:21px;font-weight:800;letter-spacing:.04em">UNDERTRAINED</text><text x="596.0" y="202" text-anchor="middle" style="fill:var(--ink-2);font-size:12.5px">still falling at the end</text><rect x="20" y="236" width="220" height="104" rx="10" style="fill:var(--surface-2);stroke:var(--line)"/><polyline points="30.0,246.0 35.1,329.0 40.3,329.3 45.4,329.1 50.5,328.8 55.6,328.9 60.8,329.6 65.9,329.2 71.0,329.4 76.2,329.4 81.3,329.3 86.4,329.3 91.5,329.0 96.7,329.2 101.8,329.4 106.9,329.3 112.1,329.3 117.2,329.0 122.3,329.4 127.4,329.3 132.6,329.6 137.7,330.0 142.8,329.2 147.9,329.2 153.1,329.6 158.2,328.8 163.3,329.7 168.5,329.4 173.6,329.4 178.7,329.0 183.8,329.0 189.0,329.3 194.1,329.3 199.2,329.6 204.4,329.9 209.5,329.5 214.6,329.3 219.7,329.1 224.9,329.1 230.0,329.5" style="fill:none;stroke:var(--c0);stroke-width:2;stroke-linejoin:round"/><polyline points="30.0,328.4 35.1,329.0 40.3,329.5 45.4,329.5 50.5,329.6 55.6,329.2 60.8,329.9 65.9,329.0 71.0,329.6 76.2,329.3 81.3,329.4 86.4,329.0 91.5,329.9 96.7,329.5 101.8,329.5 106.9,329.1 112.1,329.6 117.2,329.4 122.3,329.6 127.4,329.4 132.6,329.2 137.7,329.6 142.8,329.1 147.9,329.2 153.1,329.3 158.2,329.2 163.3,329.5 168.5,329.4 173.6,329.6 178.7,329.4 183.8,329.3 189.0,329.5 194.1,329.5 199.2,329.5 204.4,329.6 209.5,329.5 214.6,329.4 219.7,329.7 224.9,329.3 230.0,329.0" style="fill:none;stroke:var(--c1);stroke-width:2;stroke-linejoin:round"/><text x="22" y="230" style="fill:var(--ink-3);font-size:12px;font-weight:700">D</text><text x="130.0" y="370" text-anchor="middle" style="fill:var(--ink);font-size:21px;font-weight:800;letter-spacing:.04em">COLLAPSED</text><text x="130.0" y="390" text-anchor="middle" style="fill:var(--ink-2);font-size:12.5px">AUC at chance, one prediction</text><rect x="253" y="236" width="220" height="104" rx="10" style="fill:var(--surface-2);stroke:var(--line)"/><polyline points="263.0,265.3 268.1,272.9 273.3,292.7 278.4,277.6 283.5,302.5 288.6,301.4 293.8,297.3 298.9,310.2 304.0,311.5 309.2,312.6 314.3,305.9 319.4,297.3 324.5,311.2 329.7,318.6 334.8,309.9 339.9,317.0 345.1,314.2 350.2,307.8 355.3,319.0 360.4,315.0 365.6,320.2 370.7,316.3 375.8,314.1 380.9,321.3 386.1,317.7 391.2,317.2 396.3,319.6 401.5,322.7 406.6,324.1 411.7,316.9 416.8,317.6 422.0,303.4 427.1,330.0 432.2,315.5 437.4,314.1 442.5,308.4 447.6,313.3 452.7,321.0 457.9,316.2 463.0,313.1" style="fill:none;stroke:var(--c0);stroke-width:2;stroke-linejoin:round"/><polyline points="263.0,246.0 268.1,265.1 273.3,275.1 278.4,295.6 283.5,289.0 288.6,293.7 293.8,295.1 298.9,301.8 304.0,299.8 309.2,304.8 314.3,312.5 319.4,297.6 324.5,298.7 329.7,293.4 334.8,306.3 339.9,310.2 345.1,311.6 350.2,319.3 355.3,301.1 360.4,316.6 365.6,317.5 370.7,310.5 375.8,298.2 380.9,307.5 386.1,316.8 391.2,314.6 396.3,304.9 401.5,310.7 406.6,315.2 411.7,311.2 416.8,304.1 422.0,295.1 427.1,318.7 432.2,314.2 437.4,315.5 442.5,327.4 447.6,316.4 452.7,317.2 457.9,301.5 463.0,310.7" style="fill:none;stroke:var(--c1);stroke-width:2;stroke-linejoin:round"/><text x="255" y="230" style="fill:var(--ink-3);font-size:12px;font-weight:700">E</text><text x="363.0" y="370" text-anchor="middle" style="fill:var(--ink);font-size:21px;font-weight:800;letter-spacing:.04em">UNSTABLE</text><text x="363.0" y="390" text-anchor="middle" style="fill:var(--ink-2);font-size:12.5px">best epoch ≠ last epoch</text><rect x="486" y="236" width="220" height="104" rx="10" style="fill:var(--surface-2);stroke:var(--line)"/><polyline points="496.0,250.4 501.1,268.0 506.3,281.7 511.4,292.4 516.5,300.7 521.6,307.2 526.8,312.2 531.9,316.2 537.0,319.2 542.2,321.6 547.3,323.5 552.4,324.9 557.5,326.0 562.7,326.9 567.8,327.6 572.9,328.1 578.1,328.5 583.2,328.9 588.3,329.1 593.4,329.3 598.6,329.5 603.7,329.6 608.8,329.7 613.9,329.8 619.1,329.8 624.2,329.9 629.3,329.9 634.5,329.9 639.6,329.9 644.7,329.9 649.8,330.0 655.0,330.0 660.1,330.0 665.2,330.0 670.4,330.0 675.5,330.0 680.6,330.0 685.7,330.0 690.9,330.0 696.0,330.0" style="fill:none;stroke:var(--c0);stroke-width:2;stroke-linejoin:round"/><polyline points="496.0,246.0 501.1,264.2 506.3,278.4 511.4,289.4 516.5,298.0 521.6,304.7 526.8,309.9 531.9,314.0 537.0,317.2 542.2,319.6 547.3,321.5 552.4,323.0 557.5,324.2 562.7,325.1 567.8,325.8 572.9,326.4 578.1,326.8 583.2,327.1 588.3,327.4 593.4,327.6 598.6,327.7 603.7,327.9 608.8,328.0 613.9,328.0 619.1,328.1 624.2,328.1 629.3,328.2 634.5,328.2 639.6,328.2 644.7,328.2 649.8,328.3 655.0,328.3 660.1,328.3 665.2,328.3 670.4,328.3 675.5,328.3 680.6,328.3 685.7,328.3 690.9,328.3 696.0,328.3" style="fill:none;stroke:var(--c1);stroke-width:2;stroke-linejoin:round"/><text x="488" y="230" style="fill:var(--ink-3);font-size:12px;font-weight:700">F</text><text x="596.0" y="370" text-anchor="middle" style="fill:var(--ink);font-size:21px;font-weight:800;letter-spacing:.04em">SUSPICIOUS</text><text x="596.0" y="390" text-anchor="middle" style="fill:var(--ink-2);font-size:12.5px">far better than any baseline</text><rect x="20" y="412" width="680" height="42" rx="10" style="fill:var(--accent)"/><text x="360.0" y="438" text-anchor="middle" style="fill:#fff;font-size:13.5px;font-weight:700">A flat loss and a good loss are not the same thing. Always read a metric next to it.</text><g style="font-size:11.5px"><line x1="510" y1="36" x2="530" y2="36" style="stroke:var(--c0);stroke-width:2.5"/><text x="535" y="40" style="fill:var(--ink-2)">train</text><line x1="580" y1="36" x2="600" y2="36" style="stroke:var(--c1);stroke-width:2.5"/><text x="605" y="40" style="fill:var(--ink-2)">validation</text></g></svg>
+    caption: "The six shapes above as a memory card: the shape tells you where to look, the metric next to it tells you what happened."
+
+  - section: 1
+    after: "should trigger an investigation into *why* before it triggers celebration"
+    type: widget
+    name: curve-doctor
+    title: "Curve doctor: the clinic's six shapes"
+    props: { patterns: [healthy, overfit, lrlow, collapse, lrhigh, leak] }
+    intro: "Fresh patients drawn from the same six stories. Name each one from the curves alone, then read what you would check next."
+
+  # ------------------------------------------------------------------ §3
+  - section: 3
+    after: "The ordering is deliberate"
+    type: compare
+    title: "What each tier costs, and what it can rule out"
+    items:
+      - { title: "Tier 0: the run you already have", tone: green, icon: check, md: "Seconds. Rules out NaN, collapse (one prediction), threshold failures (accuracy = majority) and too-good-to-be-true results." }
+      - { title: "Tier 1: one forward/backward pass", tone: blue, icon: pulse, md: "A second or two. Rules out exploding or vanishing gradients and mass-dead ReLUs." }
+      - { title: "Tier 2: new runs", tone: orange, icon: clock, md: "Minutes to days. Tests hypotheses: can it memorise 20 rows? does another learning rate or less regularisation fix it?" }
+
+  # ------------------------------------------------------------------ §4
+  - section: 4
+    after: "case1 = run_experiment({**BASELINE, \"name\": \"case1\", \"lr\": 0.5})"
+    type: explainer
+    style: warning
+    title: "Why the gradient ratio is exactly the reference's 1.274"
+    md: |
+      The harness measures the gradient profile **at initialisation**, before the first optimizer step, and every case starts from the same
+      seed and architecture. So Cases 1, 2 and 4 all report 1.274: the profile of the untrained reference network. A profile at initialisation
+      can only catch problems that exist before training (a bad initialisation, too much depth, as in Mystery A); it cannot see damage done
+      *by* training, such as the dead units this learning rate creates. To catch those, rerun `layer_grad_norms` (and `dead_fraction` from
+      Lesson 3.3) on the **trained** model.
+
+  # ------------------------------------------------------------------ §7
+  - section: 7
+    after: "case4 = run_experiment({**BASELINE, \"name\": \"case4\", \"leak_split\": True})"
+    type: explainer
+    style: tip
+    title: "A third clue hiding in the Tier 0 output"
+    md: |
+      The majority-class rate printed for Case 4 is **0.7200**, not 0.7000. Every split in this module is stratified, so a real validation set
+      has exactly the 70/30 balance. A different class balance says these rows were not produced by the stratified split at all: they are
+      the first 250 rows of the training set.
+
+  # ------------------------------------------------------------------ §9
+  - section: 9
+    after: "should therefore be treated as an **investigation trigger**, not automatically as a success"
+    type: figure
+    svg: |
+      <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline: features known before the prediction, duration only after the call" style="font-family:Inter,system-ui,sans-serif"><text x="360.0" y="26" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">When does this value exist?</text><defs><marker id="tl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--red)"/></marker><marker id="tl-axis" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink-3)"/></marker></defs><line x1="30" y1="236" x2="700" y2="236" marker-end="url(#tl-axis)" style="stroke:var(--ink-3);stroke-width:1.5"/><text x="696" y="228" text-anchor="end" style="fill:var(--ink-3);font-size:11px">time</text><line x1="430" y1="44" x2="430" y2="248" style="stroke:var(--ink);stroke-width:2;stroke-dasharray:6 5"/><circle cx="140" cy="236" r="5" style="fill:var(--ink-3)"/><text x="140" y="264" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:600">customer data on file</text><circle cx="430" cy="236" r="5" style="fill:var(--ink)"/><text x="430" y="264" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:800">PREDICTION MADE</text><text x="430" y="281" text-anchor="middle" style="fill:var(--ink-3);font-size:11.5px">whom should we call?</text><circle cx="620" cy="236" r="5" style="fill:var(--ink-3)"/><text x="620" y="264" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:600">outcome known</text><text x="620" y="281" text-anchor="middle" style="fill:var(--ink-3);font-size:11.5px">the call has ended</text><rect x="60" y="120" width="40.599999999999994" height="30" rx="8" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="80.3" y="140" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-family:JetBrains Mono,monospace">age</text><rect x="150" y="120" width="40.599999999999994" height="30" rx="8" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="170.3" y="140" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-family:JetBrains Mono,monospace">job</text><rect x="240" y="120" width="73.39999999999999" height="30" rx="8" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="276.7" y="140" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-family:JetBrains Mono,monospace">balance</text><rect x="110" y="168" width="73.39999999999999" height="30" rx="8" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="146.7" y="188" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-family:JetBrains Mono,monospace">housing</text><rect x="205" y="168" width="48.8" height="30" rx="8" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="229.4" y="188" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-family:JetBrains Mono,monospace">loan</text><rect x="300" y="168" width="81.6" height="30" rx="8" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="340.8" y="188" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-family:JetBrains Mono,monospace">previous</text><rect x="560" y="150" width="96" height="32" rx="8" style="fill:var(--red-soft);stroke:var(--red);stroke-width:1.5"/><text x="608" y="171" text-anchor="middle" style="fill:var(--red);font-size:13.5px;font-weight:700;font-family:JetBrains Mono,monospace">duration</text><path d="M 580 146 C 540 70, 390 64, 320 96" marker-end="url(#tl-arrow)" style="fill:none;stroke:var(--red);stroke-width:2"/><text x="570" y="84" text-anchor="middle" style="fill:var(--red);font-size:12.5px;font-weight:700">used as an input anyway</text><text x="230.0" y="62" text-anchor="middle" style="fill:var(--ink-3);font-size:12px">known before the decision: allowed</text></svg>
+    caption: "Leakage is a question about time, not about statistics. `duration` is only known once the call is over, after the decision it is supposed to inform."
+
+  # ------------------------------------------------------------------ §10
+  - section: 10
+    after: "# Scratch space for your diagnosis."
+    type: explainer
+    style: deep
+    title: "A worked diagnosis: Mystery A (open after trying it yourself)"
+    md: |
+      **Evidence.** Tier 0: train loss 0.083 against validation loss 2.98, best validation AUC 0.836 against final 0.707: gallery shape B,
+      overfitting, and the final checkpoint is far past the best one. Tier 1: gradient ratio last/first **9.5×10⁵**, against 1.3 for the
+      reference. Counting layers: `hidden=tuple([64]*16)` is 16 hidden layers, 17 weight matrices.
+
+      **Diagnosis.** Two things at once. The plain 17-layer ReLU stack with PyTorch's default initialisation has a **vanishing gradient
+      profile** (Lesson 3.3): the first layers receive about a millionth of the last layer's signal. That did not stop the model from
+      *fitting*: the later layers alone have ample capacity to memorise 500 rows, so it also **overfits** badly once it passes its best epoch.
+
+      **Smallest fixes to test, one at a time.** Depth is the cause of the profile, so first go back to 2 hidden layers (the reference) and
+      confirm the ratio returns to about 1. If depth is required, add normalisation or residual blocks (Lesson 3.3 §6–7), or Kaiming
+      initialisation. Separately, keep the **best-epoch checkpoint** (early stopping) so overfitting after the peak does not decide the
+      reported number. Note that 0.836 against the reference's 0.816 is inside the noise floor: the deep model is not better.
+
+  - section: 10
+    after: "# Scratch space for your diagnosis."
+    type: explainer
+    style: deep
+    title: "A worked diagnosis: Mystery B (open after trying it yourself)"
+    md: |
+      **Evidence.** Validation AUC 0.805 looks fine, but accuracy is exactly the majority rate (0.700) and every prediction lies between
+      0.13 and 0.43: nothing crosses 0.5 (Case 3's signature). Final AUC equals best AUC, so validation was still improving at the last
+      epoch, and the loss is still falling (Case 2's signature). Training loss 0.559 is still close to the 0.611 of a constant prediction.
+
+      **Diagnosis: two faults.** The run is **undertrained**: `lr=1e-4` for only 25 epochs. And it is **heavily regularised**: dropout 0.6
+      on top of weight decay 2.0. Be careful attributing the compressed predictions: an undertrained model also stays close to the base
+      rate, so both faults push in the same direction. And because AdamW's decay per step is `lr × weight_decay`, 2.0 at lr 1e-4 decays
+      exactly as fast as 0.2 at lr 1e-3; raise the learning rate and the same setting becomes ten times stronger.
+
+      **Test them separately.** First raise `lr` to 1e-3 alone: if the prediction range widens and the curve plateaus, undertraining was the
+      larger fault. Then lower dropout and weight decay with the learning rate fixed, and watch accuracy against the majority rate and the
+      prediction range. Changing both at once would fix the run and teach you nothing about which fault mattered.
+
+  # ------------------------------------------------------------------ §11
+  - section: 11
+    after: "def experiment_log(result, hypothesis, diagnosis, action, learned):"
+    type: explainer
+    style: warning
+    title: "The example record contradicts itself"
+    md: |
+      Read the printed record carefully. Its **Result** line, generated from the run, says final validation AUC 0.5029 and **2** distinct
+      predictions. Its **Diagnosis**, typed by hand, says "Val AUC exactly 0.5000, **one** distinct prediction", which is Lesson 3.1's
+      collapse, not this run's. That is exactly how records go wrong: evidence typed from memory drifts from what was measured. Generate
+      every number in a record from the result object, and write by hand only what a program cannot know: the hypothesis, the
+      interpretation and the lesson.
+
+answers:
+  "1-1":
+    - |
+      Look at **what the model does**, not at the loss. Shape C's curve is still sloping at the last epoch (measure the slope over the final
+      few epochs), its validation AUC is still rising, and its predictions vary from row to row. Shape D sits flat at about the loss of a
+      constant prediction at the base rate, its AUC is near 0.5, and its predictions are nearly identical for every row; its first epoch
+      also shows a spike. A flat loss only says the optimiser has stopped changing the objective. That happens at a useful minimum and at
+      the trivial constant solution alike, so the *value* of the plateau (compared with the base-rate loss) and the metric decide which.
+    - |
+      Because a result far beyond a sensible baseline is more likely to come from a broken experiment than from a breakthrough. German
+      Credit models are published around 0.78–0.80 AUC; a run at 0.99 is far more often caused by leakage (training rows in validation,
+      a feature that encodes the label, duplicates across the split) than by a better model. Good numbers are also the ones nobody
+      questions, so a bug that produces them survives review. Explain *why* the result is so good (which features, which split, which rows)
+      before you trust it.
+    - |
+      The last checkpoint is **not** the best one: the optimiser is bouncing around a good region, and the final epoch landed on a worse point
+      of that noisy trajectory. Keep the **best validation checkpoint** (early stopping with restore, with patience large enough for the
+      jitter), and consider a smaller learning rate or a decaying schedule (Lesson 3.1 §8) so later epochs settle instead of jumping around.
+      Report that restored checkpoint, and confirm it on the test split.
+  "3-1":
+    - |
+      A test that does not find the fault still **eliminates explanations**. Finite losses rule out NaN problems; a spread of predictions rules
+      out collapse; AUC above chance rules out a dead model. Each seconds-long negative result shrinks the list of suspects, so the next,
+      more expensive test is aimed at what is left. Ordering by cost also means that when a cheap test *does* find the fault, you never pay
+      for the expensive ones. Running a retraining experiment first costs minutes or hours even when a free check would have answered the
+      question.
+    - |
+      A range from 0.0000 to 0.9992 with **205** distinct values over 250 rows rules out anything that makes predictions nearly constant or
+      compressed: **collapse** (Case 1: 2 distinct values in 0.20–0.35), **over-regularisation** (Case 3: 0.28–0.42, nothing above 0.5), and
+      a dead or zero-initialised network (one constant value). It also argues against **saturation from a bad initialisation**, which gives
+      extreme but few distinct values (Case 5: 7). It says nothing about **leakage** (Cases 4 and 6 have well-spread predictions too): a
+      well-behaved output distribution is not evidence of a valid experiment.
+    - |
+      It costs a **new training run**: 200 full-batch steps on 20 rows (under a second here, but minutes to hours on a large model), plus
+      code to build the subset. It answers a **capability** question: can this exact model, data pipeline and loss fit *anything* when
+      generalisation is taken out of the picture? Failing to memorise 20 rows means the wiring is broken: labels misaligned with inputs, a
+      sigmoid in `forward` fed to `BCEWithLogitsLoss`, frozen or unregistered parameters, a learning rate orders of magnitude off, a bug in
+      the batch. A Tier 0 summary shows what the trained model outputs; it cannot tell you whether the setup was ever able to learn.
+  "4-1":
+    - |
+      0.6109 is the loss of predicting the base rate, 30% bad, for everyone. Landing at 0.6158 means the model's predictions carry almost no
+      information beyond that base rate: it has learned the class balance and nothing else. That is why the loss is the least informative
+      piece of evidence here: on its own, 0.6158 is a finite, stable, unremarkable number (the reference itself started near 0.70). It only
+      becomes a clue once you compare it with the base-rate loss, while AUC at chance and two distinct predictions show the collapse directly.
+    - |
+      Confidence is about predictions being **extreme**, near 0 or 1, and different for different rows. Here every prediction sits between
+      0.20 and 0.35, around the 0.30 base rate, with a standard deviation of 0.009 (the reference: 0.36) and only two distinct values to four
+      decimals. The model is giving almost everyone the same score: it is not confident, it is **not discriminating**. A narrow band around
+      the base rate is the signature of a model that has stopped using the features.
+    - |
+      Because the damage is in the **parameters**, not in the learning rate. The oversized updates pushed most first-layer ReLU units into
+      permanently negative territory (60.9% dead at lr = 0.5 in Lesson 3.3). A dead unit receives a zero gradient, and zero times any
+      learning rate is still zero, so a smaller rate cannot move it. The surviving weights have also been thrown far from any useful
+      solution, and Adam's running averages are full of the huge early gradients. Lowering the rate only slows movement from that bad
+      point; it does not rewind to the good trajectory. Start again from a fresh initialisation with the lower rate.
+  "5-1":
+    - |
+      The **trajectory**, not the level. Validation AUC was still climbing steeply (0.50 at epoch 10, 0.78 at epoch 40) and was at its best on
+      the last epoch; both losses were still falling with no plateau; the training loss (0.53) is nowhere near what the same model reaches at
+      lr = 1e-3 (0.055), so it has not even fitted the training data; and the tiny train/validation gap shows capacity is far from used.
+      Finally, the same architecture reached 0.816 by epoch 10 with a larger learning rate: the dataset clearly allows more.
+    - |
+      In a finished run the best epoch usually comes *before* the last: once the model has reached its peak, noise or overfitting pull the
+      final value down. Best = final means the metric was still at its highest when the budget ran out, i.e. still **rising**. The run was
+      stopped mid-climb, which is exactly gallery shape C: still descending at the end, no plateau, so the attainable performance has not
+      been measured.
+    - |
+      **Train for many more epochs** (say, ten times as many). It would probably improve the run, but it is a weaker test: it costs ten times
+      the compute, and a positive result cannot tell "the step size was too small" apart from "the budget was too short", since for plain
+      undertraining those are the same thing. Raising the learning rate tests the specific hypothesis within the same budget and fails fast
+      if it is wrong. (An LR range test is cheaper still.)
+  "6-1":
+    - |
+      AUC only measures **ranking**. This model ranks reasonably, but every predicted probability sits between 0.28 and 0.42, so at the usual
+      0.5 threshold it flags no one as bad: as a decision-maker it does nothing. Its training loss (0.604) is barely below the 0.611 of a
+      constant prediction, so it has hardly learned to separate the classes at all. And the 0.8295 against 0.8158 gap is well inside the
+      noise floor of a 250-row validation set (Lesson 3.2), so "the highest AUC in the notebook" is not even a reliable ranking.
+    - |
+      That the model predicts **"good" for every validation row**. Exactly 70% of the rows are good, so labelling everyone good scores exactly
+      70%, and no prediction exceeds 0.5 (the maximum is 0.4165). At this threshold the model catches none of the 75 bad-credit applicants:
+      recall for the class that matters is zero.
+    - |
+      **Prediction range and spread:** a healthy model spreads its predictions widely, on both sides of the threshold (the reference spans
+      0.0000–0.9992 with a standard deviation of 0.36); here they are squeezed into 0.28–0.42.
+
+      **Confusion matrix at the operating threshold** (or recall and precision for the bad class): a healthy model flags a reasonable number
+      of bad applicants with recall well above zero; here nothing is flagged.
+
+      A **calibration plot** (predicted probability against the observed bad rate in bins) is a good third: healthy is close to the
+      diagonal, over-regularised is a nearly flat line in the middle.
+  "7-1":
+    - |
+      The **zero gap** is the stronger clue. A perfect validation AUC could, in principle, come from a genuinely easy problem or a single
+      strong feature (Case 6 shows a leaked *feature* can do this with a normal gap). But a model that fits its 500 training rows perfectly
+      should always do somewhat worse on rows it has never seen; validation matching training **exactly** says these rows are behaving like
+      training rows because they are training rows. Together, "perfect" and "identical to training" leave essentially one explanation: the
+      model is being scored on data it has seen. (The 0.7200 majority rate, instead of the stratified 0.7000, points the same way.)
+    - |
+      Look for the **entity**, not the row. If there is a customer ID, count how many validation customers also appear in training. If not,
+      build a key from stable identifying fields (for example age, job, marital status and credit history) and look for matches, or find each
+      validation row's nearest training row and inspect the suspiciously close pairs. Then compare the score on validation rows whose
+      customer appears in training against rows whose customer does not: a large difference is leakage. The fix is a **group split**
+      (`GroupShuffleSplit` or `GroupKFold`) so each customer lives in exactly one split.
+    - |
+      A gap of −0.02 is perfectly normal, so check the data flow rather than the number: exact and near-duplicate rows across the splits
+      (hash every row); entity overlap as in the previous answer; whether the data has a time order that a random split ignores; whether any
+      preprocessing was fitted before the split; and whether any single feature predicts the label almost perfectly on its own (compute each
+      feature's AUC). Finally, see whether a simple baseline such as logistic regression also scores suspiciously high: if it does, the
+      evaluation, not the network, is the thing to explain.
+  "8-1":
+    - |
+      The first loss describes the model **before** optimisation has had any chance to compensate, and you know what it should be: about
+      0.61 (the base-rate loss) or 0.69 (predicting 0.5) for a sensibly initialised binary classifier. A value of 641 can only come from
+      the starting state: enormous logits from enormous weights. The final loss mixes the initialisation with 40 epochs of learning rate,
+      overfitting and everything else, so many different causes could explain a bad final number. (Strictly, "epoch-1 loss" averages the
+      first epoch's batches, but those early batches dominate it.)
+    - |
+      **Exploding gradients** (Lesson 3.3 §4): the norms are about a thousand times the reference's in *every* layer, and the profile is flat
+      (ratio 1.85), so this is not the depth-driven kind of explosion but a **scale** problem. Weights with standard deviation 3 produce huge
+      pre-activations and logits, hence a huge loss and huge gradients. AdamW normalises its step size, so the run does not turn into NaN,
+      but it spends its whole budget climbing out of that regime.
+    - |
+      Case 5's predictions are **extreme**: the logits are so large that most sigmoids round to exactly 0.0000 or 1.0000, which is why only
+      seven distinct values survive across the full 0–1 range. The network still distinguishes rows (AUC 0.60, above chance) but is wildly
+      overconfident, hence the validation loss of 213. Case 1's predictions are **near-constant** around the base rate: the network has
+      stopped distinguishing rows at all (AUC 0.50). Different outputs, different mechanisms: saturation from oversized *weights* in
+      Case 5, lost capacity (dead units) from oversized *updates* in Case 1.
+  "9-1":
+    - |
+      **Tier 0 check 4**, "is the result implausibly better than a sensible baseline?". It compares 0.926 with the logistic-regression
+      baseline for Bank Marketing (0.7717, Lesson 3.1), with the same network trained without `duration` (0.785), and with everything Module 2
+      achieved (about 0.79–0.80). A single column adding 0.14 AUC, with no domain explanation, is the trigger.
+    - |
+      Cross-validation only re-splits the **same historical table**. In every fold, every row still has its `duration`, and `duration` really is
+      predictive of the outcome in that table, so every fold confirms it. Cross-validation estimates performance on data collected the same
+      way, and the flaw is that deployment data will *not* be collected that way: at prediction time the call has not happened. The problem is
+      about **when** the value exists, and no resampling of a table can see time.
+    - |
+      **`campaign`** counts contacts *during this campaign*, and the UCI documentation says it **includes the last contact**. If you predict
+      before the first call of a campaign, it does not exist yet; if you predict before each new call, a count of calls *so far* exists, but
+      the stored value may include the very call whose outcome is the label. You need to know when the column was snapshotted relative to
+      the decision.
+
+      **`poutcome`** is the outcome of the *previous* campaign, so it is normally known before the current one starts and is likely valid,
+      provided "previous" really means a campaign that finished before this prediction.
+
+      In both cases: read the data dictionary, find the timestamp at which each value was recorded, and compare it with the moment the
+      prediction must be made.
+    - |
+      1. **Which features does it use, and would every one of them exist at the moment the prediction is made?** (target leakage)
+      2. **How were training and evaluation data separated (by row, by customer, by time), and could anything cross that boundary?**
+         (validation leakage)
+
+      Only once both answers are clean is it worth asking whether the model itself is better.
+  "11-1":
+    - |
+      A hypothesis written **before** the run is a prediction that can fail: comparing it with the result tells you whether your understanding
+      of the system is right. Written afterwards, it tends to be shaped by the result (hindsight), so every outcome looks "expected" and you
+      learn nothing. Writing it first also forces you to decide what evidence would prove you wrong, so you measure the right things.
+    - |
+      Easier: you see at a glance **what changed**, runs can be compared line by line, and a confound (two keys changed at once) jumps out.
+      Lost: anything not in the config. The diff is relative to `BASELINE`, which may itself change later; defaults hidden in code (AdamW's
+      betas, the initialisation scheme, the probe batch) do not appear; nor do library versions, the data version or the hardware. The JSON
+      file next to it stores the full configuration, which covers part of this; recording the baseline's version and the package versions
+      covers the rest.
+    - |
+      For example, Case 2: *"Hypothesis: lr = 1e-4 would train more stably than 1e-3. Result: validation AUC 0.780 and still rising at epoch
+      40, best = final, losses still falling. Diagnosis: undertrained, the step size is too small for the 40-epoch budget. Fix: lr = 1e-3
+      reaches 0.816 by epoch 10."* Most people find the **hypothesis** hardest: the reason a run was started is rarely visible in its outputs,
+      so it is lost unless it is written down before the run.
+
+explain:
+  - cell: "def prepare(cfg):"
+    title: "Building the data from a config"
+    lines:
+      - match: "train_size = 0.8"
+        note: "Bank Marketing: 80% train, then the remaining 20% split in half, so validation is 10% of the data (about 4,500 rows)."
+      - match: "Xva, _, yva, _ = train_test_split(Xtmp, ytmp, test_size=0.5, random_state=SEED, stratify=ytmp)"
+        note: "The test half is discarded (`_`): this clinic only needs training and validation."
+      - match: "Xva, yva = Xtr.iloc[:n].copy(), ytr[:n].copy()"
+        note: "The deliberate bug of Case 4: \"validation\" becomes the first n training rows."
+      - match: "A = pre.fit_transform(Xtr).astype(np.float32)"
+        note: "The preprocessing is fitted on training rows only, as always."
+
+  - cell: "def run_experiment(cfg, save=True, quiet=False):"
+    title: "The clinic's harness"
+    summary: "Everything about a run comes from `cfg`, and everything it measured goes into one JSON-serialisable result."
+    lines:
+      - match: "grads_at_start = layer_grad_norms(model, probe_x, probe_y)"
+        note: "Measured **before** training: the profile of the freshly initialised network."
+      - match: "if cfg.get(\"clip\"): nn.utils.clip_grad_norm_(model.parameters(), cfg[\"clip\"])"
+        note: "Optional gradient clipping, in the right place: after `backward`, before `step`."
+      - match: "grad_ratio=(list(grads_at_start.values())[-1] / max(list(grads_at_start.values())[0], 1e-30)),"
+        note: "Last layer's gradient norm over the first layer's: large means vanishing on the way down."
+      - match: "n_unique_preds=int(len(np.unique(pb.round(4)))),"
+        note: "Distinct predictions to four decimals: 1 or 2 means collapse, a handful means saturation."
+      - match: "json.dump(result, f, indent=2)"
+        note: "Every run leaves a record on disk, which can be re-plotted or compared later without retraining."
+
+  - cell: "def tier0(result, name=\"\"):"
+    title: "Tier 0 and the tiny-overfit test"
+    lines:
+      - match: "Xs, Ys = Xt[:n], Yt[:n]"
+        note: "Just 20 training rows."
+      - match: "loss_fn(model(Xs), Ys).backward(); opt.step()"
+        note: "Full-batch: the same 20 rows every step, 200 steps. A working setup drives the loss towards zero."
+      - match: "verdict = \"PASS - setup can learn\" if final < 0.05 else \"FAIL - bug in model/data/loss\""
+        note: "A loss below 0.05 means the model can memorise; anything above suggests broken wiring."
+
+  - cell: "def experiment_log(result, hypothesis, diagnosis, action, learned):"
+    title: "The experiment record"
+    lines:
+      - match: "changed = {k: v for k, v in cfg.items()"
+        note: "Only the keys that differ from `BASELINE` (plus `name`), so the change under test is obvious."
+      - match: "path = f\"results/{cfg.get('name','run')}.md\""
+        note: "The record sits next to the run's JSON, under the same name."
+
+takeaways:
+  - "Diagnose before you intervene: observe, compare with a reference run, hypothesise, test, intervene, verify. Changing things until it works is search, not diagnosis."
+  - "Order checks by cost: Tier 0 (the run you have), Tier 1 (one forward/backward pass), Tier 2 (new runs). Cheap checks eliminate whole classes of cause."
+  - "Read the loss next to the metric and the predictions: a flat loss near the base-rate loss with AUC ≈ 0.5 is collapse; a still-falling loss with best = final is undertraining."
+  - "Prediction summaries are first-class evidence: near-constant (collapse), compressed below the threshold (over-regularised), extreme and few (saturated), wide and varied (healthy)."
+  - "If a model cannot memorise 20 rows, the wiring is broken: model, data pipeline or loss."
+  - "A gradient profile measured at initialisation catches initialisation and depth problems, not damage done during training."
+  - "Too good is a symptom: a validation score equal to training (leaked split) or a single feature adding 0.14 AUC (target leakage) needs explaining before celebrating."
+  - "For every feature, ask when it exists relative to the prediction. No statistical check can see time."
+  - "Write the hypothesis before the run, and generate the evidence in a record from the results, not from memory."
+
+quiz:
+  - q: "A run's loss is flat at 0.611 on a 30%-positive dataset and its AUC is 0.50. What is the most likely state?"
+    options: ["Converged to a good model", "Collapsed to predicting the base rate", "Overfitting", "Still learning"]
+    answer: 1
+    why: "0.611 is the loss of a constant prediction at 30%. Check the spread of predictions to confirm."
+  - q: "Validation AUC is still rising at the last epoch and final AUC equals best AUC. What should you conclude?"
+    options: ["This is the best the data allows", "The run has not finished: it may be undertrained", "The model is overfitting", "The validation set is leaked"]
+    answer: 1
+    why: "A run that has not plateaued has not measured its attainable performance."
+  - q: "AUC 0.83, accuracy exactly the majority rate, and every prediction between 0.28 and 0.42. Diagnosis?"
+    options: ["Leakage", "Over-regularised: it ranks but never crosses the threshold", "Exploding gradients", "Healthy"]
+    answer: 1
+    why: "AUC sees ranking; the threshold behaviour and the prediction range reveal the problem."
+  - q: "Which check is ordered first by the protocol?"
+    options: ["A learning-rate sweep", "The overfit-20-rows test", "Checking whether the losses are finite and what the metric and predictions look like", "Changing dropout"]
+    answer: 2
+    why: "Tier 0 checks cost nothing: they use the run you already have."
+  - q: "Validation AUC 1.0000, and validation exactly matches training. The most likely cause is:"
+    options: ["A very strong model", "Validation rows that are also training rows", "Too much dropout", "A learning rate that is too low"]
+    answer: 1
+    why: "Genuinely unseen rows always differ somewhat from the training fit."
+  - q: "Adding `duration` raises AUC from 0.785 to 0.926 and every diagnostic passes. Why is the model still unusable?"
+    options: ["It overfits", "`duration` is only known after the call, so it cannot exist when deciding whom to call", "The gradients vanish", "The validation split is leaked"]
+    answer: 1
+    why: "Target leakage is about time. Statistics computed on the historical table cannot detect it."
+  - q: "A model cannot drive its loss towards zero on 20 fixed training rows. What does that suggest?"
+    options: ["It needs regularisation", "Something is broken in the model, data pipeline or loss", "It needs more data", "Nothing: 20 rows is too few"]
+    answer: 1
+    why: "Any working setup can memorise a tiny fixed set when asked to."
+
+docstrings:
+  load_bank_marketing: |
+    Load UCI Bank Marketing, downloading and caching the CSV the first time.
+
+    Args:
+        include_duration: Keep the ``duration`` column (Case 6's target leak). It is
+            dropped by default because call length is only known after the call.
+
+    Returns:
+        A tuple ``(X, y)``: the feature DataFrame and a float32 label array
+        (1 = subscribed).
+  load_german_credit: |
+    Load German Credit from OpenML (cached locally by scikit-learn).
+
+    Returns:
+        A tuple ``(X, y)``: the 20-column feature DataFrame and a float32 label array
+        (1 = bad credit risk).
+  prepare: |
+    Build training and validation tensors for the dataset a config names.
+
+    Splits with a fixed seed (German Credit: 500 training rows; Bank Marketing: 80%),
+    halves the remainder into validation and an unused test part, and fits scaling and
+    one-hot encoding on the training rows only. With ``leak_split`` the validation set is
+    replaced by the first training rows, the deliberate bug of Case 4.
+
+    Args:
+        cfg: Experiment config; reads ``dataset``, ``include_duration`` and ``leak_split``.
+
+    Returns:
+        A tuple ``(Xt, Yt, Xv, Yv, ytr, yva, d_in)``: training and validation tensors
+        (labels shaped ``(N, 1)``), the NumPy label arrays and the encoded feature count.
+  build_model: |
+    Build the MLP a config describes, with an optional non-default initialisation.
+
+    Args:
+        cfg: Experiment config; reads ``seed``, ``hidden`` (hidden widths), ``dropout``,
+            ``init`` (``"default"``, ``"zeros"`` or ``"big"``) and ``init_std``.
+        d_in: Number of input features.
+
+    Returns:
+        An ``nn.Sequential`` producing one logit per row.
+  layer_grad_norms: |
+    One forward/backward pass, then the gradient norm of every weight matrix.
+
+    The Lesson 3.3 probe, returned as a plain dict so it can be saved in the run's JSON.
+    Gradients are cleared before and after.
+
+    Args:
+        model: The model to probe.
+        xb: A batch of inputs.
+        yb: The matching targets.
+
+    Returns:
+        A dict mapping each 2-D parameter's name to its gradient norm, in forward order.
+  run_experiment: |
+    Run one experiment from a config and return everything it measured.
+
+    Prepares the data, builds the model, records the gradient profile at
+    initialisation, trains with AdamW (optionally clipping gradients), and after every
+    epoch records losses, AUCs and validation accuracy. The result summarises the final
+    and best scores and the distribution of validation predictions.
+
+    Args:
+        cfg: Experiment config (``name``, ``dataset``, ``hidden``, ``lr``, ``epochs``,
+            ``batch_size``, ``weight_decay``, ``dropout``, ``init``, ``clip``, ``seed``,
+            ``leak_split``, ``include_duration``); missing keys use the defaults.
+        save: Write the result to ``results/<name>.json``.
+        quiet: Do not print the one-line summary.
+
+    Returns:
+        A dict with ``config``, ``history`` (one record per epoch), ``grads_at_start``,
+        ``grad_ratio`` (last/first layer), ``final``, ``best_val_loss``,
+        ``best_val_auc``, ``majority_acc``, prediction ``pred_min``/``pred_max``/
+        ``pred_std``, ``n_unique_preds`` and ``seconds``.
+  show: |
+    Plot a run: loss curves, AUC curves and the gradient profile at initialisation.
+
+    Args:
+        result: A result dict from ``run_experiment``.
+        title: Figure title; defaults to the config's name.
+  tier0: |
+    Print the Tier 0 checks for a finished run: no retraining needed.
+
+    Shows the final losses and whether they are finite, final and best validation AUC,
+    accuracy against the majority-class rate, the range, spread and number of distinct
+    predictions, and the gradient ratio at initialisation.
+
+    Args:
+        result: A result dict from ``run_experiment``.
+        name: Label for the printout.
+  overfit_tiny: |
+    Tier 2 check: can this setup memorise a handful of training rows?
+
+    Trains a fresh model from the config full-batch on the first ``n`` training rows for
+    ``epochs`` steps and prints PASS if the final loss is below 0.05.
+
+    Args:
+        cfg: Experiment config for the model, data and learning rate.
+        n: Number of training rows to memorise.
+        epochs: Number of full-batch optimizer steps.
+
+    Returns:
+        The final training loss on those rows.
+  experiment_log: |
+    Write a short markdown record of an experiment next to its JSON results.
+
+    The record lists what changed from ``BASELINE``, the hypothesis, the measured
+    result (generated from ``result``), the diagnosis, the action taken and the lesson.
+
+    Args:
+        result: A result dict from ``run_experiment``.
+        hypothesis: What you expected before running it, and why.
+        diagnosis: Your reading of the evidence.
+        action: What you changed in response.
+        learned: What you would carry into the next experiment.
+
+    Returns:
+        The path of the markdown file written, ``results/<name>.md``.

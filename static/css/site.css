@@ -383,7 +383,9 @@ pre.diagram {
 .figure figcaption { margin-top: 10px; font-size: .88rem; color: var(--ink-2); line-height: 1.5; }
 .fig-num { font-weight: 700; color: var(--ink); margin-right: .35em; }
 .custom-figure { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.custom-figure { overflow-x: auto; }
 .custom-figure svg { max-width: 100%; height: auto; }
+@media (max-width: 720px) { .custom-figure svg { max-width: none; width: 580px; } }
 
 /* ------------------------------------------------------------------ code cells */
 .code-cell { margin: 1.3em 0; border-radius: var(--radius); background: var(--code-bg); border: 1px solid var(--code-line); overflow: hidden; box-shadow: var(--shadow-sm); }
