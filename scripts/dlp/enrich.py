@@ -15,6 +15,7 @@ from pathlib import Path
 import yaml
 
 from .notebook import Lesson, Section
+from .docstrings import find_defs
 from .render import MarkdownRenderer
 from .text import inline_md
 
@@ -203,8 +204,10 @@ class Enricher:
                 self.warn(lesson, f"explain: code cell containing {needle[:40]!r} not found")
                 continue
             line_notes = []
+            skip = docstring_lines(target["src"])
             for ln in note.get("lines", []):
-                idx = next((i for i, raw in enumerate(target["src"].split("\n")) if ln["match"] in raw), None)
+                idx = next((i for i, raw in enumerate(target["src"].split("\n"))
+                            if ln["match"] in raw and i not in skip), None)
                 if idx is None:
                     self.warn(lesson, f"explain: line {ln['match'][:40]!r} not found in cell {needle[:30]!r}")
                     continue
@@ -212,3 +215,15 @@ class Enricher:
             target["note_map"] = {n["line"]: k + 1 for k, n in enumerate(line_notes)}
             target["explain"] = {"summary_html": self.md(note.get("summary")), "lines": line_notes,
                                  "title": note.get("title", "What this code does")}
+
+
+def docstring_lines(code: str) -> set[int]:
+    """0-based line indices occupied by docstrings, so code notes never attach to them."""
+    import ast
+    out: set[int] = set()
+    for _, node in find_defs(code):
+        first = node.body[0] if node.body else None
+        if isinstance(first, ast.Expr) and isinstance(getattr(first, "value", None), ast.Constant) \
+                and isinstance(first.value.value, str):
+            out.update(range(first.lineno - 1, first.end_lineno))
+    return out

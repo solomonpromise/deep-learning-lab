@@ -394,3 +394,145 @@ quiz:
     options: ["The whole model object", "`model.state_dict()` (plus optimizer state and config)", "Only the loss history", "The training data"]
     answer: 1
     why: "State dicts are robust to refactoring; rebuild the architecture in code and load the weights into it."
+
+# Docstrings inserted into the displayed code and the downloadable notebook.
+docstrings:
+  get_device: |
+    Pick the fastest hardware available: an NVIDIA GPU, then Apple Silicon, then the CPU.
+
+    Writing this once at the top of a notebook means the same code runs unchanged on
+    Colab or Kaggle (CUDA), on a Mac (MPS) and on any laptop (CPU).
+
+    Returns:
+        A ``torch.device``: ``cuda`` if an NVIDIA GPU is visible, else ``mps`` on Apple
+        Silicon, else ``cpu``.
+  shapes: |
+    Print the shape of several tensors at once, one per line.
+
+    A debugging habit: print shapes *before* you get an error, whenever you are
+    unsure how data flows through new model code.
+
+    Args:
+        **tensors: Any number of named tensors, e.g. ``shapes(input=x, weights=W)``.
+            Each name is printed next to its shape.
+  make_spirals: |
+    Generate two interleaved spiral arms, one per class (as in Lesson 1.1).
+
+    Identical to Lesson 1.1's generator except that the labels are floats (0.0 / 1.0),
+    which is what ``BCEWithLogitsLoss`` expects as a target.
+
+    Args:
+        n_per_class: Number of points generated for each of the two classes.
+        noise: Standard deviation of the Gaussian noise added to both coordinates.
+        revolutions: How many full turns each arm makes.
+        seed: Seed for the random generator, so the data is identical every run.
+
+    Returns:
+        A tuple ``(X, y)``: ``X`` has shape ``(2 * n_per_class, 2)`` (float64 coordinates)
+        and ``y`` has shape ``(2 * n_per_class,)`` (float labels). Rows are shuffled.
+  forward_raw: |
+    Forward pass of the raw-tensor network (Version A): one hidden ReLU layer.
+
+    Computes ``relu(x @ W1_raw + b1_raw) @ W2_raw + b2_raw`` using the loose global
+    parameter tensors, exactly the arithmetic of Lesson 1.2, now in PyTorch.
+
+    Args:
+        x: Input batch of shape ``(N, 2)``, on the same device as the parameters.
+
+    Returns:
+        Raw logits of shape ``(N, 1)``. No sigmoid is applied: the loss function does
+        that internally, in a numerically stable way.
+  SpiralNet: |
+    A three-layer fully connected network for the two-spirals problem.
+
+    Architecture: ``in_features → hidden → hidden → 1``, with ReLU after each hidden
+    layer. The output is a single logit per example (a raw score, not a probability).
+    With the defaults it has 4,417 trainable parameters.
+  SpiralNet.__init__: |
+    Create and register the layers.
+
+    Assigning ``nn.Linear`` layers as attributes registers their weights and biases,
+    so ``model.parameters()``, ``model.to(device)`` and ``model.state_dict()`` find them.
+
+    Args:
+        in_features: Number of input features per example (2 for the spirals).
+        hidden: Width of each of the two hidden layers.
+  SpiralNet.forward: |
+    Run a batch through the network.
+
+    Args:
+        x: Input tensor of shape ``(N, in_features)``.
+
+    Returns:
+        Logits of shape ``(N, 1)``. Apply ``torch.sigmoid`` only when you want to
+        read probabilities.
+  train_model: |
+    Full-batch training loop with validation after every epoch.
+
+    Each epoch runs the six canonical lines (``train()``, ``zero_grad()``, forward,
+    loss, ``backward()``, ``step()``) on the whole training set, then measures loss and
+    accuracy on the validation set under ``eval()`` and ``torch.no_grad()``.
+
+    Args:
+        model: The ``nn.Module`` to train (already on the right device).
+        optimizer: An optimizer built from ``model.parameters()``.
+        loss_fn: Loss function taking ``(logits, targets)``, e.g. ``BCEWithLogitsLoss``.
+        X_tr: Training inputs, shape ``(N_train, F)``.
+        y_tr: Training labels, shape ``(N_train, 1)``, float 0/1.
+        X_va: Validation inputs, shape ``(N_val, F)``.
+        y_va: Validation labels, shape ``(N_val, 1)``.
+        epochs: Number of passes over the training data (one update per epoch here).
+        log_every: Print progress every this many epochs (and on the last epoch).
+
+    Returns:
+        A dict with three lists, one value per epoch: ``"train_loss"``,
+        ``"val_loss"`` and ``"val_acc"``, ready to plot.
+  plot_boundary_torch: |
+    Shade the decision regions of a PyTorch model over the 2-D input plane.
+
+    Builds a 300 × 300 grid covering the data, runs the model on every grid point
+    (in evaluation mode, without gradients), and colours each region by whether the
+    predicted probability is above 0.5. The data points are drawn on top.
+
+    Args:
+        model: A trained ``nn.Module`` with 2 inputs and 1 output logit.
+        X_np: NumPy array ``(N, 2)`` of points to draw.
+        y_np: NumPy array ``(N,)`` of their labels.
+        title: Plot title.
+        ax: Matplotlib axes to draw on; a new figure is created when omitted.
+
+    Returns:
+        The matplotlib axes.
+  predict: |
+    Run inference on raw NumPy input and return probabilities and hard labels.
+
+    Applies the three habits of correct inference: ``model.eval()``, no gradient
+    tracking, and an explicit conversion from logits to probabilities with a sigmoid.
+
+    Args:
+        model: A trained binary classifier returning one logit per example.
+        X_numpy: NumPy array ``(N, F)`` of inputs.
+        threshold: Probability above which an example is labelled 1.
+
+    Returns:
+        A tuple ``(probs, labels)``: ``probs`` is a float array ``(N,)`` of
+        probabilities of class 1, ``labels`` an int array ``(N,)`` of 0/1 predictions.
+  LinearOnlyNet: |
+    Bug 2: the same three layers as ``SpiralNet`` but with no activation functions.
+
+    Because nothing non-linear sits between the layers, the whole network collapses
+    into a single linear layer and can only draw a straight decision boundary. It is
+    deliberately broken, to show a failure that raises no error.
+  LinearOnlyNet.__init__: |
+    Create the three linear layers (no activation is registered).
+
+    Args:
+        hidden: Width of the two hidden layers.
+  LinearOnlyNet.forward: |
+    Apply the three linear layers back to back, with no ReLU in between.
+
+    Args:
+        x: Input tensor of shape ``(N, 2)``.
+
+    Returns:
+        Logits of shape ``(N, 1)``, a purely linear function of ``x``.

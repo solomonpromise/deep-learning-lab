@@ -13,7 +13,7 @@ It also opens straight from disk.
 
 ```bash
 make update     # 1. pull new/changed notebooks from ../Day N folders and rebuild the site
-make serve      # 2. preview at http://localhost:8000
+make serve      # 2. preview at http://localhost:8000   (make defs L=5.1 → check docstrings)
 make publish    # 3. commit + push; GitHub Actions rebuilds and redeploys the live site
 ```
 
@@ -137,6 +137,33 @@ quiz:                            # end-of-lesson multiple-choice quiz
 ```
 
 **Finding question IDs:** `make questions L=1.2` prints every question card with its ID and text, ready to paste into `answers:`.
+
+### Docstrings for every function and class
+
+Every function and class shown in a lesson gets a complete, Google-style docstring: a summary, what it does and
+why, `Args:`, `Returns:` and `Raises:`. Docstrings live in the lesson's enrichment file and are inserted into both the
+displayed code and the **downloadable notebook**. The original notebooks are never edited.
+
+```yaml
+docstrings:
+  make_spirals: |            # top-level function
+    Generate two interleaved spiral arms, one per class.
+
+    Args:
+        n_per_class: Number of points for each class.
+    Returns:
+        A tuple ``(X, y)`` ...
+  SpiralNet.forward: |       # a method: Class.method
+    Run a batch through the network. ...
+  encode_features.finish: |  # a nested function: outer.inner
+    ...
+```
+
+- `make defs L=2.2` lists every function/class in a lesson with its docstring status.
+- The build **warns** about any definition with no docstring, or with a one-line docstring despite taking arguments.
+- For new modules, `GROQ_API_KEY=gsk_... make docstrings L=5.1` drafts the missing ones with the AI model into
+  `enrichments/5.1.docstrings.yaml` (add `ARGS=--all` to also upgrade one-liners). Review the drafts; anything you write
+  under `docstrings:` in `enrichments/5.1.yaml` overrides them.
 
 ### Widgets available
 

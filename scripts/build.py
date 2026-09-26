@@ -31,6 +31,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from dlp.docstrings import inject as inject_docstrings  # noqa: E402
 from dlp.enrich import Enricher, load as load_enrichment  # noqa: E402
 from dlp.glossary import Glossary  # noqa: E402
 from dlp.notebook import Lesson, LessonParser  # noqa: E402
@@ -98,8 +99,12 @@ class Builder:
             store = AssetStore(self.dist / "assets" / "lessons" / lid, f"assets/lessons/{lid}")
             mod_n = int(lid.split(".")[0])
             fallback = modules_cfg.get(mod_n, {}).get("title", f"Module {mod_n}")
-            lesson = self.parser.parse(path, lid, store, "../", fallback)
             data = load_enrichment(ENRICH / f"{lid}.yaml")
+            lesson = self.parser.parse(path, lid, store, "../", fallback, docstrings=docmap_for(lid, data))
+            for cell, qual in dict.fromkeys(lesson.doc_missing):
+                self.enricher.warnings.append(f"[{lid}] no docstring for `{qual}` (code cell {cell}); add it under `docstrings:`")
+            for cell, qual in dict.fromkeys(lesson.doc_thin):
+                self.enricher.warnings.append(f"[{lid}] one-line docstring for `{qual}` (code cell {cell}); document its arguments under `docstrings:`")
             extras[lid] = self.enricher.apply(lesson, data)
             extras[lid]["enriched"] = bool(data)
             lessons.append(lesson)
@@ -154,7 +159,8 @@ class Builder:
                 next_l = flat[idx + 1] if idx + 1 < len(flat) else None
                 nb_name = f"Lesson_{l.id}_{re.sub(r'[^A-Za-z0-9]+', '_', l.title).strip('_')}.ipynb"
                 (self.dist / "notebooks").mkdir(exist_ok=True)
-                shutil.copy2(l.source, self.dist / "notebooks" / nb_name)
+                write_documented_notebook(l.source, self.dist / "notebooks" / nb_name,
+                                          docmap_for(l.id, load_enrichment(ENRICH / f"{l.id}.yaml")))
                 colab = ""
                 repo = self.cfg["course"].get("github_repo")
                 if repo:
@@ -219,6 +225,20 @@ class Builder:
         target.write_text(html, encoding="utf-8")
 
     # ------------------------------------------------------------------ authoring helper
+    def list_defs(self, lid: str) -> None:
+        """Print every function/class in a lesson with its current docstring (authoring helper)."""
+        path = NOTES / f"module-{lid.split('.')[0]}" / f"lesson-{lid}.ipynb"
+        data = load_enrichment(ENRICH / f"{lid}.yaml")
+        lesson = self.parser.parse(path, lid, AssetStore(Path("/tmp/dlp-null"), "x"), "", "",
+                                   docstrings=docmap_for(lid, data))
+        seen = set()
+        for cell, d in lesson.defs:
+            if d.qualname in seen:
+                continue
+            seen.add(d.qualname)
+            state = "MISSING" if not d.docstring else f"{len(d.docstring.splitlines())} lines"
+            print(f"cell {cell:>3}  {d.qualname:<40} {state:<9} {d.signature[:90]}")
+
     def list_questions(self, lid: str) -> None:
         path = NOTES / f"module-{lid.split('.')[0]}" / f"lesson-{lid}.ipynb"
         lesson = self.parser.parse(path, lid, AssetStore(Path("/tmp/dlp-null"), "x"), "", "")
@@ -228,6 +248,31 @@ class Builder:
                     print(f'\n"{b["id"]}":   # §{s.num} {s.title} — {b["label"]}')
                     for q in b["items"]:
                         print("   -", q["text"][:160])
+
+
+def docmap_for(lid: str, data: dict) -> dict:
+    """All docstrings for a lesson: AI drafts (``N.M.docstrings.yaml``) overridden by hand-written ones."""
+    drafts_path = ENRICH / f"{lid}.docstrings.yaml"
+    drafts = (yaml.safe_load(drafts_path.read_text(encoding="utf-8")) or {}) if drafts_path.exists() else {}
+    return {**drafts, **(data.get("docstrings") or {})}
+
+
+def write_documented_notebook(src: Path, dest: Path, docmap: dict | None) -> None:
+    """Copy a lesson notebook for download, with the lesson's docstrings inserted.
+
+    Outputs and markdown are untouched; only the source of code cells that define
+    functions or classes changes. The original notebook in ``notes/`` is never modified.
+    """
+    nb = json.loads(src.read_text(encoding="utf-8"))
+    if docmap:
+        for cell in nb.get("cells", []):
+            if cell.get("cell_type") != "code":
+                continue
+            code = "".join(cell.get("source", ""))
+            new = inject_docstrings(code, docmap).code
+            if new != code:
+                cell["source"] = new.splitlines(keepends=True)
+    dest.write_text(json.dumps(nb, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 def serve(port: int) -> None:
@@ -244,6 +289,7 @@ def main() -> int:
     ap.add_argument("--serve", action="store_true", help="serve dist/ after building")
     ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8000)))
     ap.add_argument("--questions", metavar="LESSON", help="print question blocks of a lesson and exit")
+    ap.add_argument("--defs", metavar="LESSON", help="print functions/classes of a lesson and their docstring status")
     args = ap.parse_args()
     if args.sync:
         rc = subprocess.call([sys.executable, str(ROOT / "scripts" / "sync_notes.py")])
@@ -252,6 +298,9 @@ def main() -> int:
     b = Builder()
     if args.questions:
         b.list_questions(args.questions)
+        return 0
+    if args.defs:
+        b.list_defs(args.defs)
         return 0
     rc = b.build()
     if args.serve and rc == 0:

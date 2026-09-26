@@ -660,3 +660,63 @@ quiz:
       - "The hidden-layer activations"
     answer: 1
     why: "Weights, gradients and activations are computed. The architecture, the loss, the data and its preprocessing are chosen by you."
+
+# Docstrings inserted into the displayed code and the downloadable notebook.
+docstrings:
+  make_spirals: |
+    Generate two interleaved spiral arms, one per class.
+
+    A spiral is a circle whose radius grows as you go round it. Each point is placed at
+    a random distance ``t`` along its arm; the radius grows from 0 at the centre to 1 at
+    the outer end while the angle winds ``revolutions`` times. Class 1 is class 0 rotated
+    by half a turn, so its arm sits exactly between the turns of the other.
+
+    Args:
+        n_per_class: Number of points generated for each of the two classes.
+        noise: Standard deviation of the Gaussian noise added to both coordinates.
+            0 gives perfectly thin arms; larger values blur the arms into each other.
+        revolutions: How many full turns each arm makes.
+        seed: Seed for the random generator, so the same arguments always give
+            exactly the same dataset.
+
+    Returns:
+        A tuple ``(X, y)`` where ``X`` is a float array of shape
+        ``(2 * n_per_class, 2)`` holding the (x1, x2) coordinates and ``y`` is an int
+        array of shape ``(2 * n_per_class,)`` holding class labels 0 or 1. Rows are
+        shuffled, so the two classes are mixed.
+  plot_boundary: |
+    Shade a fitted classifier's decision regions and overlay the data.
+
+    The function lays a fine 300 × 300 grid over the plotting area, asks the model
+    to predict a class for every grid point, and colours each region by its
+    predicted class. The border between the two colours is the model's decision
+    boundary.
+
+    Args:
+        model: Any fitted scikit-learn classifier with a ``predict`` method.
+        X: Array of shape ``(N, 2)`` with the points to draw.
+        y: Array of shape ``(N,)`` with their true labels (0 or 1).
+        title: Title shown above the plot.
+        transform: Optional function applied to the grid points before predicting.
+            Needed when the model was trained on engineered features (for example
+            ``polar_features``), so it sees inputs in the same form as in training.
+        ax: Matplotlib axes to draw on. A new figure is created when omitted.
+
+    Returns:
+        The matplotlib axes the plot was drawn on.
+  polar_features: |
+    Hand-written features that encode what we know about the spiral's geometry.
+
+    Keeps the raw coordinates and adds three new columns: the distance from the
+    centre ``r``, and the sine and cosine of the *aligned angle*
+    ``alpha = theta - r * revolutions * 2π``, which removes the twist the radius
+    explains. After this transformation the two arms sit in two separate bands, so a
+    linear model can separate them. It assumes the spiral is centred at (0, 0).
+
+    Args:
+        Z: Array of shape ``(N, 2)`` with (x1, x2) coordinates.
+        revolutions: Number of turns used when the spirals were generated. The
+            feature only works if this matches the data.
+
+    Returns:
+        Array of shape ``(N, 5)``: ``[x1, x2, r, sin(alpha), cos(alpha)]``.

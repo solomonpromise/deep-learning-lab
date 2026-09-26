@@ -5,7 +5,7 @@
 
 PY ?= python3
 
-.PHONY: build sync update serve publish clean questions
+.PHONY: build sync update serve publish clean questions defs docstrings
 
 build:
 	$(PY) scripts/build.py
@@ -20,6 +20,13 @@ serve:
 
 questions:
 	@$(PY) scripts/build.py --questions $(L)
+
+defs:
+	@$(PY) scripts/build.py --defs $(L)
+
+# Draft docstrings for undocumented functions/classes with the AI model (needs GROQ_API_KEY)
+docstrings:
+	$(PY) scripts/draft_docstrings.py $(L) $(ARGS)
 
 publish: update
 	git add -A

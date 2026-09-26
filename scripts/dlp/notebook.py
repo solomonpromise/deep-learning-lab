@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from .docstrings import inject as inject_docstrings
 from .render import AssetStore, MarkdownRenderer, highlight_lines, is_shell_cell, render_outputs
 from .text import FENCE_OPEN, Terminology, inline_md, md_to_plain, slugify
 
@@ -64,6 +65,9 @@ class Lesson:
     word_count: int = 0
     code_cells: int = 0
     figures: int = 0
+    defs: list = field(default_factory=list)          # every (cell, DefInfo) shown to learners
+    doc_missing: list = field(default_factory=list)   # (cell, qualname) still without a docstring
+    doc_thin: list = field(default_factory=list)      # (cell, qualname) with a one-line docstring despite arguments
 
     @property
     def slug(self) -> str:
@@ -213,7 +217,19 @@ class LessonParser:
         self.term = term
 
     def parse(self, path: Path, lesson_id: str, assets: AssetStore, root: str,
-              fallback_module_title: str) -> Lesson:
+              fallback_module_title: str, docstrings: dict | None = None) -> Lesson:
+        """Parse one lesson notebook into a :class:`Lesson`.
+
+        Args:
+            path: The notebook file.
+            lesson_id: ``"N.M"``.
+            assets: Where extracted images are collected.
+            root: Relative path from the page to the site root (``"../"``).
+            fallback_module_title: Used if the notebook has no ``# Day N — Title`` heading.
+            docstrings: ``{qualified_name: docstring}`` inserted into the displayed code.
+        """
+        self.docmap = docstrings or {}
+        self._defs, self._missing, self._thin = [], [], []
         nb = json.loads(path.read_text(encoding="utf-8"))
         items = flatten(nb)
         module_n, lesson_n = (int(x) for x in lesson_id.split("."))
@@ -273,6 +289,7 @@ class LessonParser:
         lesson = Lesson(id=lesson_id, module=module_n, number=lesson_n, title=title,
                         module_title=module_title, source=path, preamble=preamble, sections=sections)
         self._finalise(lesson)
+        lesson.defs, lesson.doc_missing, lesson.doc_thin = self._defs, self._missing, self._thin
         return lesson
 
     @staticmethod
@@ -326,6 +343,12 @@ class LessonParser:
         code = src.rstrip()
         if shell:
             code = re.sub(r"^[!%]", "", code, flags=re.M)
+        else:
+            res = inject_docstrings(code, getattr(self, "docmap", {}))
+            code = res.code
+            self._defs.extend((idx, d) for d in res.defs)
+            self._missing.extend((idx, q) for q in res.missing)
+            self._thin.extend((idx, q) for q in res.thin)
         lines, shown = highlight_lines(code, lang, self.term)
         outs = render_outputs(outputs, assets, root)
         stripped = code.strip()

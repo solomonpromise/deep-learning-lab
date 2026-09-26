@@ -463,3 +463,115 @@ quiz:
     options: ["Learning rate too small", "Learning rate too large", "Too few parameters", "Too much data"]
     answer: 1
     why: "Steps overshoot the valley and land higher on the other side, which is the too-large-learning-rate signature."
+
+# Docstrings inserted into the displayed code and the downloadable notebook.
+docstrings:
+  count_params: |
+    Count and print the parameters of a fully connected network.
+
+    Every layer that maps ``n_in`` inputs to ``n_out`` outputs holds
+    ``n_in × n_out`` weights (one per connection) plus ``n_out`` biases (one per
+    output neuron). The function prints one row per layer and a total.
+
+    Args:
+        layer_sizes: Layer widths from input to output, e.g. ``[2, 2, 1]`` for two
+            inputs, a hidden layer of two neurons and one output.
+
+    Returns:
+        The total number of trainable parameters (weights + biases).
+
+    Example:
+        >>> count_params([2, 2, 1])   # prints a table
+        9
+  relu: |
+    Rectified Linear Unit: ``max(0, z)``, applied element-wise.
+
+    Positive values pass through unchanged and negative values become exactly 0.
+    It is the non-linearity that stops stacked layers collapsing into one linear
+    layer.
+
+    Args:
+        z: NumPy array of pre-activations, any shape.
+
+    Returns:
+        Array of the same shape with every negative entry replaced by 0.
+  sigmoid: |
+    The logistic sigmoid ``1 / (1 + e^(-z))``, applied element-wise.
+
+    Squashes any real number into the interval (0, 1), so the output layer's value
+    can be read as a probability of class 1.
+
+    Args:
+        z: NumPy array of logits (pre-activations), any shape.
+
+    Returns:
+        Array of the same shape with values strictly between 0 and 1.
+  bce: |
+    Mean binary cross-entropy between labels and predicted probabilities.
+
+    For each example the loss is ``-[y·log(p) + (1 - y)·log(1 - p)]``: small when the
+    model gives high probability to the true label, very large when it is confident
+    and wrong. The result is the average over all examples.
+
+    Args:
+        y_true: Array of true labels, 0 or 1.
+        y_pred: Array of predicted probabilities, same shape as ``y_true``.
+        eps: Tiny margin used to clip predictions away from exactly 0 and 1, because
+            ``log(0)`` is minus infinity.
+
+    Returns:
+        The mean loss as a single float.
+  forward_loss: |
+    Run the full forward pass on the lesson's four examples and return the loss.
+
+    Hidden layer: ``relu(X @ W1 + b1)``; output: ``sigmoid(A1 @ W2 + b2)``; then the
+    mean binary cross-entropy against ``y``. It uses the global ``X`` and ``y`` so that
+    it can be called with different parameter values to probe the loss surface.
+
+    Args:
+        W1: Hidden-layer weights, shape ``(2, 2)``.
+        b1: Hidden-layer biases, shape ``(1, 2)``.
+        W2: Output weights, shape ``(2, 1)``.
+        b2: Output bias, shape ``(1, 1)``.
+
+    Returns:
+        The mean loss as a float.
+  numerical_gradients: |
+    Estimate every gradient by brute force (finite differences).
+
+    For each of the nine parameters in turn, nudge it by ``eps``, re-run the whole
+    forward pass and measure how much the loss changed:
+    ``(L(w + eps) - L(w)) / eps``. Slow (one extra forward pass per parameter) but
+    independent of backpropagation, which makes it the standard way to *check*
+    hand-written gradients.
+
+    Args:
+        W1: Hidden-layer weights, shape ``(2, 2)``.
+        b1: Hidden-layer biases, shape ``(1, 2)``.
+        W2: Output weights, shape ``(2, 1)``.
+        b2: Output bias, shape ``(1, 1)``.
+        eps: Size of the nudge. Too large measures the average slope over a wide
+            range; too small loses precision to floating-point round-off.
+
+    Returns:
+        A dict ``{"W1": ..., "b1": ..., "W2": ..., "b2": ...}`` holding, for every
+        parameter, an array of the same shape with its estimated gradient.
+  train: |
+    Train the 2-2-1 network with plain gradient descent, written in NumPy.
+
+    Initialises small random weights, then for every epoch runs the forward pass,
+    computes the loss, backpropagates the gradients by hand (the five steps of
+    Section 8) and updates every parameter with ``w -= lr * gradient``. Structurally
+    this is the same loop PyTorch runs in Lesson 1.3.
+
+    Args:
+        X: Training inputs, shape ``(N, 2)``.
+        y: Training labels, shape ``(N, 1)``, values 0 or 1.
+        lr: Learning rate: the size of each update step.
+        epochs: Number of full passes over the data (one update per epoch).
+        seed: Seed for the random initial weights, so runs are repeatable.
+        verbose: Print the loss and accuracy every 50 epochs.
+
+    Returns:
+        A tuple ``(history, params)``: ``history`` is the list of the loss at every
+        epoch, and ``params`` is the final ``(W1, b1, W2, b2)``.

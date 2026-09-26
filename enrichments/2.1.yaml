@@ -339,3 +339,38 @@ quiz:
     options: ["Moves t in place", "Nothing to t: the moved copy is discarded", "Raises an error", "Moves t and all its views"]
     answer: 1
     why: "Tensors aren't moved in place; reassign: `t = t.to(DEVICE)`. Modules *are* moved in place."
+
+# Docstrings inserted into the displayed code and the downloadable notebook.
+docstrings:
+  get_device: |
+    Return the best available device: CUDA, then Apple MPS, then CPU.
+
+    MPS is used only if PyTorch was built with it *and* the hardware supports it.
+    Detect the device once and pass it everywhere, instead of hard-coding ``"cuda"``.
+
+    Returns:
+        A ``torch.device`` for the fastest backend on this machine.
+  describe: |
+    Print a tensor's three-part contract (shape, dtype, device) on one line.
+
+    Also prints ``ndim`` (the number of axes) and ``numel`` (the total number of
+    elements). Call it whenever you are unsure what a tensor is: it is faster than
+    reasoning about it.
+
+    Args:
+        name: Label printed in front of the description.
+        t: The tensor to describe.
+  check_loss_shapes: |
+    Fail loudly if predictions and targets do not have identical shapes.
+
+    Mismatched shapes such as ``(N, 1)`` and ``(N,)`` silently broadcast to
+    ``(N, N)`` in some loss functions. Calling this just before computing the loss
+    turns that silent bug into an immediate, readable error on the first step.
+
+    Args:
+        preds: Model output tensor.
+        targets: Target tensor that will be compared with ``preds``.
+
+    Raises:
+        ValueError: If the shapes differ. The message states both shapes and what
+            they would broadcast to.
