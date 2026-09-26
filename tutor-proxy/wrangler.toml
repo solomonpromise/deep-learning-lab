@@ -1,0 +1,22 @@
+# Cloudflare Worker that relays tutor requests to Groq without exposing the API key.
+# Deploy:   npx wrangler login
+#           npx wrangler deploy
+#           npx wrangler secret put GROQ_API_KEY      (paste the key when asked)
+name = "deep-learning-lab-tutor"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Sites allowed to call the tutor (comma-separated, no trailing slashes).
+ALLOWED_ORIGINS = "https://solomonpromise.github.io,http://localhost:8000,http://localhost:8765"
+MODEL = "qwen/qwen3.8-27b"
+REASONING_EFFORT = "low"
+MAX_TOKENS = "1400"
+
+# Optional: per-visitor rate limit (20 questions per minute per IP).
+# [[ratelimits]]
+# name = "RATE_LIMITER"
+# namespace_id = "1001"
+#   [ratelimits.simple]
+#   limit = 20
+#   period = 60

@@ -109,8 +109,11 @@
 <div class="term-pop" role="tooltip" data-term-pop hidden></div>
 
 <script>window.DLP_GLOSSARY = {{ glossary_js | safe }};</script>
+<script type="application/json" id="dlp-tutor-config">{{ tutor_js | safe }}</script>
+{% if lesson_ctx is defined %}<script type="application/json" id="dlp-lesson-ctx">{{ lesson_ctx | safe }}</script>{% endif %}
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
 {% block scripts %}{% endblock %}
 <script defer src="{{ root }}static/js/app.js?v={{ v }}"></script>
+<script defer src="{{ root }}static/js/tutor.js?v={{ v }}"></script>
 </body>
 </html>

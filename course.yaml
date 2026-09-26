@@ -24,6 +24,18 @@ course:
   github_repo: "solomonpromise/deep-learning-lab"
   github_branch: main
 
+# AI tutor (Qwen on Groq). Never put an API key in this file — the site is public.
+#  - endpoint: URL of the tutor proxy (tutor-proxy/, e.g. a Cloudflare Worker) that holds the key.
+#              Leave empty and learners can still use the tutor with their own Groq key.
+tutor:
+  enabled: true
+  name: AI Tutor
+  provider: Groq
+  model: qwen/qwen3.8-27b
+  model_label: Qwen 3.8 (27B)
+  reasoning_effort: low      # none | low | medium | high  (hidden reasoning; higher = slower, more careful)
+  endpoint: ""
+
 # Words used in the original notebooks → words used on the platform.
 # Applied to prose and code comments (never to executable code).
 terminology:

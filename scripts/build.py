@@ -130,8 +130,11 @@ class Builder:
             "labs": sum(len(e["widgets"]) for e in extras.values()),
             "questions": sum(1 for l in lessons for s in l.sections for b in s.blocks if b["kind"] == "questions"),
         }
+        tutor = dict(self.cfg.get("tutor") or {})
+        tutor["course"] = self.cfg["course"]["title"]
         common = {"course": self.cfg["course"], "nav": nav, "stats": stats,
-                  "glossary_js": json.dumps(self.glossary.as_js())}
+                  "glossary_js": json.dumps(self.glossary.as_js()),
+                  "tutor_js": json.dumps(tutor).replace("</", "<\\/")}
 
         # ---- pages
         self._page("home.html", "index.html", root="", page="home", **common)
@@ -159,11 +162,17 @@ class Builder:
                     colab = (f"https://colab.research.google.com/github/{repo}/blob/{branch}/"
                              f"notes/module-{l.module}/lesson-{l.id}.ipynb")
                 url = f"module-{l.module}/{l.slug}.html"
+                strip = lambda h: re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", h or "")).strip()
+                lesson_ctx = json.dumps({
+                    "id": l.id, "module": l.module, "module_title": m["title"], "title": l.title,
+                    "summary": strip(extras[l.id]["summary_html"]) or strip(l.preamble.get("goal_html")),
+                    "objectives": [strip(o) for o in l.preamble["objectives"]],
+                }, ensure_ascii=False).replace("</", "<\\/")
                 self._page("lesson.html", url, root="../", page="lesson", module=m, lesson=l,
                            ex=extras[l.id], prev_l=prev_l, next_l=next_l, minutes=reading_minutes(l),
                            notebook_url=f"../notebooks/{nb_name}", colab_url=colab,
                            widgets=sorted(extras[l.id]["widgets"]), gloss=True,
-                           gloss_label=f"Lesson {l.id}", gloss_url=url, **common)
+                           gloss_label=f"Lesson {l.id}", gloss_url=url, lesson_ctx=lesson_ctx, **common)
                 for s in l.sections:
                     search_docs.append({"l": l.id, "lt": l.title, "s": s.title, "u": f"{url}#{s.id}",
                                         "x": " ".join(s.plain)[:1400]})

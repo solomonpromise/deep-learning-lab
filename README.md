@@ -50,6 +50,7 @@ templates/ + static/  (design, behaviour, widgets)               ─┘
 | `templates/` | Jinja2 page templates |
 | `static/css`, `static/js` | Styles, page behaviour (`app.js`), the widget toolkit (`js/lib/core.js`) and widgets (`js/widgets/*.js`) |
 | `scripts/build.py` | The generator. `scripts/dlp/` contains the notebook parser, renderers, enrichment and glossary logic |
+| `tutor-proxy/` | Cloudflare Worker that relays AI-tutor requests to Groq while keeping the API key secret |
 | `dist/` | Build output. Don't edit; it's regenerated every build (and ignored by git) |
 
 ### What the converter understands in a notebook
@@ -155,6 +156,37 @@ quiz:                            # end-of-lesson multiple-choice quiz
 Read colours from `L.palette()` so the widget follows light and dark mode. Pages only load the widgets they use.
 
 ---
+
+## AI tutor (Qwen on Groq)
+
+Every page has an **Ask the tutor** button. The tutor sees the lesson, the section being read and, from a question
+card, the learner's own written answer plus the course's reference answer, so it can **check answers**, give **hints**,
+**explain code cells**, explain any **selected passage**, quiz the learner, or summarise the lesson.
+
+Configuration lives under `tutor:` in `course.yaml` (model `qwen/qwen3.8-27b` on Groq). There are two ways to connect it:
+
+| Mode | How | Who pays |
+|---|---|---|
+| **Course key (recommended)** | Deploy `tutor-proxy/` (a Cloudflare Worker) with your Groq key as a secret, then set `tutor.endpoint` to its URL | You |
+| **Personal key** | Leave `endpoint` empty; each learner pastes their own free Groq key in the tutor panel (stored only in their browser) | Each learner |
+
+**Never put an API key in `course.yaml` or anywhere in this repository.** The website is public.
+
+Deploying the proxy (one-time, needs a free Cloudflare account):
+
+```bash
+cd tutor-proxy
+npx wrangler login
+npx wrangler deploy                    # prints https://deep-learning-lab-tutor.<you>.workers.dev
+npx wrangler secret put GROQ_API_KEY   # paste the key when prompted
+```
+
+Then set `tutor.endpoint: "https://deep-learning-lab-tutor.<you>.workers.dev"` in `course.yaml` and run `make publish`.
+`ALLOWED_ORIGINS` in `tutor-proxy/wrangler.toml` restricts which sites may use it. Uncomment the rate-limit block to cap
+requests per visitor.
+
+To test locally with a key: `GROQ_API_KEY=gsk_... python scripts/tutor_dev_proxy.py`, set
+`tutor.endpoint: "http://localhost:8787"`, then `make serve`.
 
 ## Hosting on GitHub Pages
 
