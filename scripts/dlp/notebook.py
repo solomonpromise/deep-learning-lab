@@ -16,8 +16,13 @@ LESSON_HEADING = re.compile(r"^(?:Note|Lesson)\s+(\d+)\.(\d+)\s*[—–:-]\s*(.+
 NUMBERED = re.compile(r"^(\d+)\.\s+(.+)$")
 IMAGE_LABEL = re.compile(r"^\s*>\s*\*\*\s*🖼️?\s*IMAGE\s+([\d.]+)\s*[—–-]\s*(.+?)\s*\*\*\s*(?:\n\s*>\s*)*$", re.S)
 NEXT_FILE = re.compile(r"^\s*\*\*Next:?\*\*.*?\.ipynb.*$", re.M | re.I)
-# "> **🖼 Image prompt** — …" is an author's note describing an image still to be made: hidden on the site
-IMAGE_PROMPT = re.compile(r"^[ \t]*>[ \t]*\*\*[ \t]*🖼️?[ \t]*Image prompt[ \t]*\*\*.*(?:\n[ \t]*>.*)*\n?", re.M | re.I)
+# Author's notes describing an image still to be made, hidden on the site:
+#   "> **🖼 Image prompt** — description …"
+#   "> **🖼 IMAGE 4.1.1 — title**" followed, in the same quote, by a description (a bare label line is a caption)
+IMAGE_PROMPT = re.compile(
+    r"^[ \t]*>[ \t]*\*\*[ \t]*🖼️?[ \t]*Image prompt[ \t]*\*\*.*(?:\n[ \t]*>.*)*\n?"
+    r"|^[ \t]*>[ \t]*\*\*[ \t]*🖼️?[ \t]*IMAGE\s+[\d.]+[^\n]*\*\*[ \t]*\n(?:[ \t]*>[ \t]*\n)*[ \t]*>[ \t]*\S.*(?:\n[ \t]*>.*)*\n?",
+    re.M | re.I)
 WRITEFILE = re.compile(r"^\s*%%writefile\s+(?:-a\s+)?(\S+)")
 # Syntax highlighting for files written with %%writefile, by extension (anything else: plain text)
 FILE_LANGS = {".py": "python", ".yaml": "yaml", ".yml": "yaml", ".md": "markdown", ".toml": "toml",
