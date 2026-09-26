@@ -210,7 +210,16 @@ Configuration lives under `tutor:` in `course.yaml` (model `qwen/qwen3.8-27b` on
 | **Course key (recommended)** | Deploy `tutor-proxy/` (a Cloudflare Worker) with your Groq key as a secret, then set `tutor.endpoint` to its URL | You |
 | **Personal key** | Leave `endpoint` empty; each learner pastes their own free Groq key in the tutor panel (stored only in their browser) | Each learner |
 
+Both can be on at once: a learner who saves their own key always uses it, which keeps them off the course key's shared
+rate limit; everyone else uses the course proxy.
+
 **Never put an API key in `course.yaml` or anywhere in this repository.** The website is public.
+
+The tutor's Markdown renderer (marked, DOMPurify) and KaTeX load from jsDelivr at pinned versions with
+[Subresource Integrity](https://developer.mozilla.org/docs/Web/Security/Subresource_Integrity) hashes, so a tampered CDN
+copy is refused by the browser instead of running next to a learner's saved key. When upgrading one of them, update its
+hash too (`templates/base.html`, `static/js/tutor.js`): download the file from the npm package and run
+`openssl dgst -sha384 -binary FILE | openssl base64 -A`.
 
 Deploying the proxy (one-time, needs a free Cloudflare account):
 

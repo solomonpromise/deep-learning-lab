@@ -1,8 +1,10 @@
 /* AI tutor — a context-aware chat panel backed by Qwen on Groq.
    Two ways to connect:
-     1. Course proxy  (course.yaml → tutor.endpoint): the API key lives on the server, never in this page.
-     2. Personal key  : a learner pastes their own Groq key; it is stored only in this browser
-                        and sent only to api.groq.com.
+     1. Personal key  : a learner pastes their own Groq key; it is stored only in this browser
+                        and sent only to api.groq.com. When one is saved it is always used, so keen
+                        learners stay off the course key's shared rate limit.
+     2. Course proxy  (course.yaml → tutor.endpoint): the API key lives on the server, never in this page.
+                        Used by everyone who has not saved a key of their own.
    The tutor always receives the current lesson, the section being read, an outline of the whole
    course (static/course-map.js, written by the build) and, for any other lesson or module the learner
    mentions ("Module 2", "Lesson 3.4", "day 4"), that lesson's summary, objectives and sections.
@@ -29,6 +31,7 @@
   function sessionSet(k, v) { try { sessionStorage.setItem('dlp:' + k, JSON.stringify(v)); } catch (e) {} }
   function personalKey() { return store.get('tutor:key', ''); }
   function connected() { return !!CFG.endpoint || !!personalKey(); }
+  function usingOwnKey() { return !!personalKey(); }                // a saved key wins over the course proxy
   function icon(n) { return '<svg class="ic"><use href="#i-' + n + '"/></svg>'; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
@@ -240,7 +243,8 @@
   function stream(messages, onDelta, onDone) {
     controller = window.AbortController ? new AbortController() : null;
     var url, headers = { 'Content-Type': 'application/json' }, payload;
-    if (CFG.endpoint) {
+    var own = usingOwnKey();
+    if (!own) {
       url = CFG.endpoint;
       payload = { messages: messages, lesson: lesson ? lesson.id : null };
     } else {
@@ -251,7 +255,7 @@
     }
     fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(payload), signal: controller ? controller.signal : undefined })
       .then(function (res) {
-        if (!res.ok) return res.text().then(function (t) { throw new Error(explain(res.status, t)); });
+        if (!res.ok) return res.text().then(function (t) { throw new Error(explain(res.status, t, own)); });
         var reader = res.body.getReader(), dec = new TextDecoder(), buf = '';
         function pump() {
           return reader.read().then(function (r) {
@@ -276,11 +280,11 @@
       })
       .catch(function (e) { onDone(e.name === 'AbortError' ? 'Stopped.' : (e.message || 'Could not reach the tutor.')); });
   }
-  function explain(status, text) {
+  function explain(status, text, own) {
     var msg = '';
     try { msg = JSON.parse(text).error.message; } catch (e) { msg = text.slice(0, 200); }
-    if (status === 401) return 'The API key was rejected (401). Check it in the tutor settings.';
-    if (status === 429) return 'The tutor is busy (rate limit reached). Wait a minute and try again.';
+    if (status === 401) return own ? 'Your Groq key was rejected (401). Check it in the tutor settings, or remove it' + (CFG.endpoint ? ' to use the course connection.' : '.') : 'The course tutor could not authenticate (401).';
+    if (status === 429) return own ? 'Your Groq key has reached its rate limit. Wait a minute and try again.' : 'The tutor is busy (rate limit reached). Wait a minute and try again.';
     if (status === 403) return 'This site is not allowed to use the tutor service (403).';
     return 'Tutor error ' + status + (msg ? ': ' + msg : '');
   }
@@ -296,16 +300,22 @@
     if (libsReady || (window.marked && window.DOMPurify)) { libsReady = true; return cb(); }
     var n = 0;
     function done() { if (++n === 2) { libsReady = true; cb(); } }
-    ['https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js', 'https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js'].forEach(function (src) {
-      var s = document.createElement('script'); s.src = src; s.onload = done; s.onerror = done; document.head.appendChild(s);
+    // Pinned versions with Subresource Integrity: the browser refuses a file whose bytes differ from these hashes,
+    // so a tampered CDN copy cannot run on the page (and read a learner's saved key). Update both together.
+    [['https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js', 'sha384-/TQbtLCAerC3jgaim+N78RZSDYV7ryeoBCVqTuzRrFec2akfBkHS7ACQ3PQhvMVi'],
+     ['https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js', 'sha384-+VfUPEb0PdtChMwmBcBmykRMDd+v6D/oFmB3rZM/puCMDYcIvF968OimRh4KQY9a']].forEach(function (lib) {
+      var s = document.createElement('script');
+      s.src = lib[0]; s.integrity = lib[1]; s.crossOrigin = 'anonymous';
+      s.onload = done; s.onerror = done; document.head.appendChild(s);
     });
   }
   function md(text) {
     var maths = [];
     var safe = text.replace(/\$\$([\s\S]+?)\$\$/g, function (_, t) { maths.push([t, true]); return 'MATHQ' + (maths.length - 1) + 'Z'; })
       .replace(/\$([^\s$][^$\n]*?[^\s\\$])\$|\$([^\s$])\$/g, function (_, t, t2) { maths.push([t || t2, false]); return 'MATHQ' + (maths.length - 1) + 'Z'; });
-    var html = window.marked ? window.marked.parse(safe, { breaks: true }) : '<p>' + esc(safe).replace(/\n/g, '<br>') + '</p>';
-    if (window.DOMPurify) html = window.DOMPurify.sanitize(html);
+    // Markdown only when the sanitiser loaded too; otherwise plain escaped text, never unsanitised HTML.
+    var html = window.marked && window.DOMPurify ? window.DOMPurify.sanitize(window.marked.parse(safe, { breaks: true }))
+      : '<p>' + esc(safe).replace(/\n/g, '<br>') + '</p>';
     return html.replace(/MATHQ(\d+)Z/g, function (_, i) {
       var m = maths[+i];
       if (window.katex) { try { return window.katex.renderToString(m[0], { displayMode: m[1], throwOnError: false }); } catch (e) {} }
@@ -363,7 +373,9 @@
     var box = document.createElement('div');
     box.className = 'tutor-hello';
     box.innerHTML = (CFG.endpoint
-      ? '<p><strong>Connected to the course tutor</strong> (' + esc(CFG.model_label || CFG.model) + ' on ' + esc(CFG.provider || 'Groq') + ').</p><p>You can optionally use your own Groq key instead; the course connection is used whenever it is available.</p>'
+      ? (usingOwnKey()
+        ? '<p><strong>Using your own Groq key</strong> (' + esc(CFG.model_label || CFG.model) + ').</p><p>Remove it to go back to the course connection.</p>'
+        : '<p><strong>Connected to the course tutor</strong> (' + esc(CFG.model_label || CFG.model) + ' on ' + esc(CFG.provider || 'Groq') + ').</p><p>Optional: save your own free Groq key and it will be used instead, so you are not sharing the course\'s rate limit. It is stored only in this browser and sent only to Groq.</p>')
       : (needKey ? '<p><strong>Add a key to start chatting.</strong></p>' : '<p><strong>Tutor settings</strong></p>') +
         '<p>Paste your own free Groq API key. It is stored only in this browser and sent only to Groq.</p>') +
       keyFormHtml() + '<p class="muted">Model: <code>' + esc(CFG.model) + '</code></p>';

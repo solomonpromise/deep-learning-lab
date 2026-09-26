@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ root }}static/css/site.css?v={{ v }}">
   <link rel="stylesheet" href="{{ root }}static/css/widgets.css?v={{ v }}">
 </head>
@@ -111,7 +111,7 @@
 <script>window.DLP_GLOSSARY = {{ glossary_js | safe }};</script>
 <script type="application/json" id="dlp-tutor-config">{{ tutor_js | safe }}</script>
 {% if lesson_ctx is defined %}<script type="application/json" id="dlp-lesson-ctx">{{ lesson_ctx | safe }}</script>{% elif module is defined %}<script type="application/json" id="dlp-module-ctx">{"module": {{ module.number }}}</script>{% endif %}
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
 {% block scripts %}{% endblock %}
 <script defer src="{{ root }}static/js/app.js?v={{ v }}"></script>
 <script defer src="{{ root }}static/js/tutor.js?v={{ v }}"></script>
