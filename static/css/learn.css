@@ -316,3 +316,27 @@ body.focus-mode .tutor-fab { bottom: 96px; }
   body.page-certificate .cert-frame { box-shadow: none; border: 0; border-radius: 0; }
   @page { size: A4 landscape; margin: 8mm; }
 }
+
+/* ------------------------------------------------------------------ sync panel and instructor view */
+.sy-card { padding: 16px 18px; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--line); }
+.sy-card.on { border-color: color-mix(in srgb, var(--green) 45%, var(--line)); }
+.sy-card p { margin: 0 0 10px; }
+.sy-code { font: 700 1.25rem/1.4 var(--mono); letter-spacing: .06em; padding: 10px 14px; border-radius: 10px; background: var(--surface-2); display: inline-block; margin-bottom: 10px; user-select: all; }
+.sy-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.sy-connect { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-size: .9rem; }
+.sy-connect label { width: 100%; color: var(--ink-2); }
+.sy-connect input { flex: 1; min-width: 220px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); font: 600 .95rem var(--mono); letter-spacing: .04em; }
+.sy-small { font-size: .82rem; margin: 6px 0 0 !important; }
+.sy-note { margin: 10px 0 0; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); font-size: .9rem; }
+.sy-stats { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; font-size: .86rem; color: var(--ink-2); }
+.sy-stats input { margin-top: 3px; }
+.instructor-page { max-width: 1000px; }
+.in-token { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 20px; }
+.in-token input { flex: 1; min-width: 220px; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); font: inherit; }
+.in-error { padding: 10px 14px; border-radius: 10px; background: var(--red-soft); color: var(--red); }
+.in-hard { padding-left: 22px; }
+.in-hard li { margin: 0 0 12px; }
+.in-q { font-weight: 600; }
+.in-meta { font-size: .85rem; color: var(--ink-3); }
+.in-labs { columns: 2; font-size: .88rem; }
+@media (max-width: 640px) { .in-labs { columns: 1; } }

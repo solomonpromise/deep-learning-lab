@@ -186,7 +186,9 @@ class Builder:
         common = {"course": self.cfg["course"], "nav": nav, "stats": stats,
                   "site_url": (self.cfg["course"].get("site_url") or "").rstrip("/") + "/",
                   "glossary_js": json.dumps(self.glossary.as_js()),
-                  "tutor_js": json.dumps(tutor).replace("</", "<\\/")}
+                  "tutor_js": json.dumps(tutor).replace("</", "<\\/"),
+                  "services": self.cfg.get("services") or {},
+                  "services_js": json.dumps(self.cfg.get("services") or {}).replace("</", "<\\/")}
 
         # ---- pages
         def strip(html):
@@ -200,6 +202,7 @@ class Builder:
         self._page("review.html", "review.html", root="", page="review", **common)
         self._page("progress.html", "progress.html", root="", page="progress", **common)
         self._page("certificate.html", "certificate.html", root="", page="certificate", **common)
+        self._page("instructor.html", "instructor.html", root="", page="instructor", **common)
         search_docs = []
         for m in nav:
             if not m["available"]:

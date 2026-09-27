@@ -19,3 +19,15 @@ MAX_TOKENS = "1400"
 name = "RATE_LIMITER"
 namespace_id = "1001"
 simple = { limit = 20, period = 60 }
+
+# The course API (api.js): a separate per-visitor limit for sync, stats and certificates.
+[[ratelimits]]
+name = "API_LIMITER"
+namespace_id = "1002"
+simple = { limit = 60, period = 60 }
+
+# D1 database for synced progress, anonymous answer counts and certificates (schema.sql).
+[[d1_databases]]
+binding = "DB"
+database_name = "deep-learning-lab"
+database_id = "c8766e78-7402-40b7-83c2-eff8c6f1675e"

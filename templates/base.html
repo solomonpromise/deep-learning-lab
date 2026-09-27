@@ -21,6 +21,7 @@
   <meta name="theme-color" content="#0e0f12" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
   <link rel="icon" href="{{ root }}static/img/favicon.svg" type="image/svg+xml">
+  {% block head %}{% endblock %}
   <script>
     (function () {
       try { var t = localStorage.getItem('dlp-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
@@ -102,7 +103,7 @@
     {% block main %}{% endblock %}
     <footer class="site-foot">
       <p><strong>{{ course.title }}</strong> · {{ course.hours }} hours · {{ course.hands_on }} hands-on.</p>
-      <p class="muted">Generated from the course notebooks on {{ now }}. Progress and notes are stored only in this browser.</p>
+      <p class="muted">Generated from the course notebooks on {{ now }}. Your progress and notes are stored in this browser{% if services.api %}; if you turn on sync (on <a href="{{ root }}progress.html#sync">My progress</a>), a copy is kept under your private code{% endif %}.{% if services.api and services.anonymous_stats %} Anonymous answer counts (a question id and right or wrong, never a name or device id) help improve the course; you can switch them off there too.{% endif %}</p>
     </footer>
   </main>
 </div>
@@ -127,12 +128,14 @@
 
 <script>window.DLP_GLOSSARY = {{ glossary_js | safe }};</script>
 <script type="application/json" id="dlp-tutor-config">{{ tutor_js | safe }}</script>
+<script type="application/json" id="dlp-services">{{ services_js | safe }}</script>
 {% if lesson_ctx is defined %}<script type="application/json" id="dlp-lesson-ctx">{{ lesson_ctx | safe }}</script>{% elif module is defined %}<script type="application/json" id="dlp-module-ctx">{"module": {{ module.number }}}</script>{% endif %}
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
 {% block scripts %}{% endblock %}
 <script defer src="{{ root }}static/js/record.js?v={{ v }}"></script>
 <script defer src="{{ root }}static/js/app.js?v={{ v }}"></script>
 <script defer src="{{ root }}static/js/progress.js?v={{ v }}"></script>
+{% if services.api %}<script defer src="{{ root }}static/js/sync.js?v={{ v }}"></script>{% endif %}
 <script defer src="{{ root }}static/js/tutor.js?v={{ v }}"></script>
 {% block late_scripts %}{% endblock %}
 </body>
