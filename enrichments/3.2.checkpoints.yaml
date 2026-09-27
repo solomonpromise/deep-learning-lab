@@ -1,0 +1,162 @@
+# Checkpoints for Lesson 3.2 (see 1.1.checkpoints.yaml for the format).
+skill: Overfitting & regularisation
+
+sections:
+  1:
+    questions:
+      - q: "Why is Bank Marketing a poor dataset for demonstrating dropout?"
+        options:
+          - "It has categorical columns"
+          - "With ~0.15 parameters per training row the model barely overfits, so a fix has almost nothing to fix"
+          - "It is too small"
+          - "Dropout does not work on tabular data"
+        answer: 1
+        why: "A method cannot look useful if the problem it addresses is barely present. First establish that the failure mode exists in your experiment."
+    explain: "State the general engineering lesson from Section 1 in your own words."
+    key: |
+      - Before evaluating a regulariser (or any intervention), confirm that the failure it targets is actually observable in your experiment.
+      - Otherwise 'no effect' tells you about the experiment, not about the method.
+
+  2:
+    questions:
+      - q: "German Credit's model has about 98 parameters per training row, versus 0.15 for Bank Marketing. What does that mean?"
+        options:
+          - "Each parameter stores one training row"
+          - "Relative to the data, the model has far more freedom to build a complicated function, which makes memorisation possible"
+          - "The model will certainly generalise better"
+          - "The learning rate must be 658× smaller"
+        answer: 1
+        why: "'Capacity per example' is a rough diagnostic, not a law. Networks don't store rows one per parameter."
+      - q: "Why keep the Module 2 pipeline unchanged when switching datasets?"
+        options:
+          - "To save time writing code"
+          - "Change one major thing at a time, so differences can be attributed to the dataset"
+          - "Because the new dataset has the same columns"
+          - "PyTorch requires it"
+        answer: 1
+        why: "Changing several things at once makes it impossible to know what caused a difference."
+
+  3:
+    questions:
+      - q: "Training loss keeps falling while validation loss has risen for 20 epochs. What is happening?"
+        options: ["Underfitting", "Overfitting: gains no longer transfer to unseen data", "The learning rate is too small", "Data leakage"]
+        answer: 1
+        why: "The model keeps learning, but increasingly learns details specific to the training set."
+    explain: "Explain the difference between 'fitting' and 'generalising' using what happened to the German Credit model."
+    key: |
+      - Fitting asks how well the model explains the examples it was given: training AUC reached 1.0 and training loss fell towards 0.
+      - Generalising asks how well that transfers to unseen rows: validation loss hit its minimum around epoch 5 and then more than tripled.
+
+  4:
+    questions:
+      - q: "A bug multiplies every logit by 3 before the sigmoid. Which metric can stay exactly the same?"
+        options: ["Validation loss", "Validation ROC-AUC", "Both", "Neither"]
+        answer: 1
+        why: "Multiplying by 3 preserves the order of the scores, so AUC is unchanged. The confidence changes, so the loss changes. Accuracy at 0.5 is also unchanged, because the sign of each logit is preserved."
+      - q: "Late in training, 69% of validation predictions were above 0.99 or below 0.01. What does that explain?"
+        options:
+          - "Why AUC collapsed"
+          - "Why validation loss exploded while AUC barely moved: the model became extremely confident, keeping much of its ranking"
+          - "Why training was slow"
+          - "Why accuracy reached 100%"
+        answer: 1
+        why: "Confident mistakes are punished hard by the loss; AUC only sees the ordering."
+    explain: "Loss or AUC: which should you monitor? Give the lesson's answer, not a single metric."
+    key: |
+      - It depends on how the output is used: AUC for ranking/prioritisation; probability quality (loss, calibration) when outputs are used as probabilities or thresholded decisions.
+      - Know what failure modes each metric can see, and check another measurement for the failures it cannot (e.g. loss caught the overconfidence AUC missed).
+
+  5:
+    questions:
+      - q: "Which intervention removes capacity rather than constraining how it is used?"
+        options: ["Weight decay", "Dropout", "A smaller network", "Early stopping"]
+        answer: 2
+        why: "Fewer parameters mean fewer degrees of freedom. Weight decay and dropout keep the capacity but change which solutions training prefers."
+      - q: "The smallest model never reached training AUC 1.0. Is that automatically underfitting?"
+        options:
+          - "Yes, always"
+          - "No: it may be appropriately constrained; check whether training and validation are both poor or whether validation is as good or better"
+          - "No, small models never underfit"
+          - "Yes, if the loss is above 0"
+        answer: 1
+        why: "Regularisation and underfitting both stop memorisation. Underfitting also hurts validation, because the model can no longer express important structure."
+
+  6:
+    questions:
+      - q: "How do you confirm that weight decay is actually changing the model, not coincidentally changing a curve?"
+        options:
+          - "Check the training time"
+          - "Watch the final weight norm fall as the coefficient increases"
+          - "Check that AUC rises"
+          - "Look at the learning rate"
+        answer: 1
+        why: "The mechanism predicts smaller weights. A falling $\\|w\\|$ shows the regulariser is doing what it claims."
+    explain: "Contrast reduced capacity and weight decay in one sentence each."
+    key: |
+      - Reduced capacity removes some of the model's ability to represent complicated functions (fewer parameters).
+      - Weight decay keeps the capacity but makes large parameter values costly, steering the optimiser towards smoother solutions (the model could still reach training AUC 1.0).
+
+  7:
+    questions:
+      - q: "You evaluate the same model on the same data twice and get AUC 0.751 and 0.709. The most likely cause?"
+        options:
+          - "The data changed"
+          - "Dropout is still active: the model was left in training mode"
+          - "The GPU is faulty"
+          - "The learning rate is too large"
+        answer: 1
+        why: "Deterministic evaluation should give identical numbers. Call `model.eval()`. BatchNorm also behaves differently between modes."
+    explain: "A colleague gets 0.84 AUC during training but 0.81 in a separate evaluation script, with dropout in the model. Give two possible explanations and one check that separates them."
+    key: |
+      - One: the evaluation script forgot `model.eval()`, so dropout is active (or the training-time number was made in train mode).
+      - Another: a different checkpoint (last instead of best), different data/preprocessing or a different split.
+      - Check: evaluate the same data twice in the script; if the numbers differ, randomness (dropout/train mode) is active.
+
+  8:
+    questions:
+      - q: "Early stopping stops at epoch 15 with patience 10. Which weights should you keep?"
+        options: ["Epoch 15", "Epoch 5, the best validation checkpoint", "The average of epochs 5–15", "Epoch 10"]
+        answer: 1
+        why: "Early stopping is two operations: decide when to stop, and restore the best model found before stopping."
+      - q: "Why is the validation score of the selected checkpoint mildly optimistic?"
+        options:
+          - "Validation data is easier"
+          - "You picked the best of many measurements on the same validation set"
+          - "Early stopping uses the test set"
+          - "Dropout was off"
+        answer: 1
+        why: "Selection benefits from luck on that set, which is why a separate test set stays untouched."
+
+  9:
+    questions:
+      - q: "Config A scores 0.824 and config B 0.818 on validation. The same config varies with SD 0.015 across splits. What can you conclude?"
+        options:
+          - "A is better"
+          - "B is better"
+          - "Nothing reliable: the difference is well inside the noise floor"
+          - "Both are overfitting"
+        answer: 2
+        why: "A 0.006 gap is far smaller than normal split-to-split variation (≈0.03 at two SDs). Measure the noise floor before tuning."
+      - q: "The heavily regularised model had the best validation AUC but accuracy equal to the majority class. Why?"
+        options:
+          - "AUC is broken"
+          - "Its predicted probabilities were compressed into a narrow range that rarely crossed 0.5: good ranking, useless decisions at that threshold"
+          - "It overfitted"
+          - "The validation set was too small"
+        answer: 1
+        why: "AUC is threshold-free, so it cannot see this calibration failure."
+    explain: "What is a 'noise floor', and how should it change the way you read a results table?"
+    key: |
+      - The amount a score moves just because the evaluation data changes (same config and seed, different splits: here SD ≈ 0.015 AUC).
+      - Differences smaller than that are not evidence; repeat over splits or seeds for close comparisons, and be suspicious of small wins after many trials.
+
+  10:
+    questions:
+      - q: "After early stopping, the regularised configurations were indistinguishable on the test set. What is the correct statement?"
+        options:
+          - "The methods are mathematically identical"
+          - "Regularisation is useless"
+          - "This experiment cannot separate them within its resolution"
+          - "Early stopping is always enough"
+        answer: 2
+        why: "'We cannot distinguish them here' is different from 'they are identical'. Part of what the others appeared to do was stop training past the best point."

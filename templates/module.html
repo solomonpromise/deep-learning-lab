@@ -7,7 +7,7 @@
     <div class="module-hero-grid">
       <div class="module-big-num" aria-hidden="true">{{ '%02d' % module.number }}</div>
       <div>
-        <span class="eyebrow"><svg class="ic"><use href="#i-{{ module.icon }}"/></svg> Module {{ module.number }} · {{ module.lessons|length }} lessons · ~{{ (module.minutes / 60)|round(1) }} hours of reading</span>
+        <span class="eyebrow"><svg class="ic"><use href="#i-{{ module.icon }}"/></svg> Module {{ module.number }} · {{ module.lessons|length }} lessons · ~{{ (module.minutes / 60)|round(1) }} hours of study</span>
         <h1>{{ module.title }}</h1>
         <p class="module-question"><span>The question this module answers</span>{{ module.question }}</p>
       </div>

@@ -1,0 +1,154 @@
+# Checkpoints for Lesson 3.1 (see 1.1.checkpoints.yaml for the format).
+skill: Optimizers & learning rate
+
+sections:
+  1:
+    questions:
+      - q: "With plain SGD, $\\eta = 0.01$ and a gradient of $0.1$ for parameter $p$, what does `optimizer.step()` do?"
+        options: ["$p$ increases by 0.001", "$p$ decreases by 0.001", "$p$ decreases by 0.1", "$p$ is set to 0.001"]
+        answer: 1
+        why: "$p \\leftarrow p - \\eta \\nabla_p L = p - 0.01 \\times 0.1$. The update depends on both the learning rate and the gradient's size."
+      - q: "If every input feature were multiplied by 2, would the same learning rate behave the same way?"
+        options:
+          - "Yes, the learning rate is independent of the data"
+          - "Not necessarily: input scale changes activation and gradient scales, and so the size of each step"
+          - "Yes, as long as the model is the same"
+          - "Only with Adam"
+        answer: 1
+        why: "Preprocessing affects optimisation. This is one reason standardising features is not merely cosmetic."
+
+  2:
+    questions:
+      - q: "In a long, narrow valley, plain SGD zig-zags. What does momentum do about it?"
+        options:
+          - "Increases the learning rate"
+          - "Keeps a velocity of recent gradients: sign-flipping components cancel, consistent ones accumulate"
+          - "Normalises each parameter's step"
+          - "Adds noise to escape the valley"
+        answer: 1
+        why: "$v \\leftarrow \\beta v + \\nabla L$, $p \\leftarrow p - \\eta v$. It damps oscillation across the valley and speeds progress along it."
+      - q: "What is the risk of raising momentum without touching the learning rate?"
+        options:
+          - "None: they are independent"
+          - "Momentum enlarges the effective step, so a stable learning rate can become unstable"
+          - "Training becomes slower"
+          - "Adam is required"
+        answer: 1
+        why: "Learning rate and momentum are not independent knobs. Consider them together."
+    explain: "Explain in two sentences why momentum helps in a narrow valley."
+    key: |
+      - In the steep direction the gradient keeps flipping sign, so those contributions cancel in the velocity and the zig-zag shrinks.
+      - Along the shallow valley floor the gradient keeps pointing the same way, so it accumulates and the optimiser speeds up where progress is needed.
+
+  3:
+    questions:
+      - q: "What extra information does Adam keep for each parameter?"
+        options:
+          - "Nothing: it only uses the current gradient"
+          - "A running average of the gradient ($m$) and of the squared gradient ($v$)"
+          - "The best weights seen so far"
+          - "A separate learning rate chosen by the user"
+        answer: 1
+        why: "The step is roughly $m / (\\sqrt{v} + \\epsilon)$: large typical gradients are scaled down, small ones scaled up."
+      - q: "A model has 5,377 parameters. How many extra numbers does Adam store?"
+        options: ["5,377", "10,754", "16,131", "None"]
+        answer: 1
+        why: "Two moment estimates per parameter. For billion-parameter models this memory cost becomes significant."
+    explain: "Why can one global learning rate suit Adam across parameters whose gradients differ by 5,000×, when it cannot for SGD?"
+    key: |
+      - SGD's step is proportional to each gradient, so parameters with tiny gradients barely move while others move a lot.
+      - Adam divides by each parameter's running gradient magnitude ($\sqrt{v}$), so steps are normalised and the learning rate controls movement more directly.
+
+  4:
+    questions:
+      - q: "`AdamW(..., weight_decay=0)` compared with `Adam(...)`:"
+        options: ["AdamW regularises more", "They are identical", "AdamW is always better", "Adam is faster"]
+        answer: 1
+        why: "The difference only appears when weight decay is greater than 0. Switching the class alone adds no decay."
+      - q: "What does 'decoupled' weight decay mean?"
+        options:
+          - "Decay is applied only to biases"
+          - "The shrinkage $\\eta\\lambda p$ is applied directly, bypassing Adam's adaptive $\\sqrt{v}$ scaling"
+          - "Decay is turned off after warm-up"
+          - "Decay is added to the loss"
+        answer: 1
+        why: "With L2 inside the gradient, Adam rescales the penalty per parameter, so regularisation is no longer uniform. AdamW keeps it separate."
+
+  5:
+    questions:
+      - q: "At a shared lr = 1e-3, SGD reaches 0.65 AUC and Adam 0.79. Tuned separately, both reach about 0.79. What did the first result mainly show?"
+        options:
+          - "Adam is a better optimizer"
+          - "1e-3 is a poor learning rate for SGD on this problem"
+          - "SGD cannot learn this problem"
+          - "The data was different"
+        answer: 1
+        why: "An optimizer cannot be judged apart from its hyperparameters. AdamW's real advantage here is robustness to the initial learning-rate choice."
+    explain: "What is the experimental-design lesson from comparing optimizers, and how does it apply to claims like 'architecture A beats B'?"
+    key: |
+      - Give every method a fair chance: tune each one's key hyperparameters (here, its own learning rate) before comparing.
+      - A badly tuned method is not evidence the method is bad; for any published comparison, first ask whether both sides were tuned with equal effort.
+
+  6:
+    questions:
+      - q: "The lr = 0.5 run has a flat loss of about 0.36 for ten epochs and validation AUC 0.50. What happened?"
+        options:
+          - "It converged to a good minimum"
+          - "It collapsed to predicting the base rate (≈0.117) for everyone: stable loss, no ranking"
+          - "The data loader stopped"
+          - "It is overfitting"
+        answer: 1
+        why: "Predicting the base rate minimises BCE surprisingly well while ignoring the inputs. A flat loss is not proof of success."
+      - q: "Loss falls smoothly but very slowly and is still dropping when training ends. Most likely?"
+        options: ["Learning rate too large", "Learning rate too small", "Overfitting", "A collapsed model"]
+        answer: 1
+        why: "Nothing looks broken, which is why too-small learning rates waste so much compute."
+    explain: "Why must you never judge a training run from its loss curve alone?"
+    key: |
+      - A flat or low loss can mean a useful minimum or a useless collapsed state (e.g. predicting the base rate for everyone).
+      - Always check a meaningful validation metric and whether predictions actually vary with the input.
+
+  7:
+    questions:
+      - q: "An LR range test's smoothed loss is lowest at lr ≈ 0.15. A sensible first learning rate is about…"
+        options: ["0.15", "1.5", "0.015 (about a tenth of the minimum)", "1e-7"]
+        answer: 2
+        why: "The minimum of a short ramping test is already close to instability, so back off by roughly 10× and confirm with a normal run."
+      - q: "What is the LR range test?"
+        options:
+          - "A full grid search of learning rates"
+          - "One short run that ramps the learning rate up every batch while recording the loss, to find a promising range"
+          - "A learning-rate schedule for training"
+          - "A way to pick the batch size"
+        answer: 1
+        why: "It is a diagnostic, not a training strategy. The weights change during the test, so treat the result as a starting point."
+
+  8:
+    questions:
+      - q: "A schedule improved the **final**-epoch AUC but not the **best**-epoch AUC. When does that matter?"
+        options:
+          - "Never"
+          - "When your pipeline keeps the final checkpoint rather than the best validation checkpoint"
+          - "Only for SGD"
+          - "Only with warm-up"
+        answer: 1
+        why: "Decay helps the model settle instead of bouncing around a good region. If you already keep the best checkpoint, the gain may be small."
+      - q: "Why is warm-up common when training Transformers?"
+        options:
+          - "It saves memory"
+          - "Large early updates can destabilise a freshly initialised model, so the learning rate starts small and ramps up"
+          - "It speeds up data loading"
+          - "It replaces weight decay"
+        answer: 1
+        why: "Start small, ramp up, then decay."
+
+  9:
+    questions:
+      - q: "Which decision changed validation AUC the most in this lesson's experiments?"
+        options: ["Optimizer choice (each tuned)", "Learning-rate schedule", "The learning rate", "Weight decay on or off"]
+        answer: 2
+        why: "Learning rate spanned about 0.29 AUC; tuned optimizers only about 0.007; schedules about 0.005. Investigate the learning rate first."
+    explain: "Summarise what 'moved the needle' in this lesson, in order, and what that means for your next training run."
+    key: |
+      - The learning rate had by far the largest effect; optimizer choice mattered a lot only at a shared, untuned learning rate; schedules were a small refinement here.
+      - So start with AdamW, find a good learning rate (e.g. range test, then confirm), and add schedules when the setup needs them (long runs, final checkpoint, warm-up).

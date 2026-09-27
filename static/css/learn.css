@@ -1,0 +1,58 @@
+/* ==========================================================================
+   Deep Learning Lab — active-learning features
+   Checkpoints, focus mode, review, progress, challenges and the concept map.
+   Uses the tokens defined in site.css, so light and dark themes follow automatically.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------ checkpoint */
+.checkpoint {
+  --cpc: var(--aqua);
+  margin: 2em 0 .6em; border-radius: var(--radius-lg); background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--cpc) 35%, var(--line)); box-shadow: var(--shadow); overflow: hidden;
+}
+.cp-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 20px 4px; }
+.cp-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: .7rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; background: var(--cpc); color: #fff; }
+.cp-title { font-weight: 700; font-size: .95rem; color: var(--ink-2); }
+.cp-score { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: .85rem; font-weight: 700; color: var(--green); }
+.cp-score .ic { width: 16px; height: 16px; }
+.cp-q { padding: 12px 20px 14px; }
+.cp-q + .cp-q { border-top: 1px dashed var(--line); }
+.cp-qtext { display: flex; gap: 10px; font-weight: 600; max-width: none; }
+.cp-qtext p { margin: 0; }
+.cp-why { margin-top: 10px; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); font-size: .93rem; max-width: none; animation: pop .25s; }
+.cp-why > :first-child { margin-top: 0; } .cp-why > :last-child { margin-bottom: 0; }
+.checkpoint.is-done { border-color: color-mix(in srgb, var(--green) 40%, var(--line)); }
+
+.cp-explain { padding: 14px 20px 18px; border-top: 1px solid var(--line); background: linear-gradient(180deg, color-mix(in srgb, var(--cpc) 6%, var(--surface)), var(--surface)); }
+.cp-explain-head { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-weight: 700; font-size: .9rem; }
+.cp-explain-head .ic { color: var(--cpc); }
+.cp-explain-head .muted { font-weight: 500; }
+.cp-prompt { margin: 6px 0 10px; max-width: none; }
+.cp-prompt p { margin: 0; }
+.cp-input { width: 100%; min-height: 76px; resize: vertical; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line-2);
+  background: var(--surface); color: var(--ink); font: inherit; font-size: .93rem; line-height: 1.5; }
+.cp-input:focus { outline: none; border-color: var(--cpc); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cpc) 22%, transparent); }
+.cp-input.is-nudged { animation: nudge .45s; border-color: var(--orange); }
+@keyframes nudge { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
+.cp-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.cp-feedback { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); max-width: none; font-size: .93rem; animation: pop .25s; }
+.cp-feedback > :last-child { margin-bottom: 0; }
+.cp-feedback.v-solid { background: var(--green-soft); }
+.cp-feedback.v-partly { background: var(--yellow-soft); }
+.cp-feedback.v-notyet { background: var(--orange-soft); }
+.cp-verdict { margin: 0 0 6px !important; font-weight: 800; font-size: .8rem; letter-spacing: .05em; text-transform: uppercase; }
+.cp-verdict.v-solid { color: var(--green); } .cp-verdict.v-partly { color: var(--yellow); } .cp-verdict.v-notyet { color: var(--orange); }
+.cp-key { margin-top: 12px; padding: 12px 14px; border-radius: 10px; border: 1px dashed color-mix(in srgb, var(--cpc) 45%, var(--line)); animation: pop .25s; }
+.cp-key-head { font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 4px; }
+.cp-key .prose { max-width: none; font-size: .93rem; }
+.cp-key .prose > :first-child { margin-top: 0; } .cp-key .prose > :last-child { margin-bottom: 0; }
+.cp-self { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: .85rem; color: var(--ink-2); }
+.cp-self span { margin-right: 4px; }
+.toc-list a.cp-done::after { content: "✓"; margin-left: 6px; font-size: .75em; font-weight: 800; color: var(--green); }
+@media (max-width: 640px) {
+  .cp-head, .cp-q, .cp-explain { padding-left: 14px; padding-right: 14px; }
+}
+
+/* ------------------------------------------------------------------ quiz retry */
+.quiz-foot { padding: 4px 20px 16px; }

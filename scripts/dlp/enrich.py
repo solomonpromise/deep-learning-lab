@@ -7,8 +7,10 @@ Anchors are text snippets, so re-exporting a notebook does not break them.
 """
 from __future__ import annotations
 
+import hashlib
 import html
 import json
+import random
 import re
 from pathlib import Path
 
@@ -75,7 +77,61 @@ class Enricher:
                     extras["widgets"].add(b["name"])
         if extras["big_picture"] and extras["big_picture"]["kind"] == "widget":
             extras["widgets"].add(extras["big_picture"]["name"])
+        # stable ids for every quiz question, so answers can be remembered, reviewed and counted;
+        # options are put in a fixed pseudo-random order so the right answer is not always "B"
+        def settle(q, qid):
+            q["id"] = qid
+            q["options"], q["answer"] = shuffled(q["options"], q["answer"], qid, q.get("keep_order"))
+        if extras["quiz"]:
+            for n, q in enumerate(extras["quiz"]["questions"], 1):
+                settle(q, f"q:{lesson.id}:{n}")
+        k = 0
+        for s in lesson.sections:
+            for b in s.blocks:
+                if b["kind"] == "quiz":
+                    k += 1
+                    for n, q in enumerate(b["questions"], 1):
+                        settle(q, f"q:{lesson.id}:x{k}-{n}")
         return extras
+
+    # ------------------------------------------------------------ checkpoints
+    def checkpoints(self, lesson: Lesson, data: dict) -> list[dict]:
+        """Add a checkpoint to the end of each section named in ``enrichments/N.M.checkpoints.yaml``.
+
+        A checkpoint is one or two quick multiple-choice questions (instant feedback) and an
+        optional "explain it back" prompt that the AI tutor grades against the key points.
+        """
+        out: list[dict] = []
+        if not data:
+            return out
+        by_num = {str(s.num): s for s in lesson.sections if s.num is not None}
+        for num, cp in (data.get("sections") or {}).items():
+            s = by_num.get(str(num))
+            if s is None:
+                self.warn(lesson, f"checkpoints: section {num!r} not found")
+                continue
+            qs = []
+            for i, q in enumerate(cp.get("questions") or [], 1):
+                qid = f"c:{lesson.id}:{num}:{i}"
+                if not 0 <= int(q["answer"]) < len(q["options"]):
+                    self.warn(lesson, f"checkpoints: §{num} question {i} answer index out of range")
+                options, answer = shuffled(q["options"], int(q["answer"]), qid, q.get("keep_order"))
+                qs.append({"id": qid, "q_html": self.md(q["q"]), "text": q["q"],
+                           "options": [self.inline(o) for o in options], "answer": answer,
+                           "why_html": self.md(q.get("why"))})
+            explain = None
+            if cp.get("explain"):
+                explain = {"id": f"e:{lesson.id}:{num}", "prompt_html": self.md(cp["explain"]), "prompt": cp["explain"],
+                           "key_html": self.md(cp.get("key")), "key": cp.get("key") or ""}
+            block = {"kind": "checkpoint", "id": f"{lesson.id}:{num}", "sec": str(num), "title": s.title,
+                     "questions": qs, "explain": explain, "src": ""}
+            s.blocks.append(block)
+            out.append(block)
+        named = {str(k) for k in (data.get("sections") or {})}
+        for s in lesson.sections:
+            if s.kind == "section" and s.num is not None and str(s.num) not in named:
+                self.warn(lesson, f"checkpoints: no checkpoint for §{s.num} {s.title[:40]!r}")
+        return out
 
     # ------------------------------------------------------------ inserts
     def _insert(self, lesson: Lesson, item: dict, extras: dict) -> None:
@@ -172,7 +228,7 @@ class Enricher:
         qs = []
         for q in item.get("questions", []):
             qs.append({"q_html": self.md(q["q"]), "options": [self.inline(o) for o in q["options"]],
-                       "answer": int(q["answer"]), "why_html": self.md(q.get("why"))})
+                       "answer": int(q["answer"]), "why_html": self.md(q.get("why")), "keep_order": q.get("keep_order")})
         return {"kind": "quiz", "title": item.get("title", "Quick check"), "questions": qs, "src": ""}
 
     # ------------------------------------------------------------ answers
@@ -224,6 +280,16 @@ class Enricher:
             target["note_map"] = {n["line"]: k + 1 for k, n in enumerate(line_notes)}
             target["explain"] = {"summary_html": self.md(note.get("summary")), "lines": line_notes,
                                  "title": note.get("title", "What this code does")}
+
+
+def shuffled(options: list, answer: int, seed: str, keep: bool = False) -> tuple[list, int]:
+    """Put the options in a fixed pseudo-random order, so the right answer is not always in the
+    same position. Seeded by the question id: the order is stable from build to build."""
+    if keep:
+        return list(options), answer
+    order = list(range(len(options)))
+    random.Random(hashlib.sha1(seed.encode()).hexdigest()).shuffle(order)
+    return [options[i] for i in order], order.index(answer)
 
 
 def docstring_lines(code: str) -> set[int]:

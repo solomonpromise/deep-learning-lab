@@ -1,0 +1,153 @@
+# Checkpoints for Lesson 3.4 (see 1.1.checkpoints.yaml for the format).
+skill: Diagnosing training runs
+
+sections:
+  1:
+    questions:
+      - q: "Shape D is a flat, stable loss. What does 'converged' actually tell you?"
+        options:
+          - "The model is good"
+          - "Only that optimisation stopped making progress; the solution could be useful or trivial"
+          - "The learning rate is ideal"
+          - "The model is overfitting"
+        answer: 1
+        why: "Convergence is not success. The metric and the prediction distribution tell you which kind of solution it is."
+      - q: "A result dramatically better than a sensible baseline (shape F) should first trigger…"
+        options: ["Celebration", "An investigation for validation or target leakage", "More epochs", "A larger model"]
+        answer: 1
+        why: "Excellent numbers can come from a broken experiment. Explain why before you trust it."
+    explain: "Shapes C and D both end with a curve that barely moves. What evidence, other than the loss, tells them apart?"
+    key: |
+      - C (undertrained) is still descending at the end, and the validation metric is still improving; D has plateaued.
+      - For D, check the metric and predictions: AUC at chance and near-constant predictions mean collapse; good AUC and varied predictions mean healthy convergence.
+
+  2:
+    questions:
+      - q: "Why does every case change only one configuration key from the baseline?"
+        options:
+          - "To save compute"
+          - "So any change in the result can be attributed to that key; the baseline is the control condition"
+          - "Because the runner cannot change more"
+          - "To make the plots look similar"
+        answer: 1
+        why: "Diagnosis is comparative: you cannot call a run abnormal unless you know what normal looks like under the same conditions."
+
+  3:
+    questions:
+      - q: "Which check does the protocol run first?"
+        options: ["A learning-rate sweep", "Changing regularisation", "Whether the losses are finite", "Training a larger model"]
+        answer: 2
+        why: "Tier 0 checks are free (finite losses, metric, predictions, baseline plausibility). Expensive retraining comes last."
+      - q: "A model cannot drive its loss towards zero on 20 fixed training rows. What does that suggest?"
+        options:
+          - "It needs regularisation"
+          - "A structural problem in the model, data pipeline or loss"
+          - "The learning rate is slightly high"
+          - "The validation set is too small"
+        answer: 1
+        why: "Any reasonable model should memorise 20 rows. Failing that narrows the search to plumbing, not tuning."
+    explain: "What is the difference between 'search' and 'diagnosis', and why does the protocol order checks by cost?"
+    key: |
+      - Search changes plausible settings and reruns until something works; diagnosis gathers evidence, forms a hypothesis and tests it, so you learn why it failed.
+      - Cheap checks first can rule out whole classes of explanations before you spend another training run.
+
+  4:
+    questions:
+      - q: "Case 1's loss is 0.6158; a constant base-rate prediction scores 0.6109. What does that near-match tell you?"
+        options:
+          - "The model is well calibrated"
+          - "The model has collapsed to an almost-constant predictor near the base rate"
+          - "The model is overfitting"
+          - "The learning rate is too low"
+        answer: 1
+        why: "Two distinct predictions across 250 rows, AUC at chance. The loss is smooth precisely because the trivial solution is stable."
+    explain: "Why can't you rescue the collapsed Case 1 run by lowering the learning rate part-way through?"
+    key: |
+      - The large updates pushed many ReLU units into their zero region; dead units receive no gradient, so lowering the step size gives them nothing to recover with.
+      - The fix is to restart training from scratch with a sensible learning rate (e.g. 1e-3).
+
+  5:
+    questions:
+      - q: "Validation AUC is still rising at the last epoch and final AUC equals best AUC. What should you conclude?"
+        options:
+          - "This is the best the dataset allows"
+          - "The run is undertrained: it has not yet measured its attainable performance"
+          - "The model is overfitting"
+          - "The data is leaking"
+        answer: 1
+        why: "Shape C. Raise the learning rate (or use a range test) before blaming the data or model class."
+
+  6:
+    questions:
+      - q: "AUC 0.83, accuracy exactly the majority rate, and every prediction between 0.28 and 0.42. Diagnosis?"
+        options: ["Leakage", "Over-regularisation", "Learning rate too high", "Poor initialisation"]
+        answer: 1
+        why: "It ranks reasonably but never crosses 0.5, so it never predicts the positive class. You need AUC + accuracy + prediction range together."
+    explain: "Which two measurements reveal Case 3's problem that AUC misses, and what would a healthy model show on each?"
+    key: |
+      - Thresholded accuracy (or precision/recall): a healthy model beats the majority-class rate; this one equals it.
+      - Prediction range/spread: a healthy model's predictions spread widely and cross 0.5; these sit in a narrow band (0.28–0.42).
+
+  7:
+    questions:
+      - q: "Validation AUC is 1.0000 and validation exactly matches training. The most likely cause?"
+        options: ["An excellent model", "Validation rows drawn from the training rows (validation leakage)", "Too much regularisation", "Undertraining"]
+        answer: 1
+        why: "On 500 rows, a truly unseen set should not reproduce training behaviour exactly. Beautiful numbers survive review, which makes this dangerous."
+      - q: "Which is a subtle form of validation leakage?"
+        options:
+          - "Using a smaller learning rate"
+          - "Randomly splitting rows when several rows belong to the same customer"
+          - "Standardising with training statistics only"
+          - "Using a separate test set"
+        answer: 1
+        why: "The same entity on both sides lets the model recognise it. Split by group, dedupe before splitting, split time series by time, fit preprocessing on training only."
+
+  8:
+    questions:
+      - q: "Case 5's first training loss was 641 against an expected ~0.61. Why is the **first** loss such a useful clue?"
+        options:
+          - "It is always the lowest"
+          - "It shows the starting numerical regime before training can mask it: a sane classifier starts near the base-rate entropy"
+          - "It measures overfitting"
+          - "It sets the learning rate"
+        answer: 1
+        why: "$-(p\\log p + (1-p)\\log(1-p))$ with $p = 0.3$ gives ≈ 0.61. Far outside that range points to initialisation or input scaling."
+
+  9:
+    questions:
+      - q: "Adding `duration` raises AUC from 0.785 to 0.926 and every diagnostic passes. Why is the model still unusable?"
+        options:
+          - "It overfits"
+          - "Call duration only exists after the call, so it is not available when deciding whom to call (target leakage)"
+          - "The validation split is broken"
+          - "The learning rate is wrong"
+        answer: 1
+        why: "The statistical relationship is real but temporally invalid for deployment. Cross-validation cannot catch this."
+    explain: "State the three questions to ask of every feature to catch target leakage."
+    key: |
+      - At the moment I need to make the prediction, does this value exist yet?
+      - Could this value have been influenced by the outcome I am predicting?
+      - If I deployed tomorrow, could I actually obtain this value in time?
+
+  10:
+    questions:
+      - q: "Mystery A uses 16 hidden layers of width 64 and shows a huge train–validation gap. Which lesson's tools should you reach for first?"
+        options:
+          - "The gradient profile, and Lesson 3.3's vanishing-gradient and residual/normalisation ideas, plus overfitting checks"
+          - "Leakage checks only"
+          - "A higher learning rate"
+          - "Removing the validation set"
+        answer: 0
+        why: "Deep plain stacks have uneven gradient flow; compare the gradient profile with the reference, then count the layers. Evidence first, then diagnosis."
+
+  11:
+    questions:
+      - q: "Why write the hypothesis in the experiment log **before** the run?"
+        options:
+          - "It is required by git"
+          - "So the result can confirm or refute a stated prediction, instead of being rationalised afterwards"
+          - "To save time"
+          - "It makes the log shorter"
+        answer: 1
+        why: "The record preserves the reasoning that connects a configuration to its result: what, why, what happened, what you learned, what next."

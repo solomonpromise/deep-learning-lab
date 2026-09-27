@@ -152,6 +152,7 @@
           sections[i].classList.add('is-read');
           if (tocLinks[sections[i].id]) tocLinks[sections[i].id].classList.add('is-read');
           saveRead();
+          if (window.DLP.record) window.DLP.record.activity();
         }
       }
       Object.keys(tocLinks).forEach(function (k) { tocLinks[k].classList.toggle('is-active', k === active); });
@@ -302,27 +303,142 @@
     }
   });
 
-  /* ------------------------------------------------------------ quiz */
-  $$('[data-quiz]').forEach(function (quiz) {
-    var qs = $$('[data-quiz-q]', quiz), score = $('[data-quiz-score]', quiz), answered = 0, right = 0;
-    function paint() { score.textContent = answered ? right + ' / ' + qs.length + ' correct' : qs.length + ' questions'; }
-    paint();
-    qs.forEach(function (q) {
-      var ans = q.getAttribute('data-answer');
-      $$('.opt', q).forEach(function (o) {
-        o.addEventListener('click', function () {
-          if (q.classList.contains('is-answered')) return;
-          q.classList.add('is-answered'); answered++;
-          $$('.opt', q).forEach(function (x) { x.disabled = true; if (x.getAttribute('data-opt') === ans) x.classList.add('is-correct'); });
-          if (o.getAttribute('data-opt') === ans) right++; else o.classList.add('is-wrong');
-          o.classList.add('is-picked');
-          var why = $('.quiz-why', q); why.hidden = false; renderMath(why);
-          paint();
-          if (answered === qs.length && right === qs.length) confetti(score);
-        });
+  /* ------------------------------------------------------------ multiple choice (quiz + checkpoints) */
+  var REC = window.DLP.record;
+  var LESSON_ID = lessonEl ? lessonEl.getAttribute('data-lesson') : '';
+  // Show a question as answered: lock the options, mark right and wrong, reveal the explanation.
+  function showChoice(q, pick, whySel) {
+    var ans = q.getAttribute('data-answer');
+    q.classList.add('is-answered');
+    $$('.opt', q).forEach(function (x) {
+      x.disabled = true;
+      x.classList.toggle('is-correct', x.getAttribute('data-opt') === ans);
+      x.classList.toggle('is-picked', x.getAttribute('data-opt') === String(pick));
+      x.classList.toggle('is-wrong', x.getAttribute('data-opt') === String(pick) && String(pick) !== ans);
+    });
+    var why = $(whySel, q); if (why) { why.hidden = false; renderMath(why); }
+  }
+  function resetChoice(q, whySel) {
+    q.classList.remove('is-answered');
+    $$('.opt', q).forEach(function (x) { x.disabled = false; x.classList.remove('is-correct', 'is-picked', 'is-wrong'); });
+    var why = $(whySel, q); if (why) why.hidden = true;
+  }
+  function wireChoices(q, whySel, onAnswer) {
+    $$('.opt', q).forEach(function (o) {
+      o.addEventListener('click', function () {
+        if (q.classList.contains('is-answered')) return;
+        var pick = o.getAttribute('data-opt'), ok = pick === q.getAttribute('data-answer');
+        showChoice(q, pick, whySel);
+        onAnswer(ok, pick);
       });
     });
+  }
+
+  /* ------------------------------------------------------------ quiz */
+  $$('[data-quiz]').forEach(function (quiz) {
+    var qs = $$('[data-quiz-q]', quiz), score = $('[data-quiz-score]', quiz), foot = $('[data-quiz-foot]', quiz);
+    var state = {};   // qid -> ok, for this attempt
+    function paint() {
+      var answered = Object.keys(state).length, right = Object.keys(state).filter(function (k) { return state[k]; }).length;
+      score.textContent = answered ? right + ' / ' + qs.length + ' correct' : qs.length + ' questions';
+      if (foot) foot.hidden = answered < qs.length;
+      return { answered: answered, right: right };
+    }
+    qs.forEach(function (q, i) {
+      var qid = q.getAttribute('data-qid') || ('quiz:' + i);
+      var prev = REC && q.getAttribute('data-qid') ? REC.answerOf(qid) : null;
+      if (prev && prev.pick != null) { showChoice(q, prev.pick, '.quiz-why'); state[qid] = prev.ok; }
+      wireChoices(q, '.quiz-why', function (ok, pick) {
+        state[qid] = ok;
+        if (REC && q.getAttribute('data-qid')) REC.answer(qid, ok, { kind: 'quiz', lesson: LESSON_ID, pick: pick });
+        var p = paint();
+        if (p.answered === qs.length && p.right === qs.length) confetti(score);
+      });
+    });
+    if (foot) $('[data-quiz-retry]', foot).addEventListener('click', function () {
+      state = {}; qs.forEach(function (q) { resetChoice(q, '.quiz-why'); }); paint();
+      qs[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+    paint();
   });
+
+  /* ------------------------------------------------------------ checkpoints */
+  var VERDICT = { solid: 'Solid', partly: 'Partly there', notyet: 'Not yet' };
+  $$('[data-checkpoint]').forEach(function (cp) {
+    var qs = $$('[data-cp-q]', cp), score = $('[data-cp-score]', cp), sec = cp.getAttribute('data-sec');
+    function paint() {
+      var done = 0, right = 0;
+      qs.forEach(function (q) { var a = REC.answerOf(q.getAttribute('data-cp-q')); if (a) { done++; if (a.ok) right++; } });
+      var ex = $('[data-cp-explain]', cp), exv = ex ? REC.explainOf(ex.getAttribute('data-cp-explain')) : null;
+      score.innerHTML = done === qs.length && qs.length ? '<svg class="ic"><use href="#i-check"/></svg> ' + right + ' / ' + qs.length + (exv ? ' · ' + VERDICT[exv.v] : '') : '';
+      var complete = done === qs.length;
+      cp.classList.toggle('is-done', complete);
+      var tl = $('[data-toc-link="' + (cp.closest('[data-section]') || {}).id + '"]');
+      if (tl) tl.classList.toggle('cp-done', complete);
+      cp.dispatchEvent(new CustomEvent('dlp:checkpoint', { bubbles: true, detail: { sec: sec, complete: complete } }));
+    }
+    qs.forEach(function (q) {
+      var qid = q.getAttribute('data-cp-q'), prev = REC.answerOf(qid);
+      if (prev && prev.pick != null) showChoice(q, prev.pick, '.cp-why');
+      wireChoices(q, '.cp-why', function (ok, pick) { REC.answer(qid, ok, { kind: 'checkpoint', lesson: LESSON_ID, pick: pick }); paint(); });
+    });
+    var ex = $('[data-cp-explain]', cp);
+    if (ex) wireExplain(ex, paint);
+    paint();
+  });
+  function wireExplain(ex, paint) {
+    var id = ex.getAttribute('data-cp-explain'), ta = $('.cp-input', ex), fb = $('[data-cp-feedback]', ex);
+    var keyBox = $('[data-cp-keybox]', ex), keyBtn = $('[data-cp-key]', ex), checkBtn = $('[data-cp-check]', ex);
+    var ref = {}; try { ref = JSON.parse($('[data-cp-ref]', ex).textContent); } catch (e) {}
+    var noteKey = 'note:' + LESSON_ID + ':' + ta.getAttribute('data-note-key'), t;
+    ta.value = store.get(noteKey, '');
+    ta.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { store.set(noteKey, ta.value); }, 250); });
+    var prev = REC.explainOf(id);
+    if (prev) markVerdict(prev.v);
+    function markVerdict(v) {
+      ex.setAttribute('data-verdict', v);
+      $$('[data-self]', ex).forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-self') === v); });
+    }
+    function showKey(show) {
+      keyBox.hidden = !show; keyBtn.setAttribute('aria-expanded', show ? 'true' : 'false');
+      $('span', keyBtn).textContent = show ? 'Hide key points' : 'Show key points';
+      if (show) renderMath(keyBox);
+    }
+    keyBtn.addEventListener('click', function () { showKey(keyBox.hidden); });
+    $$('[data-self]', ex).forEach(function (b) {
+      b.addEventListener('click', function () { var v = b.getAttribute('data-self'); REC.explain(id, v, { lesson: LESSON_ID, by: 'self' }); markVerdict(v); paint(); });
+    });
+    checkBtn.addEventListener('click', function () {
+      var answer = ta.value.trim();
+      if (answer.length < 12) { ta.focus(); ta.classList.add('is-nudged'); setTimeout(function () { ta.classList.remove('is-nudged'); }, 600); return; }
+      var tutor = window.DLP.tutor;
+      if (!tutor || !tutor.grade) { showKey(true); return; }
+      checkBtn.disabled = true; $('span', checkBtn).textContent = 'Checking…';
+      fb.hidden = false; fb.className = 'cp-feedback prose'; fb.innerHTML = '<span class="tutor-typing"><i></i><i></i><i></i></span>';
+      tutor.grade({ prompt: ref.prompt, key: ref.key, answer: answer, section: ex.closest('[data-section]') }, function (text) {
+        fb.innerHTML = tutor.render(text.replace(/^\s*VERDICT:[^\n]*\n?/i, ''));
+      }, function (err, verdict, text) {
+        checkBtn.disabled = false; $('span', checkBtn).textContent = 'Check again';
+        if (err) {
+          fb.innerHTML = '<p>' + (err === 'not-connected' ? 'The tutor is not connected, so compare your answer with the key points instead.' : 'The tutor could not check this right now (' + err + '). Compare with the key points instead.') + '</p>';
+          showKey(true); return;
+        }
+        fb.innerHTML = '<p class="cp-verdict v-' + verdict + '">' + VERDICT[verdict] + '</p>' + tutor.render(text.replace(/^\s*VERDICT:[^\n]*\n?/i, ''));
+        fb.className = 'cp-feedback prose v-' + verdict;
+        REC.explain(id, verdict, { lesson: LESSON_ID, by: 'tutor' }); markVerdict(verdict); paint();
+        $('span', keyBtn).textContent = keyBox.hidden ? 'Show key points' : 'Hide key points';
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------ labs used (for mastery) */
+  if (lessonEl && REC) {
+    $$('[data-widget]').forEach(function (fig) {
+      function used() { REC.lab(LESSON_ID, fig.getAttribute('data-widget')); fig.removeEventListener('pointerdown', used, true); fig.removeEventListener('keydown', used, true); }
+      fig.addEventListener('pointerdown', used, true);
+      fig.addEventListener('keydown', used, true);
+    });
+  }
 
   /* ------------------------------------------------------------ stepper */
   $$('[data-stepper]').forEach(function (st) {

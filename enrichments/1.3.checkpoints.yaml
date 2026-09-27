@@ -1,0 +1,227 @@
+# Checkpoints for Lesson 1.3 (see 1.1.checkpoints.yaml for the format).
+skill: First PyTorch model
+
+sections:
+  1:
+    questions:
+      - q: "A batch of 16 RGB images at 64×64 pixels, in PyTorch's usual layout, has which shape?"
+        options: ["(64, 64, 3, 16)", "(16, 3, 64, 64)", "(16, 64, 64)", "(3, 16, 64, 64)"]
+        answer: 1
+        why: "PyTorch images are (batch, channels, height, width): 16 images, 3 colour channels, 64×64."
+      - q: "Class labels for a multi-class loss should normally have which dtype?"
+        options: ["float32", "float64", "int64 (long)", "bool"]
+        answer: 2
+        why: "`nn.CrossEntropyLoss` expects integer class indices as `int64`. Passing floats gives an unhelpful error the first time."
+    explain: "Name a tensor's three properties and say which one causes the most new errors for someone coming from NumPy."
+    key: |
+      - Shape (its dimensions), dtype (the element type) and device (the hardware holding it).
+      - Device is the new one: operations need all inputs on the same device (CPU, CUDA or MPS).
+
+  2:
+    questions:
+      - q: "What does the line `x.to(DEVICE)` do when written on its own?"
+        options:
+          - "Moves `x` to the device in place"
+          - "Returns a moved copy that is immediately discarded, so `x` stays where it was"
+          - "Raises an error"
+          - "Moves every tensor in the notebook"
+        answer: 1
+        why: "`.to()` returns a new tensor for tensors. Write `x = x.to(DEVICE)`. (For an `nn.Module`, `.to()` moves the parameters in place.)"
+      - q: "You add a CPU tensor to a tensor on `mps:0`. What happens?"
+        options: ["PyTorch copies one automatically", "A RuntimeError: tensors must be on the same device", "The result is on the CPU", "Nothing, it works"]
+        answer: 1
+        why: "Operations need all inputs on one device. Detect the device once at the top and move both the model and the data to it."
+
+  3:
+    questions:
+      - q: "Which matrix product is valid?"
+        options: ["(4, 3) @ (4, 3)", "(4, 3) @ (3, 5)", "(3, 4) @ (3, 4)", "(4, 5) @ (3, 5)"]
+        answer: 1
+        why: "The inner dimensions must match: (4, **3**) @ (**3**, 5) → (4, 5). The outer ones survive."
+      - q: "Labels arrive with shape (N,) but the model outputs (N, 1). Which call fixes the labels?"
+        options: ["`y.squeeze()`", "`y.unsqueeze(1)`", "`y.flatten()`", "`y.T`"]
+        answer: 1
+        why: "`unsqueeze(1)` adds an axis of size 1: (N,) → (N, 1). Without it, broadcasting can silently produce an (N, N) loss."
+    explain: "What is the difference between a tensor of shape (5,) and one of shape (5, 1), and when does it matter?"
+    key: |
+      - (5,) is a rank-1 vector; (5, 1) is a rank-2 column (5 rows, 1 column).
+      - It matters in element-wise operations and losses: combining (5,) with (5, 1) broadcasts to (5, 5), which gives wrong numbers without an error.
+
+  4:
+    questions:
+      - q: "Why do we convert the NumPy arrays with `dtype=torch.float32` explicitly?"
+        options:
+          - "NumPy arrays become float64 tensors by default, which wastes memory and mismatches the float32 model"
+          - "PyTorch cannot read NumPy arrays"
+          - "float32 is more precise"
+          - "It shuffles the data"
+        answer: 0
+        why: "`torch.tensor(np_array)` keeps NumPy's float64. The model's weights are float32, so mixing them causes errors or wasted memory."
+      - q: "Why must the validation set be data the model never trains on?"
+        options:
+          - "To make training faster"
+          - "Because a score on training data says nothing about how the model does on unseen data"
+          - "Because validation data is noisier"
+          - "PyTorch requires it"
+        answer: 1
+        why: "Lesson 1.2 measured loss on its own four training points. From here on every model is judged on held-out data."
+
+  5:
+    questions:
+      - q: "Why call `model(x)` rather than `model.forward(x)`?"
+        options:
+          - "They are identical"
+          - "`model(x)` runs PyTorch's machinery around forward (hooks etc.); calling forward directly bypasses it"
+          - "`forward` is private and cannot be called"
+          - "`model(x)` is faster because it skips autograd"
+        answer: 1
+        why: "Calling the module triggers the surrounding machinery. Calling `.forward()` directly can break subtle things later."
+      - q: "How many parameters does `nn.Linear(2, 64)` hold?"
+        options: ["128", "130", "192", "66"]
+        answer: 2
+        why: "$2 \\times 64 = 128$ weights plus 64 biases = 192."
+    explain: "What does `nn.Module` do for you that the raw-tensor version made you do by hand?"
+    key: |
+      - It creates and initialises every weight, and registers them so `model.parameters()` finds them all (for the optimizer and for saving).
+      - One `.to(DEVICE)` moves the whole model; with raw tensors every parameter is a loose variable you must create, move, pass and save yourself.
+
+  6:
+    questions:
+      - q: "Your model outputs raw logits for a binary task. Which loss is right?"
+        options: ["`nn.BCELoss`", "`nn.BCEWithLogitsLoss`", "`nn.MSELoss`", "`nn.CrossEntropyLoss` after a sigmoid"]
+        answer: 1
+        why: "It fuses sigmoid and BCE in a numerically stable way. `BCELoss` expects probabilities."
+      - q: "An untrained binary classifier starts at loss 4.2. What does that suggest?"
+        options:
+          - "Normal: losses start high"
+          - "A bug: random guessing should give about $-\\log 0.5 \\approx 0.69$"
+          - "The learning rate is too small"
+          - "The model is overfitting"
+        answer: 1
+        why: "Check the initial loss against random guessing before training. Far above it usually means mismatched shapes, the wrong loss or a label-encoding error."
+    explain: "Explain why the model outputs logits instead of probabilities."
+    key: |
+      - Computing a probability with sigmoid and then its log can hit $\log(0)$ for confident predictions in float32.
+      - `BCEWithLogitsLoss` (and `CrossEntropyLoss` for many classes) takes logits and does both steps in one stable operation.
+
+  7:
+    questions:
+      - q: "What does `optimizer.step()` do for plain SGD?"
+        options:
+          - "Computes the gradients"
+          - "Applies $w \\leftarrow w - \\eta\\,\\nabla w$ to every parameter it was given"
+          - "Clears the gradients"
+          - "Runs the forward pass"
+        answer: 1
+        why: "The lesson proves it: the weight after `step()` equals `before - 0.1 * grad`."
+      - q: "Why does `optimizer.zero_grad()` exist?"
+        options:
+          - "PyTorch accumulates (adds) gradients into `.grad` instead of overwriting them"
+          - "To reset the weights"
+          - "To free GPU memory"
+          - "To change the learning rate"
+        answer: 0
+        why: "Call `backward()` twice without clearing and you get the sum of both. Accumulation is occasionally useful on purpose, when a batch does not fit in memory."
+
+  8:
+    questions:
+      - q: "Which order is correct for one training step?"
+        options:
+          - "step → zero_grad → forward → loss → backward"
+          - "zero_grad → forward → loss → backward → step"
+          - "forward → step → loss → backward → zero_grad"
+          - "backward → forward → loss → step → zero_grad"
+        answer: 1
+        why: "Clear old gradients, compute predictions and loss, fill `.grad`, then update. (`model.train()` goes first each epoch.)"
+    explain: "Write the six lines of the training loop from memory, and say what each does in a few words."
+    key: |
+      - `model.train()` (training mode); `optimizer.zero_grad()` (clear old gradients); `out = model(X)` (forward, builds the graph);
+      - `loss = loss_fn(out, y)` (one number); `loss.backward()` (fill `.grad`); `optimizer.step()` (update the parameters).
+
+  9:
+    questions:
+      - q: "The trained network draws a curved boundary following the spiral arms. What did it learn that logistic regression could not?"
+        options:
+          - "The radius and angle formulas, written into its code"
+          - "Its own intermediate representation in the hidden layers, from raw (x1, x2)"
+          - "A lookup table of the training points"
+          - "Nothing: it memorised the data"
+        answer: 1
+        why: "Nothing was told to the model about radius or angle. The hidden layers found a usable description, as argued in Lesson 1.1."
+
+  10:
+    questions:
+      - q: "Training loss keeps falling while validation loss turns upward. Diagnosis?"
+        options: ["Underfitting", "Overfitting", "Learning rate too small", "A bug in the data loader"]
+        answer: 1
+        why: "The model is fitting training-specific noise that does not transfer. It is the single most important curve pattern to recognise."
+      - q: "Neither the training nor the validation loss falls. Which is **not** a likely cause?"
+        options: ["Learning rate far too small", "A bug (e.g. wrong loss or labels)", "Too little capacity", "The model generalises perfectly"]
+        answer: 3
+        why: "Flat curves mean nothing is being learned: underfitting, a bad learning rate or a bug."
+    explain: "Describe the three loss-curve shapes the lesson asks you to memorise and what each means."
+    key: |
+      - Both curves fall and stay close: healthy.
+      - Training falls while validation rises: overfitting.
+      - Neither falls: underfitting, a bad learning rate or a bug.
+
+  11:
+    questions:
+      - q: "At the origin, where both arms start, the model predicts 0.64. What does that illustrate?"
+        options:
+          - "The model is perfectly calibrated"
+          - "Models are often more confident than they have earned, especially away from clear training data (calibration)"
+          - "The threshold of 0.5 is wrong"
+          - "The model is broken"
+        answer: 1
+        why: "A genuinely ambiguous point deserves about 0.5. Whether stated probabilities match reliability is calibration, covered in Module 9."
+      - q: "Which three habits make inference correct?"
+        options:
+          - "`model.train()`, gradients on, raw logits"
+          - "`model.eval()`, `torch.no_grad()`, and an explicit logits→probability conversion"
+          - "A new optimizer, `zero_grad()`, `backward()`"
+          - "Saving the model before every prediction"
+        answer: 1
+        why: "Evaluation mode (for dropout/batch norm), no graph building, and applying sigmoid/softmax yourself because the model outputs logits."
+
+  12:
+    questions:
+      - q: "What should you save to disk to reload a model later?"
+        options:
+          - "The pickled model object"
+          - "The `state_dict` (the parameter tensors), ideally with the optimizer state and config"
+          - "A screenshot of the loss curve"
+          - "The training data"
+        answer: 1
+        why: "Pickling the object ties the file to your class definition and breaks when you refactor. To load a `state_dict` you rebuild the architecture, then pour the weights in."
+    explain: "Why store the optimizer state and a config dictionary in a checkpoint, not just the weights?"
+    key: |
+      - The optimizer state (e.g. Adam's running averages) lets an interrupted run resume exactly where it stopped.
+      - The config (learning rate, seed, sizes) makes the file self-describing, so you know weeks later what produced it; `map_location` lets it load on another device.
+
+  13:
+    questions:
+      - q: "Which bug produces a **smooth, healthy-looking** loss curve that plateaus far too low in accuracy?"
+        options: ["Forgetting `zero_grad()`", "No activation functions", "Learning rate 500× too large", "Wrong device"]
+        answer: 1
+        why: "With no activations the stacked linear layers collapse into logistic regression (~0.61 on the spirals). Nothing looks broken, which is why it is dangerous."
+      - q: "What is the professional lesson of the three bugs?"
+        options:
+          - "Always use a smaller learning rate"
+          - "Code running without errors tells you nothing about whether the model is learning"
+          - "PyTorch is unreliable"
+          - "Use CPU for debugging"
+        answer: 1
+        why: "None of the bugs raised an exception. Recognising their signatures in the curves is the start of engineering judgement."
+    explain: "Pick one of the three bugs and describe its signature on the loss curve and why it happens."
+    key: |
+      - No `zero_grad()`: gradients accumulate so effective steps grow; erratic, unstable training that no learning-rate change quite fixes.
+      - No activation: smooth, healthy-looking curve that plateaus at logistic-regression accuracy, because linear layers collapse into one.
+      - Learning rate too large: every step overshoots; violent oscillation, visible immediately.
+
+  14:
+    questions:
+      - q: "A binary classifier starts training at loss 4.2. Before looking at anything else, what do you suspect?"
+        options: ["The model is too small", "A bug: shapes, the loss function or label encoding", "Too few epochs", "Nothing, it is normal"]
+        answer: 1
+        why: "Random guessing gives about 0.69. Starting at 4.2 means something is wrong before training even begins."

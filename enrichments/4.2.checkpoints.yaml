@@ -1,0 +1,177 @@
+# Checkpoints for Lesson 4.2 (see 1.1.checkpoints.yaml for the format).
+skill: Reproducible experiments
+
+sections:
+  1:
+    questions:
+      - q: "A colleague reruns your code on their laptop with a newer PyTorch and gets 0.7869 where you got 0.7871. Which level is this?"
+        options: ["Level 1, repeatable (it failed)", "Level 2, portable: close, and the difference should be explainable", "Level 3, robust", "Not reproducible at all"]
+        answer: 1
+        why: "Different machine or software: close but not identical. Check the recorded environment (versions, threads, hardware) first."
+      - q: "Which level asks whether your conclusion survives a new seed or a new split?"
+        options: ["Level 1", "Level 2", "Level 3, robust", "None of them"]
+        answer: 2
+        why: "A finding that only holds for one seed is not a finding. The noise floor measures exactly this."
+    explain: "Describe the three levels of 'reproducible' in one line each."
+    key: |
+      - Repeatable: same code, data, machine and software give identical numbers.
+      - Portable: a different machine or version gives close numbers, with the difference recorded and explainable.
+      - Robust: different seeds or splits move the numbers, but the conclusion still holds.
+
+  2:
+    questions:
+      - q: "Why is one `seed_everything(42)` at the top of a notebook not enough?"
+        options:
+          - "42 is a bad seed"
+          - "Each draw continues along the sequence, so rerunning or reordering cells changes every later random number"
+          - "PyTorch ignores it"
+          - "It only seeds NumPy"
+        answer: 1
+        why: "Seed at the start of every run, and give the DataLoader its own generator so the row order depends on nothing else."
+      - q: "Which of these can a seed **not** fix?"
+        options:
+          - "The initial weights"
+          - "The shuffle order"
+          - "Different thread counts or library versions changing the order floating-point sums are added in"
+          - "Dropout masks"
+        answer: 2
+        why: "Those are Level 2 differences: record them, don't try to seed them away."
+
+  3:
+    questions:
+      - q: "Why fit the scaler and encoder on the training rows only, even when compressing Lesson 4.1 into three cells?"
+        options:
+          - "It is faster"
+          - "So no information from validation or test rows reaches the model before evaluation"
+          - "The test set has different columns"
+          - "scikit-learn requires it"
+        answer: 1
+        why: "The same rule as Lesson 4.1: fit on training, transform everything with that fitted object."
+
+  4:
+    questions:
+      - q: "Why put every setting of an experiment into one dictionary?"
+        options:
+          - "Dictionaries are faster"
+          - "So the settings are the experiment: they can be saved, compared, hashed and changed one at a time"
+          - "PyTorch requires a dictionary"
+          - "To avoid using YAML"
+        answer: 1
+        why: "Editing a cell for twenty runs makes it impossible to know which version produced which number."
+      - q: "The run picks the best epoch on validation and then scores test once. What would go wrong if it picked the epoch by test AUC?"
+        options:
+          - "Nothing"
+          - "The test score would be flattered by selection, leaving no honest estimate"
+          - "Training would be slower"
+          - "The validation set would leak"
+        answer: 1
+        why: "Validation helps choose, so it is slightly optimistic. Test chooses nothing, so it is the number to report."
+
+  5:
+    questions:
+      - q: "What does `yaml.safe_load('lr: 3e-4')['lr']` return?"
+        options: ["0.0003 (a float)", "The string '3e-4'", "An error", "3"]
+        answer: 1
+        why: "PyYAML's YAML version needs a decimal point in scientific notation. Write `3.0e-4` or `0.0003`."
+      - q: "Why does the settings fingerprint ignore `name` and `resume`?"
+        options:
+          - "They are too long"
+          - "They describe how a run was labelled or executed, not what was computed"
+          - "They change every run"
+          - "YAML cannot store them"
+        answer: 1
+        why: "Same computation should mean the same fingerprint, so only result-deciding settings are hashed (with keys sorted)."
+
+  6:
+    questions:
+      - q: "Two runs share a settings fingerprint but have different data fingerprints. What happened?"
+        options:
+          - "Nothing important"
+          - "The data changed between runs (re-downloaded, edited, appended), so the scores are not comparable"
+          - "Different seeds"
+          - "Different code"
+        answer: 1
+        why: "One flipped label changes the data fingerprint: it is a smoke alarm, not a summary."
+    explain: "List what every run should record about itself so someone can get its number again."
+    key: |
+      - A run id; the settings fingerprint (what was run); a data fingerprint (exact rows, columns, labels).
+      - The code version (commit, and whether there were uncommitted changes) and the software/environment versions (for Level 2 differences).
+
+  7:
+    questions:
+      - q: "A resumed run must reproduce the uninterrupted one exactly. Which save is enough?"
+        options:
+          - "`model.state_dict()` only"
+          - "Weights, optimizer state, the DataLoader's generator, the global RNG states, and the bookkeeping (history, best score and weights)"
+          - "The optimizer state only"
+          - "The config file only"
+        answer: 1
+        why: "Weights-only resuming ran fine but produced a quietly different model (val 0.7866 vs 0.7871)."
+      - q: "Why is `torch.load(..., weights_only=True)` the safer default for downloaded files?"
+        options:
+          - "It is faster"
+          - "`weights_only=False` can rebuild arbitrary Python objects, so a malicious file could run code"
+          - "It loads the optimizer too"
+          - "It compresses the file"
+        answer: 1
+        why: "Only load full checkpoints you made or trust."
+    explain: "Why does throwing away AdamW's state change the rest of a resumed run?"
+    key: |
+      - AdamW keeps two running averages per weight (`exp_avg`, `exp_avg_sq`) that decide each weight's step size.
+      - Without them it restarts from nothing and takes wrongly sized steps until it rebuilds them; with a schedule this can show as a visible jump in the loss.
+
+  8:
+    questions:
+      - q: "Changing only the seed moved test AUC by SD 0.001; changing only the split, 0.013. What follows?"
+        options:
+          - "Average over more seeds to fix the uncertainty"
+          - "Most uncertainty comes from which rows you test on; a change smaller than ~0.013 is not a result"
+          - "Seeds don't matter at all"
+          - "Always use the best split"
+        answer: 1
+        why: "Three seeds is cheap reassurance that barely touches the number that actually moves. Comparing models on the same splits cancels much of the split noise."
+      - q: "The best epoch ranged from 8 to 22 across ten runs that changed nothing important. What does that mean?"
+        options:
+          - "The model is broken"
+          - "The best epoch is itself noisy; it is not a finding"
+          - "Use epoch 22"
+          - "Training is too short"
+        answer: 1
+        why: "Validation's best-of-30 also carries luck, which is why average validation AUC (0.795) sat above test (0.789)."
+    explain: "If two models are compared on the same splits, which part of the noise cancels out, and why does that matter?"
+    key: |
+      - Split noise is largely shared: both models see the same easy or hard test rows, so the difference between them moves much less than each score does.
+      - Paired comparisons on the same splits (Lesson 4.4) can therefore detect smaller real differences than comparing two independent scores.
+
+  9:
+    questions:
+      - q: "Why does the record function refuse to write without a reason and a lesson?"
+        options:
+          - "To save disk space"
+          - "Those are the parts only you can supply; without them the record is just the numbers again"
+          - "MLflow requires them"
+          - "To enforce a word count"
+        answer: 1
+        why: "What did I try, why, what happened, what did I learn, what next? Two of the five come from your thinking, written at the time."
+
+  10:
+    questions:
+      - q: "What does a tracking tool such as MLflow add?"
+        options:
+          - "Guaranteed reproducibility"
+          - "Searching, sorting and comparing runs and curves in one database and web UI, but none of the discipline"
+          - "Automatic hyperparameter tuning"
+          - "Protection from data leakage"
+        answer: 1
+        why: "It will happily store a run from a folder full of uncommitted changes. Fingerprints, commits and reasons still come from your habits."
+
+  11:
+    questions:
+      - q: "A reproduction on another machine passes the settings and data fingerprint checks but not the identical-history check. What should you conclude?"
+        options:
+          - "The original result was wrong"
+          - "A Level 2 outcome: compare the recorded environment (versions, threads, hardware) to explain the difference"
+          - "The data changed"
+          - "The seed was lost"
+        answer: 1
+        why: "Settings and data are yours to control; software and hardware differences are explained by the environment block."

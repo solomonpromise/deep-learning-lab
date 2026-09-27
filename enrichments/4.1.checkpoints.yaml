@@ -1,0 +1,184 @@
+# Checkpoints for Lesson 4.1 (see 1.1.checkpoints.yaml for the format).
+skill: Splits, leakage & shift
+
+sections:
+  1:
+    questions:
+      - q: "What is the test set standing in for?"
+        options:
+          - "A second training set"
+          - "The future: the data the model will meet once it is put to work"
+          - "The hardest examples"
+          - "The validation set"
+        answer: 1
+        why: "A split is only as good as that pretence. Ask who, and when, the model will be used on."
+    explain: "Why could the broken split in Lesson 3.4 Case 4 stay invisible to every training diagnostic?"
+    key: |
+      - The loss curve and gradients only describe optimisation on the data you gave the model; they cannot know that validation rows are copies of training rows.
+      - A split failure is a problem with what the evaluation represents, so you catch it by checking the split itself (overlaps, groups, time), not the training curves.
+
+  2:
+    questions:
+      - q: "Why drop `duration` (call length) before modelling?"
+        options:
+          - "It has missing values"
+          - "It is only known after the call, when the answer is also known: target leakage"
+          - "It is categorical"
+          - "It is uncorrelated with the label"
+        answer: 1
+        why: "Calls with a 'yes' average 537 s, against 221 s for a 'no'. It predicts well and is useless when deciding whom to call."
+
+  3:
+    questions:
+      - q: "`pdays` is −1 on 81.7% of rows. What is it?"
+        options:
+          - "Missing data that pandas missed by mistake"
+          - "A sentinel meaning 'never contacted before': a yes/no fact hiding in a number column"
+          - "A bug in the download"
+          - "Negative day counts"
+        answer: 1
+        why: "`isna()` sees nothing. A scaler would treat −1 as 'one day before zero days ago'. It matches `poutcome == 'unknown'` on nearly the same rows."
+      - q: "`contact` is 'unknown' on 28.8% of rows, and those customers said yes only 4.1% of the time. What should you do?"
+        options:
+          - "Replace 'unknown' with the most common value"
+          - "Drop those rows"
+          - "Keep 'unknown' as its own category: it carries signal"
+          - "Treat it as NaN and impute"
+        answer: 2
+        why: "Always check a placeholder against the label before deciding its treatment."
+    explain: "Why run the data audit on the raw table rather than after encoding?"
+    key: |
+      - Encoding hides the evidence: sentinels become ordinary scaled numbers and placeholder words become one indicator column among many.
+      - On the raw table you can see −1, 'unknown', near-constant columns and negative values for what they are.
+
+  4:
+    questions:
+      - q: "In the second `train_test_split` call (splitting the leftover rows), what must `stratify` receive?"
+        options: ["`y`", "`y[rest_idx]`, the labels of the leftover rows", "Nothing", "`y[train_idx]`"]
+        answer: 1
+        why: "It is splitting only the leftover rows, so it needs those rows' labels. Passing the full `y` is a common silent bug."
+      - q: "Why does `check_split` use `assert` rather than printing a warning?"
+        options:
+          - "It is faster"
+          - "A broken split makes every later number untrustworthy, so the run should stop, not scroll past a warning"
+          - "Warnings are not allowed in notebooks"
+          - "To save memory"
+        answer: 1
+        why: "Five leaked rows out of 45,211 are too few to show in any score, and the check caught them instantly."
+
+  5:
+    questions:
+      - q: "Fitting the scaler on all rows changed test AUC by only +0.000093. Why keep the train-only rule?"
+        options:
+          - "Habit"
+          - "The same mistake with a label-reading step (e.g. target encoding) or on small data can be large, and you cannot tell in advance which kind you have"
+          - "Scalers are slow"
+          - "The difference will grow with more epochs"
+        answer: 1
+        why: "A scaler learns an average and spread that barely move with 4,522 extra rows. A target encoder copies test labels into the inputs."
+      - q: "Why must the fitted preprocessor be shipped with the model?"
+        options:
+          - "It contains the training data"
+          - "It holds learned numbers (averages, spreads, categories) that turn raw inputs into the 50 columns the model expects"
+          - "It speeds up inference"
+          - "It is part of the loss"
+        answer: 1
+        why: "Save it (e.g. with joblib) and never re-fit it on each new production batch."
+    explain: "Which is more dangerous to fit before splitting, a scaler or a target encoder? Explain by what each one reads."
+    key: |
+      - A target encoder is far more dangerous: it reads the labels, so fitting it on all rows copies test answers into training inputs.
+      - A scaler reads only the input distribution (mean and spread), so with plenty of training rows the leak is tiny, though still wrong in principle.
+
+  6:
+    questions:
+      - q: "The share of 'yes' goes from 5% (2008) to 17% (2009) to 52% (2010). Why is this the most important number in the lesson?"
+        options:
+          - "It proves the model is good"
+          - "The rows are in date order and the world changed a lot, so a random split mixes very different periods"
+          - "It shows the data has errors"
+          - "It means we should drop 2010"
+        answer: 1
+        why: "Same bank, same product, same columns, and the success rate multiplies by ten. Section 7 shows what that does to an honest test."
+
+  7:
+    questions:
+      - q: "On the chronological split, AUC fell from 0.78 to 0.61 while PR-AUC rose from 0.43 to 0.55. Why did PR-AUC rise?"
+        options:
+          - "The model improved"
+          - "PR-AUC's floor is the positive rate, which jumped from 11.7% to 47.1% in the test set"
+          - "Chronological splits always raise PR-AUC"
+          - "A bug"
+        answer: 1
+        why: "Comparing PR-AUC across test sets with different positive rates compares their floors. Always print the positive rate beside it."
+    explain: "Write one sentence for each split saying what question it answers."
+    key: |
+      - Stratified/random: how well does the model score a random customer from somewhere in 2008–2010?
+      - Chronological: trained on the past, how well will it do on the next period's customers? (The bank's real question.)
+
+  8:
+    questions:
+      - q: "A model separates early rows from late rows with AUC 0.94. What does that tell you?"
+        options:
+          - "The model is overfitting"
+          - "The two periods look very different (strong shift); a random split will hide that"
+          - "The periods are identical"
+          - "The labels leaked"
+        answer: 1
+        why: "Adversarial validation: 0.5 means indistinguishable. Removing month and day barely changed it, so it isn't just seasonality."
+      - q: "The bank switched from cold calls to calling back known customers. Which kinds of shift did that cause?"
+        options:
+          - "Label shift only"
+          - "Covariate shift only"
+          - "Both: more 'yes' answers (label shift) and different inputs such as `pdays`, `previous`, `poutcome` (covariate shift)"
+          - "Neither"
+        answer: 2
+        why: "Label shift breaks the size of the probabilities; covariate shift breaks the model where it has little experience."
+    explain: "What is label shift, what is covariate shift, and what does each one break?"
+    key: |
+      - Label shift: the answer becomes more or less common (6.7% → 47.1% 'yes'); it breaks calibration, the size of the probabilities.
+      - Covariate shift: the inputs change (different customers being called); it breaks the model in regions it has barely seen.
+
+  9:
+    questions:
+      - q: "A day-average success-rate column, computed from training rows only, still inflated a random split's score. How?"
+        options:
+          - "It used test rows directly"
+          - "A test call's day was almost always in training, so the column summarised its same-day neighbours' answers"
+          - "The scaler leaked"
+          - "Duplicate rows"
+        answer: 1
+        why: "No row was on both sides, and the encoder was fitted on training only. The leak travelled through the group (the calling day), worth about 0.08 AUC."
+    explain: "Name the group you would split on for hospital readmission, for product reviews, and for frames cut from videos."
+    key: |
+      - Hospital readmission: the patient (possibly the hospital). Product reviews: the author (or product). Video frames: the source video.
+      - Rows in the same group are more alike than random rows, so they must all fall on one side of the split.
+
+  10:
+    questions:
+      - q: "`class_weight='balanced'` changed AUC from 0.7796 to 0.7795 and recall at 0.5 from 0.18 to 0.62. What really changed?"
+        options:
+          - "The model got much better"
+          - "The predicted probabilities were inflated, which moved the 0.5 threshold; the ranking stayed the same"
+          - "The data changed"
+          - "Precision improved"
+        answer: 1
+        why: "Average prediction rose from 0.115 to 0.412 (true rate 0.117) and the Brier score doubled. With a fixed 10% calling budget, both models performed the same."
+      - q: "A model that always says 'no' scores what accuracy here?"
+        options: ["11.7%", "50%", "88.3%", "0%"]
+        answer: 2
+        why: "It finds none of the 529 test customers who would say yes. Report AUC, PR-AUC beside the positive rate, precision/recall at the real threshold, and calibration."
+    explain: "How would you choose a threshold if missing a subscriber costs ten times as much as a wasted phone call?"
+    key: |
+      - Pick the threshold from the costs, not 0.5: phone a customer when the expected value is positive, roughly when $p \times 10 > (1-p) \times 1$, i.e. $p > 1/11 \approx 0.09$ (given calibrated probabilities).
+      - Or work from the real constraint (e.g. calling capacity) and choose the cut-off that fits it.
+
+  11:
+    questions:
+      - q: "What is a data card?"
+        options:
+          - "A visualisation of the dataset"
+          - "A short note kept beside the data recording what is in it, what is wrong with it, and the decisions taken (such as the split rule and why)"
+          - "The dataset's licence"
+          - "A summary of model results"
+        answer: 1
+        why: "A split is a decision; decisions are written down for the next person, including you in three months."

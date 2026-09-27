@@ -1,0 +1,172 @@
+# Checkpoints for Lesson 1.1: a quick check at the end of each section.
+# Each section: 1–2 multiple-choice questions (instant feedback) and an optional
+# "explain it back" prompt that the AI tutor grades against the key points.
+# Question ids are c:<lesson>:<section>:<n>. Changing the order of questions changes the ids.
+skill: ML vs deep learning
+
+sections:
+  1:
+    questions:
+      - q: "According to this lesson, what is the one genuinely new thing deep learning brings to someone who already does classical ML well?"
+        options:
+          - "Much larger datasets"
+          - "The description of each example is learned from data instead of chosen by you"
+          - "Better optimisers than gradient boosting uses"
+          - "Models that no longer need a train/test split"
+        answer: 1
+        why: "Classical ML optimises coefficients or split points on columns *you* chose. Deep learning moves the choice of the description (the features) inside the model, fitted jointly with the prediction."
+    explain: "Explain, in two sentences, who decides what the model looks at in classical ML, and who decides it in deep learning."
+    key: |
+      - In classical ML a person chooses and builds the features (columns, ratios, interactions); the algorithm only fits weights or splits on them.
+      - In deep learning the network learns its own intermediate descriptions from rawer input, as part of the same training that fits the prediction.
+
+  2:
+    questions:
+      - q: "Why is the spiral problem deliberately stripped of missing data, leakage, imbalance and categorical columns?"
+        options:
+          - "To make the model train faster"
+          - "So that if a model fails, the only possible cause is the shape of the decision boundary"
+          - "Because scikit-learn cannot handle those issues"
+          - "To make the linear model look better than it is"
+        answer: 1
+        why: "With every usual complication removed, a failure can only mean the model cannot express the boundary. That makes the diagnosis unambiguous."
+
+  3:
+    questions:
+      - q: "Logistic regression scores about 0.59 on the spirals. Which change would most likely fix it?"
+        options:
+          - "Collect ten times more spiral data"
+          - "Train for more iterations with a smaller tolerance"
+          - "Change the space the model draws its line in, or use a model that can bend its boundary"
+          - "Balance the classes"
+        answer: 2
+        why: "More data or more training cannot help: a single straight line cannot trace a coil, whatever the data size. The fix is a different representation or a more expressive model class."
+      - q: "The model 'failed' but nothing is broken. What is the name for this kind of failure?"
+        options:
+          - "A bug in the optimiser"
+          - "The model class cannot express the answer"
+          - "Overfitting"
+          - "Data leakage"
+        answer: 1
+        why: "Distinguishing 'this model failed' from 'this model class cannot represent the answer' is the diagnostic instinct the lesson wants you to build."
+    explain: "Why would ten times more spiral data not rescue logistic regression here?"
+    key: |
+      - Logistic regression draws one straight line in the feature space, by definition.
+      - The two spiral arms alternate as you move outward, so no straight line separates them in (x1, x2), however many points you have.
+      - More data only pins down the best straight line more precisely; the limit is the model's expressiveness, not the data.
+
+  4:
+    questions:
+      - q: "After adding r, sin α and cos α, the same logistic regression jumps from 0.59 to 0.99. What changed?"
+        options:
+          - "The model became non-linear"
+          - "The optimiser found a better minimum"
+          - "The representation: the same straight cut now works in the new feature space"
+          - "The test set became easier"
+        answer: 2
+        why: "The classifier is unchanged and still draws one straight line. In the aligned-angle space one straight cut is all the problem needs. The limitation was in the representation."
+      - q: "Why feed the model sin α and cos α rather than α itself?"
+        options:
+          - "Angles wrap around, so a raw α would put nearby points at opposite ends of the number line"
+          - "sin and cos are faster to compute"
+          - "Logistic regression cannot accept negative numbers"
+          - "It reduces the number of features"
+        answer: 0
+        why: "An angle of 359° is next to 1°, but as a raw number they are far apart. sin and cos place wrapped angles smoothly next to each other."
+    explain: "In two sentences: what did you have to know to invent the aligned angle α, and why does that matter?"
+    key: |
+      - You needed to know how the data was generated: the angle grows in lockstep with the radius (the number of revolutions).
+      - That knowledge rarely comes with real data, so hand-engineering like this only works when you can see and understand the structure.
+
+  5:
+    questions:
+      - q: "Which condition, when missing, makes hand-engineering features like α collapse for images, audio and text?"
+        options:
+          - "Having enough compute"
+          - "Being able to visualise the data and knowing its generating process"
+          - "Having a GPU"
+          - "Using Python"
+        answer: 1
+        why: "Hand-engineering relied on seeing the data in 2-D, knowing how it was made, a compact transformation and stable structure. Pixels, waveforms and text usually lack all four."
+
+  6:
+    questions:
+      - q: "The network's final layer is essentially the same logistic regression that failed in §3. Why does it now succeed?"
+        options:
+          - "It has more parameters in that last layer"
+          - "It sits on top of a representation the earlier layers learned from the raw inputs"
+          - "It was trained for longer"
+          - "It uses ReLU in the output"
+        answer: 1
+        why: "The earlier layers are the feature engineering, fitted rather than written. The final straight cut works because it is made in the learned space."
+    explain: "Explain what the hidden layers of the network are doing, using the phrase 'fitted, not written'."
+    key: |
+      - The hidden layers transform (x1, x2) into new numbers, a learned description of each point, just as r and α were a hand-written one.
+      - Those transformations are learned by training (fitted), not designed by a person (written); the last layer then classifies in that learned space.
+
+  7:
+    questions:
+      - q: "On the Telco churn table, gradient boosting beat the network (0.829 vs 0.774 AUC). What is the lesson's explanation?"
+        options:
+          - "Neural networks cannot handle categorical data"
+          - "The columns are already meaningful, human-curated quantities, so there is little left for a network to discover"
+          - "The dataset was too large for a network"
+          - "Gradient boosting always beats networks"
+        answer: 1
+        why: "Someone already did the representation learning when designing the schema (tenure, charges, contract type). Networks pay off where the raw signal is high-dimensional and unstructured."
+    explain: "State the lesson's rule of thumb for when deep learning pays off, and when it usually does not."
+    key: |
+      - Deep learning pays off when the raw signal is high-dimensional, redundant and structured in ways people cannot write down: pixels, waveforms, text.
+      - On well-curated tabular data with meaningful columns, gradient-boosted trees are usually a strong (often better, cheaper) default.
+
+  8:
+    questions:
+      - q: "Which statement follows from 'representation learning' as the lesson defines it?"
+        options:
+          - "Feature engineering is obsolete"
+          - "Networks always win"
+          - "The human work moves into architecture, data preparation and training dynamics"
+          - "No data preparation is needed any more"
+        answer: 2
+        why: "The principle says the description can be learned from data jointly with the task. It does not say networks always win or that engineering vanishes; the work moves."
+    explain: "Rewrite the lesson's principle in two sentences without using the words 'features' or 'representation'."
+    key: |
+      - The step that turns raw input into a useful description is learned from examples, at the same time as the task, instead of being designed by a person.
+      - This matters most where people cannot write that step down, and it lets a description learned on one task be reused on another (transfer learning).
+
+  9:
+    questions:
+      - q: "Why can unscaled inputs hurt a network trained with gradient descent?"
+        options:
+          - "Large numbers overflow 32-bit floats"
+          - "A feature measured in thousands dominates the update steps, so small-range features are effectively ignored for a long time"
+          - "Scaling removes outliers"
+          - "Networks only accept inputs between 0 and 1"
+        answer: 1
+        why: "Gradient descent's steps interact with each feature's scale. TotalCharges (0–8,672) swamps tenure (0–72) unless inputs are standardised. Module 3 makes this precise."
+    explain: "Name two places where human engineering effort still lives in a deep learning project, and say why each matters."
+    key: |
+      - Any two of: input scaling/normalisation; data quality and labelling; architecture choice (an engineered inductive bias); tokenisation / sample rate / resizing and augmentation; loss design.
+      - Each shapes what the network can learn before or while it trains, so the work moved rather than disappeared.
+
+  10:
+    questions:
+      - q: "Why does the pixel at one fixed position carry so little information about which digit is drawn?"
+        options:
+          - "Pixels are too small"
+          - "Meaning lives in relationships between pixels, which shift when the digit moves, thickens or slants"
+          - "The images are greyscale"
+          - "There are only 64 pixels"
+        answer: 1
+        why: "One pixel's value changes with stroke thickness, slant and position. The identity of a digit is in patterns across many pixels at several scales, which is what learned features capture."
+
+  11:
+    questions:
+      - q: "Which habit does the lesson ask you to start now, because Module 10 asks for it as a deliverable?"
+        options:
+          - "Memorising PyTorch APIs"
+          - "Keeping a short log of every experiment: what, why, what happened, what you learned"
+          - "Tuning every model to the maximum"
+          - "Reading one research paper a day"
+        answer: 1
+        why: "Four lines per experiment. It builds the discipline Module 4 turns into proper experiment tracking."

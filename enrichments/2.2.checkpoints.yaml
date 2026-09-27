@@ -1,0 +1,132 @@
+# Checkpoints for Lesson 2.2 (see 1.1.checkpoints.yaml for the format).
+skill: Datasets & DataLoaders
+
+sections:
+  1:
+    questions:
+      - q: "Bank Marketing fits in memory (7 MB). What did mini-batching still buy in the experiment?"
+        options:
+          - "Nothing: full batch was better"
+          - "Many more parameter updates per epoch (2,840 vs 20), which reached a much higher ROC-AUC"
+          - "Less arithmetic per epoch"
+          - "An exact gradient at every step"
+        answer: 1
+        why: "Same data, same 20 epochs, but 142× more updates. Here mini-batching is about how often the model gets to change, not memory."
+      - q: "Each mini-batch gradient had cosine similarity about 0.98 with the exact gradient. What does that mean?"
+        options:
+          - "Mini-batch gradients point in random directions"
+          - "Each points broadly the right way but is slightly wrong in its own direction: gradient noise"
+          - "Mini-batch gradients are exact"
+          - "The model has converged"
+        answer: 1
+        why: "Well above zero, well below one: a useful but noisy estimate of the full gradient."
+    explain: "Give the two reasons to use mini-batches, and say which one mattered for this dataset."
+    key: |
+      - Memory: large datasets (especially images) cannot be processed as one batch on a GPU.
+      - More parameter updates per epoch (with a noisy but useful gradient estimate); for the 7 MB Bank Marketing table this was the reason that mattered.
+
+  2:
+    questions:
+      - q: "Which pipeline order is correct?"
+        options:
+          - "Fit the scaler on all data → split → train"
+          - "Split → fit the scaler on the training split → transform train, val and test with it"
+          - "Split → fit one scaler per split"
+          - "Train → split → scale"
+        answer: 1
+        why: "Preprocessing rules are learned from training data only. Fitting on all data (or on validation itself) leaks held-out information."
+      - q: "The leaked scaler changed the statistics by only ~0.1%. Is it still a problem?"
+        options:
+          - "No, the effect is negligible"
+          - "Yes: the evaluation method is wrong, even if today's number barely moves"
+          - "Only if accuracy drops"
+          - "Only for image data"
+        answer: 1
+        why: "Leakage does not have to produce an absurd result. Code review should check that the pipeline is logically correct."
+    explain: "Why would a random row split over-estimate performance when several rows belong to the same patient?"
+    key: |
+      - Rows from the same patient are strongly related, so the model can recognise the patient in validation from training rows (memorising, not generalising).
+      - Validation then measures performance on "partly seen" people; a group-based split (all of a patient's rows on one side) is needed.
+
+  3:
+    questions:
+      - q: "Why not encode `job` as 0, 1, 2, …?"
+        options:
+          - "It uses too much memory"
+          - "It invents an order and distances between categories that mean nothing"
+          - "Networks cannot read integers"
+          - "It is slower than one-hot"
+        answer: 1
+        why: "The model would treat 'student' as larger than 'management' and distances as meaningful. One-hot gives membership without a false ordering."
+      - q: "Only 11.7% of clients subscribe. A model that always predicts 'no' scores what accuracy, and what is it worth?"
+        options: ["11.7%, useless", "88.3%, useless", "88.3%, a good baseline to beat on accuracy", "50%, random"]
+        answer: 1
+        why: "It identifies none of the 3,702 subscribers. Use ranking metrics such as ROC-AUC and average precision (baseline ≈ 0.117) instead."
+    explain: "Name one alternative to one-hot encoding for a column with thousands of categories, and why it helps."
+    key: |
+      - A learned embedding: each category gets a small trainable vector.
+      - It avoids thousands of mostly-zero indicator columns and can learn which categories are similar (the same idea language models use for tokens).
+
+  4:
+    questions:
+      - q: "What must a custom PyTorch `Dataset` implement?"
+        options:
+          - "`__iter__` and `__next__`"
+          - "`__len__` and `__getitem__`"
+          - "`forward` and `backward`"
+          - "`fit` and `transform`"
+        answer: 1
+        why: "'How many examples?' and 'give me example i'. That protocol is all a DataLoader needs."
+      - q: "Whose job is it to add the batch axis?"
+        options: ["`__getitem__`", "The DataLoader (by collating examples)", "The model", "The loss function"]
+        answer: 1
+        why: "`__getitem__` returns one example with no batch axis. The DataLoader groups and stacks examples into batches."
+    explain: "Why does a noisy training Dataset return a different tensor for the same index on each call, and why should validation not do that?"
+    key: |
+      - `__getitem__` runs fresh every time, so random transforms (augmentation) create a new version of the example each epoch, which helps generalisation.
+      - Validation must be deterministic so that changes in its score come from the model, not from the data changing between evaluations.
+
+  5:
+    questions:
+      - q: "What does the lazy-loading `DigitImageFolder` keep in memory?"
+        options: ["Every image's pixels", "Only the file paths (and labels); pixels are read on demand in `__getitem__`", "Nothing at all", "A compressed copy of the folder"]
+        answer: 1
+        why: "About 12 KB of paths. The same pattern scales to a million images that could never fit in RAM."
+      - q: "Where do random augmentations belong?"
+        options: ["Training and validation", "Training only; validation transforms stay deterministic", "Validation only", "Nowhere in `__getitem__`"]
+        answer: 1
+        why: "Random shifts give the model varied training views. Validation must be stable to be comparable over time."
+
+  6:
+    questions:
+      - q: "For the **validation** DataLoader you should normally use…"
+        options:
+          - "`shuffle=True, drop_last=True`"
+          - "`shuffle=False, drop_last=False`"
+          - "`shuffle=True, drop_last=False`"
+          - "`shuffle=False, drop_last=True`"
+        answer: 1
+        why: "Evaluation should be deterministic and must see every example. `drop_last=True` would silently skip some."
+      - q: "31,647 training rows with `batch_size=256` and `drop_last=False` give how many batches per epoch?"
+        options: ["123", "124", "125", "256"]
+        answer: 1
+        why: "ceil(31,647 / 256) = 124; the last batch has 159 rows."
+    explain: "Should you always raise `num_workers` to speed up training? Explain with the lesson's measurement."
+    key: |
+      - No. Workers help when producing an example is expensive (reading and decoding files from disk).
+      - For data already in memory, starting processes and moving data between them can cost more than it saves; measure on your own pipeline (0 is often right, especially in notebooks).
+
+  7:
+    questions:
+      - q: "Why inspect one batch with assertions before training?"
+        options:
+          - "It speeds up training"
+          - "Many 'training problems' are pipeline problems (shape, dtype, NaNs, label values); catching them costs seconds instead of a run"
+          - "PyTorch requires it"
+          - "To choose the learning rate"
+        answer: 1
+        why: "Check the contract (shapes, dtype, finite values, label set, scaling) before spending time training."
+    explain: "List four things the batch contract should check for this project."
+    key: |
+      - x is (batch, 50) float32; y is (batch, 1) float32 (matching the one-logit model).
+      - No NaN or infinite values; labels only in {0, 1}; sensible value ranges and a positive rate close to the training set's.

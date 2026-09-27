@@ -1,0 +1,136 @@
+# Checkpoints for Lesson 2.1 (see 1.1.checkpoints.yaml for the format).
+skill: Tensors & shapes
+
+sections:
+  1:
+    questions:
+      - q: "`loss.backward()` complains *grad can be implicitly created only for scalar outputs*. What is wrong?"
+        options:
+          - "The loss is on the wrong device"
+          - "The 'loss' still has axes, e.g. shape (N,) or (1,), instead of shape ()"
+          - "The loss is float64"
+          - "The model has no parameters"
+        answer: 1
+        why: "`backward()` needs a zero-dimensional tensor: shape `()`. Something you expected to be one number still has axes attached (for example, a loss you forgot to average)."
+      - q: "You build a tensor with `torch.from_numpy(arr)` and then change `arr[0, 0]`. What happens to the tensor?"
+        options: ["Nothing: it is a copy", "It changes too: `from_numpy` shares memory", "PyTorch raises an error", "The tensor becomes float64"]
+        answer: 1
+        why: "`from_numpy` shares memory (cheap, but mutations propagate). `torch.tensor(arr)` copies."
+    explain: "Where should you cast to float32 when data goes from pandas/NumPy into PyTorch, and why there?"
+    key: |
+      - At the boundary where NumPy becomes PyTorch (e.g. `X.astype(np.float32)` once), not later in the pipeline.
+      - NumPy defaults to float64 and a float32 layer rejects or mis-handles it; casting once at the boundary means the problem never recurs.
+
+  2:
+    questions:
+      - q: "`batch` has shape (8, 5). What is the shape of `batch[0]`, and of `batch[0:1]`?"
+        options: ["(5,) and (1, 5)", "(1, 5) and (5,)", "(5,) and (5,)", "(8,) and (1, 8)"]
+        answer: 0
+        why: "An integer index removes the axis; a slice keeps it with length 1. A single example for a model must look like `batch[0:1]`: a batch of one."
+      - q: "An image batch loaded from PIL/matplotlib has shape (N, H, W, C). What does PyTorch expect?"
+        options: ["(N, H, W, C)", "(N, C, H, W)", "(C, N, H, W)", "(H, W, C, N)"]
+        answer: 1
+        why: "PyTorch puts channels before the spatial dimensions. This difference causes many first-week image bugs."
+    explain: "Read the shape (32, 10, 64) aloud as a sentence for a batch of token embeddings."
+    key: |
+      - 32 sequences (axis 0 is always the batch), each 10 tokens long, with 64 numbers (the embedding) per token.
+      - The convention (N, L, E) lets you read unfamiliar code from its shapes.
+
+  3:
+    questions:
+      - q: "Why can `x.t().view(-1)` fail while `x.t().reshape(-1)` works?"
+        options:
+          - "`view` is deprecated"
+          - "After a transpose the tensor is not contiguous; `view` only rewrites strides, `reshape` copies if it must"
+          - "`reshape` changes the number of elements"
+          - "`view` only works on 1-D tensors"
+        answer: 1
+        why: "`.t()` and `.permute()` relabel axes without moving data, so memory is no longer in reading order. `view` cannot express that; `reshape` silently copies."
+      - q: "Why is bare `squeeze()` a production bug waiting to happen?"
+        options:
+          - "It is slow"
+          - "With a batch of one it also removes the batch axis"
+          - "It changes the dtype"
+          - "It only works on the CPU"
+        answer: 1
+        why: "The last partial batch, or a single request in production, can have batch size 1. Name the axis: `squeeze(1)`."
+    explain: "A (4, 3, 32, 32) tensor: which of these reshapes is impossible, (4, 3072), (12, 1024) or (4, 3000), and what rule decides it?"
+    key: |
+      - (4, 3000) is impossible; the other two are fine.
+      - Reshaping must conserve the number of elements: 4 × 3 × 32 × 32 = 12,288 = 4 × 3072 = 12 × 1024, but 4 × 3000 = 12,000.
+
+  4:
+    questions:
+      - q: "Predictions of shape (256, 1) and targets of shape (256,) go into `nn.MSELoss`. What does it average over?"
+        options:
+          - "256 values: each prediction against its target"
+          - "A 256 × 256 matrix: every prediction against every target"
+          - "It raises an error"
+          - "Only the first 256 values of a flattened tensor"
+        answer: 1
+        why: "Broadcasting aligns from the right: (256, 1) and (256,) → (256, 256). Only 256 of the 65,536 entries compare a prediction with its own target. It runs with only a warning."
+      - q: "Which pair of shapes is **not** broadcastable?"
+        options: ["(8, 5) and (5,)", "(8, 5) and (8, 1)", "(8, 5) and (8,)", "(3, 1) and (1, 4)"]
+        answer: 2
+        why: "Aligned from the right, 5 and 8 differ and neither is 1. (8, 5) + (8,) raises an error, which is exactly what you want."
+    explain: "Why does the lesson call broadcasting the mechanism behind 'the worst category of bug', and what is the defence?"
+    key: |
+      - Shape mismatches such as (N,) against (N, 1) can broadcast silently into an (N, N) computation: the code runs, the number looks plausible, and you optimise or measure the wrong thing.
+      - Defence: assert that predictions and targets have equal shapes before every loss (e.g. `check_loss_shapes`), and treat broadcasting warnings as errors.
+
+  5:
+    questions:
+      - q: "`nn.Linear(64, 16)` receives a tensor of shape (2, 3, 5, 64). What comes out?"
+        options: ["An error", "(2, 3, 5, 16)", "(2, 16)", "(30, 16)"]
+        answer: 1
+        why: "A linear layer transforms only the last axis, from in_features to out_features. Every leading axis is treated as batch."
+      - q: "How is `nn.Linear`'s weight stored, and what does the layer compute?"
+        options:
+          - "(in, out); `x @ W + b`"
+          - "(out, in); `x @ W.T + b`"
+          - "(out, in); `W @ x + b` with x as rows"
+          - "(in, out); `x * W + b` element-wise"
+        answer: 1
+        why: "PyTorch stores the weight as (out_features, in_features), a memory-layout choice, so the layer is `x @ W.T + b`."
+    explain: "How many parameters does `nn.Linear(1000, 1000)` have, and roughly how much memory do ten of them take in float32?"
+    key: |
+      - $1000 \times 1000 + 1000 = 1{,}001{,}000$ parameters per layer.
+      - Ten layers ≈ 10 million parameters × 4 bytes ≈ 40 MB for the weights alone.
+
+  6:
+    questions:
+      - q: "Which targets does `nn.CrossEntropyLoss` expect for a batch of N examples?"
+        options: ["(N, C) one-hot floats", "(N,) int64 class indices", "(N, 1) float32", "(N,) probabilities"]
+        answer: 1
+        why: "Class indices, as `long`. `BCEWithLogitsLoss` is the opposite: float targets with the same shape as the output."
+      - q: "`t.to(DEVICE)` on its own line leaves `t` on the CPU, but `model.to(DEVICE)` moves the model. Why?"
+        options:
+          - "A bug in PyTorch"
+          - "`Module.to()` moves parameters in place; `Tensor.to()` returns a new tensor and never mutates"
+          - "Models are always on the GPU"
+          - "Tensors cannot be moved"
+        answer: 1
+        why: "The asymmetry catches everyone once. Move the model once; move each batch as it arrives, and keep the returned tensor."
+
+  7:
+    questions:
+      - q: "`nn.Linear(10, 4)` receives a (32, 20) batch. The error says `(32x20 and 10x4)`. What must match?"
+        options:
+          - "32 and 10"
+          - "The input's last axis (20) must equal the layer's in_features (10)"
+          - "4 and 20"
+          - "32 and 4"
+        answer: 1
+        why: "PyTorch reports the weight already transposed. Fix the layer to `nn.Linear(20, 4)`, or find out why the feature count changed (often an encoder fitted on a different split)."
+      - q: "Of the five clinic cases, which kind is the most expensive to discover in a real project?"
+        options:
+          - "A shape error that raises a traceback"
+          - "A silent broadcast in a regression loss that runs and gives a plausible number"
+          - "Float labels rejected by CrossEntropyLoss"
+          - "A device mismatch"
+        answer: 1
+        why: "A traceback is a gift. A wrong objective that runs quietly can waste days before anyone notices."
+    explain: "Write (in words) an assertion for your data pipeline that catches images in (N, H, W, C) layout regardless of image size."
+    key: |
+      - Check the channel axis explicitly, e.g. assert `x.ndim == 4 and x.shape[1] in (1, 3)` (expected channel count at axis 1).
+      - Relying on an error from the first layer only works when H or W happens not to equal the channel count.

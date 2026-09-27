@@ -52,8 +52,37 @@ def lesson_sort_key(p: Path):
     return (int(m.group(1)), int(m.group(2))) if m else (999, 999)
 
 
-def reading_minutes(lesson: Lesson) -> int:
-    return max(5, round(lesson.word_count / 190 + lesson.code_cells * 0.6))
+def _words(html: str | None) -> int:
+    return len(re.sub(r"<[^>]+>", " ", html or "").split())
+
+
+def teaching_words(lesson: Lesson, ex: dict) -> int:
+    """Words the teaching layer adds to the notes: explainers, walkthroughs, code notes, answers (counted at half,
+    since they are read after answering), the summary and the takeaways."""
+    n = _words(ex["summary_html"]) + sum(_words(t) for t in ex["takeaways"])
+    for s in lesson.sections:
+        for b in s.blocks:
+            if b.get("_ins"):
+                n += sum(_words(b.get(k)) for k in ("html", "intro_html", "caption_html", "prompt_html", "reveal_html"))
+                n += sum(_words(st["html"]) for st in b.get("steps", []))
+                if b["kind"] == "compare":
+                    n += sum(_words(c["html"]) for c in b["items"])
+            if b["kind"] == "questions":
+                n += sum(_words(it.get("answer_html")) for it in b["items"]) // 2
+            if b["kind"] == "code" and b.get("explain"):
+                n += _words(b["explain"]["summary_html"]) + sum(_words(x["html"]) for x in b["explain"]["lines"])
+    return n
+
+
+def lesson_minutes(lesson: Lesson, ex: dict) -> int:
+    """An honest time for the whole lesson: reading the notes and the teaching layer, the code,
+    about 3 minutes per lab, and the checkpoints and quiz."""
+    labs = sum(1 for s in lesson.sections for b in s.blocks if b["kind"] == "widget")
+    cps = sum(len(c["questions"]) for c in ex["checkpoints"])
+    explains = sum(1 for c in ex["checkpoints"] if c["explain"])
+    quiz = len(ex["quiz"]["questions"]) if ex["quiz"] else 0
+    words = lesson.word_count + teaching_words(lesson, ex)
+    return max(5, round(words / 200 + lesson.code_cells * 0.6 + labs * 3 + cps * 0.75 + explains * 1.5 + quiz * 0.5))
 
 
 class Builder:
@@ -107,6 +136,10 @@ class Builder:
                 self.enricher.warnings.append(f"[{lid}] one-line docstring for `{qual}` (code cell {cell}); document its arguments under `docstrings:`")
             extras[lid] = self.enricher.apply(lesson, data)
             extras[lid]["enriched"] = bool(data)
+            cp_data = load_enrichment(ENRICH / f"{lid}.checkpoints.yaml")
+            extras[lid]["checkpoints"] = self.enricher.checkpoints(lesson, cp_data)
+            extras[lid]["skill"] = cp_data.get("skill") or lesson.title
+            extras[lid]["minutes"] = lesson_minutes(lesson, extras[lid])
             lessons.append(lesson)
             assets[lid] = store
             store.write()
@@ -124,8 +157,8 @@ class Builder:
                 **mcfg, "color": MODULE_COLORS[(n - 1) % len(MODULE_COLORS)],
                 "available": bool(mls), "url": f"module-{n}/index.html",
                 "lessons": [{"id": l.id, "title": l.title, "url": f"module-{n}/{l.slug}.html",
-                             "minutes": reading_minutes(l), "sections": len(l.sections)} for l in mls],
-                "minutes": sum(reading_minutes(l) for l in mls),
+                             "minutes": extras[l.id]["minutes"], "sections": len(l.sections)} for l in mls],
+                "minutes": sum(extras[l.id]["minutes"] for l in mls),
             })
         flat = [le for m in nav for le in m["lessons"]]
         stats = {
@@ -158,7 +191,7 @@ class Builder:
                 continue
             mls = [l for l in lessons if l.module == m["number"]]
             self._page("module.html", f"module-{m['number']}/index.html", root="../", page="module",
-                       module=m, lessons=mls, reading=reading_minutes, extras=extras, **common)
+                       module=m, lessons=mls, reading=lambda le: extras[le.id]["minutes"], extras=extras, **common)
             for l in mls:
                 idx = next(i for i, le in enumerate(flat) if le["id"] == l.id)
                 prev_l = flat[idx - 1] if idx > 0 else None
@@ -180,7 +213,7 @@ class Builder:
                     "objectives": [strip(o) for o in l.preamble["objectives"]],
                 }, ensure_ascii=False).replace("</", "<\\/")
                 self._page("lesson.html", url, root="../", page="lesson", module=m, lesson=l,
-                           ex=extras[l.id], prev_l=prev_l, next_l=next_l, minutes=reading_minutes(l),
+                           ex=extras[l.id], prev_l=prev_l, next_l=next_l, minutes=extras[l.id]["minutes"],
                            notebook_url=f"../notebooks/{nb_name}", colab_url=colab,
                            widgets=sorted(extras[l.id]["widgets"]), gloss=True,
                            gloss_label=f"Lesson {l.id}", gloss_url=url, lesson_ctx=lesson_ctx, **common)
@@ -208,11 +241,31 @@ class Builder:
                 "summary": strip(extras[le["id"]]["summary_html"]) or strip(by_id[le["id"]].preamble.get("goal_html")),
                 "objectives": [strip(o) for o in by_id[le["id"]].preamble["objectives"]],
                 "sections": [s.title for s in by_id[le["id"]].sections if s.kind == "section"],
+                "skill": extras[le["id"]]["skill"],
+                "cp": [q["id"] for c in extras[le["id"]]["checkpoints"] for q in c["questions"]],
+                "ex": [c["explain"]["id"] for c in extras[le["id"]]["checkpoints"] if c["explain"]],
+                "quiz": [q["id"] for q in (extras[le["id"]]["quiz"] or {}).get("questions", [])],
+                "labs": sorted(extras[le["id"]]["widgets"]),
+                "n_sections": sum(1 for s in by_id[le["id"]].sections),
             } for le in m["lessons"]],
         } for m in nav]}
         (self.dist / "static" / "course-map.js").write_text(
             "window.DLP_COURSE=" + json.dumps(course_map, ensure_ascii=False, separators=(",", ":")) + ";",
             encoding="utf-8")
+        # every checkpoint and quiz question, for the review page
+        bank = []
+        for l in lessons:
+            url = f"module-{l.module}/{l.slug}.html"
+            for c in extras[l.id]["checkpoints"]:
+                for q in c["questions"]:
+                    bank.append({"id": q["id"], "l": l.id, "lt": l.title, "s": c["sec"], "st": strip(c["title"]),
+                                 "u": f"{url}#cp-{c['sec']}", "q": q["q_html"], "o": q["options"], "a": q["answer"],
+                                 "w": q["why_html"]})
+            for q in (extras[l.id]["quiz"] or {}).get("questions", []):
+                bank.append({"id": q["id"], "l": l.id, "lt": l.title, "s": "quiz", "st": "End-of-lesson quiz",
+                             "u": f"{url}#wrap-up", "q": q["q_html"], "o": q["options"], "a": q["answer"], "w": q["why_html"]})
+        (self.dist / "static" / "question-bank.js").write_text(
+            "window.DLP_BANK=" + json.dumps(bank, ensure_ascii=False, separators=(",", ":")) + ";", encoding="utf-8")
         (self.dist / ".nojekyll").write_text("")
         self._page("404.html", "404.html", root="", page="404", **common)
 
