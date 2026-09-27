@@ -44,21 +44,21 @@
     "ignored_variants": [
       "note_3_1_optimizers_and_learning_rate.ipynb"
     ],
-    "sha": "55d3253bdf1cd7a9",
+    "sha": "9d44552f5082509e",
     "source": "deep_learning-platform/../Day 3/note_3_1_optimizers_and_learning_rate_self_sufficient.ipynb"
   },
   "3.2": {
     "ignored_variants": [
       "note_3_2_overfitting_and_regularisation.ipynb"
     ],
-    "sha": "c57b46b512b9f14b",
+    "sha": "bcbb7ee0d75321d0",
     "source": "deep_learning-platform/../Day 3/note_3_2_overfitting_and_regularisation_self_sufficient.ipynb"
   },
   "3.3": {
     "ignored_variants": [
       "note_3_3_when_gradients_misbehave.ipynb"
     ],
-    "sha": "53ab67fc33e4d7c6",
+    "sha": "6f18762359335ae4",
     "source": "deep_learning-platform/../Day 3/note_3_3_when_gradients_misbehave_self_sufficient.ipynb"
   },
   "3.4": {

@@ -1,5 +1,6 @@
 # Teaching layer for Lesson 3.1 — Optimizers and the Learning Rate
-# The notebook is the author's current version (not locked). Its two "Check your understanding" sections are
+# Note: this lesson uses a curated notebook (see course.yaml → sources.locked): the author's version with its two
+# loss figures labelled as loss, re-executed end to end. Its two "Check your understanding" sections are
 # written as a question followed by its worked answer; the inserts below turn each back into a question card
 # (answer hidden until asked for), keeping the author's explanation as the answer.
 

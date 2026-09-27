@@ -1,6 +1,7 @@
 # Teaching layer for Lesson 3.2 — Overfitting, and What to Do About It
-# The notebook is the author's current version (not locked). Its Section 9 image prompt is hidden by the build and
-# replaced here by the noise-floor lab it describes.
+# Note: this lesson uses a curated notebook (see course.yaml → sources.locked) whose code matches its text
+# (run() trains 60 epochs; capacity sweep (256,128) → (8,)) and whose outputs were re-generated end to end.
+# Its Section 9 image prompt is hidden by the build and replaced here by the noise-floor lab it describes.
 
 summary: |
   A network that is too big for its data memorises it. You make that happen on purpose (German Credit: 500 training rows,
@@ -85,14 +86,14 @@ inserts:
           min: 0.5
           max: 0.85
           rows:
-            - { label: "Fixed 60 epochs", value: 0.7424, series: 1 }
+            - { label: "Fixed 60 epochs", value: 0.7422, series: 1 }
             - { label: "Early stopping (epoch 5 restored)", value: 0.8095, series: 0 }
         - title: "Test ROC-AUC (never used for any decision)"
           digits: 4
           min: 0.5
           max: 0.85
           rows:
-            - { label: "Fixed 60 epochs", value: 0.7019, series: 1 }
+            - { label: "Fixed 60 epochs", value: 0.7017, series: 1 }
             - { label: "Early stopping (epoch 5 restored)", value: 0.7528, series: 0 }
       footnote: "Early stopping stopped at epoch 15 and restored epoch 5: 45 fewer epochs, and a better model."
 

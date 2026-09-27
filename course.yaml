@@ -76,7 +76,14 @@ sources:
   #   2.4: the Updated notebook interleaved two versions (walkthroughs several cells before
   #        their code, sections 4–7 each headed twice); merged into one ordered notebook,
   #        duplicate outputs removed, config diff made to ignore comments.
-  locked: ["2.3", "2.4"]
+  #   3.1: the Sep 26 evening version (cells split, scratch cells removed) with its two edited figures
+  #        finished: the schedule plot's third panel shows validation loss but was still titled
+  #        "validation AUC", and the learning-rate loss panel kept a "random (AUC=0.5)" line
+  #        (now the constant base-rate loss). Re-executed so duplicated outputs are gone.
+  #   3.2: the Sep 26 evening version (cells split, transition to 3.3 added) with run() back to the
+  #        60 epochs and (256,128) → (8,) capacity sweep the text describes; the classroom
+  #        run had mixed 60- and 100-epoch outputs. Re-executed so every output matches.
+  locked: ["2.3", "2.4", "3.1", "3.2"]
 
 modules:
   - number: 1
