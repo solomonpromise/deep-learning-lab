@@ -82,6 +82,7 @@
     function paintScale() {
       var s = Math.pow(2, scalePow), zero = 0, inf = 0;
       grads.forEach(function (g) { var v = useBF16 ? toBF16(g * s) : toF16(g * s); if (v === 0) zero++; else if (!isFinite(v)) inf++; });
+      root.dispatchEvent(new CustomEvent('dlp:metrics', { bubbles: true, detail: { view: 'scale', format: useBF16 ? 'bf16' : 'fp16', zeroPct: zero / grads.length * 100, infPct: inf / grads.length * 100, scalePow: scalePow } }));
       [['Gradients that became 0', (zero / grads.length * 100).toFixed(1) + '%', zero ? 'bad' : 'good'], ['Overflowed to inf', (inf / grads.length * 100).toFixed(1) + '%', inf ? 'bad' : 'good'], ['Loss scale', '2^' + scalePow]].forEach(function (x) { stats.appendChild(L.stat(x[0], x[1], x[2]).el); });
       msg.className = 'w-msg' + (zero || inf ? ' warn' : ' good');
       msg.innerHTML = useBF16 ? '<strong>bf16 has fp32\'s range</strong>, so none of these gradients vanish, even without scaling. That is why bf16 training needs no GradScaler.'

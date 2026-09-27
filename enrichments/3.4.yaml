@@ -186,6 +186,15 @@ inserts:
     type: widget
     name: case-library
     title: "Case library: twelve broken runs to diagnose"
+    challenge:
+      id: case-library
+      title: "Attending physician"
+      goal: "Finish a round of all twelve cases with **at least 45 of 60 points**."
+      require: [["done", "==", true, "finish the round"], ["roundScore", ">=", 45, "score at least 45 points"]]
+      score: roundScore
+      better: higher
+      unit: points
+      share: "I diagnosed twelve broken training runs and scored {roundScore}/60"
     intro: |
       More practice before the two mysteries. Each case shows the curves and the free Tier 0 evidence; deeper evidence costs points, just as
       it costs time in a real project. A correct diagnosis earns 3 points and the right first fix 2.

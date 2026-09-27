@@ -21,3 +21,10 @@ CREATE TABLE IF NOT EXISTS certs (
   data    TEXT NOT NULL,             -- name, modules passed, counts, dates (JSON)
   created INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS challenge_scores (
+  id      TEXT NOT NULL,             -- lab challenge id, e.g. spiral-small
+  value   REAL NOT NULL,             -- the learner's result (e.g. parameters used, steps taken)
+  created INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS challenge_scores_id ON challenge_scores (id, value);

@@ -98,7 +98,19 @@
       '<a class="btn" data-cert-open href="' + ROOT + 'certificate.html">' + icon('trophy') + ' Open my certificate</a></div>';
     $('[data-cert-name]').addEventListener('input', function (e) { store.set('cert:name', e.target.value.trim()); });
   }
-  function paintAll(mods) { paintStreak(); paintGoal(); paintNext(mods); paintHeat(); paintSkills(mods); paintBadges(mods); paintTable(mods); paintCert(mods); }
+  function paintChallenges() {
+    M.loadCourse(function (course) {
+      var items = [];
+      course.modules.forEach(function (m) { m.lessons.forEach(function (l) { (l.challenges || []).forEach(function (c) { items.push({ c: c, l: l }); }); }); });
+      $('[data-pg-challenges]').innerHTML = items.length ? items.map(function (it) {
+        var r = R.challengeOf(it.c.id), done = r && r.passed;
+        return '<a class="pg-ch' + (done ? ' done' : '') + '" href="' + ROOT + it.l.url + '">' + icon(done ? 'trophy' : 'target') + '<span><strong>' + esc(it.c.title) + '</strong><span class="pg-ch-where">Lesson ' + it.l.id + ' · ' + esc(it.c.lab) + '</span></span>' +
+          '<span class="pg-ch-state">' + (done ? 'Passed' + (r.best != null ? ' · best ' + (Math.round(r.best * 1000) / 1000) : '') : 'Not yet') + '</span></a>';
+      }).join('') : '<p class="muted">No lab challenges yet.</p>';
+    });
+  }
+  function paintAll(mods) {
+    paintChallenges(); paintStreak(); paintGoal(); paintNext(mods); paintHeat(); paintSkills(mods); paintBadges(mods); paintTable(mods); paintCert(mods); }
   M.all(paintAll);
   document.addEventListener('dlp:mastery', function (e) { paintAll(e.detail); });
 })();

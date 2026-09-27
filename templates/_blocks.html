@@ -61,6 +61,13 @@
   <div class="widget-mount"><div class="widget-loading">Loading interactive…</div></div>
   <noscript><p class="muted">This interactive needs JavaScript.</p></noscript>
   {% if b.caption_html %}<figcaption class="widget-caption prose">{{ b.caption_html | safe }}</figcaption>{% endif %}
+  {% if b.challenge %}
+  <div class="lab-challenge" data-lab-challenge="{{ b.challenge.spec }}">
+    <div class="lch-head"><span class="lch-badge"><svg class="ic"><use href="#i-trophy"/></svg> Challenge</span><strong>{{ b.challenge.title }}</strong><span class="lch-state" data-lch-state></span></div>
+    <div class="lch-goal prose">{{ b.challenge.goal_html | safe }}</div>
+    <div class="lch-result" data-lch-result aria-live="polite" hidden></div>
+  </div>
+  {% endif %}
 </figure>
 
 {% elif b.kind == 'explainer' %}

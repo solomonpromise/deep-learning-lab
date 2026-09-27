@@ -121,6 +121,16 @@ inserts:
     type: widget
     name: seed-roulette
     title: "Seed roulette: ten runs, nothing important changed"
+    challenge:
+      id: spread-guess
+      title: "Calibrated intuition"
+      goal: "Lock in a guess, run ten experiments, and land within **1.5 points** of the real best-minus-worst gap."
+      require: [["runs", ">=", 10, "run at least ten experiments"], ["guessError", "<=", 1.5, "guess within 1.5 points"]]
+      score: guessError
+      better: lower
+      digits: 1
+      unit: points off
+      share: "I predicted the spread of ten training runs to within {guessError} points"
     intro: |
       A small network trains ten times in your browser on the same data. Guess the gap between the best and worst run first, then compare
       "Seed only" with "Split only".

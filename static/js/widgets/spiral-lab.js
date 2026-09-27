@@ -163,7 +163,10 @@
       }
       updateStats(); draw(); lossChart.redraw();
       if (state.model === 'network' && (state.epoch % 10 === 0 || state.done) && peek.open) drawUnits();
-      if (state.done) setMessage();
+      if (state.done) {
+        setMessage();
+        root.dispatchEvent(new CustomEvent('dlp:metrics', { bubbles: true, detail: { model: state.model, testAcc: state.acc, trainAcc: state.tacc, params: state.net.nParams(), done: true } }));
+      }
     });
 
     function updateStats() {

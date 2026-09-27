@@ -9,6 +9,8 @@
  *   GET  /api/stats              the counts, for the instructor page; needs "Authorization: Bearer <STATS_TOKEN>"
  *   POST /api/cert               record a certificate: { name, modules, lessons, correct, date } -> { id }
  *   GET  /api/cert/:id           read a recorded certificate (public, for verification)
+ *   POST /api/challenge          record a lab-challenge result { id, value, better: 'higher'|'lower' }
+ *                                -> { beat, n }: the share of earlier results this one beats, and how many there are
  *
  * A sync code is 20 random characters (100 bits) from an unambiguous alphabet, so codes cannot be guessed.
  * Requests are limited per visitor by env.API_LIMITER (separate from the tutor's limit).
@@ -124,6 +126,18 @@ export async function handleApi(request, env, cors) {
       return reply({ id, record: JSON.parse(row.data), created: row.created }, 200, cors);
     }
     return reply({ error: { message: 'Method not allowed.' } }, 405, cors);
+  }
+  // ---------------------------------------------------------------- lab challenges
+  if (parts[0] === 'challenge' && method === 'POST') {
+    let body;
+    try { body = await readJson(request, 2 * 1024); } catch (e) { return reply({ error: { message: 'Bad request.' } }, 400, cors); }
+    const id = String(body.id || ''), value = Number(body.value), higher = body.better !== 'lower';
+    if (!/^[a-z0-9-]{2,40}$/.test(id) || !Number.isFinite(value)) return reply({ error: { message: 'Bad challenge result.' } }, 400, cors);
+    const cmp = higher ? 'value < ?' : 'value > ?';
+    const row = await env.DB.prepare('SELECT COUNT(*) AS n, SUM(CASE WHEN ' + cmp + ' THEN 1 ELSE 0 END) AS beat FROM challenge_scores WHERE id = ?').bind(value, id).first();
+    await env.DB.prepare('INSERT INTO challenge_scores (id, value, created) VALUES (?, ?, ?)').bind(id, value, now).run();
+    const n = row ? row.n : 0;
+    return reply({ beat: n ? (row.beat || 0) / n : null, n }, 200, cors);
   }
   return reply({ error: { message: 'Not found.' } }, 404, cors);
 }

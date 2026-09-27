@@ -201,10 +201,19 @@ class Enricher:
     def _insert_block(self, item: dict) -> dict:
         t = item.get("type", "explainer")
         if t == "widget":
+            ch = item.get("challenge")
+            challenge = None
+            if ch:
+                # a goal inside the lab: `require` is a list of [metric, op, value] the lab's reported metrics must meet;
+                # `score` is the metric to rank passes by, `better` its direction
+                challenge = {"id": ch["id"], "title": ch.get("title", "Challenge"), "goal_html": self.md(ch["goal"]),
+                             "spec": json.dumps({"id": ch["id"], "require": ch.get("require", []), "score": ch.get("score"),
+                                                 "better": ch.get("better", "higher"), "unit": ch.get("unit", ""),
+                                                 "digits": ch.get("digits", 0), "share": ch.get("share", ""), "title": ch.get("title", "Challenge")})}
             return {"kind": "widget", "name": item["name"], "title": item.get("title", ""),
                     "caption_html": self.md(item.get("caption")),
                     "intro_html": self.md(item.get("intro")),
-                    "props": json.dumps(item.get("props", {})),
+                    "props": json.dumps(item.get("props", {})), "challenge": challenge,
                     "height": item.get("height"), "src": item.get("title", "")}
         if t == "explainer":
             return {"kind": "explainer", "style": item.get("style", "plain"), "title": item.get("title", ""),

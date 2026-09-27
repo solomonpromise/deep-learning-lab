@@ -167,6 +167,15 @@ inserts:
     type: widget
     name: spiral-lab
     title: "Spiral Lab: train all three models yourself"
+    challenge:
+      id: spiral-small
+      title: "Small but mighty"
+      goal: "Train the **neural network** to at least **95% test accuracy** with **at most 300 parameters**. Fewer is better: change *Hidden units per layer* and *Hidden layers*, then train."
+      require: [["model", "==", "network", "choose the Neural network model"], ["testAcc", ">=", 0.95, "reach 95% test accuracy"], ["params", "<=", 300, "use at most 300 parameters"]]
+      score: params
+      better: lower
+      unit: parameters
+      share: "I trained a {params}-parameter network to {testAcc%} test accuracy on the two spirals"
     props: { model: network }
     intro: |
       This lab reproduces Sections 3, 4 and 6 in your browser. Pick a model, press **Train** and watch its

@@ -141,6 +141,7 @@ class Builder:
             extras[lid]["checkpoints"] = self.enricher.checkpoints(lesson, cp_data)
             extras[lid]["skill"] = cp_data.get("skill") or lesson.title
             extras[lid]["minutes"] = lesson_minutes(lesson, extras[lid])
+            extras[lid]["challenges"] = any(b["kind"] == "widget" and b.get("challenge") for s in lesson.sections for b in s.blocks)
             extras[lid]["python"] = self._mark_runnable(lesson) or any(
                 b["kind"] == "exercise" for s in lesson.sections for b in s.blocks)
             lessons.append(lesson)
@@ -269,6 +270,8 @@ class Builder:
                 "ex": [c["explain"]["id"] for c in extras[le["id"]]["checkpoints"] if c["explain"]],
                 "quiz": [q["id"] for q in (extras[le["id"]]["quiz"] or {}).get("questions", [])],
                 "labs": sorted(extras[le["id"]]["widgets"]),
+                "challenges": [{"id": b["challenge"]["id"], "title": b["challenge"]["title"], "lab": b.get("title", "")}
+                               for s in by_id[le["id"]].sections for b in s.blocks if b["kind"] == "widget" and b.get("challenge")],
                 "n_sections": sum(1 for s in by_id[le["id"]].sections),
             } for le in m["lessons"]],
         } for m in nav]}

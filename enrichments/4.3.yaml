@@ -215,6 +215,15 @@ inserts:
     type: widget
     name: precision-lab
     title: "Precision lab: what each format keeps, and loss scaling"
+    challenge:
+      id: loss-scale
+      title: "Nothing lost, nothing overflowed"
+      goal: "In **Loss scaling** with **fp16**, find a loss scale at which **no gradient becomes 0** and **none overflows**."
+      require: [["format", "==", "fp16", "use fp16"], ["zeroPct", "==", 0, "let no gradient become 0"], ["infPct", "==", 0, "let no gradient overflow"]]
+      score: scalePow
+      better: lower
+      unit: "(the power of 2)"
+      share: "I found an fp16 loss scale of 2^{scalePow} that keeps every gradient in range"
     intro: |
       Real IEEE rounding in your browser. Store 70000 and 1e-8 in each format, then switch to **Loss scaling** and find the scale at which no
       fp16 gradient vanishes.

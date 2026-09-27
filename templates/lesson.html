@@ -8,7 +8,8 @@
 {% endfor %}
 {% endblock %}
 {% block late_scripts %}<script defer src="{{ root }}static/js/focus.js?v={{ v }}"></script>
-{% if ex.python %}<script defer src="{{ root }}static/js/pyrun.js?v={{ v }}"></script>{% endif %}{% endblock %}
+{% if ex.python %}<script defer src="{{ root }}static/js/pyrun.js?v={{ v }}"></script>{% endif %}
+{% if ex.challenges %}<script defer src="{{ root }}static/js/challenges.js?v={{ v }}"></script>{% endif %}{% endblock %}
 
 {% block main %}
 <div class="lesson-layout" style="--mc: {{ module.color }}" data-lesson="{{ lesson.id }}">

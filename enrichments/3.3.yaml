@@ -122,6 +122,15 @@ inserts:
     type: widget
     name: unit-health
     title: "Unit health: symmetry and dead units, live"
+    challenge:
+      id: unit-edge
+      title: "Find the edge"
+      goal: "With the **Default** initialisation, find the **largest learning rate** that still reaches **95% test accuracy** with **no more than 6 dead units** in layer 1 after 25 epochs."
+      require: [["init", "==", "default", "use the Default initialisation"], ["testAcc", ">=", 0.95, "reach 95% test accuracy"], ["dead1", "<=", 6, "keep at most 6 dead units in layer 1"]]
+      score: lr
+      better: higher
+      unit: learning rate
+      share: "I kept a ReLU network healthy at learning rate {lr} (test accuracy {testAcc%}, {dead1} dead units)"
     intro: |
       A real network trains here, and every hidden unit is a tile. Try **All zeros** and **All 0.1** first and count the distinct units.
       Then go back to **Default** and push the learning rate to 0.5 or 1.0 (that is §5's experiment).
@@ -131,6 +140,15 @@ inserts:
     type: widget
     name: clip-lab
     title: "Clip lab: one step off a cliff"
+    challenge:
+      id: clip-fast
+      title: "Down the cliff, fast"
+      goal: "Choose a learning rate and `max_norm` so the **clipped** path reaches the minimum in **6 steps or fewer**."
+      require: [["clippedSteps", "<=", 6, "reach the minimum in 6 clipped steps or fewer"]]
+      score: clippedSteps
+      better: lower
+      unit: steps
+      share: "I got clipped gradient descent down a cliff in {clippedSteps} steps (lr {lr}, max_norm {maxNorm})"
     intro: |
       A gentle bowl with a steep cliff. Plain gradient descent reaches the cliff face, meets a huge gradient, and is thrown far past the
       minimum. `clip_grad_norm_` keeps the direction and caps the length. Move the learning rate and `max_norm`.

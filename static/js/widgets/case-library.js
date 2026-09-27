@@ -207,7 +207,7 @@
         var lesson = (document.querySelector('[data-lesson]') || { getAttribute: function () { return ''; } }).getAttribute('data-lesson');
         window.DLP.record.answer('lab:case-library:' + c.id, okD && okF, { kind: 'challenge', lesson: lesson });
         if (at === pool.length - 1) window.DLP.record.challenge('case-library', score, true, { passed: score >= pool.length * 3 });
-        document.dispatchEvent(new CustomEvent('dlp:lab-result', { detail: { widget: 'case-library', score: score, max: maxScore, solved: solved, done: at === pool.length - 1 } }));
+        if (at === pool.length - 1) root.dispatchEvent(new CustomEvent('dlp:metrics', { bubbles: true, detail: { roundScore: score, maxScore: maxScore, solved: solved, done: true } }));
       }
       msg.className = 'w-msg ' + (okD && okF ? 'good' : okD ? 'warn' : 'bad');
       msg.innerHTML = '<strong>' + (okD ? 'Right diagnosis' : 'Not quite: ' + DIAG[c.id]) + (okF ? ', right first fix.' : okD ? ', but a different first fix.' : '.') + '</strong> +' + pts + ' point' + (pts === 1 ? '' : 's') + (state.spent ? ' (spent ' + state.spent + ' on evidence)' : ' with free evidence only') + '. ' + c.why +

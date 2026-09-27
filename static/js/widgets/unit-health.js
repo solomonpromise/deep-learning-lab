@@ -52,7 +52,10 @@
         }
         paint();
         if (epoch < target) later(step);
-        else { busy = false; trainBtn.disabled = false; trainBtn.innerHTML = L.icon('play') + ' Train 25 more'; if (window.DLP.record) { var le = document.querySelector('[data-lesson]'); window.DLP.record.lab(le ? le.getAttribute('data-lesson') : '', 'unit-health'); } }
+        else {
+          busy = false; trainBtn.disabled = false; trainBtn.innerHTML = L.icon('play') + ' Train 25 more';
+          var act = activity(), dead1 = act[0].filter(function (a) { return a === 0; }).length;
+          root.dispatchEvent(new CustomEvent('dlp:metrics', { bubbles: true, detail: { init: init, lr: LRS[lrIdx], epochs: epoch, testAcc: L.accuracy(net, sp.test.X, sp.test.y), dead1: dead1 } })); if (window.DLP.record) { var le = document.querySelector('[data-lesson]'); window.DLP.record.lab(le ? le.getAttribute('data-lesson') : '', 'unit-health'); } }
       }
       later(step);
     }

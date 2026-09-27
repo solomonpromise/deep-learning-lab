@@ -40,6 +40,7 @@
        ['Steps to reach the minimum, unclipped', ta == null ? 'not within ' + steps : String(ta), ta == null || (tb != null && ta > tb) ? 'bad' : ''],
        ['Steps to reach the minimum, clipped', tb == null ? 'not within ' + steps : String(tb), tb != null ? 'good' : '']]
         .forEach(function (x) { stats.appendChild(L.stat(x[0], x[1], x[2]).el); });
+      root.dispatchEvent(new CustomEvent('dlp:metrics', { bubbles: true, detail: { lr: lr, maxNorm: MAX_NORMS[mIdx], clippedSteps: tb == null ? 99 : tb, unclippedSteps: ta == null ? 99 : ta, jump: jump } }));
       msg.className = 'w-msg' + (jump > 3 ? ' warn' : '');
       msg.innerHTML = jump > 3
         ? 'On the cliff face the gradient norm reaches <strong>' + A.worst.toFixed(0) + '</strong>, so one unclipped step moves the parameters <strong>' + jump.toFixed(1) + '</strong> units and throws them far past the minimum. Clipping keeps the same direction but caps each step at learning rate × max_norm = ' + (lr * MAX_NORMS[mIdx]).toFixed(2) + ', so the path walks down the cliff instead. Clipping protects the update; it does not explain why the gradient was huge.'

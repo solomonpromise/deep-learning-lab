@@ -50,7 +50,12 @@
       busy = true; runBtn.disabled = true;
       var i = 0; batchNo++;
       function next() {
-        if (i >= n) { busy = false; runBtn.disabled = false; runBtn.innerHTML = L.icon('play') + ' Run 10 more'; paintStats(); return; }
+        if (i >= n) {
+          busy = false; runBtn.disabled = false; runBtn.innerHTML = L.icon('play') + ' Run 10 more'; paintStats();
+          var accs = runs.map(function (r) { return r.acc; }), range = (Math.max.apply(null, accs) - Math.min.apply(null, accs)) * 100;
+          root.dispatchEvent(new CustomEvent('dlp:metrics', { bubbles: true, detail: { mode: mode, runs: runs.length, range: range, guess: guess, guessError: guess == null ? 99 : Math.abs(range - guess) } }));
+          return;
+        }
         var k = runs.length;
         var splitSeed = mode === 'seed' ? 101 : 101 + k * 17, modelSeed = mode === 'split' ? 5 : 5 + k * 31;
         runs.push({ acc: trainOnce(data, splitSeed, modelSeed), batch: batchNo });
