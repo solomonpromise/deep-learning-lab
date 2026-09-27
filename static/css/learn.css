@@ -107,3 +107,36 @@
 .uh-key { display: flex; flex-wrap: wrap; gap: 12px; font-size: .78rem; color: var(--ink-3); }
 .uh-key span { display: inline-flex; align-items: center; gap: 6px; }
 .uh-key i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+/* ------------------------------------------------------------------ focus mode */
+.focus-hidden { display: none !important; }
+body.focus-mode .main { padding-bottom: 96px; }
+.focus-bar {
+  position: fixed; z-index: 40; left: 50%; bottom: 16px; transform: translateX(-50%);
+  width: min(760px, calc(100vw - 32px)); display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 16px; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(10px);
+  border: 1px solid var(--line-2); box-shadow: var(--shadow-lg);
+}
+.focus-where { display: grid; min-width: 0; gap: 3px; }
+.focus-count { font-size: .7rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.focus-title { font-weight: 700; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.focus-dots { display: flex; gap: 3px; }
+.focus-dots i { flex: 1; max-width: 18px; height: 4px; border-radius: 2px; background: var(--line-2); }
+.focus-dots i.is-past { background: var(--mc, var(--accent)); opacity: .55; }
+.focus-dots i.is-now { background: var(--mc, var(--accent)); }
+.focus-next-wrap { display: grid; justify-items: end; gap: 2px; }
+.focus-bar [data-focus-next] { max-width: 280px; }
+.focus-bar [data-focus-next] span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.focus-bar [data-focus-next].is-waiting { background: var(--surface-2); color: var(--ink-2); border-color: var(--line-2); }
+.focus-skip { border: 0; background: none; padding: 0; font: inherit; font-size: .75rem; color: var(--ink-3); cursor: pointer; text-decoration: underline; }
+.focus-toggle[aria-pressed="true"] { border-color: var(--mc, var(--accent)); }
+.toc-list a.focus-current { background: var(--accent-soft); }
+.checkpoint.focus-nudge { animation: nudge .45s; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cpc) 35%, transparent), var(--shadow); }
+body.focus-mode .tutor-fab { bottom: 96px; }
+@media (max-width: 640px) {
+  .focus-bar { grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; padding: 8px; bottom: 8px; }
+  .focus-bar [data-focus-prev] span, .focus-exit { display: none; }
+  .focus-bar [data-focus-next] { max-width: 150px; }
+  .focus-dots { display: none; }
+}
+@media print { .focus-bar, .focus-toggle { display: none !important; } .focus-hidden { display: block !important; } }
