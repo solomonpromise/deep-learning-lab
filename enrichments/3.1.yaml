@@ -276,6 +276,56 @@ inserts:
             - { label: "Schedule", value: 0.0048, series: 3 }
       footnote: "Single seed, final epoch. The last two ranges are within run-to-run noise (Lesson 3.2)."
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 3
+    at: end
+    type: exercise
+    title: "One momentum step and one Adam step"
+    prompt: |
+      Implement the two update rules from §2 and §3 for a NumPy array of parameters. Adam uses bias-corrected moments
+      $\hat m = m/(1-\beta_1^t)$ and $\hat v = v/(1-\beta_2^t)$.
+    starter: |
+      import numpy as np
+
+      def momentum_step(p, g, v, lr=0.1, beta=0.9):
+          v = ___
+          p = ___
+          return p, v
+
+      def adam_step(p, g, m, v, t, lr=1e-3, b1=0.9, b2=0.999, eps=1e-8):
+          m = b1 * m + (1 - b1) * g
+          v = ___
+          m_hat = m / (1 - b1 ** t)
+          v_hat = ___
+          p = p - lr * m_hat / (np.sqrt(v_hat) + eps)
+          return p, m, v
+    check: |
+      p, v = momentum_step(np.array([1.0, -2.0]), np.array([0.5, 0.5]), np.array([0.1, -0.1]))
+      assert np.allclose(v, [0.59, 0.41]), "Velocity: v ← β·v + g"
+      assert np.allclose(p, [0.941, -2.041]), "Update: p ← p − lr·v (with the NEW velocity)"
+      p2, m2, v2 = adam_step(np.array([1.0, 1.0]), np.array([0.001, 100.0]), np.zeros(2), np.zeros(2), t=1)
+      assert np.allclose(v2, [(1 - 0.999) * 1e-6, (1 - 0.999) * 1e4]), "Second moment: v ← β2·v + (1 − β2)·g²"
+      assert np.allclose(p2, [0.999, 0.999], atol=1e-6), "On the first step Adam moves each parameter by about lr, whatever the gradient's size: check the bias correction of v"
+    solution: |
+      import numpy as np
+
+      def momentum_step(p, g, v, lr=0.1, beta=0.9):
+          v = beta * v + g
+          p = p - lr * v
+          return p, v
+
+      def adam_step(p, g, m, v, t, lr=1e-3, b1=0.9, b2=0.999, eps=1e-8):
+          m = b1 * m + (1 - b1) * g
+          v = b2 * v + (1 - b2) * g ** 2
+          m_hat = m / (1 - b1 ** t)
+          v_hat = v / (1 - b2 ** t)
+          p = p - lr * m_hat / (np.sqrt(v_hat) + eps)
+          return p, m, v
+    hints:
+      - "PyTorch's momentum keeps a running sum: `v = beta * v + g`, then steps with `lr * v`."
+      - "Adam's second moment averages the squared gradient; its bias correction divides by `1 - b2 ** t`."
+    success: "Notice the second check: gradients of 0.001 and 100 both moved their parameter by 0.001. That is §3's per-parameter normalisation."
+
 explain:
   - cell: "def train(optimizer_name, lr, epochs=15"
     title: "One training function for every experiment"

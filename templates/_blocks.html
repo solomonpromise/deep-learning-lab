@@ -142,6 +142,29 @@
 {% elif b.kind == 'checkpoint' %}
 {{ checkpoint(b) }}
 
+{% elif b.kind == 'exercise' %}
+<div class="exercise reveal" data-exercise="{{ b.id }}">
+  <div class="ex-head">
+    <span class="badge-lab"><svg class="ic"><use href="#i-code"/></svg> Code exercise</span>
+    <h4 class="widget-title">{{ b.title | md_inline | safe }}</h4>
+    <span class="ex-meta">Python · runs in your browser</span>
+  </div>
+  <div class="ex-prompt prose">{{ b.prompt_html | safe }}</div>
+  <div class="ex-editor"><noscript><pre class="code"><code>{{ b.spec.starter }}</code></pre></noscript></div>
+  <div class="ex-actions">
+    <button class="btn btn-sm" data-ex-check><svg class="ic"><use href="#i-check"/></svg> Check my code</button>
+    <button class="chip-btn" data-ex-run><svg class="ic"><use href="#i-play"/></svg> Run</button>
+    {% if b.spec.hints %}<button class="chip-btn" data-ex-hint><svg class="ic"><use href="#i-bulb"/></svg> Hint</button>{% endif %}
+    <button class="chip-btn" data-ex-reset><svg class="ic"><use href="#i-refresh"/></svg> Reset</button>
+    {% if b.spec.solution %}<button class="chip-btn" data-ex-solution hidden><svg class="ic"><use href="#i-eye"/></svg> Show solution</button>{% endif %}
+    <span class="py-status" hidden aria-live="polite"></span>
+  </div>
+  <ol class="ex-hints" hidden></ol>
+  <div class="ex-verdict" hidden aria-live="polite"></div>
+  <div class="py-out" hidden></div>
+  <script type="application/json" data-ex-spec>{{ b.spec | tojson }}</script>
+</div>
+
 {% elif b.kind == 'raw' %}
 {{ b.html | safe }}
 {% endif %}
@@ -150,11 +173,13 @@
 {# ------------------------------------------------------------------ code cell #}
 {% macro code_cell(b) %}
 {% set long = b.n_lines > 26 %}
-<div class="code-cell role-{{ b.role }}{% if long %} is-long{% endif %}{% if b.explain %} has-explain{% endif %}" data-code>
+<div class="code-cell role-{{ b.role }}{% if long %} is-long{% endif %}{% if b.explain %} has-explain{% endif %}" data-code{% if b.runnable %} data-runnable{% endif %}>
   <div class="code-head">
     <span class="code-lang">{% if b.file %}<svg class="ic"><use href="#i-pencil"/></svg> Writes {{ b.file }}{% elif b.lang == 'bash' %}<svg class="ic"><use href="#i-terminal"/></svg> Terminal{% elif b.role == 'inspect' %}<svg class="ic"><use href="#i-eye"/></svg> Inspect a value{% elif b.role == 'setup' %}<svg class="ic"><use href="#i-gear"/></svg> Setup{% else %}<svg class="ic"><use href="#i-code"/></svg> Python{% endif %}</span>
     <span class="code-meta">{{ b.n_lines }} line{{ 's' if b.n_lines != 1 }}</span>
     <span class="code-actions">
+      {% if b.runnable %}<button class="chip-btn py-run" data-py-run title="Run this cell in your browser (earlier cells run first)"><svg class="ic"><use href="#i-play"/></svg> Run</button>
+      <button class="chip-btn" data-py-edit title="Edit the code, then run your version"><svg class="ic"><use href="#i-pencil"/></svg> <span>Edit</span></button>{% endif %}
       {% if b.explain %}<button class="chip-btn accent" data-explain-toggle aria-expanded="true"><svg class="ic"><use href="#i-bulb"/></svg> <span>Hide explanation</span></button>{% endif %}
       <button class="icon-btn sm" data-copy aria-label="Copy code" title="Copy code"><svg class="ic"><use href="#i-copy"/></svg></button>
     </span>
@@ -162,6 +187,7 @@
   <pre class="code"><code>{% for line in b.lines %}<span class="ln"{% if b.note_map and loop.index0 in b.note_map %} data-note="{{ b.note_map[loop.index0] }}"{% endif %}>{{ line | safe }}</span>{% endfor %}</code></pre>
   {% if long %}<button class="code-expand" data-code-expand><svg class="ic"><use href="#i-chevron-down"/></svg> <span>Show all {{ b.n_lines }} lines</span></button>{% endif %}
   <textarea class="code-src" hidden>{{ b.source }}</textarea>
+  {% if b.runnable %}<div class="py-status" hidden aria-live="polite"></div><div class="py-out" hidden aria-live="polite"></div>{% endif %}
   {% if b.explain %}
   <div class="code-explain">
     <div class="code-explain-head"><svg class="ic"><use href="#i-bulb"/></svg> {{ b.explain.title }}</div>

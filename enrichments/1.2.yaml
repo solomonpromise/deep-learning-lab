@@ -233,6 +233,50 @@ inserts:
       PyTorch's autograd applies the **same exact derivative formulas** you used (in the same floating-point precision, float64 here),
       so the results agree to the last bit. Autograd is not approximating anything; it is doing your five-step bookkeeping automatically.
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 8
+    at: end
+    type: exercise
+    title: "Backpropagate through the output layer"
+    prompt: |
+      Using the numbers from §3, compute the three output-layer gradients of §8: $dZ_2 = (\hat y - y)/N$, then
+      $dW_2 = A_1^\top dZ_2$ and $db_2$ (sum over the examples, keeping the shape `(1, 1)`).
+    starter: |
+      import numpy as np
+
+      A1 = np.array([[0.05, 0.00], [1.00, 0.00], [0.00, 0.85], [0.00, 0.00]])   # hidden activations, (4, 2)
+      A2 = np.array([[0.5585], [0.7109], [0.4651], [0.5498]])                   # predictions, (4, 1)
+      y  = np.array([[1.0], [1.0], [0.0], [0.0]])
+      N = len(y)
+
+      dZ2 = ___
+      dW2 = ___
+      db2 = ___
+      print(dW2.round(4), db2.round(4))
+    check: |
+      assert dZ2.shape == (4, 1), f"dZ2 should have one value per example: shape (4, 1), not {np.shape(dZ2)}"
+      assert np.allclose(dZ2, (A2 - y) / 4), "dZ2 is prediction minus truth, divided by N"
+      assert np.shape(dW2) == (2, 1), f"dW2 must match W2's shape (2, 1), got {np.shape(dW2)}"
+      assert np.allclose(dW2, [[-0.0778], [0.0988]], atol=1e-3), "dW2 should match the lesson's [[-0.0778], [0.0988]]: multiply A1 transposed by dZ2"
+      assert np.shape(db2) == (1, 1) and np.isclose(db2[0, 0], 0.0711, atol=1e-3), "db2 is dZ2 summed over the examples, shape (1, 1)"
+    solution: |
+      import numpy as np
+
+      A1 = np.array([[0.05, 0.00], [1.00, 0.00], [0.00, 0.85], [0.00, 0.00]])
+      A2 = np.array([[0.5585], [0.7109], [0.4651], [0.5498]])
+      y  = np.array([[1.0], [1.0], [0.0], [0.0]])
+      N = len(y)
+
+      dZ2 = (A2 - y) / N
+      dW2 = A1.T @ dZ2
+      db2 = dZ2.sum(axis=0, keepdims=True)
+      print(dW2.round(4), db2.round(4))
+    hints:
+      - "`A2 - y` is prediction minus truth for each example; divide by `N`."
+      - "Shapes: `A1.T` is (2, 4) and `dZ2` is (4, 1), so `A1.T @ dZ2` is (2, 1), the shape of W2."
+      - "`dZ2.sum(axis=0, keepdims=True)` sums over the examples and keeps a (1, 1) shape."
+    success: "Those are the same numbers PyTorch produced in §12, from three lines of your own."
+
 answers:
   "1-1":
     - |

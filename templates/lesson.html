@@ -7,7 +7,8 @@
 {% for w in widgets %}<script defer src="{{ root }}static/js/widgets/{{ w }}.js?v={{ v }}"></script>
 {% endfor %}
 {% endblock %}
-{% block late_scripts %}<script defer src="{{ root }}static/js/focus.js?v={{ v }}"></script>{% endblock %}
+{% block late_scripts %}<script defer src="{{ root }}static/js/focus.js?v={{ v }}"></script>
+{% if ex.python %}<script defer src="{{ root }}static/js/pyrun.js?v={{ v }}"></script>{% endif %}{% endblock %}
 
 {% block main %}
 <div class="lesson-layout" style="--mc: {{ module.color }}" data-lesson="{{ lesson.id }}">

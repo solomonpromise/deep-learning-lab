@@ -144,6 +144,44 @@ inserts:
       within the noise floor" is a cautious reading. It is still the right conclusion for this lesson: no configuration has a margin
       you could defend.
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 7
+    at: end
+    type: exercise
+    title: "Write inverted dropout"
+    prompt: |
+      In training mode, zero each value with probability `p` and scale the survivors by $1/(1-p)$ so the expected value is unchanged. In
+      evaluation mode, return `x` untouched. `rng` is a NumPy random generator.
+    starter: |
+      import numpy as np
+
+      def dropout(x, p, rng, training=True):
+          if not training or p == 0:
+              return ___
+          keep = rng.random(x.shape) >= p          # True where the value survives
+          return ___
+    check: |
+      rng = np.random.default_rng(0)
+      x = np.ones(100_000)
+      out = dropout(x, 0.5, rng)
+      assert out.shape == x.shape, "Same shape in, same shape out"
+      assert abs((out == 0).mean() - 0.5) < 0.01, "About half the values should be zeroed at p = 0.5"
+      assert abs(out.mean() - 1.0) < 0.02, "The mean should stay ≈ 1: scale the survivors by 1 / (1 − p)"
+      assert np.array_equal(dropout(x[:5], 0.5, rng, training=False), x[:5]), "In evaluation mode dropout must do nothing"
+      assert np.allclose(dropout(np.full(4, 3.0), 0.8, np.random.default_rng(1))[dropout(np.full(4, 3.0), 0.8, np.random.default_rng(1)) != 0], 15.0), "At p = 0.8 a survivor of 3.0 becomes 3.0 / 0.2 = 15"
+    solution: |
+      import numpy as np
+
+      def dropout(x, p, rng, training=True):
+          if not training or p == 0:
+              return x
+          keep = rng.random(x.shape) >= p
+          return x * keep / (1 - p)
+    hints:
+      - "Multiply by the boolean mask to zero the dropped values."
+      - "Divide by `1 - p` so that, on average, the output equals the input."
+    success: "And that asymmetry between training and evaluation is exactly why forgetting `model.eval()` makes validation scores wobble."
+
 answers:
   "4-1":
     - |

@@ -237,6 +237,39 @@ inserts:
     answer: 2
     reveal: "**0.7584**, and with `cache_enabled=False` it comes back to 0.7848, so this is a caching problem, not a precision problem."
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 2
+    at: end
+    type: exercise
+    title: "Will it fit? Estimate before you run"
+    prompt: |
+      Return the memory (in GiB, $2^{30}$ bytes) for weights, gradients and optimizer state. Every parameter needs a weight; only the
+      **trainable** share needs a gradient and optimizer state. Activations are left out, as in §2.
+    starter: |
+      def training_memory_gib(n_params, bytes_per_number=4, optimizer_copies=2, trainable=1.0):
+          weights = ___
+          gradients = ___
+          optimizer = ___
+          return (weights + gradients + optimizer) / 2 ** 30
+
+      print(round(training_memory_gib(7e9), 1))
+    check: |
+      assert round(training_memory_gib(7e9), 1) == 104.3, f"7B in fp32 with AdamW: the lesson's 104 GB (104.3 GiB); got {training_memory_gib(7e9):.1f}"
+      assert round(training_memory_gib(7e9, 2, 0), 1) == 26.1, "Plain SGD in fp16: weights + gradients only, 26.1 GiB"
+      assert round(training_memory_gib(7e9, 2, 2, trainable=0.002), 2) == 13.12, "LoRA-style: fp16 weights for all 7B, gradients and AdamW state for 0.2% of them (≈ 13.12 GiB)"
+    solution: |
+      def training_memory_gib(n_params, bytes_per_number=4, optimizer_copies=2, trainable=1.0):
+          weights = n_params * bytes_per_number
+          gradients = n_params * trainable * bytes_per_number
+          optimizer = n_params * trainable * optimizer_copies * bytes_per_number
+          return (weights + gradients + optimizer) / 2 ** 30
+
+      print(round(training_memory_gib(7e9), 1))
+    hints:
+      - "Weights: every parameter × bytes per number."
+      - "Gradients and optimizer state only exist for the trainable share: multiply by `trainable` (and by `optimizer_copies` for the optimizer)."
+    success: "The same arithmetic answers \"will this fit?\" in a code review, without booking a GPU."
+
 answers:
   "1-1":
     - |

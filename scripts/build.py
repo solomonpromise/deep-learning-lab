@@ -141,6 +141,8 @@ class Builder:
             extras[lid]["checkpoints"] = self.enricher.checkpoints(lesson, cp_data)
             extras[lid]["skill"] = cp_data.get("skill") or lesson.title
             extras[lid]["minutes"] = lesson_minutes(lesson, extras[lid])
+            extras[lid]["python"] = self._mark_runnable(lesson) or any(
+                b["kind"] == "exercise" for s in lesson.sections for b in s.blocks)
             lessons.append(lesson)
             assets[lid] = store
             store.write()
@@ -305,6 +307,28 @@ class Builder:
         target = self.dist / out
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(html, encoding="utf-8")
+
+    def _mark_runnable(self, lesson: Lesson) -> bool:
+        """Flag the code cells that can run in the browser (course.yaml → run_in_browser)."""
+        cfg = self.cfg.get("run_in_browser") or {}
+        if lesson.id not in [str(x) for x in cfg.get("lessons", [])]:
+            return False
+        skip = [re.compile(pat, re.M) for pat in cfg.get("skip", [])]
+        allow = [re.compile(pat, re.M) for pat in cfg.get("allow", [])]
+        blocks = list(lesson.preamble.get("setup_blocks", []))
+        blocks += [b for part in lesson.preamble.get("intro", []) for b in part["blocks"]]
+        blocks += [b for s in lesson.sections for b in s.blocks]
+        n = 0
+        for b in blocks:
+            if b.get("kind") == "code" and b.get("lang", "python") == "python" and not b.get("file"):
+                src = b["source"]
+                if re.search(r"^\s*(!|%pip|pip install)", src, re.M):       # installs never run here
+                    continue
+                if any(pat.search(src) for pat in skip) and not any(pat.search(src) for pat in allow):
+                    continue
+                b["runnable"] = True
+                n += 1
+        return n > 0
 
     def _social_cards(self, nav: list, lessons: list, extras: dict, stats: dict) -> None:
         """The images shown when a page is shared (Open Graph / Twitter cards)."""

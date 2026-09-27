@@ -133,6 +133,54 @@ inserts:
       **0.7795.** The ranking is essentially unchanged. What moves is the *size* of the probabilities (average 0.115 → 0.412), and with it
       the meaning of the 0.5 threshold.
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 9
+    at: end
+    type: exercise
+    title: "Target encoding from training rows only"
+    prompt: |
+      Compute each day's success rate from the **training** rows, shrunk toward the overall training rate with `prior_weight`
+      pseudo-rows: $(\text{yes on that day} + \text{prior}\cdot w)/(\text{calls that day} + w)$. Days not seen in training get the prior.
+    starter: |
+      import numpy as np
+
+      def day_rates(train_days, train_y, prior_weight=5):
+          prior = float(np.mean(train_y))
+          rates = {}
+          for day in set(train_days):
+              mask = train_days == day
+              rates[day] = ___
+          return rates, prior
+
+      def encode(days, rates, prior):
+          return np.array([___ for d in days])
+    check: |
+      days = np.array(["mon", "mon", "mon", "tue", "tue"])
+      y = np.array([1, 1, 0, 0, 0])
+      rates, prior = day_rates(days, y, prior_weight=5)
+      assert np.isclose(prior, 0.4), "The prior is the overall training success rate"
+      assert np.isclose(rates["mon"], (2 + 0.4 * 5) / (3 + 5)), "Monday: (2 yes + 0.4·5) / (3 calls + 5)"
+      assert np.isclose(rates["tue"], (0 + 0.4 * 5) / (2 + 5)), "Tuesday: (0 yes + 0.4·5) / (2 calls + 5)"
+      enc = encode(np.array(["tue", "wed"]), rates, prior)
+      assert np.isclose(enc[0], rates["tue"]) and np.isclose(enc[1], 0.4), "A day never seen in training must get the prior"
+    solution: |
+      import numpy as np
+
+      def day_rates(train_days, train_y, prior_weight=5):
+          prior = float(np.mean(train_y))
+          rates = {}
+          for day in set(train_days):
+              mask = train_days == day
+              rates[day] = (train_y[mask].sum() + prior * prior_weight) / (mask.sum() + prior_weight)
+          return rates, prior
+
+      def encode(days, rates, prior):
+          return np.array([rates.get(d, prior) for d in days])
+    hints:
+      - "`train_y[mask].sum()` counts the yes answers on that day; `mask.sum()` counts its calls."
+      - "`rates.get(d, prior)` falls back to the prior for unseen days."
+    success: "Correct, and still leaky on a random split: a test call's day is in training. §9's leak travels through the group, not the code."
+
 answers:
   "1-1":
     - |

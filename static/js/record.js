@@ -49,7 +49,7 @@
       if (info.pick != null) a.pick = info.pick;
       if (first) a.first = !!ok;
       rec.answers[qid] = a;
-      if (info.kind !== 'challenge') schedule(qid, ok, first);
+      if (info.kind !== 'challenge' && info.kind !== 'exercise') schedule(qid, ok, first);
       touch(); save();
       emit({ type: 'answer', qid: qid, ok: !!ok, first: first, kind: info.kind || '', lesson: info.lesson || '' });
     },

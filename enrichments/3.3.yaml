@@ -157,6 +157,43 @@ inserts:
       **About 9.4**, nearly three orders of magnitude better from one change to the block. The identity path gives the gradient a route that
       bypasses every transformation.
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 4
+    at: end
+    type: exercise
+    title: "Implement clip_grad_norm_"
+    prompt: |
+      Given a list of gradient arrays, compute their **total** norm (as if they were one long vector). If it exceeds `max_norm`, scale every
+      array by `max_norm / total`. Return the clipped list and the total norm before clipping.
+    starter: |
+      import numpy as np
+
+      def clip_grad_norm(grads, max_norm):
+          total = ___
+          if total > max_norm:
+              grads = ___
+          return grads, total
+    check: |
+      g = [np.array([3.0, 0.0]), np.array([[0.0], [4.0]])]
+      clipped, total = clip_grad_norm(g, 1.0)
+      assert np.isclose(total, 5.0), f"The total norm of [3, 0] and [0, 4] is 5, got {total}"
+      assert np.isclose(np.sqrt(sum((c ** 2).sum() for c in clipped)), 1.0), "After clipping the total norm should equal max_norm"
+      assert np.allclose(clipped[0], [0.6, 0.0]) and np.allclose(clipped[1], [[0.0], [0.8]]), "Clipping scales every array by the same factor: the direction is kept"
+      same, t2 = clip_grad_norm([np.array([0.3, 0.4])], 1.0)
+      assert np.allclose(same[0], [0.3, 0.4]) and np.isclose(t2, 0.5), "Below the threshold, nothing changes"
+    solution: |
+      import numpy as np
+
+      def clip_grad_norm(grads, max_norm):
+          total = np.sqrt(sum((g ** 2).sum() for g in grads))
+          if total > max_norm:
+              grads = [g * (max_norm / total) for g in grads]
+          return grads, total
+    hints:
+      - "Square every element of every array, add them all up, take the square root."
+      - "Scale each array by the same factor `max_norm / total`."
+    success: "One factor for all the gradients: the step keeps its direction and only its length is capped."
+
 answers:
   "2-1":
     - |

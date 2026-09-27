@@ -39,6 +39,16 @@ tutor:
   reasoning_effort: low      # none | low | medium | high  (hidden reasoning; higher = slower, more careful)
   endpoint: "https://deep-learning-lab-tutor.solomonpromise51.workers.dev"
 
+# Python in the browser (Pyodide, in a Web Worker). Code cells of these lessons get Run and Edit
+# buttons and share one namespace per lesson, like a notebook. Cells matching a `skip` pattern (PyTorch,
+# installs) keep only "Open in Colab": PyTorch does not run in the browser. Code exercises
+# (`type: exercise` in an enrichment file) work in every lesson.
+run_in_browser:
+  lessons: ["1.1", "1.2"]
+  skip: ['\btorch\b', 'pip install', '^\s*!']
+  # ...unless the cell guards the import, e.g. `try: import torch … except ImportError:`
+  allow: ['except ImportError']
+
 # Words used in the original notebooks → words used on the platform.
 # Applied to prose and code comments (never to executable code).
 terminology:

@@ -165,6 +165,42 @@ inserts:
 
       If the first batch satisfies this, most of the bugs of Lesson 2.1 are already impossible.
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 6
+    at: end
+    type: exercise
+    title: "Predict the DataLoader's batches"
+    prompt: |
+      Write `batch_sizes(n, batch_size, drop_last)` returning the list of batch sizes a `DataLoader` produces for `n` examples.
+    starter: |
+      def batch_sizes(n, batch_size, drop_last=False):
+          sizes = []
+          ___
+          return sizes
+
+      print(len(batch_sizes(31647, 256)), batch_sizes(31647, 256)[-1])
+    check: |
+      assert batch_sizes(10, 4) == [4, 4, 2], f"10 examples, batch 4: expected [4, 4, 2], got {batch_sizes(10, 4)}"
+      assert batch_sizes(10, 4, drop_last=True) == [4, 4], "drop_last=True discards the short final batch"
+      b = batch_sizes(31647, 256)
+      assert len(b) == 124 and b[-1] == 159, f"The lesson's loader has 124 batches, the last one 159 rows; got {len(b)} and {b[-1] if b else None}"
+      assert batch_sizes(512, 256) == [256, 256], "When n divides evenly there is no short batch"
+    solution: |
+      def batch_sizes(n, batch_size, drop_last=False):
+          sizes = []
+          for start in range(0, n, batch_size):
+              size = min(batch_size, n - start)
+              if size < batch_size and drop_last:
+                  break
+              sizes.append(size)
+          return sizes
+
+      print(len(batch_sizes(31647, 256)), batch_sizes(31647, 256)[-1])
+    hints:
+      - "Walk `start` from 0 to `n` in steps of `batch_size`; each batch holds `min(batch_size, n - start)` rows."
+      - "With `drop_last`, stop when a batch would be shorter than `batch_size`."
+    success: "Which is why validation loaders keep `drop_last=False`: otherwise up to `batch_size − 1` rows are never scored."
+
 answers:
   "1-1":
     - |

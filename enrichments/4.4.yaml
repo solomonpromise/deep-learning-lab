@@ -222,6 +222,47 @@ inserts:
           answer: 1
           reveal: "0.8163 against 0.8160. They rank customers similarly (Spearman 0.87), so the ensemble buys nothing worth shipping two models for."
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 5
+    at: end
+    type: exercise
+    title: "Summarise a paired comparison"
+    prompt: |
+      The lists hold test AUC for ten splits, both models on identical rows. Return the mean and standard deviation (with `ddof=1`) of the
+      **split-by-split** difference `b − a`, and the number of splits where `b` wins.
+    starter: |
+      import numpy as np
+
+      network  = np.array([0.7776, 0.8098, 0.7902, 0.7811, 0.8040, 0.7964, 0.7757, 0.8120, 0.8055, 0.8037])
+      boosting = network + np.array([0.0127, 0.0076, 0.0073, 0.0141, 0.0076, 0.0017, 0.0020, 0.0135, 0.0026, 0.0089])
+
+      def paired_summary(a, b):
+          d = ___
+          return d.mean(), ___, int(___)
+
+      print(paired_summary(network, boosting))
+    check: |
+      mean, sd, wins = paired_summary(network, boosting)
+      assert np.isclose(mean, 0.0078, atol=5e-5), f"Mean paired difference should be ≈ +0.0078, got {mean:.4f}"
+      assert np.isclose(sd, 0.0047, atol=5e-5), f"Its standard deviation (ddof=1) should be ≈ 0.0047, got {sd:.4f}: did you use ddof=1?"
+      assert wins == 10, f"Boosting wins all ten splits; got {wins}"
+      assert np.std(network, ddof=1) > 2 * sd, "Sanity: each model's own spread is far larger than the spread of the difference"
+    solution: |
+      import numpy as np
+
+      network  = np.array([0.7776, 0.8098, 0.7902, 0.7811, 0.8040, 0.7964, 0.7757, 0.8120, 0.8055, 0.8037])
+      boosting = network + np.array([0.0127, 0.0076, 0.0073, 0.0141, 0.0076, 0.0017, 0.0020, 0.0135, 0.0026, 0.0089])
+
+      def paired_summary(a, b):
+          d = b - a
+          return d.mean(), d.std(ddof=1), int((d > 0).sum())
+
+      print(paired_summary(network, boosting))
+    hints:
+      - "Subtract split by split: `b - a`."
+      - "`d.std(ddof=1)` is the sample standard deviation; `(d > 0).sum()` counts the wins."
+    success: "+0.0078 ± 0.0047 and 10 of 10: small, consistent and real, although each model alone wobbles by 0.013."
+
 answers:
   "1-1":
     - |

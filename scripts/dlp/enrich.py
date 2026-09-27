@@ -85,6 +85,12 @@ class Enricher:
         if extras["quiz"]:
             for n, q in enumerate(extras["quiz"]["questions"], 1):
                 settle(q, f"q:{lesson.id}:{n}")
+        n_ex = 0
+        for s in lesson.sections:
+            for b in s.blocks:
+                if b["kind"] == "exercise":
+                    n_ex += 1
+                    b["id"] = f"x:{lesson.id}:{n_ex}"
         k = 0
         for s in lesson.sections:
             for b in s.blocks:
@@ -220,6 +226,15 @@ class Enricher:
             return {"kind": "questions", "qtype": item.get("qtype", "check"),
                     "label": item.get("label", "Check your understanding"), "intro_html": self.md(item.get("intro")) if item.get("intro") else "",
                     "items": items, "id": item.get("id", ""), "src": item.get("label", "")}
+        if t == "exercise":
+            # a small coding task checked in the browser: starter code with blanks, hidden checks (asserts),
+            # optional hints and a model solution
+            hints = item.get("hints") or []
+            return {"kind": "exercise", "title": item.get("title", "Code exercise"), "prompt_html": self.md(item.get("prompt")),
+                    "spec": {"starter": item["starter"].rstrip() + "\n", "check": item["check"], "solution": item.get("solution", ""),
+                             "hints": hints, "hints_html": [self.inline(h) for h in hints],
+                             "success": self.inline(item["success"]) if item.get("success") else ""},
+                    "src": item.get("title", "")}
         if t == "html":
             return {"kind": "raw", "html": item.get("html", ""), "src": ""}
         raise EnrichmentError(f"unknown insert type {t!r}")

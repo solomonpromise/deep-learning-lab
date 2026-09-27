@@ -125,6 +125,43 @@ inserts:
       A small network trains ten times in your browser on the same data. Guess the gap between the best and worst run first, then compare
       "Seed only" with "Split only".
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 5
+    at: end
+    type: exercise
+    title: "A settings fingerprint"
+    prompt: |
+      Write `settings_hash` as §5 describes: ignore the keys that do not change the result, serialise with sorted keys, hash with SHA-256
+      and keep the first 12 characters.
+    starter: |
+      import hashlib, json
+
+      IGNORE = {"name", "resume", "stop_after", "checkpoint_every"}
+
+      def settings_hash(settings):
+          kept = ___
+          text = json.dumps(kept, sort_keys=___)
+          return hashlib.sha256(text.encode()).hexdigest()[:12]
+    check: |
+      a = {"name": "baseline", "lr": 0.001, "seed": 42, "hidden": [64, 32]}
+      b = {"hidden": [64, 32], "seed": 42, "lr": 0.001, "name": "renamed", "resume": True}
+      assert len(settings_hash(a)) == 12, "Keep the first 12 hex characters"
+      assert settings_hash(a) == settings_hash(b), "Key order, the run name and resume must not change the fingerprint"
+      assert settings_hash(a) != settings_hash({**a, "lr": 0.0003}), "Changing the learning rate must change the fingerprint"
+    solution: |
+      import hashlib, json
+
+      IGNORE = {"name", "resume", "stop_after", "checkpoint_every"}
+
+      def settings_hash(settings):
+          kept = {k: v for k, v in settings.items() if k not in IGNORE}
+          text = json.dumps(kept, sort_keys=True)
+          return hashlib.sha256(text.encode()).hexdigest()[:12]
+    hints:
+      - "A dictionary comprehension that skips the keys in `IGNORE`."
+      - "`sort_keys=True` makes the text, and so the hash, independent of key order."
+    success: "Same computation, same fingerprint; different computation, different fingerprint."
+
 answers:
   "1-1":
     - |

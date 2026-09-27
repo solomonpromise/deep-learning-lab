@@ -369,6 +369,47 @@ inserts:
       Learned:  what I now believe, and what I'd try next
       ```
 
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 4
+    at: end
+    type: exercise
+    title: "Write the hand-made features yourself"
+    prompt: |
+      Complete `aligned_features` so it returns the radius $r$, $\sin\alpha$ and $\cos\alpha$ for each point, exactly as §4 defines
+      them. Replace every `___`, then press **Check my code**.
+    starter: |
+      import numpy as np
+
+      def aligned_features(X, revolutions=2.5):
+          """(r, sin α, cos α) for each row of X, an (n, 2) array of points."""
+          x1, x2 = X[:, 0], X[:, 1]
+          r = ___                                    # distance from the centre
+          theta = ___                                # angle around the centre (use np.arctan2)
+          alpha = theta - r * revolutions * 2 * np.pi
+          return np.column_stack([r, np.sin(alpha), np.cos(alpha)])
+    check: |
+      X = np.array([[0.0, 0.5], [-0.3, -0.4], [0.6, 0.8]])
+      F = aligned_features(X)
+      assert F.shape == (3, 3), f"Expected 3 columns for 3 points, got shape {F.shape}"
+      assert np.allclose(F[:, 0], [0.5, 0.5, 1.0]), "Column 0 should be the radius, sqrt(x1² + x2²)"
+      theta = np.arctan2(X[:, 1], X[:, 0])
+      alpha = theta - F[:, 0] * 2.5 * 2 * np.pi
+      assert np.allclose(F[:, 1], np.sin(alpha)) and np.allclose(F[:, 2], np.cos(alpha)), "The angle is off: np.arctan2 takes x2 first, then x1"
+    solution: |
+      import numpy as np
+
+      def aligned_features(X, revolutions=2.5):
+          """(r, sin α, cos α) for each row of X, an (n, 2) array of points."""
+          x1, x2 = X[:, 0], X[:, 1]
+          r = np.sqrt(x1 ** 2 + x2 ** 2)
+          theta = np.arctan2(x2, x1)
+          alpha = theta - r * revolutions * 2 * np.pi
+          return np.column_stack([r, np.sin(alpha), np.cos(alpha)])
+    hints:
+      - "The radius is the ordinary distance from $(0, 0)$: `np.sqrt(x1**2 + x2**2)`."
+      - "`np.arctan2(y, x)` takes the vertical coordinate first. Here that is `x2`."
+    success: "That is the whole of §4's domain knowledge in three lines. Now imagine writing the equivalent for a photo."
+
 answers:
   "1-1":
     - |
