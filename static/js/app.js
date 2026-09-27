@@ -105,6 +105,7 @@
   });
   paintProgress();
 
+  window.DLP.confetti = function (anchor) { confetti(anchor); };
   function confetti(anchor) {
     var r = anchor.getBoundingClientRect();
     var colors = ['#2a78d6', '#eb6834', '#1baf7a', '#6a55e0', '#d99400'];

@@ -151,6 +151,10 @@ class Builder:
                   + (f", {len(lesson.image_prompts)} image prompt(s) hidden" if lesson.image_prompts else "")
                   + f"{', enriched' if data else ''})")
 
+        # ---- module challenges (enrichments/module-N.challenge.yaml)
+        challenges = {m["number"]: self.enricher.module_challenge(m["number"], load_enrichment(ENRICH / f"module-{m['number']}.challenge.yaml"))
+                      for m in self.cfg["modules"]}
+
         # ---- navigation model
         nav = []
         for i, mcfg in enumerate(self.cfg["modules"]):
@@ -162,6 +166,7 @@ class Builder:
                 "lessons": [{"id": l.id, "title": l.title, "url": f"module-{n}/{l.slug}.html",
                              "minutes": extras[l.id]["minutes"], "sections": len(l.sections)} for l in mls],
                 "minutes": sum(extras[l.id]["minutes"] for l in mls),
+                "challenge": challenges.get(n) if mls else None,
             })
         flat = [le for m in nav for le in m["lessons"]]
         stats = {
@@ -193,6 +198,8 @@ class Builder:
                    entries=sorted(self.glossary.entries, key=lambda e: e["term"].lower()), **common)
         self._page("guide.html", "guide.html", root="", page="guide", **common)
         self._page("review.html", "review.html", root="", page="review", **common)
+        self._page("progress.html", "progress.html", root="", page="progress", **common)
+        self._page("certificate.html", "certificate.html", root="", page="certificate", **common)
         search_docs = []
         for m in nav:
             if not m["available"]:
@@ -246,7 +253,9 @@ class Builder:
         # the tutor's map of the whole course, so it can answer about lessons other than the open one
         by_id = {l.id: l for l in lessons}
         course_map = {"modules": [{
-            "number": m["number"], "title": m["title"], "available": m["available"],
+            "number": m["number"], "title": m["title"], "available": m["available"], "color": m["color"], "url": m["url"],
+            "challenge": {"id": m["challenge"]["id"], "title": m["challenge"]["title"], "n": len(m["challenge"]["questions"]),
+                          "pass_mark": m["challenge"]["pass_mark"]} if m.get("challenge") else None,
             "lessons": [{
                 "id": le["id"], "title": le["title"], "url": le["url"],
                 "summary": strip(extras[le["id"]]["summary_html"]) or strip(by_id[le["id"]].preamble.get("goal_html")),

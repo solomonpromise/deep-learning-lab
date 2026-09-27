@@ -100,6 +100,20 @@ class Enricher:
                         settle(q, f"q:{lesson.id}:x{k}-{n}")
         return extras
 
+    # ------------------------------------------------------------ module challenge
+    def module_challenge(self, number: int, data: dict) -> dict | None:
+        """Scenario questions shown on a module's overview page (enrichments/module-N.challenge.yaml)."""
+        if not data or not data.get("questions"):
+            return None
+        qs = []
+        for n, q in enumerate(data["questions"], 1):
+            qid = f"m:{number}:{n}"
+            options, answer = shuffled(q["options"], int(q["answer"]), qid, q.get("keep_order"))
+            qs.append({"id": qid, "q_html": self.md(q["q"]), "options": [self.inline(o) for o in options],
+                       "answer": answer, "why_html": self.md(q.get("why"))})
+        return {"kind": "mchallenge", "id": f"module-{number}", "title": data.get("title", f"Module {number} challenge"),
+                "pass_mark": float(data.get("pass_mark", 0.75)), "questions": qs}
+
     # ------------------------------------------------------------ checkpoints
     def checkpoints(self, lesson: Lesson, data: dict) -> list[dict]:
         """Add a checkpoint to the end of each section named in ``enrichments/N.M.checkpoints.yaml``.

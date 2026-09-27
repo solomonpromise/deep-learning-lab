@@ -89,6 +89,7 @@
       </div>
       {% endfor %}
       <div class="side-foot">
+        <a href="{{ root }}progress.html"{% if page == 'progress' %} class="is-active"{% endif %}><svg class="ic"><use href="#i-chart"/></svg> My progress</a>
         <a href="{{ root }}review.html"{% if page == 'review' %} class="is-active"{% endif %}><svg class="ic"><use href="#i-cards"/></svg> Daily review <span class="due-badge inline" data-due-badge hidden></span></a>
         <a href="{{ root }}glossary.html"><svg class="ic"><use href="#i-book"/></svg> Glossary</a>
         <a href="{{ root }}guide.html"><svg class="ic"><use href="#i-help"/></svg> How to use this platform</a>
@@ -131,6 +132,7 @@
 {% block scripts %}{% endblock %}
 <script defer src="{{ root }}static/js/record.js?v={{ v }}"></script>
 <script defer src="{{ root }}static/js/app.js?v={{ v }}"></script>
+<script defer src="{{ root }}static/js/progress.js?v={{ v }}"></script>
 <script defer src="{{ root }}static/js/tutor.js?v={{ v }}"></script>
 {% block late_scripts %}{% endblock %}
 </body>

@@ -1,0 +1,68 @@
+# Module 3 challenge (see module-1.challenge.yaml for the format).
+title: "Module 3 challenge: why a network learns well, badly, or not at all"
+pass_mark: 0.75
+questions:
+  - q: "Two optimizers are compared at one shared learning rate of 1e-3: Adam reaches AUC 0.79, SGD 0.65. A report concludes \"Adam is better\". What is missing?"
+    options:
+      - "Nothing, the result is clear"
+      - "Each optimizer tuned at its own learning rate; SGD's best rate here is around 0.1–0.5, and the gap nearly disappears"
+      - "A larger batch size"
+      - "A different dataset"
+    answer: 1
+    why: "An optimizer cannot be judged apart from its hyperparameters (Lesson 3.1 §5). Give every method a fair chance."
+  - q: "Switching from Adam to AdamW with weight_decay=0 changed nothing. A teammate says AdamW is broken. What do you explain?"
+    options:
+      - "AdamW needs a larger learning rate"
+      - "With weight_decay = 0, AdamW is exactly Adam; decoupled decay only acts when weight_decay > 0"
+      - "AdamW only works with schedules"
+      - "They should use SGD instead"
+    answer: 1
+    why: "Lesson 3.1 §4."
+  - q: "A run's loss sits flat at 0.36 (on an 11.7%-positive dataset) and validation AUC is 0.50. The learning rate is 0.5. What happened, and what do you do?"
+    options:
+      - "Converged well; stop training"
+      - "Collapse to the base rate (dead ReLUs from huge updates); restart with a much smaller learning rate"
+      - "Overfitting; add dropout"
+      - "Undertrained; train longer at the same rate"
+    answer: 1
+    why: "A flat loss near the base-rate loss with AUC at chance is collapse, not convergence (Lessons 3.1 §6, 3.3 §5, 3.4 Case 1)."
+  - q: "On 500 training rows a (256, 128) MLP reaches training AUC 1.0 while validation loss triples after epoch 5. What is the cheapest first intervention to try?"
+    options:
+      - "Bigger model"
+      - "Early stopping that restores the best epoch (and/or a smaller model)"
+      - "Higher learning rate"
+      - "Remove the validation set"
+    answer: 1
+    why: "Capacity reduction and early stopping are cheap and, in Lesson 3.2, early stopping removed most differences between regularisers."
+  - q: "Config A scores validation AUC 0.824, config B 0.818. The same config varies by SD 0.015 across splits. A teammate wants to ship A because it is higher. Your response?"
+    options:
+      - "Agree: higher is better"
+      - "The 0.006 gap is inside the noise floor; compare on more splits or seeds (ideally paired) before claiming a difference"
+      - "Ship B instead"
+      - "Average the two configs"
+    answer: 1
+    why: "Measure the noise floor before tuning (Lesson 3.2 §9); pair the comparison (Lesson 4.4)."
+  - q: "A 16-layer plain sigmoid MLP barely reduces its loss. The per-layer probe shows first-layer gradients around 1e-10 and last-layer gradients around 1. Which change targets the cause?"
+    options:
+      - "Raise the learning rate 100×"
+      - "ReLU plus normalisation or residual connections (or fewer layers)"
+      - "Add dropout"
+      - "Use a larger batch"
+    answer: 1
+    why: "Vanishing gradients: sigmoid slopes (≤ 0.25) multiply through depth. Structural fixes address gradient flow (Lesson 3.3 §3, §6, §7)."
+  - q: "Your model uses dropout. Validation AUC printed twice for the same checkpoint: 0.751, then 0.709. What is the fix?"
+    options:
+      - "Average the two numbers"
+      - "Call model.eval() (and torch.no_grad()) before evaluating"
+      - "Lower the dropout rate"
+      - "Use a larger validation set"
+    answer: 1
+    why: "Deterministic evaluation must give identical numbers; dropout is still active in training mode (Lesson 3.2 §7, 3.4 case)."
+  - q: "A new feature raises validation AUC from 0.78 to 0.93; every training diagnostic looks healthy. Which protocol check should now fire?"
+    options:
+      - "None: healthy diagnostics mean it's fine"
+      - "Plausibility against a sensible baseline, then ask when the feature exists at prediction time (target leakage)"
+      - "The gradient profile"
+      - "The dead-unit fraction"
+    answer: 1
+    why: "Lesson 3.4 Case 6: `duration` was only known after the call. Good numbers deserve scrutiny too."

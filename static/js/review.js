@@ -114,6 +114,8 @@
     var recent = Object.keys(lessons).sort(function (a, b) { return lessons[b] - lessons[a]; })[0];
     if (recent) $('[data-rv-lesson]').value = recent;
     paintSummary();
-    if (location.hash === '#start' && R.due().length) start('due');
+    var practise = /^#practice=([\d.]+)$/.exec(location.hash);
+    if (practise && $('[data-rv-lesson] option[value="' + practise[1] + '"]')) { $('[data-rv-lesson]').value = practise[1]; start('practice', practise[1]); }
+    else if (location.hash === '#start' && R.due().length) start('due');
   });
 })();

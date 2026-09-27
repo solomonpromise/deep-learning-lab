@@ -278,3 +278,28 @@
   {% endif %}
 </div>
 {% endmacro %}
+
+{# ------------------------------------------------------------------ module challenge (module page) #}
+{% macro mchallenge(b, module) %}
+<section class="mchallenge" id="challenge" data-mchallenge="{{ b.id }}" data-pass="{{ b.pass_mark }}" data-module="{{ module.number }}">
+  <div class="mc-head">
+    <span class="mc-badge" aria-hidden="true"><svg class="ic"><use href="#i-award"/></svg></span>
+    <div>
+      <span class="mc-kicker">Module challenge · {{ b.questions|length }} scenario questions · pass mark {{ (b.pass_mark * 100)|round|int }}%</span>
+      <h2>{{ b.title }}</h2>
+      <p class="muted">Harder than the checkpoints: each question mixes ideas from several lessons. Pass it to earn the Module {{ module.number }} badge, which counts toward your certificate.</p>
+    </div>
+    <span class="mc-status" data-mc-status aria-live="polite"></span>
+  </div>
+  {% for q in b.questions %}
+  <div class="quiz-q" data-quiz-q data-mc-q="{{ q.id }}" data-answer="{{ q.answer }}">
+    <div class="quiz-qtext prose"><span class="quiz-n">{{ loop.index }}</span>{{ q.q_html | safe }}</div>
+    <div class="quiz-options">
+      {% for o in q.options %}<button class="opt" data-opt="{{ loop.index0 }}"><span class="opt-letter">{{ 'ABCDEFG'[loop.index0] }}</span><span>{{ o | safe }}</span></button>{% endfor %}
+    </div>
+    <div class="quiz-why prose" hidden>{{ q.why_html | safe }}</div>
+  </div>
+  {% endfor %}
+  <div class="mc-foot" data-mc-foot hidden></div>
+</section>
+{% endmacro %}
