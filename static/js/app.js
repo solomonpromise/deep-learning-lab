@@ -120,6 +120,16 @@
     }
   }
 
+  /* ------------------------------------------------------------ review badge */
+  function paintDue() {
+    if (!window.DLP.record) return;
+    var n = window.DLP.record.due().length;
+    $$('[data-due-badge]').forEach(function (b) { b.hidden = !n; b.textContent = n > 99 ? '99+' : String(n); });
+    $$('[data-review-link]').forEach(function (a) { a.setAttribute('aria-label', 'Daily review' + (n ? ', ' + n + ' due' : '')); a.title = 'Daily review' + (n ? ': ' + n + ' due' : ''); });
+  }
+  paintDue();
+  document.addEventListener('dlp:record', paintDue);
+
   /* ------------------------------------------------------------ lesson page */
   var lessonEl = $('[data-lesson]');
   if (lessonEl) {

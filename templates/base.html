@@ -51,6 +51,7 @@
   <button class="search-btn" data-search-open aria-label="Search the course">
     <svg class="ic"><use href="#i-search"/></svg><span>Search lessons, terms…</span><kbd>⌘K</kbd>
   </button>
+  <a class="icon-btn review-link" href="{{ root }}review.html" title="Daily review" aria-label="Daily review" data-review-link><svg class="ic"><use href="#i-cards"/></svg><span class="due-badge" data-due-badge hidden></span></a>
   <a class="icon-btn hide-sm" href="{{ root }}glossary.html" title="Glossary" aria-label="Glossary"><svg class="ic"><use href="#i-book"/></svg></a>
   <a class="icon-btn hide-sm" href="{{ root }}guide.html" title="How to use this platform" aria-label="How to use this platform"><svg class="ic"><use href="#i-help"/></svg></a>
   <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
@@ -88,6 +89,7 @@
       </div>
       {% endfor %}
       <div class="side-foot">
+        <a href="{{ root }}review.html"{% if page == 'review' %} class="is-active"{% endif %}><svg class="ic"><use href="#i-cards"/></svg> Daily review <span class="due-badge inline" data-due-badge hidden></span></a>
         <a href="{{ root }}glossary.html"><svg class="ic"><use href="#i-book"/></svg> Glossary</a>
         <a href="{{ root }}guide.html"><svg class="ic"><use href="#i-help"/></svg> How to use this platform</a>
       </div>

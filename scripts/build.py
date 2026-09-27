@@ -192,6 +192,7 @@ class Builder:
         self._page("glossary.html", "glossary.html", root="", page="glossary",
                    entries=sorted(self.glossary.entries, key=lambda e: e["term"].lower()), **common)
         self._page("guide.html", "guide.html", root="", page="guide", **common)
+        self._page("review.html", "review.html", root="", page="review", **common)
         search_docs = []
         for m in nav:
             if not m["available"]:
