@@ -34,7 +34,7 @@ tutor:
   model: qwen/qwen3.8-27b
   model_label: Qwen 3.8 (27B)
   reasoning_effort: low      # none | low | medium | high  (hidden reasoning; higher = slower, more careful)
-  endpoint: ""
+  endpoint: "https://deep-learning-lab-tutor.solomonpromise51.workers.dev"
 
 # Words used in the original notebooks → words used on the platform.
 # Applied to prose and code comments (never to executable code).
