@@ -79,6 +79,26 @@
     gridEl.addEventListener('pointerdown', function (e) { drawing = true; gridEl.setPointerCapture(e.pointerId); paintAt(e); });
     gridEl.addEventListener('pointermove', function (e) { if (drawing) paintAt(e); });
     gridEl.addEventListener('pointerup', function () { drawing = false; });
+    // keyboard drawing: arrow keys move a cursor, Space or Enter inks the pixel under it
+    var cursor = 27;
+    gridEl.tabIndex = 0;
+    gridEl.setAttribute('role', 'application');
+    gridEl.setAttribute('aria-label', 'Drawing grid, 8 by 8 pixels. Arrow keys move, Space or Enter adds ink.');
+    function showCursor(on) { cells.forEach(function (c, j) { c.classList.toggle('kbd-cursor', on && j === cursor); }); }
+    gridEl.addEventListener('focus', function () { showCursor(true); });
+    gridEl.addEventListener('blur', function () { showCursor(false); });
+    gridEl.addEventListener('keydown', function (e) {
+      var r = Math.floor(cursor / 8), c = cursor % 8;
+      if (e.key === 'ArrowLeft') c = Math.max(0, c - 1);
+      else if (e.key === 'ArrowRight') c = Math.min(7, c + 1);
+      else if (e.key === 'ArrowUp') r = Math.max(0, r - 1);
+      else if (e.key === 'ArrowDown') r = Math.min(7, r + 1);
+      else if (e.key === ' ' || e.key === 'Enter') {
+        var box = gridEl.getBoundingClientRect();
+        paintAt({ clientX: box.left + (c + 0.5) * box.width / 8, clientY: box.top + (r + 0.5) * box.height / 8 });
+      } else return;
+      e.preventDefault(); cursor = r * 8 + c; showCursor(true);
+    });
 
     function paint() {
       P = L.palette();

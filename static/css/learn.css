@@ -56,3 +56,14 @@
 
 /* ------------------------------------------------------------------ quiz retry */
 .quiz-foot { padding: 4px 20px 16px; }
+
+/* ------------------------------------------------------------------ lab accessibility */
+.px-grid div.kbd-cursor { outline: 2px solid var(--accent); outline-offset: -2px; }
+.px-grid:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.widget tr[role="button"]:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ------------------------------------------------------------------ lesson summary on phones */
+.lesson-summary.is-clamped { display: -webkit-box; -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.lesson-summary.is-clamped > * { display: inline; }
+.summary-more { margin: -4px 0 12px; padding: 0; border: 0; background: none; color: var(--accent-ink); font: inherit; font-weight: 600; font-size: .92rem; cursor: pointer; }

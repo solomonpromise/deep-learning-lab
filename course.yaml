@@ -23,6 +23,9 @@ course:
   # to show "Open in Colab" buttons on every lesson.
   github_repo: "solomonpromise/deep-learning-lab"
   github_branch: main
+  # Public address of the published site. Used for link previews (the image and title shown
+  # when a lesson link is shared) and for absolute links in them.
+  site_url: "https://solomonpromise.github.io/deep-learning-lab/"
 
 # AI tutor (Qwen on Groq). Never put an API key in this file — the site is public.
 #  - endpoint: URL of the tutor proxy (tutor-proxy/, e.g. a Cloudflare Worker) that holds the key.

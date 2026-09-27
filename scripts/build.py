@@ -36,6 +36,7 @@ from dlp.enrich import Enricher, load as load_enrichment  # noqa: E402
 from dlp.glossary import Glossary  # noqa: E402
 from dlp.notebook import Lesson, LessonParser  # noqa: E402
 from dlp.render import AssetStore, MarkdownRenderer  # noqa: E402
+from dlp.social import render_card  # noqa: E402
 from dlp.text import Terminology, inline_md  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -170,9 +171,13 @@ class Builder:
             "labs": sum(len(e["widgets"]) for e in extras.values()),
             "questions": sum(1 for l in lessons for s in l.sections for b in s.blocks if b["kind"] == "questions"),
         }
+        stats["practice"] = sum(len(c["questions"]) for e in extras.values() for c in e["checkpoints"]) + \
+            sum(len((e["quiz"] or {}).get("questions", [])) for e in extras.values())
+        self._social_cards(nav, lessons, extras, stats)
         tutor = dict(self.cfg.get("tutor") or {})
         tutor["course"] = self.cfg["course"]["title"]
         common = {"course": self.cfg["course"], "nav": nav, "stats": stats,
+                  "site_url": (self.cfg["course"].get("site_url") or "").rstrip("/") + "/",
                   "glossary_js": json.dumps(self.glossary.as_js()),
                   "tutor_js": json.dumps(tutor).replace("</", "<\\/")}
 
@@ -191,7 +196,7 @@ class Builder:
                 continue
             mls = [l for l in lessons if l.module == m["number"]]
             self._page("module.html", f"module-{m['number']}/index.html", root="../", page="module",
-                       module=m, lessons=mls, reading=lambda le: extras[le.id]["minutes"], extras=extras, **common)
+                       og_image=f"assets/og/module-{m['number']}.png", module=m, lessons=mls, reading=lambda le: extras[le.id]["minutes"], extras=extras, **common)
             for l in mls:
                 idx = next(i for i, le in enumerate(flat) if le["id"] == l.id)
                 prev_l = flat[idx - 1] if idx > 0 else None
@@ -212,7 +217,10 @@ class Builder:
                     "summary": strip(extras[l.id]["summary_html"]) or strip(l.preamble.get("goal_html")),
                     "objectives": [strip(o) for o in l.preamble["objectives"]],
                 }, ensure_ascii=False).replace("</", "<\\/")
+                summary = strip(extras[l.id]["summary_html"]) or strip(l.preamble.get("goal_html"))
+                meta_desc = summary if len(summary) <= 200 else summary[:197].rsplit(" ", 1)[0] + "…"
                 self._page("lesson.html", url, root="../", page="lesson", module=m, lesson=l,
+                           og_image=f"assets/og/lesson-{l.id}.png", meta_desc=meta_desc,
                            ex=extras[l.id], prev_l=prev_l, next_l=next_l, minutes=extras[l.id]["minutes"],
                            notebook_url=f"../notebooks/{nb_name}", colab_url=colab,
                            widgets=sorted(extras[l.id]["widgets"]), gloss=True,
@@ -289,12 +297,40 @@ class Builder:
         return 0
 
     def _page(self, template: str, out: str, **ctx) -> None:
+        ctx.setdefault("og_image", "assets/og/home.png")
+        ctx["page_path"] = "" if out == "index.html" else out
         html = self.env.get_template(template).render(**ctx)
         if ctx.get("gloss"):
             html = self.glossary.annotate(html, ctx["gloss_label"], ctx["gloss_url"])
         target = self.dist / out
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(html, encoding="utf-8")
+
+    def _social_cards(self, nav: list, lessons: list, extras: dict, stats: dict) -> None:
+        """The images shown when a page is shared (Open Graph / Twitter cards)."""
+        c = self.cfg["course"]
+        site = (c.get("site_url") or "").replace("https://", "").rstrip("/")
+        og = self.dist / "assets" / "og"
+        common = dict(brand=c["short_title"], course=c["title"], site=site)
+        render_card(og / "home.png", kicker=f"{c['hours']}-hour course · {c['hands_on']} hands-on", title=c["title"],
+                    subtitle=c["tagline"], chips=[f"{stats['lessons']} lessons", f"{stats['labs']} interactive labs",
+                                                  f"{stats['practice']} practice questions"], **common)
+        by_id = {l.id: l for l in lessons}
+        for m in nav:
+            if not m["available"]:
+                continue
+            render_card(og / f"module-{m['number']}.png", kicker=f"Module {m['number']}", title=m["title"],
+                        subtitle=f"“{m['question']}”" if m.get("question") else "", accent=m["color"],
+                        chips=[f"{len(m['lessons'])} lessons", f"~{m['minutes'] / 60:.1f} hours"], **common)
+            for le in m["lessons"]:
+                ex = extras[le["id"]]
+                chips = [f"~{ex['minutes']} min"]
+                if ex["widgets"]:
+                    chips.append(f"{len(ex['widgets'])} interactive lab{'s' if len(ex['widgets']) != 1 else ''}")
+                if ex["checkpoints"]:
+                    chips.append(f"{len(ex['checkpoints'])} checkpoints")
+                render_card(og / f"lesson-{le['id']}.png", kicker=f"Module {m['number']} · Lesson {le['id']}",
+                            title=by_id[le["id"]].title, accent=m["color"], chips=chips, **common)
 
     # ------------------------------------------------------------------ authoring helper
     def list_defs(self, lid: str) -> None:

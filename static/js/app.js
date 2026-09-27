@@ -181,6 +181,23 @@
     window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
     onScroll();
 
+    // on phones the lesson summary fills the first screen: show four lines and a "Read more"
+    var summary = $('.lesson-summary');
+    if (summary && window.matchMedia && window.matchMedia('(max-width: 640px)').matches) {
+      summary.classList.add('is-clamped');
+      if (summary.scrollHeight > summary.clientHeight + 4) {
+        var more = document.createElement('button');
+        more.type = 'button'; more.className = 'summary-more'; more.textContent = 'Read more';
+        more.setAttribute('aria-expanded', 'false');
+        more.addEventListener('click', function () {
+          var open = summary.classList.toggle('is-clamped') === false;
+          more.textContent = open ? 'Show less' : 'Read more';
+          more.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        summary.insertAdjacentElement('afterend', more);
+      } else summary.classList.remove('is-clamped');
+    }
+
     // keyboard: alt + arrows for prev/next
     document.addEventListener('keydown', function (e) {
       if (!e.altKey) return;
@@ -190,11 +207,37 @@
   }
 
   /* ------------------------------------------------------------ reveal on scroll */
+  // Cards fade in as you scroll to them. After a jump (a table-of-contents link, a search result,
+  // a link with #section, Home/End), everything around the landing point appears at once instead,
+  // so the page is never blank while it catches up.
   if ('IntersectionObserver' in window) {
     var ro = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('is-in'); ro.unobserve(en.target); } });
     }, { rootMargin: '0px 0px -8% 0px' });
     $$('.reveal').forEach(function (el) { ro.observe(el); });
+    var revealAround = function () {
+      var h = window.innerHeight;
+      $$('.reveal:not(.is-in)').forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.bottom > -h && r.top < h * 2) { el.classList.add('no-anim', 'is-in'); ro.unobserve(el); }
+      });
+    };
+    var lastY = window.scrollY;
+    window.addEventListener('scroll', function () {
+      if (Math.abs(window.scrollY - lastY) > window.innerHeight * 0.9) revealAround();
+      lastY = window.scrollY;
+    }, { passive: true });
+    window.addEventListener('hashchange', function () { setTimeout(revealAround, 0); });
+    // in-page links scroll smoothly; reveal the landing area as soon as the scroll settles
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a) return;
+      var done = function () { window.removeEventListener('scrollend', done); revealAround(); };
+      window.addEventListener('scrollend', done);
+      setTimeout(done, 900);
+    });
+    if (location.hash) { revealAround(); window.addEventListener('load', revealAround); }
+    window.DLP.revealAround = revealAround;
   } else {
     $$('.reveal').forEach(function (el) { el.classList.add('is-in'); });
   }
@@ -592,6 +635,13 @@
     mount.innerHTML = '';
     try { fn(mount, props, fig); } catch (err) { mount.innerHTML = '<div class="widget-loading">Could not start this interactive.</div>'; console.error(err); }
     renderMath(fig);
+    // assistive tech: the lab is a named group, and each drawing is an image named after the lab
+    var title = $('.widget-title', fig), name = title ? title.textContent.trim() : 'Interactive lab';
+    fig.setAttribute('role', 'group'); fig.setAttribute('aria-label', name);
+    $$('canvas', fig).forEach(function (c, i, all) {
+      if (!c.getAttribute('aria-label')) c.setAttribute('aria-label', name + (all.length > 1 ? ', chart ' + (i + 1) + ' of ' + all.length : ', chart') + '. The controls and numbers beside it describe the same result.');
+      if (!c.getAttribute('role')) c.setAttribute('role', 'img');
+    });
   }
   var widgets = $$('[data-widget]');
   if ('IntersectionObserver' in window) {

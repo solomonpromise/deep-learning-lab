@@ -16,9 +16,13 @@
       P = L.palette();
       var cols = mode === 'ordinal' ? ['job_code'] : CATS.map(function (c) { return 'job_' + c; });
       var t = '<div class="w-panel-title">' + L.icon('database') + ' What the model receives (click a row)</div><div class="table-wrap" style="margin:0"><table><thead><tr><th>job</th>' + cols.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr></thead><tbody>' +
-        CATS.map(function (c, i) { return '<tr data-row="' + i + '" style="cursor:pointer;' + (i === sel ? 'background:var(--accent-soft)' : '') + '"><td><strong>' + c + '</strong></td>' + vec(i).map(function (v) { return '<td style="text-align:center;font-family:var(--mono);' + (v ? 'color:var(--accent-ink);font-weight:700' : 'color:var(--ink-3)') + '">' + v + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+        CATS.map(function (c, i) { return '<tr data-row="' + i + '" tabindex="0" role="button" aria-pressed="' + (i === sel) + '" aria-label="Compare ' + c + ' with every job" style="cursor:pointer;' + (i === sel ? 'background:var(--accent-soft)' : '') + '"><td><strong>' + c + '</strong></td>' + vec(i).map(function (v) { return '<td style="text-align:center;font-family:var(--mono);' + (v ? 'color:var(--accent-ink);font-weight:700' : 'color:var(--ink-3)') + '">' + v + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
       left.innerHTML = t;
-      Array.prototype.forEach.call(left.querySelectorAll('[data-row]'), function (tr) { tr.addEventListener('click', function () { sel = +tr.getAttribute('data-row'); paint(); }); });
+      Array.prototype.forEach.call(left.querySelectorAll('[data-row]'), function (tr) {
+        function pick() { sel = +tr.getAttribute('data-row'); paint(); var again = left.querySelector('[data-row="' + sel + '"]'); if (again) again.focus(); }
+        tr.addEventListener('click', pick);
+        tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+      });
       var mx = mode === 'ordinal' ? 4 : Math.SQRT2;
       var d = '<div class="w-panel-title">' + L.icon('scale') + ' Distance from <em>' + CATS[sel] + '</em> to every job</div>';
       CATS.forEach(function (c, i) {

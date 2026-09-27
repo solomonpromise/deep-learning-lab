@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Module {{ module.number }} · {{ module.title }} — {{ course.short_title }}{% endblock %}
+{% block description %}Module {{ module.number }}: {{ module.question }} {{ module.lessons|length }} lessons: {{ module.lessons|map(attribute='title')|join('; ') }}.{% endblock %}
 {% block main %}
 <div class="module-page" style="--mc: {{ module.color }}">
   <header class="module-hero">

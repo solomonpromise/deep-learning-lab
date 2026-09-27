@@ -177,15 +177,51 @@ docstrings:
 
 ### Widgets available
 
+This table is generated: run `make widgets` after adding or changing a lab.
+
+<!-- widgets:start -->
 | Name | What it does | Used in |
 |---|---|---|
-| `pipeline-flow` | Animated classical-ML vs deep-learning pipeline | 1.1 |
-| `spiral-lab` | Trains logistic regression / engineered features / a neural network live on the two spirals; shows hidden units | 1.1 |
-| `spiral-unroll` | Morphs the spiral into (radius, aligned angle) space | 1.1 |
-| `results-bars` | Animated comparison bars for recorded results (`props.metrics`) | 1.1 |
-| `dl-or-not` | Gradient boosting vs neural network rule-of-thumb helper | 1.1 |
-| `scale-contours` | Gradient descent on loss contours; feature-scale and learning-rate sliders | 1.1 |
-| `pixel-lab` | 8×8 digits as 64 numbers, one-pixel shifts, the "ink" feature | 1.1 |
+| `broadcast-bug` | predictions (N,) against targets (N,1) silently become an N×N comparison | 2.1 |
+| `bug-lab` | the three silent bugs of Lesson 1.3, reproduced live on the spirals | 1.3 |
+| `contiguity-viz` | why view() sometimes refuses and reshape() copies | 2.1 |
+| `curve-doctor` | diagnose a training run from its loss curves alone | 1.3, 3.1, 3.2, 3.4 |
+| `dataloader-viz` | how a Dataset's examples become batches | 2.2 |
+| `dl-or-not` | a rule-of-thumb decision helper: gradient boosting vs a neural network | 1.1 |
+| `dropout-lab` | one hidden layer of 12 units feeding one output, for one fixed input row | 3.2 |
+| `early-stopping` | keep the best weights, not the last | 2.3 |
+| `gitignore-lab` | edit the rules and watch which files of the Lesson 2.4 project git would keep | 2.4 |
+| `gradient-flow` | Lesson 3.3's per-layer gradient probe, computed live | 3.3 |
+| `logit-stability` | why the loss takes logits, not probabilities | 2.3 |
+| `logit-temperature` | what loss, ROC-AUC and accuracy can each see | 3.2 |
+| `loss-contract` | what shapes and dtypes each loss function expects, and what happens if you get it wrong | 2.1 |
+| `loss-vs-accuracy` | why we train on a smooth loss, not on accuracy | 1.2 |
+| `lr-explorer` | the same gradient, three completely different outcomes | 1.2 |
+| `lr-schedules` | the learning rate each epoch trains with, for four common schedules, exactly as PyTorch computes them when scheduler.step() is called once per epoch: constant, StepLR, CosineAnnealingLR, and linear warmup followed by cosine (LinearLR + CosineAnnealingLR chained with SequentialLR) | 3.1 |
+| `memory-planner` | the bytes a run needs before it starts, from the parameter count, the number format, the optimizer, the trainable share and the batch | 4.3 |
+| `minibatch-paths` | full-batch vs mini-batch gradient descent on the same loss surface | 2.2 |
+| `module-registry` | what nn.Module can see, and what the optimizer therefore updates | 2.3 |
+| `momentum-valley` | Lesson 3.1's stretched bowl f(x, y) = 0.05·x² + y², with plain SGD and SGD + momentum run side by side at the same learning rate (PyTorch's rule: v ← β·v + g, p ← p − lr·v) | 3.1 |
+| `neuron-playground` | one neuron: weighted sum + bias, then an activation | 1.2 |
+| `noise-floor` | how far a validation score moves when only the split changes | 3.2 |
+| `notebook-state` | hidden state, reproduced | 2.4 |
+| `onehot-viz` | ordinal codes invent distances; one-hot keeps every category equally far apart | 2.2 |
+| `paired-lab` | why comparing two models on the same splits beats comparing their averages | 4.4 |
+| `param-counter` | parameters and memory of a stack of Linear layers, from their widths alone | 2.1, 2.3, 2.4 |
+| `pipeline-flow` | classical ML vs deep learning pipelines, animated | 1.1 |
+| `pixel-lab` | why raw pixels defeat hand-written features | 1.1 |
+| `project-map` | the bank_marketing_project repository built in Lesson 2.4, file by file | 2.4 |
+| `relu-bends` | why non-linearity is structurally necessary | 1.2 |
+| `results-bars` | animated side-by-side comparison of recorded results | 1.1, 3.1, 3.2, 4.1 |
+| `scale-contours` | why feature scale matters to gradient descent | 1.1 |
+| `slope-probe` | a gradient is a local slope | 1.2 |
+| `spiral-lab` | train three models on the two-spirals problem, live in the browser | 1.1, 1.3 |
+| `spiral-unroll` | animate the change of representation from (x1, x2) to (radius, aligned angle) | 1.1 |
+| `tensor-shapes` | see shapes instead of imagining them | 1.3, 2.1 |
+| `threshold-explorer` | ranking vs classification on an imbalanced problem | 2.3, 4.1 |
+| `tiny-net` | "be the optimiser" on the exact 2-2-1 network of Lesson 1.2 | 1.2 |
+| `training-loop` | the six canonical lines, executed one at a time on a model you can watch | 1.3 |
+<!-- widgets:end -->
 
 **Adding a widget:** create `static/js/widgets/<name>.js` that registers
 `window.DLP.widgets['<name>'] = function (mountEl, props) { … }`. Use the helpers in `static/js/lib/core.js`

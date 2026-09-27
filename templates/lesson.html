@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from "_blocks.html" import block, code_cell, quiz %}
 {% block title %}Lesson {{ lesson.id }} · {{ lesson.title }} — {{ course.short_title }}{% endblock %}
-{% block description %}Module {{ module.number }}: {{ module.title }} — Lesson {{ lesson.id }}: {{ lesson.title }}{% endblock %}
+{% block description %}{{ meta_desc or ("Module " ~ module.number ~ ": " ~ module.title ~ " — Lesson " ~ lesson.id ~ ": " ~ lesson.title) }}{% endblock %}
 {% block scripts %}
 <script defer src="{{ root }}static/js/lib/core.js?v={{ v }}"></script>
 {% for w in widgets %}<script defer src="{{ root }}static/js/widgets/{{ w }}.js?v={{ v }}"></script>

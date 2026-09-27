@@ -150,7 +150,9 @@
       }
       var gC = grid(st.m, st.n, function (c, r, k) {
         c.style.background = 'var(--violet)'; c.style.cursor = 'pointer';
+        c.tabIndex = 0; c.setAttribute('aria-label', 'Output row ' + (r + 1) + ', column ' + (k + 1) + ': row ' + (r + 1) + ' of A times column ' + (k + 1) + ' of B');
         c.addEventListener('mouseenter', function () { hl(r, k); });
+        c.addEventListener('focus', function () { hl(r, k); });
         c.addEventListener('click', function () { hl(r, k); });
       });
       stage.appendChild(labelled(gC, 'result (' + st.m + ', ' + st.n + ')'));
