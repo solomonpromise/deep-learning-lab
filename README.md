@@ -184,6 +184,8 @@ This table is generated: run `make widgets` after adding or changing a lab.
 |---|---|---|
 | `broadcast-bug` | predictions (N,) against targets (N,1) silently become an N×N comparison | 2.1 |
 | `bug-lab` | the three silent bugs of Lesson 1.3, reproduced live on the spirals | 1.3 |
+| `case-library` | diagnose broken training runs the way Lesson 3.4's protocol orders the checks | 3.4 |
+| `clip-lab` | one step off a cliff, with and without gradient clipping | 3.3 |
 | `contiguity-viz` | why view() sometimes refuses and reshape() copies | 2.1 |
 | `curve-doctor` | diagnose a training run from its loss curves alone | 1.3, 3.1, 3.2, 3.4 |
 | `dataloader-viz` | how a Dataset's examples become batches | 2.2 |
@@ -192,6 +194,7 @@ This table is generated: run `make widgets` after adding or changing a lab.
 | `early-stopping` | keep the best weights, not the last | 2.3 |
 | `gitignore-lab` | edit the rules and watch which files of the Lesson 2.4 project git would keep | 2.4 |
 | `gradient-flow` | Lesson 3.3's per-layer gradient probe, computed live | 3.3 |
+| `leakage-lab` | the score your split reports against the score the model earns in real use | 4.1 |
 | `logit-stability` | why the loss takes logits, not probabilities | 2.3 |
 | `logit-temperature` | what loss, ROC-AUC and accuracy can each see | 3.2 |
 | `loss-contract` | what shapes and dtypes each loss function expects, and what happens if you get it wrong | 2.1 |
@@ -210,10 +213,13 @@ This table is generated: run `make widgets` after adding or changing a lab.
 | `param-counter` | parameters and memory of a stack of Linear layers, from their widths alone | 2.1, 2.3, 2.4 |
 | `pipeline-flow` | classical ML vs deep learning pipelines, animated | 1.1 |
 | `pixel-lab` | why raw pixels defeat hand-written features | 1.1 |
+| `precision-lab` | what fp32, fp16 and bf16 can hold, and why fp16 training needs a loss scaler | 4.3 |
+| `predict-rounds` | commit to a prediction, then see the lesson's real result, one round at a time | 4.4 |
 | `project-map` | the bank_marketing_project repository built in Lesson 2.4, file by file | 2.4 |
 | `relu-bends` | why non-linearity is structurally necessary | 1.2 |
 | `results-bars` | animated side-by-side comparison of recorded results | 1.1, 3.1, 3.2, 4.1 |
 | `scale-contours` | why feature scale matters to gradient descent | 1.1 |
+| `seed-roulette` | train the same small network ten times and watch the score move when nothing that matters changed | 4.2 |
 | `slope-probe` | a gradient is a local slope | 1.2 |
 | `spiral-lab` | train three models on the two-spirals problem, live in the browser | 1.1, 1.3 |
 | `spiral-unroll` | animate the change of representation from (x1, x2) to (radius, aligned angle) | 1.1 |
@@ -221,6 +227,7 @@ This table is generated: run `make widgets` after adding or changing a lab.
 | `threshold-explorer` | ranking vs classification on an imbalanced problem | 2.3, 4.1 |
 | `tiny-net` | "be the optimiser" on the exact 2-2-1 network of Lesson 1.2 | 1.2 |
 | `training-loop` | the six canonical lines, executed one at a time on a model you can watch | 1.3 |
+| `unit-health` | watch every hidden unit of a real network: identical twins from a symmetric start, dead ReLUs from a learning rate that is too large | 3.3 |
 <!-- widgets:end -->
 
 **Adding a widget:** create `static/js/widgets/<name>.js` that registers

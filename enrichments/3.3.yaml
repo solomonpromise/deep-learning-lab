@@ -116,6 +116,47 @@ inserts:
       comes up by more than three orders of magnitude, the same effect this section measures. Then make the network 24 layers deep: the
       plain stack's last/first ratio jumps to about 5×10⁸, while the residual one stays below 100.
 
+  # ------------------------------------------------------------------ added: labs and predictions
+  - section: 2
+    after: "What you do need to recognise are the signatures of a broken start"
+    type: widget
+    name: unit-health
+    title: "Unit health: symmetry and dead units, live"
+    intro: |
+      A real network trains here, and every hidden unit is a tile. Try **All zeros** and **All 0.1** first and count the distinct units.
+      Then go back to **Default** and push the learning rate to 0.5 or 1.0 (that is §5's experiment).
+
+  - section: 4
+    after: "Use clipping as protection against unusually large updates"
+    type: widget
+    name: clip-lab
+    title: "Clip lab: one step off a cliff"
+    intro: |
+      A gentle bowl with a steep cliff. Plain gradient descent reaches the cliff face, meets a huge gradient, and is thrown far past the
+      minimum. `clip_grad_norm_` keeps the direction and caps the length. Move the learning rate and `max_norm`.
+
+  - section: 5
+    after: "Here we will measure whether dead units are the mechanism behind that collapse"
+    type: predict
+    mode: choice
+    prompt: "Train the same model at learning rate **0.5**. What share of the first layer's ReLU units end up dead (zero on every training row)?"
+    options: ["About 0%", "About 10%", "About 60%", "All of them"]
+    answer: 2
+    reveal: |
+      **60.9%.** At 0.01 it is 12.5% and the model is fine; at 0.5 most of the layer is gone and validation AUC falls to 0.5000. The Unit
+      health lab in §2 lets you watch it happen.
+
+  - section: 7
+    after: "That route becomes extremely valuable when many blocks are stacked"
+    type: predict
+    mode: choice
+    prompt: "The plain 12-layer ReLU network's last/first gradient ratio is about **4,500**. Change every block from $f(x)$ to $x + f(x)$. The ratio becomes about…"
+    options: ["4,000: the shortcut changes little", "500", "9", "Exactly 1"]
+    answer: 2
+    reveal: |
+      **About 9.4**, nearly three orders of magnitude better from one change to the block. The identity path gives the gradient a route that
+      bypasses every transformation.
+
 answers:
   "2-1":
     - |

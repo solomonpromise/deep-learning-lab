@@ -67,3 +67,43 @@
 .lesson-summary.is-clamped { display: -webkit-box; -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .lesson-summary.is-clamped > * { display: inline; }
 .summary-more { margin: -4px 0 12px; padding: 0; border: 0; background: none; color: var(--accent-ink); font: inherit; font-weight: 600; font-size: .92rem; cursor: pointer; }
+
+/* ------------------------------------------------------------------ case library (Lesson 3.4) */
+.cl-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: .85rem; font-weight: 700; }
+.cl-count { color: var(--ink-3); letter-spacing: .04em; text-transform: uppercase; font-size: .75rem; }
+.cl-score { display: inline-flex; align-items: center; gap: 6px; color: var(--mc, var(--accent)); }
+.cl-story { padding: 10px 14px; border-radius: 10px; background: var(--surface-2); font-size: .92rem; }
+.cl-evidence { display: grid; gap: 10px; align-content: start; }
+.cl-tier { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); }
+.cl-tier .muted { margin: 2px 0 8px; font-size: .85rem; }
+.cl-tier-head { font-size: .7rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+.cl-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.cl-table th { text-align: left; font-weight: 600; color: var(--ink-2); padding: 3px 8px 3px 0; vertical-align: top; width: 45%; }
+.cl-table td { padding: 3px 0; font-family: var(--mono); font-size: .8rem; }
+.cl-q { display: grid; gap: 4px; }
+.cl-q-title { font-weight: 700; font-size: .92rem; }
+.cl-ask { display: grid; gap: 14px; }
+
+/* ------------------------------------------------------------------ predict rounds, precision and leakage labs */
+.pr-q { font-weight: 650; font-size: 1rem; line-height: 1.45; }
+.pr-dots { display: flex; gap: 6px; }
+.pr-dots i { width: 22px; height: 6px; border-radius: 3px; background: var(--line-2); }
+.pr-dots i.is-now { background: var(--ink-3); }
+.pr-dots i.is-right { background: var(--green); }
+.pr-dots i.is-wrong { background: var(--orange); }
+.pl-input { width: 100%; max-width: 280px; padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--line-2); background: var(--surface); color: var(--ink); font: 600 1rem var(--mono); }
+.pl-input:focus { outline: none; border-color: var(--accent); }
+.pl-presets .w-btn code { font-size: .8rem; background: none; }
+.pl-t thead th { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); }
+.pl-t tr.pl-bad td, .pl-t tr.pl-bad th { color: var(--red); }
+.ll-toggle .ll-box { display: inline-block; width: 13px; height: 13px; border: 1.5px solid var(--ink-3); border-radius: 3px; }
+.ll-toggle.is-on { border-color: var(--mc, var(--accent)); color: var(--mc, var(--accent)); }
+.ll-hist { padding: 10px 12px; border-radius: 10px; background: var(--surface-2); }
+.ll-hist .cl-table td { text-align: right; }
+.uh-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+.uh-grid i { display: block; aspect-ratio: 1; border-radius: 5px; background: var(--surface-3); position: relative; }
+.uh-grid i.dead, .uh-key i.dead { background: var(--surface); border: 1.5px dashed var(--red); }
+.uh-grid i.dead::after { content: "×"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--red); font-weight: 800; font-size: .8rem; }
+.uh-key { display: flex; flex-wrap: wrap; gap: 12px; font-size: .78rem; color: var(--ink-3); }
+.uh-key span { display: inline-flex; align-items: center; gap: 6px; }
+.uh-key i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }

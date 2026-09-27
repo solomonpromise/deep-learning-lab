@@ -78,6 +78,53 @@ inserts:
       and 0.8055, the split runs from 0.7776 to 0.8098). Before relying on the exact figure 0.013, run more splits; before comparing two
       models, compare them on the **same** splits, which removes most of the split noise from the difference (Lesson 4.4).
 
+  # ------------------------------------------------------------------ added: labs, walkthrough and predictions
+  - section: 7
+    after: "So a checkpoint that can resume must hold"
+    type: steps
+    title: "What a resumable checkpoint holds, and what breaks without each piece"
+    steps:
+      - title: "The weights"
+        md: "The model itself. Without them there is nothing to resume, only a model you could use but not continue training faithfully."
+      - title: "The optimizer state"
+        md: "AdamW's two running averages per weight and the step count. Without them the next steps have the wrong size until the averages rebuild; with a schedule you may see a jump in the loss."
+      - title: "The DataLoader's generator"
+        md: "The row order for the next epoch. Without it the resumed run visits rows in a different order, so it can see examples it has just seen."
+      - title: "The global random generators"
+        md: "Python, NumPy and torch states, for dropout and anything else that draws random numbers."
+      - title: "The bookkeeping"
+        md: "History so far, the best score and the best weights. Without them early stopping forgets what it was comparing against."
+
+  - section: 7
+    after: "Three runs. One straight through"
+    type: predict
+    mode: choice
+    prompt: "The third run resumes from the epoch-12 checkpoint with **only the weights** (a fresh AdamW and a fresh DataLoader). Its final test AUC, against 0.8016 for the uninterrupted run, is…"
+    options: ["Identical, 0.8016", "Slightly different, and nothing warns you", "Much worse, about 0.70", "NaN"]
+    answer: 1
+    reveal: |
+      **0.7991**, and the weights differ. The full checkpoint reproduced the uninterrupted run exactly, to every decimal; the weights-only one
+      produced a quietly different model.
+
+  - section: 8
+    after: "Two different things can wobble"
+    type: predict
+    mode: choice
+    prompt: "Five runs changing only the **seed**, five changing only the **split**. Which moves test AUC more?"
+    options: ["The seed, by far", "About the same", "The split, by more than ten times", "Neither moves it"]
+    answer: 2
+    reveal: |
+      **The split**: a standard deviation of 0.0130 against 0.0010 for the seed. Almost all the uncertainty is in which rows you tested on.
+
+  - section: 8
+    after: "Two different things can wobble"
+    type: widget
+    name: seed-roulette
+    title: "Seed roulette: ten runs, nothing important changed"
+    intro: |
+      A small network trains ten times in your browser on the same data. Guess the gap between the best and worst run first, then compare
+      "Seed only" with "Split only".
+
 answers:
   "1-1":
     - |

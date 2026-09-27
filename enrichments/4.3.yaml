@@ -195,6 +195,48 @@ inserts:
       <svg viewBox="0 0 720 588" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The out-of-memory ladder: free fixes first, then cheap ones, then changes to the model, and new hardware last" style="font-family:Inter,system-ui,sans-serif"><text x="360" y="28" text-anchor="middle" style="fill:var(--ink);font-size:18px;font-weight:800">The out-of-memory ladder: work top to bottom</text><rect x="96" y="50" width="560" height="158" rx="12" style="fill:var(--green-soft);stroke:var(--green);stroke-width:1.5"/><text x="112" y="74" text-anchor="start" style="fill:var(--ink);font-size:14px;font-weight:800">Tier 0 · free  ·  changes nothing about the model</text><text x="112" y="92" text-anchor="start" style="fill:var(--ink-3);font-size:11.5px;font-weight:700">costs you: nothing</text><circle cx="126" cy="114" r="9" style="fill:var(--green)"/><text x="126" y="118" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">1</text><text x="144" y="118" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Restart the kernel or the process</text><circle cx="126" cy="138" r="9" style="fill:var(--green)"/><text x="126" y="142" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">2</text><text x="144" y="142" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Append loss.item(), never loss</text><circle cx="126" cy="162" r="9" style="fill:var(--green)"/><text x="126" y="166" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">3</text><text x="144" y="166" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Score inside torch.no_grad()</text><circle cx="126" cy="186" r="9" style="fill:var(--green)"/><text x="126" y="190" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">4</text><text x="144" y="190" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">del, then gc.collect(), then empty_cache()</text><rect x="96" y="220" width="560" height="158" rx="12" style="fill:var(--yellow-soft);stroke:var(--yellow);stroke-width:1.5"/><text x="112" y="244" text-anchor="start" style="fill:var(--ink);font-size:14px;font-weight:800">Tier 1 · cheap  ·  changes the run, not the model</text><text x="112" y="262" text-anchor="start" style="fill:var(--ink-3);font-size:11.5px;font-weight:700">costs you: some speed, and maybe a re-tuned learning rate</text><circle cx="126" cy="284" r="9" style="fill:var(--yellow)"/><text x="126" y="288" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">5</text><text x="144" y="288" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Halve the batch size (the ladder)</text><circle cx="126" cy="308" r="9" style="fill:var(--yellow)"/><text x="126" y="312" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">6</text><text x="144" y="312" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Gradient accumulation to get it back</text><circle cx="126" cy="332" r="9" style="fill:var(--yellow)"/><text x="126" y="336" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">7</text><text x="144" y="336" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Mixed precision: halves the activations</text><circle cx="126" cy="356" r="9" style="fill:var(--yellow)"/><text x="126" y="360" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">8</text><text x="144" y="360" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Shorter sequences, for text</text><rect x="96" y="390" width="560" height="134" rx="12" style="fill:var(--red-soft);stroke:var(--red);stroke-width:1.5"/><text x="112" y="414" text-anchor="start" style="fill:var(--ink);font-size:14px;font-weight:800">Tier 2 · changes the computation or the model</text><text x="112" y="432" text-anchor="start" style="fill:var(--ink-3);font-size:11.5px;font-weight:700">costs you: time, accuracy or money</text><circle cx="126" cy="454" r="9" style="fill:var(--red)"/><text x="126" y="458" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">9</text><text x="144" y="458" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Gradient checkpointing (about 30% slower)</text><circle cx="126" cy="478" r="9" style="fill:var(--red)"/><text x="126" y="482" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">10</text><text x="144" y="482" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Freeze most of the model: LoRA</text><circle cx="126" cy="502" r="9" style="fill:var(--red)"/><text x="126" y="506" text-anchor="middle" style="fill:var(--surface);font-size:10px;font-weight:800">11</text><text x="144" y="506" text-anchor="start" style="fill:var(--ink);font-size:12.5px;font-weight:600">Quantise the frozen weights: QLoRA</text><rect x="186" y="540" width="380" height="36" rx="10" style="fill:none;stroke:var(--ink-3);stroke-width:1.4;stroke-dasharray:6 5"/><text x="376.0" y="563" text-anchor="middle" style="fill:var(--ink-3);font-size:12.5px;font-weight:700">12  A smaller model, or a bigger GPU: last, not first</text><line x1="52" y1="58" x2="52" y2="556" style="stroke:var(--ink-2);stroke-width:2"/><path d="M 45 554 L 52 566 L 59 554 z" style="fill:var(--ink-2)"/><text x="0" y="0" transform="translate(40 312.0) rotate(-90)" text-anchor="middle" style="fill:var(--ink-2);font-size:12px;font-weight:700">cost to you rises</text><text x="0" y="0" transform="translate(686 312.0) rotate(90)" text-anchor="middle" style="fill:var(--ink-3);font-size:11.5px;font-weight:700">stop at the first fix that works</text></svg>
     caption: "Stop at the first rung that works. The four free fixes solve more real failures than their position suggests."
 
+  # ------------------------------------------------------------------ added: labs, walkthrough and predictions
+  - section: 1
+    after: "Rather than take that on trust, measure it on the Day 3 network"
+    type: steps
+    title: "Where the bytes of a training run go"
+    steps:
+      - title: "Parameters: 1× the model"
+        md: "The weights you are training. The Module 3 network: 5,377 numbers × 4 bytes = 21,508 bytes."
+      - title: "Gradients: another 1×"
+        md: "One gradient per parameter, the same shape as the weights: 21,508 bytes more."
+      - title: "Optimizer state: 0×, 1× or 2×"
+        md: "Plain SGD keeps nothing, momentum one copy, Adam and AdamW two (`exp_avg`, `exp_avg_sq`): 43,040 bytes. Total so far: **4× the model**."
+      - title: "Activations: set by the batch"
+        md: "Every layer's output, kept for the backward pass. They grow in a straight line with batch size, which is why halving the batch is the first thing to try when a run won't fit."
+
+  - section: 3
+    after: "Watch both failures happen"
+    type: widget
+    name: precision-lab
+    title: "Precision lab: what each format keeps, and loss scaling"
+    intro: |
+      Real IEEE rounding in your browser. Store 70000 and 1e-8 in each format, then switch to **Loss scaling** and find the scale at which no
+      fp16 gradient vanishes.
+
+  - section: 4
+    after: "Use a wider one, where each row costs more, and the picture changes"
+    type: predict
+    mode: choice
+    prompt: "The wide network's weights take 4.2 MB. At batch **16,384**, its activations are about…"
+    options: ["A tenth of the weights", "About the same as the weights", "10 times the weights", "60 times the weights"]
+    answer: 3
+    reveal: "**61 times the weights** (256 MB). At batch 32 they are a rounding error. Model memory is fixed; activation memory is yours to set."
+
+  - section: 7
+    after: "which looks tidier and is the mistake"
+    type: predict
+    mode: choice
+    prompt: "Best validation AUC is 0.7847 in fp32 and with autocast around the forward pass. With autocast around the **whole training loop** it is…"
+    options: ["0.7847, the same", "Slightly better", "0.7584, clearly worse", "NaN"]
+    answer: 2
+    reveal: "**0.7584**, and with `cache_enabled=False` it comes back to 0.7848, so this is a caching problem, not a precision problem."
+
 answers:
   "1-1":
     - |

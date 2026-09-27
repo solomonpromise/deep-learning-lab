@@ -172,6 +172,18 @@ inserts:
     title: "Patience and min_delta, visualised"
     intro: "A validation curve like this lesson's: best around epoch 11, then creeping up. Change `patience`, `min_delta` and the noise, and re-roll the run."
 
+  # ------------------------------------------------------------------ added: prediction
+  - section: 7
+    after: "It is the reference that makes the result interpretable"
+    type: predict
+    mode: choice
+    prompt: "Logistic regression reaches validation ROC-AUC **0.770** in 0.03 seconds. The 5,377-parameter MLP, after 30 epochs, reaches about…"
+    options: ["0.95", "0.80", "0.77", "0.70"]
+    answer: 1
+    reveal: |
+      **About 0.80** at its best epoch: ahead, but by a small margin for far more machinery. That is the fact to report; whether it is
+      worth it is a deployment decision.
+
 answers:
   "1-1":
     - |

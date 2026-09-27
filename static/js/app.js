@@ -650,6 +650,7 @@
     }, { rootMargin: '400px 0px' });
     widgets.forEach(function (w) { wo.observe(w); });
   } else widgets.forEach(mountWidget);
+  window.DLP.mountAll = function () { widgets.forEach(mountWidget); };   // e.g. before printing
 
   /* ------------------------------------------------------------ home hero animation */
   var hc = $('[data-hero-canvas]');

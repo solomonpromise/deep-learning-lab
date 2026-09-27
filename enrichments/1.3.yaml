@@ -240,6 +240,18 @@ inserts:
       - q: "**Practical.** Regenerate the spirals with `noise=0.20` and retrain. How does the boundary change, and does the loss curve tell you the data got harder?"
         a: "The arms blur into each other, so the boundary becomes rougher and the best possible accuracy drops (some points genuinely sit on the wrong arm). The curves show it: both losses flatten at a **higher** value and the train/validation gap widens as the network tries to fit the noise. A higher loss floor with healthy-looking curves is the signature of a harder (noisier) task, not a bug."
 
+  # ------------------------------------------------------------------ added: prediction
+  - section: 13
+    before: "# ---------- BUG 1: forgetting optimizer.zero_grad() ----------"
+    type: predict
+    mode: choice
+    prompt: "Bug 2 removes every activation from the 4,417-parameter SpiralNet and trains it as usual. Its validation accuracy will be about…"
+    options: ["0.95, like the working model", "0.80", "0.61", "0.50"]
+    answer: 2
+    reveal: |
+      **About 0.61**, the same as logistic regression's 0.592 in Lesson 1.1: three stacked linear layers collapse into one. The loss curve
+      looks perfectly healthy while it happens.
+
 answers:
   "1-1":
     - "`(16, 3, 64, 64)`: batch of 16, 3 colour channels (RGB), 64 × 64 pixels, the (batch, channels, height, width) layout PyTorch uses for images."

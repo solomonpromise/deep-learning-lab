@@ -166,6 +166,62 @@ inserts:
       puts the numbers where the reader is, and the Limitations line can then say what that interval does not cover: training
       randomness, and rows that are not independent (Section 8's questions).
 
+  # ------------------------------------------------------------------ added: predict the bake-off
+  - section: 1
+    at: end
+    type: widget
+    name: predict-rounds
+    title: "Before any result: predict the bake-off"
+    intro: |
+      The rules are written. Now commit to what you think will happen, round by round, before the lesson shows you. Each answer reveals the
+      real number from the sections below.
+    props:
+      key: predict-bakeoff
+      title_done: "Now read the sections to see how each number was measured."
+      rounds:
+        - q: "Split 42, test ROC-AUC: gradient boosting with default settings against the frozen Module 3 network. Who wins, and by how much?"
+          options: ["The network, by more than 0.01", "A tie: less than 0.005 apart", "Boosting, by 0.01 to 0.02", "Boosting, by more than 0.05"]
+          answer: 2
+          reveal: "Boosting 0.8160 against 0.8016, untuned, trained in under a second, on the raw columns."
+          bars: [["Gradient boosting", 0.8160], ["Neural network", 0.8016]]
+          lo: 0.75
+          hi: 0.85
+          digits: 4
+        - q: "Ten splits, both models on identical rows. On how many does boosting win?"
+          options: ["3 of 10", "5 of 10", "7 of 10", "10 of 10"]
+          answer: 3
+          reveal: "All ten. Each model's own spread (0.013) is larger than the gap between their averages (0.0078), but paired split by split the difference is +0.0078 ± 0.0047."
+        - q: "The best of twelve boosting settings (chosen on split 42's validation rows) against the defaults, over ten splits. The tuning gains…"
+          options: ["About +0.01, clearly better", "About +0.005, better on 8 of 10", "+0.0012 ± 0.0024, better on 5 of 10", "It is worse on every split"]
+          answer: 2
+          reveal: "A coin toss. The whole search spanned 0.0068 on validation, narrower than the 0.013 split noise, so ranking inside it mostly ranked luck."
+        - q: "Bare training time on the same machine: the network's 30 epochs against boosting's fit. Boosting is…"
+          options: ["About as fast", "3 times faster", "About 14 times faster", "100 times faster"]
+          answer: 2
+          reveal: "6.80 s against 0.49 s, about 14×, with no epochs or learning rate to choose."
+          bars: [["Neural network (s)", 6.80, "6.80 s"], ["Gradient boosting (s)", 0.49, "0.49 s"]]
+          lo: 0
+          hi: 7.5
+        - q: "Predicting 1,000 raw rows, preprocessing included. Which is faster?"
+          options: ["Boosting, about 2× faster", "The network, about 2× faster", "Exactly the same", "Boosting, 10× faster"]
+          answer: 1
+          reveal: "The network: 6.1 ms against 13.4 ms, and 28 KB against 344 KB to ship. A few small matrix multiplications beat walking dozens of trees."
+          bars: [["Neural network (ms)", 6.1, "6.1 ms"], ["Gradient boosting (ms)", 13.4, "13.4 ms"]]
+          lo: 0
+          hi: 15
+        - q: "Now the deployment question: train on the earliest 80% of the file, test on the last 10%. Which model wins?"
+          options: ["Boosting again, by about 0.01", "The network, by about 0.03", "Both stay near 0.80", "Both fall below 0.5"]
+          answer: 1
+          reveal: "The ranking reverses: network 0.6141, boosting 0.5841, and a bootstrap puts the gap between +0.017 and +0.044. Both lose most of their skill: the shift matters more than the model."
+          bars: [["Neural network", 0.6141], ["Gradient boosting", 0.5841]]
+          lo: 0.5
+          hi: 0.85
+          digits: 4
+        - q: "Averaging the two models' predictions on split 42 gives a test AUC of…"
+          options: ["About 0.83: a clear gain", "0.8163: about the same as boosting alone", "About 0.80: worse than boosting", "About 0.78"]
+          answer: 1
+          reveal: "0.8163 against 0.8160. They rank customers similarly (Spearman 0.87), so the ensemble buys nothing worth shipping two models for."
+
 answers:
   "1-1":
     - |

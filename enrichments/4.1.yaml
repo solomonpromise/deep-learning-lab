@@ -91,6 +91,48 @@ inserts:
       about 0.78). Toggle the **weighted loss**: every probability moves up and the 0.5 threshold catches far more customers. Then switch to
       **Rank and call the top k%** at 10%: the weighting changes nothing, which is exactly what the next cell measures.
 
+  # ------------------------------------------------------------------ added: labs and predictions
+  - section: 5
+    after: "Let us measure it instead of describing it"
+    type: predict
+    mode: choice
+    prompt: "Fit the scaler on **all** rows instead of the training rows only, then score the test rows. Test AUC changes by about…"
+    options: ["+0.05", "+0.01", "+0.0001", "−0.02"]
+    answer: 2
+    reveal: |
+      **+0.000093.** A scaler learns an average and a spread; with 36,168 training rows, 4,522 more barely move them. The rule still stands,
+      because a step that reads the **labels** (like §9's day-rate column) is a different story.
+
+  - section: 7
+    after: "Train on the past, test on the future, exactly as it will happen in use"
+    type: predict
+    mode: choice
+    prompt: "Same model, same columns, same code. Only the test rows change, from a random 10% to the **last** 10% of the file. Test AUC goes from 0.78 to…"
+    options: ["About 0.80", "About 0.78: splits don't matter", "About 0.70", "About 0.61"]
+    answer: 3
+    reveal: |
+      **0.6108**, a drop of 0.17, larger than anything Module 3 gained by tuning. And PR-AUC *rises* at the same time, which the section explains.
+
+  - section: 9
+    after: "No row was ever on both sides"
+    type: widget
+    name: leakage-lab
+    title: "Leakage lab: the reported score against real use"
+    intro: |
+      A small calling campaign with a strong day effect, and a logistic regression trained in your browser. "Reported" is the test split's
+      score; "In real use" is the score on 120 brand-new days. Switch the day-rate column on with a random split, then hold out whole days.
+
+  - section: 10
+    after: "Now measure what re-weighting actually changes"
+    type: predict
+    mode: choice
+    prompt: "`class_weight=\"balanced\"` makes each yes count about 7.5 times as much in training. Test AUC goes from 0.7796 to…"
+    options: ["About 0.82", "About 0.80", "About 0.78: unchanged", "About 0.70"]
+    answer: 2
+    reveal: |
+      **0.7795.** The ranking is essentially unchanged. What moves is the *size* of the probabilities (average 0.115 → 0.412), and with it
+      the meaning of the 0.5 threshold.
+
 answers:
   "1-1":
     - |
