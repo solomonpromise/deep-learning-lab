@@ -189,6 +189,7 @@ class Builder:
                   "glossary_js": json.dumps(self.glossary.as_js()),
                   "tutor_js": json.dumps(tutor).replace("</", "<\\/"),
                   "services": self.cfg.get("services") or {},
+                  "discussions": self.cfg.get("discussions") or None,
                   "services_js": json.dumps(self.cfg.get("services") or {}).replace("</", "<\\/")}
 
         # ---- pages

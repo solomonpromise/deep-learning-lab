@@ -51,6 +51,7 @@
     var all = [hero, bigPicture, start].concat($$('[data-section]')).filter(Boolean);
     all.forEach(function (el) { el.classList.toggle('focus-hidden', pages[page].indexOf(el) < 0); });
     if (end) end.classList.toggle('focus-hidden', page !== pages.length - 1);
+    $$('[data-discussion], .mastery-panel').forEach(function (el) { el.classList.toggle('focus-hidden', page !== pages.length - 1); });
     $$('[data-toc-link]').forEach(function (a) { a.classList.toggle('focus-current', pageOf(document.getElementById(a.getAttribute('data-toc-link'))) === page); });
     store.set('focus:page:' + LID, page);
     paintBar();

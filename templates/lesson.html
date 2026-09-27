@@ -9,7 +9,8 @@
 {% endblock %}
 {% block late_scripts %}<script defer src="{{ root }}static/js/focus.js?v={{ v }}"></script>
 {% if ex.python %}<script defer src="{{ root }}static/js/pyrun.js?v={{ v }}"></script>{% endif %}
-{% if ex.challenges %}<script defer src="{{ root }}static/js/challenges.js?v={{ v }}"></script>{% endif %}{% endblock %}
+{% if ex.challenges %}<script defer src="{{ root }}static/js/challenges.js?v={{ v }}"></script>{% endif %}
+{% if discussions %}<script defer src="{{ root }}static/js/discussion.js?v={{ v }}"></script>{% endif %}{% endblock %}
 
 {% block main %}
 <div class="lesson-layout" style="--mc: {{ module.color }}" data-lesson="{{ lesson.id }}">
@@ -123,6 +124,22 @@
       {% if next_l %}<a class="pager-link next" href="{{ root }}{{ next_l.url }}"><span class="pager-k">Next <svg class="ic"><use href="#i-arrow-right"/></svg></span><span class="pager-t">{{ next_l.id }} · {{ next_l.title }}</span></a>{% endif %}
     </nav>
   </div>
+
+  {% if discussions %}
+  <section class="discussion" id="discussion" data-discussion data-term="Lesson {{ lesson.id }}: {{ lesson.title }}"
+           data-repo="{{ discussions.repo }}" data-repo-id="{{ discussions.repo_id }}" data-category="{{ discussions.category }}" data-category-id="{{ discussions.category_id }}">
+    <div class="disc-head">
+      <span class="disc-icon" aria-hidden="true"><svg class="ic"><use href="#i-message"/></svg></span>
+      <div>
+        <h2>Questions and discussion</h2>
+        <p class="muted">Ask about this lesson, share what you found in a lab, or help someone else. Posts are public on the course's GitHub Discussions: anyone can read them, and you need a GitHub account to post.</p>
+      </div>
+    </div>
+    <button class="btn btn-ghost" data-disc-load><svg class="ic"><use href="#i-message"/></svg> Show the discussion</button>
+    <p class="muted disc-note" data-disc-note>Opening it loads giscus from giscus.app.</p>
+    <div class="disc-frame" data-disc-frame></div>
+  </section>
+  {% endif %}
 </article>
 
 <!-- ======================= on this page -->

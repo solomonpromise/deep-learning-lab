@@ -46,6 +46,17 @@ services:
   api: "https://deep-learning-lab-tutor.solomonpromise51.workers.dev"
   anonymous_stats: true     # learners can switch it off on My progress; off by default with Do Not Track
 
+# Discussion under every lesson: giscus (https://giscus.app) on this repository's GitHub Discussions.
+# One thread per lesson in the Announcements category, created by giscus on the first comment; learners need
+# a GitHub account to post, anyone can read. The giscus GitHub app must be installed on the repository.
+# Nothing is loaded from giscus.app until a learner opens the discussion. Remove this block to turn it off.
+discussions:
+  provider: giscus
+  repo: solomonpromise/deep-learning-lab
+  repo_id: R_kgDOUs0ZjQ
+  category: Announcements
+  category_id: DIC_kwDOUs0Zjc4DGh2i
+
 # Python in the browser (Pyodide, in a Web Worker). Code cells of these lessons get Run and Edit
 # buttons and share one namespace per lesson, like a notebook. Cells matching a `skip` pattern (PyTorch,
 # installs) keep only "Open in Colab": PyTorch does not run in the browser. Code exercises
