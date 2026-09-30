@@ -1,0 +1,82 @@
+# The concept map (concepts.html): how the glossary's terms connect.
+# home:      the lesson that teaches the term. The map puts it in that lesson's module column. Without it, the
+#            build guesses from where the term is used, which is often wrong for words used everywhere.
+# builds_on: the terms you need first (by glossary term name). Keep them taught no later than the term itself:
+#            the build warns when a term builds on one from a later module.
+# later:     modules not yet published whose topics (course.yaml) pick the idea up again, with a short why.
+# Every other lesson that uses a term comes from the glossary's own tracking at build time.
+# Terms not listed here still appear on the map, with no connections.
+
+# Module 1
+Linear model: { home: "1.1" }
+Feature engineering: { home: "1.1", builds_on: [Linear model] }
+Engineered feature: { home: "1.1", builds_on: [Feature engineering] }
+Logistic regression: { home: "1.1", builds_on: [Linear model] }
+ROC-AUC: { home: "1.1", builds_on: [Logistic regression], later: { 9: "choosing evaluation metrics" } }
+Inductive bias: { home: "1.1", builds_on: [Feature engineering], later: { 6: "what attention assumes" } }
+Representation: { home: "1.1", builds_on: [Feature engineering], later: { 5: "what makes a representation useful" } }
+Representation learning: { home: "1.1", builds_on: [Representation, Hidden layer], later: { 5: "encoders and self-supervised learning" } }
+Pretraining: { home: "1.1", builds_on: [Representation learning], later: { 7: "pretrained models", 8: "supervised fine-tuning" } }
+Transfer learning: { home: "1.1", builds_on: [Pretraining], later: { 7: "adapting a pretrained model" } }
+Weights: { home: "1.2", builds_on: [Linear model] }
+Parameter: { home: "1.2", builds_on: [Weights], later: { 8: "LoRA trains only a sliver of them" } }
+Bias (parameter): { home: "1.2", builds_on: [Parameter] }
+Hyperparameter: { home: "1.2", builds_on: [Parameter] }
+Decision boundary: { home: "1.2", builds_on: [Linear model] }
+Hidden layer: { home: "1.2", builds_on: [Linear model] }
+Activation function: { home: "1.2", builds_on: [Linear model, Hidden layer] }
+ReLU: { home: "1.2", builds_on: [Activation function] }
+Logit: { home: "1.2", builds_on: [Linear model], later: { 9: "calibration" } }
+Sigmoid: { home: "1.2", builds_on: [Logit] }
+Forward pass: { home: "1.2", builds_on: [Hidden layer, Weights] }
+Loss function: { home: "1.2", builds_on: [Forward pass] }
+CrossEntropyLoss: { home: "1.2", builds_on: [Loss function, Logit] }
+Gradient: { home: "1.2", builds_on: [Loss function] }
+Computational graph: { home: "1.2", builds_on: [Forward pass] }
+Backpropagation: { home: "1.2", builds_on: [Computational graph, Gradient, Loss function] }
+Learning rate: { home: "1.2", builds_on: [Hyperparameter], later: { 8: "fine-tuning learning rates are small" } }
+Gradient descent: { home: "1.2", builds_on: [Gradient, Learning rate] }
+Tensor: { home: "1.3" }
+nn.Module: { home: "1.3", builds_on: [Parameter, Hidden layer], later: { 10: "the Keras equivalent" } }
+Optimizer: { home: "1.3", builds_on: [Gradient descent] }
+Epoch: { home: "1.3", builds_on: [Gradient descent] }
+
+# Module 2
+dtype: { home: "2.1", builds_on: [Tensor] }
+Broadcasting: { home: "2.1", builds_on: [Tensor] }
+Dataset (PyTorch): { home: "2.2", builds_on: [Tensor] }
+Batch: { home: "2.2", builds_on: [Gradient descent, Epoch] }
+DataLoader: { home: "2.2", builds_on: ["Dataset (PyTorch)", Batch] }
+Standardisation: { home: "2.2", builds_on: [Feature engineering] }
+One-hot encoding: { home: "2.2", builds_on: [Feature engineering] }
+Embedding: { home: "2.2", builds_on: [One-hot encoding, Representation], later: { 5: "embeddings and cosine similarity", 6: "token embeddings in a Transformer" } }
+Tokenisation: { home: "2.2", builds_on: [Embedding], later: { 6: "tokens are a Transformer's input", 7: "tokenizers on the Hub" } }
+Validation set: { home: "2.2" }
+Leakage: { home: "2.2", builds_on: [Validation set, Standardisation], later: { 8: "data contamination in fine-tuning" } }
+MLP: { home: "2.3", builds_on: [Hidden layer, Activation function] }
+Architecture: { home: "2.3", builds_on: [MLP], later: { 6: "the Transformer block", 10: "the same ideas in Keras" } }
+Baseline: { home: "2.3", builds_on: [Logistic regression], later: { 9: "what counts as good enough" } }
+Class imbalance: { home: "2.3", builds_on: [ROC-AUC], later: { 9: "error analysis" } }
+Checkpoint: { home: "2.3", builds_on: [Parameter, Optimizer], later: { 7: "pretrained checkpoints on the Hub", 10: "shipping a model" } }
+
+# Module 3
+SGD: { home: "3.1", builds_on: [Gradient descent, Batch] }
+Momentum: { home: "3.1", builds_on: [Gradient descent] }
+Adam: { home: "3.1", builds_on: [Optimizer, Momentum, Learning rate], later: { 8: "AdamW state is why full fine-tuning is expensive" } }
+Test set: { home: "3.2", builds_on: [Validation set], later: { 8: "benchmark contamination", 9: "evaluation design" } }
+Overfitting: { home: "3.2", builds_on: [Validation set] }
+Underfitting: { home: "3.2", builds_on: [Validation set] }
+Regularisation: { home: "3.2", builds_on: [Overfitting] }
+Dropout: { home: "3.2", builds_on: [Regularisation, Hidden layer] }
+Weight decay: { home: "3.2", builds_on: [Regularisation, Adam] }
+Early stopping: { home: "3.2", builds_on: [Validation set, Overfitting, Checkpoint] }
+Vanishing gradients: { home: "3.3", builds_on: [Backpropagation, Activation function] }
+Gradient clipping: { home: "3.3", builds_on: [Gradient] }
+Normalisation: { home: "3.3", builds_on: [Standardisation, Vanishing gradients], later: { 6: "LayerNorm in every Transformer block" } }
+
+# Module 4
+Distribution shift: { home: "4.1", builds_on: [Test set], later: { 9: "monitoring a deployed model" } }
+Seed: { home: "4.2", later: { 10: "reproducible project structure" } }
+VRAM: { home: "4.3", builds_on: [Tensor, Batch], later: { 8: "QLoRA on one GPU", 9: "the KV cache at inference" } }
+Mixed precision: { home: "4.3", builds_on: [dtype, VRAM], later: { 8: "4-bit weights in QLoRA" } }
+Gradient boosting: { home: "4.4", builds_on: [Engineered feature, Baseline] }

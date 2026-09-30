@@ -4,7 +4,10 @@
  * The site sends { messages } here; this Worker adds the tutor's rules, forwards the
  * conversation to Groq (Qwen) and streams the answer back. Only origins listed in
  * ALLOWED_ORIGINS may call it. The key is a Worker *secret*: `wrangler secret put GROQ_API_KEY`.
+ * Paths under /api/ are the course API (sync, anonymous stats, certificates): see api.js.
  */
+import { handleApi } from './api.js';
+
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 const TUTOR_RULES = `You are the AI tutor built into the "Deep Learning Lab" course website
@@ -25,12 +28,16 @@ export default {
     const originOk = allowed.length === 0 || allowed.includes(origin);
     const cors = {
       'Access-Control-Allow-Origin': originOk && origin ? origin : allowed[0] || '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Max-Age': '86400',
       Vary: 'Origin',
     };
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
+    if (new URL(request.url).pathname.startsWith('/api/')) {
+      if (!originOk) return json({ error: { message: 'This site is not allowed to use the course API.' } }, 403, cors);
+      return handleApi(request, env, cors);
+    }
     if (request.method !== 'POST') return json({ error: { message: 'Use POST.' } }, 405, cors);
     if (!originOk) return json({ error: { message: 'This site is not allowed to use the tutor.' } }, 403, cors);
     if (!env.GROQ_API_KEY) return json({ error: { message: 'Tutor proxy has no GROQ_API_KEY secret.' } }, 500, cors);

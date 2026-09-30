@@ -1,0 +1,117 @@
+# Checkpoints for Lesson 2.4 (see 1.1.checkpoints.yaml for the format).
+skill: Notebook to project
+
+sections:
+  1:
+    questions:
+      - q: "`classify(0.6)` returns 'yes' and later 'no', although the function never changed. Why?"
+        options:
+          - "Floating-point error"
+          - "It reads a global `threshold` that another cell changed: hidden state"
+          - "The kernel restarted"
+          - "0.6 was rounded differently"
+        answer: 1
+        why: "Its important input lives outside the function, in the notebook session. A saved notebook does not record which sequence of state changes produced its outputs."
+      - q: "Which task is a notebook still the better tool for?"
+        options: ["Automated testing", "Running many configurations from the command line", "Exploring data and explaining an experiment", "Code review with small diffs"]
+        answer: 2
+        why: "Notebooks for exploration and communication; modules for reusable, testable, automatable logic."
+    explain: "Give two reasons why a notebook is not the deliverable of an ML project."
+    key: |
+      - Hidden state and execution order: outputs can come from cells run in a different order, so results are hard to reproduce or trust.
+      - Reuse, automation and review are awkward: you cannot cleanly import a class from a notebook, run many configs, or review diffs dominated by outputs and metadata.
+
+  2:
+    questions:
+      - q: "Why list direct dependencies in `requirements.txt` rather than `pip freeze` output?"
+        options:
+          - "`pip freeze` is slower"
+          - "`freeze` lists hundreds of transitive and unrelated packages; direct pins tell a contributor what the project actually needs"
+          - "Direct dependencies never change"
+          - "`freeze` omits PyTorch"
+        answer: 1
+        why: "The project used 6 packages; `freeze` listed 419. Pin each direct dependency to a version you actually ran and tested."
+      - q: "Why check `torch.cuda.is_available()` / `torch.backends.mps.is_available()` on a new machine?"
+        options:
+          - "To install drivers"
+          - "To catch a run that silently falls back to CPU when you expected GPU acceleration"
+          - "To choose the dataset"
+          - "To set the random seed"
+        answer: 1
+        why: "The program still runs on the CPU, just far slower, and nothing warns you."
+
+  3:
+    questions:
+      - q: "Why does `src/inference/predict.py` import the model but never the training module?"
+        options:
+          - "Training code is too slow to import"
+          - "A prediction service should not need the optimizer, epochs or training loop just to score a row"
+          - "Python forbids it"
+          - "The model changes during training"
+        answer: 1
+        why: "Keeping training and inference separate makes the deployed program smaller and safer."
+      - q: "What does a cell starting with `%%writefile bank_marketing_project/src/models/mlp.py` do?"
+        options:
+          - "Defines `BankMLP` in the notebook's memory"
+          - "Writes the cell's text to that file; nothing in the cell runs, so the class exists only once the file is imported"
+          - "Runs the file"
+          - "Commits the file to git"
+        answer: 1
+        why: "The cell body becomes a file on disk. To use the class you import it from the module."
+    explain: "Why must validation and test encodings use `reindex(columns=names, fill_value=0)` with the training column names?"
+    key: |
+      - One-hot encoding each split separately can produce different columns (a category missing from one split), so the feature matrices would not line up.
+      - Reindexing forces every split to have exactly the training feature columns, in the same order, which is what the model was trained on.
+
+  4:
+    questions:
+      - q: "What does `seed_everything(42)` guarantee?"
+        options:
+          - "Bit-for-bit identical results on any hardware"
+          - "Repeatable random choices (initialisation, shuffling, dropout) as far as practical, but not identical bits across GPUs or backends"
+          - "The best possible model"
+          - "Deterministic GPU kernels"
+        answer: 1
+        why: "Reduction order and cuDNN algorithm choice still vary. Report a mean and spread over seeds rather than one run."
+      - q: "Which value belongs in the YAML config rather than in code?"
+        options: ["The definition of `DenseBlock`", "The learning rate", "The training loop", "The ROC-AUC formula"]
+        answer: 1
+        why: "If changing it should create a new experiment without rewriting the algorithm, it goes in the config."
+    explain: "Why does the test that checks for logits multiply its input by 10 before checking the output range?"
+    key: |
+      - An untrained model's outputs are near zero, so they could fall inside (0, 1) even without a sigmoid and the test would pass by accident.
+      - Scaling the input pushes raw logits outside (0, 1), so a stray sigmoid in `forward` is reliably caught.
+
+  5:
+    questions:
+      - q: "`python src/training/train.py` fails with `No module named 'src'`, but `python -m src.training.train` works. Why?"
+        options:
+          - "The file is broken"
+          - "`-m` runs it as a module from the project root, so `src` is importable as a package"
+          - "`-m` installs the package"
+          - "The first command needs `sudo`"
+        answer: 1
+        why: "Running the file directly puts its own folder on the path, not the project root. A real project uses an editable install (`pip install -e .` with `pyproject.toml`)."
+      - q: "Validation ROC-AUC is 0.798 and test is 0.787. Which belongs in the README as the honest estimate?"
+        options: ["0.798 (validation)", "0.787 (test)", "Their average", "Whichever is higher"]
+        answer: 1
+        why: "Validation was used to choose the epoch, so it is mildly optimistic. The test set, touched once after model selection, is the honest number."
+
+  6:
+    questions:
+      - q: "Why does the `.gitignore` say `/data/` rather than `data/`?"
+        options:
+          - "Style preference"
+          - "`data/` matches at every level, including `src/data/`, silently dropping your loader code from the repository"
+          - "`/data/` also ignores checkpoints"
+          - "Git requires a leading slash"
+        answer: 1
+        why: "The leading slash anchors the pattern to the project root. Check it with `git check-ignore -v` and a test that every source file is tracked."
+      - q: "Which of these belongs in git?"
+        options: ["The downloaded CSV", "Model checkpoints", "The config and results JSON of a run", "The `.venv/` folder"]
+        answer: 2
+        why: "Commit what cannot be regenerated and what explains results: code, configs and results. Data, checkpoints and environments are regenerable."
+    explain: "Why should you commit a run's results JSON together with the config that produced it?"
+    key: |
+      - So that "which settings gave 0.80?" is answered by git history instead of memory.
+      - The pair makes each result reproducible and reviewable: the config is the experiment, the JSON is its outcome.

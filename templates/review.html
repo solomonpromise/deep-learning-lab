@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Daily review — {{ course.short_title }}{% endblock %}
+{% block description %}Spaced review of every checkpoint and quiz question you have answered, a few minutes a day.{% endblock %}
+{% block late_scripts %}<script defer src="{{ root }}static/js/review.js?v={{ v }}"></script>{% endblock %}
+{% block main %}
+<div class="plain-page review-page" data-review-page>
+  <header class="plain-hero">
+    <span class="eyebrow"><svg class="ic"><use href="#i-cards"/></svg> Daily review</span>
+    <h1>Remember what you learned</h1>
+    <p class="lead">Questions you have answered come back just before you would forget them: the ones you missed tomorrow, the ones you got right a week later, then further apart each time you get them right again. A few minutes a day keeps the whole course fresh.</p>
+  </header>
+
+  <section class="rv-summary" data-rv-summary aria-live="polite"></section>
+
+  <section class="rv-card" data-rv-card hidden>
+    <div class="rv-top">
+      <span class="rv-from" data-rv-from></span>
+      <span class="rv-count" data-rv-count></span>
+    </div>
+    <div class="rv-bar" aria-hidden="true"><span data-rv-bar></span></div>
+    <div class="rv-q prose" data-rv-q></div>
+    <div class="quiz-options" data-rv-options role="group" aria-label="Answer options"></div>
+    <div class="rv-why prose" data-rv-why hidden></div>
+    <div class="rv-actions" data-rv-actions hidden>
+      <a class="chip-btn" data-rv-link href="#"><svg class="ic"><use href="#i-book"/></svg> Revisit in the lesson</a>
+      <button class="btn" data-rv-next><span>Next question</span> <svg class="ic"><use href="#i-arrow-right"/></svg></button>
+    </div>
+  </section>
+
+  <section class="rv-done" data-rv-done hidden aria-live="polite"></section>
+
+  <section class="rv-practice">
+    <h2>Practise a lesson</h2>
+    <p class="muted">Not waiting for anything to come due? Pick a lesson and answer its checkpoint and quiz questions in a random order.</p>
+    <div class="rv-practice-row">
+      <label class="sr-only" for="rv-lesson">Lesson</label>
+      <select id="rv-lesson" data-rv-lesson>
+        {% for m in nav if m.available %}<optgroup label="Module {{ m.number }} · {{ m.title }}">{% for le in m.lessons %}<option value="{{ le.id }}">{{ le.id }} · {{ le.title }}</option>{% endfor %}</optgroup>{% endfor %}
+      </select>
+      <button class="btn btn-ghost" data-rv-practice><svg class="ic"><use href="#i-play"/></svg> Practise 10 questions</button>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}My progress — {{ course.short_title }}{% endblock %}
+{% block description %}Your streak, weekly goal, skills map, lesson mastery, module badges and certificate.{% endblock %}
+{% block late_scripts %}<script defer src="{{ root }}static/js/progress-page.js?v={{ v }}"></script>{% endblock %}
+{% block main %}
+<div class="plain-page progress-page" data-progress-page>
+  <header class="plain-hero">
+    <span class="eyebrow"><svg class="ic"><use href="#i-chart"/></svg> My progress</span>
+    <h1>Where you are, and what to do next</h1>
+    <p class="lead">Everything here is worked out from what you have actually done: sections read, checkpoints and quizzes answered, labs tried and module challenges passed.</p>
+  </header>
+
+  <section class="pg-top">
+    <div class="pg-card pg-streak" data-pg-streak></div>
+    <div class="pg-card pg-goal" data-pg-goal></div>
+    <div class="pg-card pg-next" data-pg-next></div>
+  </section>
+
+  <section class="pg-section">
+    <h2><svg class="ic"><use href="#i-calendar"/></svg> Your last 16 weeks</h2>
+    <div class="pg-heat" data-pg-heat role="img"></div>
+  </section>
+
+  <section class="pg-section">
+    <h2><svg class="ic"><use href="#i-map"/></svg> Skills map</h2>
+    <p class="muted">One tile per lesson. The colour is how much of it you have shown you can do: checkpoints and quiz answered correctly, reading and labs.</p>
+    <div class="pg-skills" data-pg-skills></div>
+    <div class="pg-weak" data-pg-weak></div>
+  </section>
+
+  <section class="pg-section">
+    <h2><svg class="ic"><use href="#i-award"/></svg> Module badges</h2>
+    <div class="pg-badges" data-pg-badges></div>
+  </section>
+
+  <section class="pg-section">
+    <h2><svg class="ic"><use href="#i-trophy"/></svg> Lab challenges</h2>
+    <div class="pg-challenges" data-pg-challenges></div>
+  </section>
+
+  <section class="pg-section">
+    <h2><svg class="ic"><use href="#i-list-check"/></svg> Lesson by lesson</h2>
+    <div class="table-wrap"><table class="pg-table" data-pg-table></table></div>
+  </section>
+
+  <section class="pg-section" id="certificate">
+    <h2><svg class="ic"><use href="#i-trophy"/></svg> Certificate</h2>
+    <div data-pg-cert></div>
+  </section>
+
+  <section class="pg-section" id="sync" data-pg-sync></section>
+</div>
+{% endblock %}

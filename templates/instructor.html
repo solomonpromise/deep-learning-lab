@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Instructor view — {{ course.short_title }}{% endblock %}
+{% block description %}Anonymous answer counts across the course.{% endblock %}
+{% block head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block late_scripts %}<script defer src="{{ root }}static/js/instructor.js?v={{ v }}"></script>{% endblock %}
+{% block main %}
+<div class="plain-page instructor-page" data-instructor data-api="{{ services.api }}">
+  <header class="plain-hero">
+    <span class="eyebrow"><svg class="ic"><use href="#i-chart"/></svg> Instructor view</span>
+    <h1>Where learners struggle</h1>
+    <p class="lead">Anonymous counts of right and wrong answers for every checkpoint, quiz and module-challenge question, the tutor's verdicts on "explain it back" answers, and how often each lab is used. No names, codes or device ids are recorded.</p>
+  </header>
+  <form class="in-token" data-in-form>
+    <label for="in-token">Stats token</label>
+    <input id="in-token" type="password" autocomplete="off" data-in-token placeholder="The STATS_TOKEN set on the Worker">
+    <button class="btn btn-sm" type="submit">Show the numbers</button>
+    <span class="muted">Stored only in this browser.</span>
+  </form>
+  <div data-in-out aria-live="polite"></div>
+</div>
+{% endblock %}

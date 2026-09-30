@@ -1,0 +1,164 @@
+# Checkpoints for Lesson 4.4 (see 1.1.checkpoints.yaml for the format).
+skill: Fair model comparison
+
+sections:
+  1:
+    questions:
+      - q: "What usually makes model comparisons go wrong, according to the lesson?"
+        options:
+          - "Dishonesty"
+          - "Drift: one model quietly gets far more tuning attention, so you end up measuring effort, not models"
+          - "Too few epochs"
+          - "Using the wrong library"
+        answer: 1
+        why: "Write the rules first (question, splits, measure, tuning budget, decision rule), run them, and report what happened."
+    explain: "Why does writing the tuning budget down beforehand matter more than making it large?"
+    key: |
+      - A declared budget stops you from tuning one model until it wins; both sides get the effort you committed to, not the effort your hopes produced.
+      - The size matters less than fairness and being fixed in advance; a huge search can also partly pick luck (Section 6).
+
+  2:
+    questions:
+      - q: "Two models are scored on the same ten splits. Why is the spread of their difference much smaller than either model's spread?"
+        options:
+          - "Differences are always small"
+          - "Each split's shared difficulty affects both models equally and cancels when you subtract"
+          - "The models are identical"
+          - "Averaging removes all noise"
+        answer: 1
+        why: "That is a paired comparison: subtract split by split and only the model-dependent part remains."
+    explain: "Explain a paired comparison to a colleague in two sentences."
+    key: |
+      - Score both models on exactly the same test rows (same splits), then look at the difference split by split rather than at each model's average.
+      - The part of each score that comes from 'how hard were these rows' is shared and cancels, so small but consistent real differences become visible.
+
+  3:
+    questions:
+      - q: "The network's settings are frozen at the Module 3 values. Why is that acceptable in this comparison?"
+        options:
+          - "The network can't be tuned"
+          - "The rules declared the budget in advance: the network uses known-good settings, boosting gets defaults plus one declared search"
+          - "It makes the network win"
+          - "It saves memory"
+        answer: 1
+        why: "Fairness comes from a declared, symmetric-enough protocol, not from tuning both until exhaustion."
+
+  4:
+    questions:
+      - q: "Why does gradient boosting need no scaling or one-hot encoding here?"
+        options:
+          - "It ignores categorical columns"
+          - "Trees split on raw values, and `HistGradientBoostingClassifier` handles columns marked as categories natively"
+          - "The data was pre-scaled"
+          - "It only uses numeric columns"
+        answer: 1
+        why: "15 raw columns for boosting against 50 engineered inputs for the network, which also means one less fitted object to ship."
+      - q: "The whole 12-setting search spanned 0.0068 validation AUC; the split noise is 0.013. What does that suggest?"
+        options:
+          - "The search found a big improvement"
+          - "The search space is narrower than the noise, so ranking within it mostly ranks luck"
+          - "Use a larger learning rate"
+          - "The data is leaking"
+        answer: 1
+        why: "Check whether a space is wider than your noise before spending time searching it."
+
+  5:
+    questions:
+      - q: "Each model's AUC varies by ~0.013 across splits, the gap between averages is 0.008, and boosting wins all ten paired splits. The verdict?"
+        options:
+          - "Inconclusive: the gap is smaller than the spread"
+          - "Boosting is better by a small, consistent margin (paired +0.0078, SD 0.0047)"
+          - "The network is better"
+          - "Boosting is much better"
+        answer: 1
+        why: "A difference smaller than the noise floor can still be real when you measure it in a way that cancels the noise."
+    explain: "Boosting wins 6 of 10 splits with the same average difference. What would you conclude, and why?"
+    key: |
+      - Much weaker evidence: a 6–4 split is close to a coin toss, so the average may be driven by one or two large splits.
+      - You'd report 'no reliable difference' (or collect more splits/data), because consistency across paired splits is what made the 10–0 result convincing.
+
+  6:
+    questions:
+      - q: "The best of twelve settings beat the default on validation, then lost on the test rows of the same split. Most likely?"
+        options:
+          - "The test set is broken"
+          - "Picking the best of twelve noisy numbers partly picked luck, and luck doesn't transfer to new rows"
+          - "The default is secretly tuned"
+          - "The model overfitted the test set"
+        answer: 1
+        why: "Paired across ten splits, tuning gained +0.0012 ± 0.0024 and won 5 of 10. The budget produced nothing."
+
+  7:
+    questions:
+      - q: "Which timing comparison is fair?"
+        options:
+          - "The network's run time including per-epoch validation scoring vs boosting's fit time"
+          - "Both models' bare training time, measured the same way on the same machine"
+          - "Whichever is shorter"
+          - "Prediction time only"
+        answer: 1
+        why: "The run function's timer included scoring, which is diagnostic work. Bare training: 6.80 s vs 0.49 s (~14×)."
+      - q: "Which cost favoured the network?"
+        options: ["Training time", "Prediction latency and file size (6 ms vs 13 ms per 1,000 rows; 28 KB vs 344 KB)", "Preprocessing needed", "Tuning effort"]
+        answer: 1
+        why: "At this request volume neither latency matters; at 100k requests per second, or on a small device, the same table could point the other way."
+    explain: "List three non-accuracy columns that belong in a model decision, with this lesson's example for each."
+    key: |
+      - Training time (boosting ~14× faster, no epochs or learning rate to choose); prediction latency and model size (network faster and smaller).
+      - Preparation and moving parts (the network needs a fitted preprocessor kept in step with its weights); behaviour under shift (Section 8).
+
+  8:
+    questions:
+      - q: "In Section 8's bootstrap, what is resampled?"
+        options:
+          - "The training rows"
+          - "The chronological test rows, with replacement, scoring both models on each resample"
+          - "The model weights"
+          - "The random seeds"
+        answer: 1
+        why: "Time runs one way, so there is only one chronological test set; the bootstrap shows how much the result depends on which rows were in it."
+      - q: "Under the chronological split, the ranking reversed (network ahead by 0.030). What is the honest conclusion?"
+        options:
+          - "Ship the network"
+          - "The shift is the dominant problem: both models lose most of their skill and are badly miscalibrated, whichever wins"
+          - "Boosting is broken"
+          - "Ignore the chronological split"
+        answer: 1
+        why: "The shift changed the ranking by about four times the stratified margin. Flexibility fitted to the old population suffers more when it moves."
+    explain: "The bootstrap interval covers which rows you tested on. Name a source of uncertainty it does not cover."
+    key: |
+      - It does not cover training randomness (seed), the choice of training/validation period, or future periods that differ from this one.
+      - It also can't tell you how the shift will continue: one later period is one sample of 'the future'.
+
+  9:
+    questions:
+      - q: "The two models rank customers with Spearman 0.87, and averaging them gives 0.8163 against 0.8160. What follows?"
+        options:
+          - "Always ship the average"
+          - "They mostly agree; the ensemble gain is too small to justify shipping and maintaining two models"
+          - "The models are identical"
+          - "Spearman proves boosting is better"
+        answer: 1
+        why: "Slices are more useful: both are weakest on `contact == 'unknown'`, a data question no model choice fixes."
+
+  10:
+    questions:
+      - q: "What does the blueprint ask the decision memo to deliver?"
+        options:
+          - "A declaration that neural networks win"
+          - "A defensible decision rule backed by the measurements (accuracy, costs, robustness), including what would change the decision"
+          - "The best single number"
+          - "Only the test AUC"
+        answer: 1
+        why: "Here: ship gradient boosting for this problem at this size, and treat the distribution shift as more urgent than model choice."
+
+  11:
+    questions:
+      - q: "Why is ten random splits of one file weaker evidence than ten independent datasets?"
+        options:
+          - "Ten splits are too few"
+          - "All splits share the same population and quirks, so they can't tell you how the result generalises to different data"
+          - "Random splits leak labels"
+          - "It isn't weaker"
+        answer: 1
+        why: "Splits measure noise within one dataset; independent datasets would test whether the conclusion transfers."

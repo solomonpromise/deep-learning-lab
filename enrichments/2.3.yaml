@@ -172,6 +172,46 @@ inserts:
     title: "Patience and min_delta, visualised"
     intro: "A validation curve like this lesson's: best around epoch 11, then creeping up. Change `patience`, `min_delta` and the noise, and re-roll the run."
 
+  # ------------------------------------------------------------------ added: prediction
+  - section: 7
+    after: "It is the reference that makes the result interpretable"
+    type: predict
+    mode: choice
+    prompt: "Logistic regression reaches validation ROC-AUC **0.770** in 0.03 seconds. The 5,377-parameter MLP, after 30 epochs, reaches about…"
+    options: ["0.95", "0.80", "0.77", "0.70"]
+    answer: 1
+    reveal: |
+      **About 0.80** at its best epoch: ahead, but by a small margin for far more machinery. That is the fact to report; whether it is
+      worth it is a deployment decision.
+
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 5
+    at: end
+    type: exercise
+    title: "Average the losses correctly"
+    prompt: |
+      Each batch reports its **mean** loss. Write `epoch_loss(batch_means, batch_sizes)` returning the true per-example mean for the epoch,
+      the quantity `running_loss += loss.item() * xb.size(0)` computes.
+    starter: |
+      def epoch_loss(batch_means, batch_sizes):
+          ___
+
+      print(epoch_loss([0.3, 0.2], [256, 10]))
+    check: |
+      assert abs(epoch_loss([0.3, 0.2], [256, 10]) - (0.3 * 256 + 0.2 * 10) / 266) < 1e-12, "Weight each batch mean by its number of examples, then divide by the total"
+      assert abs(epoch_loss([0.5, 0.5, 0.5], [4, 4, 1]) - 0.5) < 1e-12, "Equal means should give that same mean"
+      assert abs(epoch_loss([1.0, 0.0], [3, 1]) - 0.75) < 1e-12, "[1.0, 0.0] over batches of 3 and 1 should give 0.75, not 0.5"
+    solution: |
+      def epoch_loss(batch_means, batch_sizes):
+          total = sum(m * n for m, n in zip(batch_means, batch_sizes))
+          return total / sum(batch_sizes)
+
+      print(epoch_loss([0.3, 0.2], [256, 10]))
+    hints:
+      - "Turn each batch mean back into a batch total: mean × size."
+      - "Add the totals and divide by the total number of examples."
+    success: "Averaging the averages would have given the 10-row batch the same say as a 256-row one."
+
 answers:
   "1-1":
     - |

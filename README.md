@@ -2,7 +2,9 @@
 
 An interactive learning platform generated from the course notebooks of **Modern Deep Learning & AI Engineering**.
 Every lesson is the full teaching note, restructured for the web and enriched with explainers, animations,
-interactive labs, worked answers to every question, and a quiz.
+interactive labs, worked answers to every question, and a quiz. Learners answer a checkpoint at the end of every section,
+run Python in the browser, review what they answered with spaced repetition, earn module badges and a verifiable
+certificate, and can carry their progress between devices with a private code.
 
 The site is **static** (plain HTML, CSS and JavaScript), so it can be hosted for free on GitHub Pages, Netlify or any web server.
 It also opens straight from disk.
@@ -36,8 +38,10 @@ You can also drop notebooks straight into `notes/module-N/lesson-N.M.ipynb`.
 ../Day N/*.ipynb ──make sync──▶ notes/module-N/lesson-N.M.ipynb ─┐
                                                                   ├─▶ scripts/build.py ──▶ dist/  (the website)
 enrichments/N.M.yaml  (teaching layer)                            │
-course.yaml           (modules, terminology, sources)             │
+enrichments/N.M.checkpoints.yaml, module-N.challenge.yaml        │
+course.yaml           (modules, terminology, sources, services)   │
 glossary.yaml         (hover definitions)                         │
+concepts.yaml         (how the terms connect)                     │
 templates/ + static/  (design, behaviour, widgets)               ─┘
 ```
 
@@ -45,12 +49,13 @@ templates/ + static/  (design, behaviour, widgets)               ─┘
 |---|---|
 | `course.yaml` | Course title, the 10 modules (question, topics, hands-on), terminology rules ("Day" → "Module", "Note" → "Lesson"), and where notebooks come from |
 | `notes/` | The lesson notebooks the site is built from (one per lesson). `notes/sources.json` records which original file each came from |
-| `enrichments/` | The hand-written teaching layer, one YAML file per lesson. Never modifies the notebook |
+| `enrichments/` | The hand-written teaching layer, one YAML file per lesson (plus its checkpoints, and one challenge per module). Never modifies the notebook |
 | `glossary.yaml` | Terms shown with a dotted underline; hover or tap for a definition |
+| `concepts.yaml` | For the concept map: the lesson that teaches each glossary term and the terms it builds on |
 | `templates/` | Jinja2 page templates |
 | `static/css`, `static/js` | Styles, page behaviour (`app.js`), the widget toolkit (`js/lib/core.js`) and widgets (`js/widgets/*.js`) |
 | `scripts/build.py` | The generator. `scripts/dlp/` contains the notebook parser, renderers, enrichment and glossary logic |
-| `tutor-proxy/` | Cloudflare Worker that relays AI-tutor requests to Groq while keeping the API key secret |
+| `tutor-proxy/` | Cloudflare Worker: relays AI-tutor requests to Groq while keeping the API key secret, and serves the course API (sync, answer counts, certificates, challenge results) from a D1 database |
 | `dist/` | Build output. Don't edit; it's regenerated every build (and ignored by git) |
 
 ### What the converter understands in a notebook
@@ -86,7 +91,7 @@ summary: |                       # "the big idea" shown under the lesson title
 inserts:                         # things placed inside sections
   - section: 3                   # section number (optional: search all sections)
     after: "text from a cell"    # or: before: "…"   or: at: start|end
-    type: explainer              # explainer | widget | predict | steps | compare | figure | quiz | html
+    type: explainer              # explainer | widget | predict | steps | compare | figure | quiz | exercise | html
     style: plain                 # plain | analogy | why | deep | warning | tip | math | recap | remember | code | result
     title: "Radius and angle in plain English"
     md: |
@@ -146,6 +151,106 @@ quiz:                            # end-of-lesson multiple-choice quiz
 
 **Finding question IDs:** `make questions L=1.2` prints every question card with its ID and text, ready to paste into `answers:`.
 
+Quiz and checkpoint options are **shuffled at build time**, seeded by the question's id, so write the right answer
+wherever it reads best: the same question always shows its options in the same order, and the correct letter is spread
+evenly across a lesson.
+
+### Checkpoints (`enrichments/N.M.checkpoints.yaml`)
+
+A checkpoint closes each section: one or two multiple-choice questions with instant feedback, and optionally an
+"explain it back" prompt that the AI tutor grades against key points (without a tutor, the learner compares their
+answer with the key points themselves). The build warns about section numbers that don't exist.
+
+```yaml
+skill: Optimizers & learning rate      # the skill this lesson feeds on My progress
+sections:
+  2:                                   # section number
+    questions:
+      - q: "In a long, narrow valley, plain SGD zig-zags. What does momentum do?"
+        options: ["…", "…", "…", "…"]
+        answer: 1
+        why: "Shown after answering, right or wrong."
+    explain: "Explain in two sentences why momentum helps in a narrow valley."
+    key: |                             # what a good answer contains (the tutor grades against it)
+      - Sign-flipping components cancel in the velocity, so the zig-zag shrinks.
+```
+
+Every answered question joins the learner's **daily review** (Leitner boxes, `static/js/record.js`): a miss comes back
+tomorrow, a first-time right answer in a week, and each later right answer after a longer gap (3, 7, 16, 35, then 90 days). Question ids are `c:<lesson>:<section>:<n>`, so reordering questions resets their review history.
+
+### Code exercises (`type: exercise`)
+
+A small function to complete in the browser. `check` runs after the learner's code, in the same namespace; a failed
+`assert` shows its message as the hint. Blanks are written `___`. Exercises run with Pyodide (NumPy, pandas,
+scikit-learn, Matplotlib; no PyTorch) and work in every lesson.
+
+```yaml
+  - section: 4
+    after: "text from a cell"
+    type: exercise
+    title: "Standardise per feature"
+    prompt: "Complete `standardise` (markdown)."
+    starter: |
+      def standardise(X):
+          return (X - X.mean(axis=___, keepdims=True)) / X.std(axis=___, keepdims=True)
+    check: |
+      Z = standardise(np.random.default_rng(0).normal(size=(200, 4)) * 50)
+      assert np.allclose(Z.mean(axis=0), 0), "Each COLUMN should have mean 0: reduce along axis 0"
+    solution: |
+      …
+    hints: ["Axis 0 is the batch."]
+    success: "Shown when every check passes."
+```
+
+**Runnable code cells.** Lessons listed under `run_in_browser` in `course.yaml` also get **Run** and **Edit** buttons
+on their notebook cells, which share one namespace per lesson like a notebook. Cells that need PyTorch or install
+packages (the `skip` patterns) are left alone.
+
+### Lab challenges
+
+Any widget insert can carry a challenge: a goal, the conditions that count as meeting it, and the number that ranks a
+result. Widgets report their state through a `dlp:metrics` event (spiral-lab, unit-health, clip-lab, precision-lab,
+seed-roulette and case-library do). The learner sees their best result, the share of other results it beats (when the
+course API is on) and a share button.
+
+```yaml
+    challenge:
+      id: clip-fast                                   # unique across the course
+      title: "Down the cliff, fast"
+      goal: "Choose a learning rate and `max_norm` so the clipped path reaches the minimum in **6 steps or fewer**."
+      require: [["clippedSteps", "<=", 6, "reach the minimum in 6 clipped steps or fewer"]]
+      score: clippedSteps                             # the metric that ranks results
+      better: lower                                   # or: higher
+      unit: steps
+      share: "I got clipped gradient descent down a cliff in {clippedSteps} steps (lr {lr})"
+```
+
+### Module challenges (`enrichments/module-N.challenge.yaml`)
+
+Harder scenario questions that mix a module's lessons, shown on the module's overview page. Passing (`pass_mark`
+of them right) earns the module badge; all badges together unlock the certificate.
+
+```yaml
+title: "Module 3 challenge: why a network learns well, badly, or not at all"
+pass_mark: 0.75
+questions:
+  - { q: "…", options: ["…", "…", "…", "…"], answer: 1, why: "…" }
+```
+
+### The concept map (`concepts.yaml`)
+
+`concepts.html` shows every glossary term in the module of the lesson that teaches it, with arrows to the terms it
+builds on. Selecting one highlights everything it rests on and everything that rests on it.
+
+```yaml
+Adam: { home: "3.1", builds_on: [Optimizer, Momentum, Learning rate], later: { 8: "AdamW state is why full fine-tuning is expensive" } }
+```
+
+`home` is the lesson that teaches the term; `later` names unpublished modules that pick it up again. The other lessons
+that use a term come from the glossary at build time. The build warns when a term builds on one taught in a later
+module, or names a term the glossary doesn't have. A new glossary term appears on the map without being listed here,
+placed by where it is used most.
+
 ### Docstrings for every function and class
 
 Every function and class shown in a lesson gets a complete, Google-style docstring: a summary, what it does and
@@ -177,15 +282,58 @@ docstrings:
 
 ### Widgets available
 
+This table is generated: run `make widgets` after adding or changing a lab.
+
+<!-- widgets:start -->
 | Name | What it does | Used in |
 |---|---|---|
-| `pipeline-flow` | Animated classical-ML vs deep-learning pipeline | 1.1 |
-| `spiral-lab` | Trains logistic regression / engineered features / a neural network live on the two spirals; shows hidden units | 1.1 |
-| `spiral-unroll` | Morphs the spiral into (radius, aligned angle) space | 1.1 |
-| `results-bars` | Animated comparison bars for recorded results (`props.metrics`) | 1.1 |
-| `dl-or-not` | Gradient boosting vs neural network rule-of-thumb helper | 1.1 |
-| `scale-contours` | Gradient descent on loss contours; feature-scale and learning-rate sliders | 1.1 |
-| `pixel-lab` | 8×8 digits as 64 numbers, one-pixel shifts, the "ink" feature | 1.1 |
+| `broadcast-bug` | predictions (N,) against targets (N,1) silently become an N×N comparison | 2.1 |
+| `bug-lab` | the three silent bugs of Lesson 1.3, reproduced live on the spirals | 1.3 |
+| `case-library` | diagnose broken training runs the way Lesson 3.4's protocol orders the checks | 3.4 |
+| `clip-lab` | one step off a cliff, with and without gradient clipping | 3.3 |
+| `contiguity-viz` | why view() sometimes refuses and reshape() copies | 2.1 |
+| `curve-doctor` | diagnose a training run from its loss curves alone | 1.3, 3.1, 3.2, 3.4 |
+| `dataloader-viz` | how a Dataset's examples become batches | 2.2 |
+| `dl-or-not` | a rule-of-thumb decision helper: gradient boosting vs a neural network | 1.1 |
+| `dropout-lab` | one hidden layer of 12 units feeding one output, for one fixed input row | 3.2 |
+| `early-stopping` | keep the best weights, not the last | 2.3 |
+| `gitignore-lab` | edit the rules and watch which files of the Lesson 2.4 project git would keep | 2.4 |
+| `gradient-flow` | Lesson 3.3's per-layer gradient probe, computed live | 3.3 |
+| `leakage-lab` | the score your split reports against the score the model earns in real use | 4.1 |
+| `logit-stability` | why the loss takes logits, not probabilities | 2.3 |
+| `logit-temperature` | what loss, ROC-AUC and accuracy can each see | 3.2 |
+| `loss-contract` | what shapes and dtypes each loss function expects, and what happens if you get it wrong | 2.1 |
+| `loss-vs-accuracy` | why we train on a smooth loss, not on accuracy | 1.2 |
+| `lr-explorer` | the same gradient, three completely different outcomes | 1.2 |
+| `lr-schedules` | the learning rate each epoch trains with, under four common schedules | 3.1 |
+| `memory-planner` | the bytes a run needs before it starts, from the parameter count, the number format, the optimizer, the trainable share and the batch | 4.3 |
+| `minibatch-paths` | full-batch vs mini-batch gradient descent on the same loss surface | 2.2 |
+| `module-registry` | what nn.Module can see, and what the optimizer therefore updates | 2.3 |
+| `momentum-valley` | plain SGD and SGD with momentum, side by side in a long, narrow valley | 3.1 |
+| `neuron-playground` | one neuron: weighted sum + bias, then an activation | 1.2 |
+| `noise-floor` | how far a validation score moves when only the split changes | 3.2 |
+| `notebook-state` | hidden state, reproduced | 2.4 |
+| `onehot-viz` | ordinal codes invent distances; one-hot keeps every category equally far apart | 2.2 |
+| `paired-lab` | why comparing two models on the same splits beats comparing their averages | 4.4 |
+| `param-counter` | parameters and memory of a stack of Linear layers, from their widths alone | 2.1, 2.3, 2.4 |
+| `pipeline-flow` | classical ML vs deep learning pipelines, animated | 1.1 |
+| `pixel-lab` | why raw pixels defeat hand-written features | 1.1 |
+| `precision-lab` | what fp32, fp16 and bf16 can hold, and why fp16 training needs a loss scaler | 4.3 |
+| `predict-rounds` | commit to a prediction, then see the lesson's real result, one round at a time | 4.4 |
+| `project-map` | the bank_marketing_project repository built in Lesson 2.4, file by file | 2.4 |
+| `relu-bends` | why non-linearity is structurally necessary | 1.2 |
+| `results-bars` | animated side-by-side comparison of recorded results | 1.1, 3.1, 3.2, 4.1 |
+| `scale-contours` | why feature scale matters to gradient descent | 1.1 |
+| `seed-roulette` | train the same small network ten times and watch the score move when nothing that matters changed | 4.2 |
+| `slope-probe` | a gradient is a local slope | 1.2 |
+| `spiral-lab` | train three models on the two-spirals problem, live in the browser | 1.1, 1.3 |
+| `spiral-unroll` | animate the change of representation from (x1, x2) to (radius, aligned angle) | 1.1 |
+| `tensor-shapes` | see shapes instead of imagining them | 1.3, 2.1 |
+| `threshold-explorer` | ranking vs classification on an imbalanced problem | 2.3, 4.1 |
+| `tiny-net` | "be the optimiser" on the exact 2-2-1 network of Lesson 1.2 | 1.2 |
+| `training-loop` | the six canonical lines, executed one at a time on a model you can watch | 1.3 |
+| `unit-health` | watch every hidden unit of a real network: identical twins from a symmetric start, dead ReLUs from a learning rate that is too large | 3.3 |
+<!-- widgets:end -->
 
 **Adding a widget:** create `static/js/widgets/<name>.js` that registers
 `window.DLP.widgets['<name>'] = function (mountEl, props) { … }`. Use the helpers in `static/js/lib/core.js`
@@ -236,6 +384,54 @@ visitor at 20 questions a minute (change `limit` there; `period` must be 10 or 6
 
 To test locally with a key: `GROQ_API_KEY=gsk_... python scripts/tutor_dev_proxy.py`, set
 `tutor.endpoint: "http://localhost:8787"`, then `make serve`.
+
+## Progress, sync and the course API
+
+Everything a learner does (answers, notes, review schedule, streak, badges) is kept in their browser under one
+record (`static/js/record.js`). No account is needed. The pages built on it:
+
+| Page | What it shows |
+|---|---|
+| `review.html` | Today's daily review, and practice for any lesson |
+| `progress.html` | Streak and weekly goal, a 16-week calendar, the skills map, badges, lab challenge results, and sync |
+| `certificate.html` | The certificate, once every module challenge is passed; printable, downloadable as PNG |
+| `concepts.html` | The concept map |
+| `instructor.html` | Answer counts per question, for the course author (not linked, not indexed; needs the stats token) |
+
+With `services.api` set in `course.yaml`, the same Worker as the tutor adds a small API (`tutor-proxy/api.js`, storage in
+the D1 database from `tutor-proxy/schema.sql`):
+
+- **Sync**: a learner turns it on under *My progress* and gets a private 20-character code. Entering it (or opening
+  the link it gives) on another device merges the two records. The tutor key is never synced.
+- **Anonymous answer counts**: a question id and right or wrong, nothing else. Learners can switch it off, and it is
+  off for browsers that send Do Not Track and on local previews (`make serve`), so testing doesn't skew the counts. The instructor page reads them with a token.
+- **Certificates** get an id and a public verification link.
+- **Lab challenges** report the share of earlier results a new one beats.
+
+One-time setup, after the tutor proxy (below) is deployed:
+
+```bash
+cd tutor-proxy
+npx wrangler d1 create deep-learning-lab          # copy the database_id into wrangler.toml
+npx wrangler d1 execute deep-learning-lab --remote --file=schema.sql
+npx wrangler secret put STATS_TOKEN               # any long random string; you type it on instructor.html
+npx wrangler deploy
+```
+
+Leave `services.api` empty to turn all of this off: the site then keeps everything in each learner's browser.
+
+## Discussions (giscus)
+
+With the `discussions:` block in `course.yaml`, every lesson ends with a discussion thread on the repository's GitHub
+Discussions, through [giscus](https://giscus.app). Reading needs nothing; posting needs a GitHub account. Nothing loads
+from giscus until a learner opens the discussion. Setup: enable Discussions on the repository, install the
+[giscus app](https://github.com/apps/giscus) on it, and copy `repo_id` and `category_id` from giscus.app.
+
+## Sharing previews
+
+Each lesson, module and the home page gets a 1200×630 preview image (drawn at build time, `scripts/dlp/social.py`) and
+Open Graph tags, so a link shared in a chat or on social media shows the lesson's title and module. Set `site_url` in
+`course.yaml` to the live address so the tags carry absolute URLs.
 
 ## Hosting on GitHub Pages
 

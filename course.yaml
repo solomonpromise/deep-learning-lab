@@ -23,6 +23,9 @@ course:
   # to show "Open in Colab" buttons on every lesson.
   github_repo: "solomonpromise/deep-learning-lab"
   github_branch: main
+  # Public address of the published site. Used for link previews (the image and title shown
+  # when a lesson link is shared) and for absolute links in them.
+  site_url: "https://solomonpromise.github.io/deep-learning-lab/"
 
 # AI tutor (Qwen on Groq). Never put an API key in this file — the site is public.
 #  - endpoint: URL of the tutor proxy (tutor-proxy/, e.g. a Cloudflare Worker) that holds the key.
@@ -35,6 +38,34 @@ tutor:
   model_label: Qwen 3.8 (27B)
   reasoning_effort: low      # none | low | medium | high  (hidden reasoning; higher = slower, more careful)
   endpoint: "https://deep-learning-lab-tutor.solomonpromise51.workers.dev"
+
+# The course API: the same Cloudflare Worker as the tutor (tutor-proxy/api.js, D1 database). It keeps
+# synced progress under private codes, anonymous answer counts and issued certificates. Leave `api`
+# empty to turn all three off; the site then keeps everything in each learner's browser.
+services:
+  api: "https://deep-learning-lab-tutor.solomonpromise51.workers.dev"
+  anonymous_stats: true     # learners can switch it off on My progress; off by default with Do Not Track
+
+# Discussion under every lesson: giscus (https://giscus.app) on this repository's GitHub Discussions.
+# One thread per lesson in the Announcements category, created by giscus on the first comment; learners need
+# a GitHub account to post, anyone can read. The giscus GitHub app must be installed on the repository.
+# Nothing is loaded from giscus.app until a learner opens the discussion. Remove this block to turn it off.
+discussions:
+  provider: giscus
+  repo: solomonpromise/deep-learning-lab
+  repo_id: R_kgDOUs0ZjQ
+  category: Announcements
+  category_id: DIC_kwDOUs0Zjc4DGh2i
+
+# Python in the browser (Pyodide, in a Web Worker). Code cells of these lessons get Run and Edit
+# buttons and share one namespace per lesson, like a notebook. Cells matching a `skip` pattern (PyTorch,
+# installs) keep only "Open in Colab": PyTorch does not run in the browser. Code exercises
+# (`type: exercise` in an enrichment file) work in every lesson.
+run_in_browser:
+  lessons: ["1.1", "1.2"]
+  skip: ['\btorch\b', 'pip install', '^\s*!']
+  # ...unless the cell guards the import, e.g. `try: import torch … except ImportError:`
+  allow: ['except ImportError']
 
 # Words used in the original notebooks → words used on the platform.
 # Applied to prose and code comments (never to executable code).

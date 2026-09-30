@@ -116,6 +116,102 @@ inserts:
       comes up by more than three orders of magnitude, the same effect this section measures. Then make the network 24 layers deep: the
       plain stack's last/first ratio jumps to about 5×10⁸, while the residual one stays below 100.
 
+  # ------------------------------------------------------------------ added: labs and predictions
+  - section: 2
+    after: "What you do need to recognise are the signatures of a broken start"
+    type: widget
+    name: unit-health
+    title: "Unit health: symmetry and dead units, live"
+    challenge:
+      id: unit-edge
+      title: "Find the edge"
+      goal: "With the **Default** initialisation, find the **largest learning rate** that still reaches **95% test accuracy** with **no more than 6 dead units** in layer 1 after 25 epochs."
+      require: [["init", "==", "default", "use the Default initialisation"], ["testAcc", ">=", 0.95, "reach 95% test accuracy"], ["dead1", "<=", 6, "keep at most 6 dead units in layer 1"]]
+      score: lr
+      better: higher
+      unit: learning rate
+      share: "I kept a ReLU network healthy at learning rate {lr} (test accuracy {testAcc%}, {dead1} dead units)"
+    intro: |
+      A real network trains here, and every hidden unit is a tile. Try **All zeros** and **All 0.1** first and count the distinct units.
+      Then go back to **Default** and push the learning rate to 0.5 or 1.0 (that is §5's experiment).
+
+  - section: 4
+    after: "Use clipping as protection against unusually large updates"
+    type: widget
+    name: clip-lab
+    title: "Clip lab: one step off a cliff"
+    challenge:
+      id: clip-fast
+      title: "Down the cliff, fast"
+      goal: "Choose a learning rate and `max_norm` so the **clipped** path reaches the minimum in **6 steps or fewer**."
+      require: [["clippedSteps", "<=", 6, "reach the minimum in 6 clipped steps or fewer"]]
+      score: clippedSteps
+      better: lower
+      unit: steps
+      share: "I got clipped gradient descent down a cliff in {clippedSteps} steps (lr {lr}, max_norm {maxNorm})"
+    intro: |
+      A gentle bowl with a steep cliff. Plain gradient descent reaches the cliff face, meets a huge gradient, and is thrown far past the
+      minimum. `clip_grad_norm_` keeps the direction and caps the length. Move the learning rate and `max_norm`.
+
+  - section: 5
+    after: "Here we will measure whether dead units are the mechanism behind that collapse"
+    type: predict
+    mode: choice
+    prompt: "Train the same model at learning rate **0.5**. What share of the first layer's ReLU units end up dead (zero on every training row)?"
+    options: ["About 0%", "About 10%", "About 60%", "All of them"]
+    answer: 2
+    reveal: |
+      **60.9%.** At 0.01 it is 12.5% and the model is fine; at 0.5 most of the layer is gone and validation AUC falls to 0.5000. The Unit
+      health lab in §2 lets you watch it happen.
+
+  - section: 7
+    after: "That route becomes extremely valuable when many blocks are stacked"
+    type: predict
+    mode: choice
+    prompt: "The plain 12-layer ReLU network's last/first gradient ratio is about **4,500**. Change every block from $f(x)$ to $x + f(x)$. The ratio becomes about…"
+    options: ["4,000: the shortcut changes little", "500", "9", "Exactly 1"]
+    answer: 2
+    reveal: |
+      **About 9.4**, nearly three orders of magnitude better from one change to the block. The identity path gives the gradient a route that
+      bypasses every transformation.
+
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 4
+    at: end
+    type: exercise
+    title: "Implement clip_grad_norm_"
+    prompt: |
+      Given a list of gradient arrays, compute their **total** norm (as if they were one long vector). If it exceeds `max_norm`, scale every
+      array by `max_norm / total`. Return the clipped list and the total norm before clipping.
+    starter: |
+      import numpy as np
+
+      def clip_grad_norm(grads, max_norm):
+          total = ___
+          if total > max_norm:
+              grads = ___
+          return grads, total
+    check: |
+      g = [np.array([3.0, 0.0]), np.array([[0.0], [4.0]])]
+      clipped, total = clip_grad_norm(g, 1.0)
+      assert np.isclose(total, 5.0), f"The total norm of [3, 0] and [0, 4] is 5, got {total}"
+      assert np.isclose(np.sqrt(sum((c ** 2).sum() for c in clipped)), 1.0), "After clipping the total norm should equal max_norm"
+      assert np.allclose(clipped[0], [0.6, 0.0]) and np.allclose(clipped[1], [[0.0], [0.8]]), "Clipping scales every array by the same factor: the direction is kept"
+      same, t2 = clip_grad_norm([np.array([0.3, 0.4])], 1.0)
+      assert np.allclose(same[0], [0.3, 0.4]) and np.isclose(t2, 0.5), "Below the threshold, nothing changes"
+    solution: |
+      import numpy as np
+
+      def clip_grad_norm(grads, max_norm):
+          total = np.sqrt(sum((g ** 2).sum() for g in grads))
+          if total > max_norm:
+              grads = [g * (max_norm / total) for g in grads]
+          return grads, total
+    hints:
+      - "Square every element of every array, add them all up, take the square root."
+      - "Scale each array by the same factor `max_norm / total`."
+    success: "One factor for all the gradients: the step keeps its direction and only its length is capped."
+
 answers:
   "2-1":
     - |

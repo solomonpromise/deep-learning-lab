@@ -1,0 +1,155 @@
+# Checkpoints for Lesson 3.3 (see 1.1.checkpoints.yaml for the format).
+skill: Gradient health
+
+sections:
+  1:
+    questions:
+      - q: "A network's summed gradient norm looks perfectly normal. What can it still hide?"
+        options:
+          - "Nothing: a normal total means every layer is fine"
+          - "An early layer receiving a gradient billions of times smaller than the last layer's"
+          - "The learning rate"
+          - "The batch size"
+        answer: 1
+        why: "A large last-layer gradient dominates the total. Per-layer norms show where the learning signal is lost or amplified."
+    explain: "What question does the per-layer gradient probe answer, and what does a 'healthy' profile look like?"
+    key: |
+      - It asks where in the network the learning signal becomes too small or too large, layer by layer.
+      - Healthy: layers' gradient norms are within roughly the same order of magnitude, with no huge systematic gap between early and late layers.
+
+  2:
+    questions:
+      - q: "Why does an all-zero weight initialisation fail?"
+        options:
+          - "Zeros cause division by zero"
+          - "Every hidden unit starts identical, gets identical gradients and stays identical (symmetry is never broken)"
+          - "The loss starts too high"
+          - "ReLU cannot handle zeros"
+        answer: 1
+        why: "After training, the 64-unit layer had one distinct row. Random initialisation's main job is to break symmetry."
+      - q: "Weights initialised with standard deviation 3.0 gave a starting loss of about 640. What is the failure mechanism?"
+        options:
+          - "Symmetry"
+          - "The numerical scale is badly behaved: huge pre-activations, and many ReLUs pushed into the zero region"
+          - "Overfitting"
+          - "A data bug"
+        answer: 1
+        why: "Different mechanism from zeros: the units differ, but the computation's scale is extreme. Kaiming-style (and PyTorch default) init keeps activation variance stable."
+    explain: "If all weights are the same non-zero value, say 0.1, has the symmetry problem been fixed? Explain."
+    key: |
+      - No. Every unit in the layer still computes the same function, receives the same gradient and makes the same update, so they stay identical.
+      - Only the starting scale changed; breaking symmetry needs different (random) starting values per unit. (Non-zero biases that are all equal do not help either.)
+
+  3:
+    questions:
+      - q: "What is the largest slope the sigmoid function can have?"
+        options: ["1", "0.5", "0.25", "It is unbounded"]
+        answer: 2
+        why: "$\\sigma'(z) = \\sigma(z)(1-\\sigma(z)) \\le 0.25$, reached at $z = 0$. Twelve such factors shrink a gradient enormously."
+      - q: "In the 12-layer sigmoid network, the first layer's gradient was about $10^{9}$ times smaller than the last's. What does that mean in practice?"
+        options:
+          - "The network is overfitting"
+          - "Early layers barely train even though the loss can still fall"
+          - "The learning rate is too large"
+          - "The data is unscaled"
+        answer: 1
+        why: "A falling loss does not prove every layer is training. ReLU helps (slope 1 when active) but does not guarantee healthy flow in deep stacks."
+    explain: "Would the sigmoid network's gradient profile get better or worse as training pushes activations to extremes? Explain with 'saturation'."
+    key: |
+      - Worse. When sigmoid inputs become very positive or very negative, the output saturates near 1 or 0 and the derivative approaches 0.
+      - Saturated layers pass back even smaller factors, so the vanishing gets stronger.
+
+  4:
+    questions:
+      - q: "Where does gradient clipping go in the training loop?"
+        options:
+          - "Before `loss.backward()`"
+          - "Between `loss.backward()` and `optimizer.step()`"
+          - "After `optimizer.step()`"
+          - "Before `zero_grad()`"
+        answer: 1
+        why: "Before backward there is nothing to clip; after step the oversized update has already happened."
+      - q: "What does `clip_grad_norm_(params, max_norm=1.0)` change?"
+        options:
+          - "The gradient's direction"
+          - "Only the gradient's length, when it exceeds 1.0; the direction is kept"
+          - "The learning rate"
+          - "The weights directly"
+        answer: 1
+        why: "It prevents one catastrophic update. It does not fix the cause."
+    explain: "Clipping fires on almost every step of your run. What should you do, and what should you not do?"
+    key: |
+      - Investigate the cause: learning rate too high, poor initialisation or badly scaled inputs.
+      - Don't just keep lowering the threshold: that hides the symptom without fixing the problem.
+
+  5:
+    questions:
+      - q: "Most of a layer's ReLU units are dead after training at lr = 0.5. Lowering the learning rate now…"
+        options:
+          - "Revives them within a few epochs"
+          - "Cannot revive them: dead units get zero gradient, so you restart after fixing the cause"
+          - "Makes them overfit"
+          - "Turns them into LeakyReLUs"
+        answer: 1
+        why: "A unit inactive for every row receives no gradient. Remedies: a smaller learning rate, LeakyReLU/GELU, and scaled inputs, then restart."
+      - q: "Is any dead ReLU unit a problem?"
+        options:
+          - "Yes, even one ruins the model"
+          - "No: a small fraction is often harmless; what matters is how much of a layer is lost and whether behaviour degrades"
+          - "Only in the last layer"
+          - "Only with Adam"
+        answer: 1
+        why: "Networks are over-parameterised. At lr = 0.5, 61% died and AUC fell to 0.5; at lr = 0.01, 12.5% died and AUC was fine."
+
+  6:
+    questions:
+      - q: "What does `model.eval()` change for BatchNorm?"
+        options:
+          - "It turns BatchNorm off entirely"
+          - "It uses the stored running statistics instead of the current batch's statistics"
+          - "It recomputes statistics from the evaluation batch"
+          - "Nothing"
+        answer: 1
+        why: "Training uses batch statistics (and updates running averages); evaluation uses the running averages, so each row's output does not depend on its batch-mates."
+      - q: "Why is LayerNorm the standard choice in Transformers?"
+        options:
+          - "It is faster than BatchNorm"
+          - "It normalises each example across its own features, independent of batch composition or batch size"
+          - "It has no parameters"
+          - "It removes the need for residual connections"
+        answer: 1
+        why: "BatchNorm normalises each feature across the batch; LayerNorm normalises each row across its features."
+    explain: "Explain the difference between BatchNorm and LayerNorm by the axis each one normalises over."
+    key: |
+      - BatchNorm: for each feature, statistics across the examples in the batch, so an example's output depends on the other rows (and on train/eval mode).
+      - LayerNorm: for each example, statistics across its features, so there is no dependence on the rest of the batch.
+
+  7:
+    questions:
+      - q: "Why does $y = x + f(x)$ help gradients reach early layers?"
+        options:
+          - "It doubles the learning rate"
+          - "$dy/dx = 1 + f'(x)$: the constant 1 gives the gradient a direct route even when $f'$ is tiny"
+          - "It removes the activation function"
+          - "It normalises the activations"
+        answer: 1
+        why: "The identity path bypasses the transformation. The 12-layer residual net's last/first ratio fell from ~4,500 to ~9."
+      - q: "A block's input has width 64 but $f(x)$ has width 128. What do you need?"
+        options:
+          - "Nothing: PyTorch broadcasts"
+          - "A projection (e.g. a linear layer) on the shortcut to make the shapes match"
+          - "To remove the residual connection"
+          - "A larger learning rate"
+        answer: 1
+        why: "The shortcut still gives a short, direct path for the gradient, now through one linear map rather than the whole block."
+
+  8:
+    questions:
+      - q: "A layer-health report shows a last/first gradient ratio of $10^4$ and 55% dead units in layer 1. What is the value of the report?"
+        options:
+          - "It proves the model is bad"
+          - "It turns 'the model isn't learning' into specific, testable questions about where and why"
+          - "It fixes the model"
+          - "It picks the learning rate"
+        answer: 1
+        why: "The thresholds are warning signs, not laws. The point is to measure before changing five settings and hoping."

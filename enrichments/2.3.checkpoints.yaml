@@ -1,0 +1,198 @@
+# Checkpoints for Lesson 2.3 (see 1.1.checkpoints.yaml for the format).
+skill: Building & training an MLP
+
+sections:
+  1:
+    questions:
+      - q: "Layers stored in a plain Python list, `self.layers = [nn.Linear(...), ...]`. What happens when you train?"
+        options:
+          - "An error at construction"
+          - "It trains normally"
+          - "Those layers' weights are invisible to the optimizer and never update, silently"
+          - "The layers run on the CPU only"
+        answer: 2
+        why: "A plain list does not register modules, so `model.parameters()` misses them. The forward pass and backward still run. Use `nn.ModuleList`."
+      - q: "Registration lets PyTorch do all of these **except**…"
+        options:
+          - "Give the optimizer every trainable tensor via `parameters()`"
+          - "Move everything with one `.to(device)`"
+          - "Choose the learning rate automatically"
+          - "Collect the state for `state_dict()` and propagate `train()`/`eval()`"
+        answer: 2
+        why: "Registration is bookkeeping for parameters, devices, checkpoints and modes. The learning rate is still your choice."
+    explain: "Why is the plain-list bug described as 'silent', and how would you catch it?"
+    key: |
+      - The model still runs forward, computes a loss and calls backward without errors; the unregistered weights simply never change, so it only partly learns.
+      - Catch it by checking structure: count `model.parameters()` against the expected total, or print `named_parameters()`.
+
+  2:
+    questions:
+      - q: "What does the parameter name `blocks.0.linear.weight` describe?"
+        options:
+          - "A random label"
+          - "The path through the module tree: BankMLP → blocks → block 0 → linear → weight"
+          - "The weight's shape"
+          - "The layer's training order"
+        answer: 1
+        why: "These paths are the keys in `state_dict()`, which is why renaming a sub-module can stop an old checkpoint loading."
+      - q: "When do you need a custom `nn.Module` rather than `nn.Sequential`?"
+        options:
+          - "Always"
+          - "When the forward pass needs branching, skip connections like $x + f(x)$, or multiple inputs"
+          - "When the model has more than three layers"
+          - "Never: Sequential can express everything"
+        answer: 1
+        why: "Sequential is a straight chain. A residual connection needs the original $x$ later in forward, which a chain cannot keep."
+
+  3:
+    questions:
+      - q: "Why dry-run a fake batch through a new model?"
+        options:
+          - "To initialise the weights"
+          - "To test the wiring (input accepted, output shape correct) in milliseconds, before real data"
+          - "To warm up the GPU"
+          - "To measure accuracy"
+        answer: 1
+        why: "The predictions do not matter. A wrong input width or a layer mismatch shows up instantly."
+      - q: "A forward hook fires when you call `model(x)`. What happens with `model.forward(x)`?"
+        options: ["It fires twice", "The hook is bypassed", "It raises an error", "It fires once, as normal"]
+        answer: 1
+        why: "Hooks are part of the module's call machinery. Calling `forward` directly skips it. Also remove diagnostic hooks when you are done."
+    explain: "An error says `(4x64 and 32x16)`. Explain how a shape trace helps you find the layer that is actually wrong."
+    key: |
+      - The trace shows the output shape of each leaf layer and stops at the last layer that succeeded, so you see what the failing layer received (64 features).
+      - The bug is the layer configured for 32 inputs; the traceback names the operation that failed, not the earlier configuration choice.
+
+  4:
+    questions:
+      - q: "A colleague's model ends in `nn.Sigmoid()` and trains with `BCEWithLogitsLoss`. What is wrong?"
+        options:
+          - "Nothing"
+          - "The loss applies a sigmoid again to values already squashed into (0, 1), so it receives the wrong quantity and weak gradients"
+          - "It will crash"
+          - "It trains faster"
+        answer: 1
+        why: "The loss expects raw logits. Output logits during training; apply sigmoid only when you need probabilities."
+      - q: "For a one-logit binary head, which combination is right?"
+        options:
+          - "`Linear(h, 1)`, `BCEWithLogitsLoss`, labels (N, 1) float32"
+          - "`Linear(h, 1)`, `CrossEntropyLoss`, labels (N,) long"
+          - "`Linear(h, 2)`, `BCEWithLogitsLoss`, labels (N, 1) float32"
+          - "`Linear(h, 2)`, `BCELoss`, labels (N, 2)"
+        answer: 0
+        why: "One logit pairs with BCEWithLogits and float (N, 1) targets. Two logits pair with CrossEntropyLoss and (N,) long targets."
+    explain: "Why does the naive 'sigmoid then BCE' route return the same loss for logits +20 and +30, and why is that a problem?"
+    key: |
+      - In float32, sigmoid(20) and sigmoid(30) both round to exactly 1.0, so the log term is clamped: the loss (and its gradient) cannot tell them apart.
+      - A confidently wrong model then gets no useful signal to recover; `BCEWithLogitsLoss` uses a stable formula that keeps the information.
+
+  5:
+    questions:
+      - q: "Why accumulate `loss.item()` rather than `loss` in the running total?"
+        options:
+          - "`.item()` is more accurate"
+          - "Adding loss tensors keeps every batch's computation graph alive and wastes memory"
+          - "`loss` is on the GPU"
+          - "They are identical"
+        answer: 1
+        why: "`.item()` extracts a plain Python number, so the old graphs can be freed."
+      - q: "Why multiply each batch's mean loss by `xb.size(0)` before averaging?"
+        options:
+          - "To make the number bigger"
+          - "The last batch is often shorter; weighting by actual size gives the true per-example mean"
+          - "PyTorch requires it"
+          - "To normalise the gradients"
+        answer: 1
+        why: "Averaging batch means would give a 10-example batch the same weight as a 256-example one."
+
+  6:
+    questions:
+      - q: "What does `model.eval()` change, and what does it not?"
+        options:
+          - "It turns off gradients"
+          - "It switches layers such as dropout and batch norm to evaluation behaviour; it does not stop gradient tracking"
+          - "It freezes the weights"
+          - "It moves the model to the CPU"
+        answer: 1
+        why: "`eval()` is about layer behaviour; `torch.no_grad()` is about not building the graph. Validation normally needs both."
+      - q: "Why compute ROC-AUC once over all validation predictions rather than averaging per-batch AUCs?"
+        options:
+          - "It is faster"
+          - "AUC is a ranking over the whole set; batch AUCs depend on each batch's mix of positives and don't combine into the dataset's AUC"
+          - "Batch AUC is always 0.5"
+          - "PyTorch has no batch AUC"
+        answer: 1
+        why: "Concatenate the predictions and labels, then compute the metric once."
+    explain: "What is a 'mode leak', and how do robust train and evaluate functions prevent it?"
+    key: |
+      - `train()`/`eval()` are state changes that persist; a mode leak is a function inheriting the mode another part of the code left behind (e.g. training with dropout off after evaluation).
+      - Each function sets its own mode at the start: `model.train()` in the training loop, `model.eval()` in evaluation.
+
+  7:
+    questions:
+      - q: "Why is logistic regression the important baseline here, rather than 'majority class'?"
+        options:
+          - "It is always better"
+          - "It tests whether the MLP's non-linear capacity adds enough value to justify its extra complexity and cost"
+          - "It has the highest accuracy"
+          - "It trains on the test set"
+        answer: 1
+        why: "The majority baseline shows accuracy is misleading (88.3%, finds nobody). Logistic regression is the modelling reference that makes the MLP's result interpretable."
+      - q: "A call centre can phone 20% of customers. Which framing and metric fit best?"
+        options:
+          - "Classification accuracy at threshold 0.5"
+          - "Ranking: recall or lift among the top 20% by predicted score"
+          - "Training loss"
+          - "The number of epochs"
+        answer: 1
+        why: "The team acts on the top k, so ordering matters, not a yes/no threshold. The MLP reached about 3× lift at 20% of the list."
+    explain: "Validation loss rises after epoch 11 while ROC-AUC stays roughly flat. What does that tell you?"
+    key: |
+      - The model is overfitting mildly: it keeps fitting training-specific detail and becomes overconfident, which loss (which scores probability quality) penalises.
+      - ROC-AUC only cares about the ordering, which barely changed, so ranking quality held while calibration got worse.
+
+  8:
+    questions:
+      - q: "What four things make a checkpoint resumable?"
+        options:
+          - "Weights, optimizer state, epoch, config"
+          - "Weights, the training data, the loss curve, the GPU type"
+          - "The pickled model object only"
+          - "Weights and the test set"
+        answer: 0
+        why: "The config (e.g. `hidden_sizes`) is needed to rebuild the architecture before loading the weights."
+      - q: "Resuming with a fresh Adam barely changed this run. The right conclusion is…"
+        options:
+          - "Optimizer state never matters"
+          - "Save it anyway: it matters for short runs, fine-tuning, schedulers and large models, and forgetting it may show no symptom here"
+          - "Always use a fresh optimizer"
+          - "Use SGD instead"
+        answer: 1
+        why: "One small experiment does not make a rule. The engineering conclusion is about risk and reproducibility."
+    explain: "Adam keeps about two extra floats per parameter. Estimate the optimizer state for a 7-billion-parameter model in float32 and what that implies."
+    key: |
+      - 7B × 2 × 4 bytes ≈ 56 GB of optimizer state, on top of the weights (≈ 28 GB) and gradients (≈ 28 GB).
+      - Full fine-tuning of such a model does not fit on a single typical GPU, which motivates parameter-efficient methods (LoRA, Module 8) and memory tricks (Module 4).
+
+  9:
+    questions:
+      - q: "`pos_weight=7.5` barely moved ROC-AUC but recall at threshold 0.5 jumped from 0.24 to 0.64. Why?"
+        options:
+          - "The weighting improved the ranking a lot"
+          - "Weighting mainly shifted the predicted probabilities upward, moving the 0.5 operating point, while the ranking stayed similar"
+          - "The model was retrained on more data"
+          - "The threshold was changed to 0.1"
+        answer: 1
+        why: "Loss weighting changes what the model cares about while learning; threshold choice changes which scores become actions. The weighted model is also less calibrated."
+      - q: "Why `copy.deepcopy(model.state_dict())` when saving the best weights for early stopping?"
+        options:
+          - "It is faster"
+          - "`state_dict()` tensors refer to the live parameters, so without a copy your 'best' weights keep changing as training continues"
+          - "It compresses the weights"
+          - "It moves them to the CPU"
+        answer: 1
+        why: "Without an independent copy, the snapshot silently becomes the latest weights."
+    explain: "Why is the validation score chosen by early stopping mildly optimistic, and what protects you?"
+    key: |
+      - You pick the best of many measurements on the same validation set, so the chosen score benefits from luck on that set.
+      - A separate test set, never used to make choices, gives the honest final estimate.

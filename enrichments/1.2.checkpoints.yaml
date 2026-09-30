@@ -1,0 +1,221 @@
+# Checkpoints for Lesson 1.2 (see 1.1.checkpoints.yaml for the format).
+skill: Forward pass, loss & backprop
+
+sections:
+  1:
+    questions:
+      - q: "Which of these is a **hyperparameter** rather than a parameter?"
+        options: ["A weight $w$", "A bias $b$", "The learning rate $\\eta$", "The pre-activation $z$"]
+        answer: 2
+        why: "Parameters (every weight and bias) are found by gradient descent. Hyperparameters such as the learning rate, layer widths and epochs are chosen by you, by experiment. $z$ is a computed value, not something learned or chosen."
+      - q: "What would a neuron with **no bias** be unable to do?"
+        options:
+          - "Scale its inputs"
+          - "Shift its activation threshold away from the origin: with all inputs 0, its pre-activation is always 0"
+          - "Use ReLU"
+          - "Be trained by gradient descent"
+        answer: 1
+        why: "The bias is added regardless of the input, so it moves the point at which the neuron switches on. Without it, every decision boundary must pass through the origin."
+    explain: "Describe the two steps every neuron performs, and say which step makes it more than logistic regression."
+    key: |
+      - Step 1: a weighted sum of the inputs plus a bias, $z = w \cdot x + b$ (a linear model).
+      - Step 2: an activation function, $a = f(z)$.
+      - The non-linear activation is what makes a network more than a single linear model.
+
+  2:
+    questions:
+      - q: "How many parameters does a fully connected layer from 64 inputs to 32 outputs have?"
+        options: ["96", "2,048", "2,080", "2,112"]
+        answer: 2
+        why: "Weights: $64 \\times 32 = 2{,}048$. Biases: one per output, 32. Total $2{,}080$."
+      - q: "For the network `[784, 512, 256, 10]`, which layer holds most of the parameters?"
+        options: ["784 → 512", "512 → 256", "256 → 10", "They are roughly equal"]
+        answer: 0
+        why: "$784 \\times 512 \\approx 401{,}000$ weights, far more than $512 \\times 256 \\approx 131{,}000$. The widest input to the widest layer dominates."
+
+  3:
+    questions:
+      - q: "For the first example, hidden neuron 2 has $z_2 = -1.05$. After ReLU, what does it pass to the output layer?"
+        options: ["-1.05", "0", "1.05", "0.26 (its sigmoid)"]
+        answer: 1
+        why: "ReLU is $\\max(0, z)$, so a negative pre-activation becomes exactly 0. For this example the neuron contributes nothing, and (as §8 shows) receives no gradient either."
+      - q: "Why does the network use sigmoid at the output but ReLU in the hidden layer?"
+        options:
+          - "Sigmoid is faster"
+          - "The output must be a probability in (0, 1); hidden units only need to be non-linear, and ReLU trains better"
+          - "ReLU cannot be used twice"
+          - "Sigmoid prevents overfitting"
+        answer: 1
+        why: "Different jobs: the output has to be squashed into a probability; hidden units just need non-linearity, and ReLU is cheaper and better behaved during training."
+    explain: "Why do we push all four examples through as one matrix multiply, `X @ W1`, instead of one at a time?"
+    key: |
+      - The whole batch is one matrix multiplication with the same weights, which gives the same numbers as four separate passes.
+      - That shape of computation parallelises almost perfectly, which is exactly why GPUs matter for deep learning.
+
+  4:
+    questions:
+      - q: "A 50-layer network has **no** activation functions. How expressive is it?"
+        options:
+          - "Very: depth always adds power"
+          - "Exactly as expressive as a single linear layer"
+          - "As expressive as a 25-layer network with ReLU"
+          - "It cannot be trained at all"
+        answer: 1
+        why: "$(XW_1 + b_1)W_2 + b_2 = X(W_1W_2) + (b_1W_2 + b_2)$: linear layers compose into one linear layer, however many you stack."
+    explain: "Explain to a colleague, in one or two sentences, why stacking linear layers without activations is pointless."
+    key: |
+      - A linear layer followed by a linear layer is algebraically just one linear layer ($W' = W_1W_2$, $b' = b_1W_2 + b_2$).
+      - So depth adds nothing; the non-linearity (e.g. ReLU clipping) is what makes the composition irreducible and depth meaningful.
+
+  5:
+    questions:
+      - q: "Why do we train on loss rather than directly on accuracy?"
+        options:
+          - "Accuracy is harder to compute"
+          - "Accuracy is flat almost everywhere and jumps, so it gives gradient descent no useful slope"
+          - "Loss is always between 0 and 1"
+          - "Accuracy ignores the test set"
+        answer: 1
+        why: "Nudging a weight usually leaves accuracy unchanged until a prediction crosses the boundary. Loss changes smoothly, so it has a slope to follow."
+      - q: "After training, accuracy stays at 0.75 but the loss falls from 0.59 to 0.40. What happened?"
+        options:
+          - "Nothing: the model did not improve"
+          - "The model became more confident in the right direction on its predictions, even though no prediction flipped"
+          - "The model overfitted"
+          - "The loss function is broken"
+        answer: 1
+        why: "Loss rewards probabilities closer to the true labels. Predictions can get better (and safer) without crossing the 0.5 threshold."
+    explain: "In two sentences, explain the different jobs of loss and accuracy."
+    key: |
+      - Loss is a single, smooth measure of how well predictions match the truth; gradient descent needs it to train.
+      - Accuracy counts correct predictions; it is what we report and evaluate, but it has no useful slope to train on.
+
+  6:
+    questions:
+      - q: "The gradient $\\partial L / \\partial w$ for a weight is $-0.08$. Plain gradient descent will…"
+        options: ["decrease $w$", "increase $w$", "leave $w$ unchanged", "set $w$ to zero"]
+        answer: 1
+        why: "The update is $w \\leftarrow w - \\eta \\cdot (-0.08)$, so $w$ goes up. A negative slope means increasing $w$ lowers the loss."
+      - q: "Why did hidden neuron 2's weights get smaller gradients than neuron 1's?"
+        options:
+          - "Its weights were initialised smaller"
+          - "ReLU switched it off (output 0) on three of the four examples, so it could not influence those predictions"
+          - "It is further from the output"
+          - "The learning rate was lower for it"
+        answer: 1
+        why: "A neuron that contributed nothing to a prediction cannot be blamed for its error. That is credit assignment showing up in the numbers."
+    explain: "If numerical (brute-force) gradients work, why do we need backpropagation?"
+    key: |
+      - Brute force needs roughly one extra forward pass per parameter, which is impossible for millions or billions of parameters.
+      - Backpropagation gets every gradient in one backward pass through the graph (and exactly, not approximately).
+
+  7:
+    questions:
+      - q: "State the chain rule in the lesson's plain-language form."
+        options:
+          - "Gradients add along the chain"
+          - "Sensitivities multiply along the chain: if L depends on A and A on w, then dL/dw = dL/dA × dA/dw"
+          - "The gradient of a sum is the product of gradients"
+          - "Each node's gradient equals its output"
+        answer: 1
+        why: "Each node only knows its local rule. Multiplying local sensitivities along the path gives the sensitivity of the loss to any parameter."
+      - q: "Why does training use much more memory than inference?"
+        options:
+          - "The model is larger during training"
+          - "The forward pass must keep intermediate values so the backward pass can use them"
+          - "The optimizer copies the dataset"
+          - "Inference uses a GPU and training does not"
+        answer: 1
+        why: "Local derivatives need the stored inputs of each operation (e.g. $X$ for $\\partial/\\partial W_1$, the ReLU mask). Under `torch.no_grad()` nothing is recorded, so memory drops."
+
+  8:
+    questions:
+      - q: "For sigmoid output + binary cross-entropy, the gradient at the output pre-activation is…"
+        options: ["$\\hat y (1 - \\hat y)$", "$(\\hat y - y)/N$", "$-\\log \\hat y$", "Always 1"]
+        answer: 1
+        why: "Prediction minus truth, averaged over the examples. The sigmoid derivative and the log terms cancel, which is one reason this pairing is standard."
+      - q: "What does multiplying by the ReLU mask, `dZ1 = dA1 * (Z1 > 0)`, accomplish?"
+        options:
+          - "It speeds up training"
+          - "It cuts off the gradient through every neuron that was inactive for that example"
+          - "It normalises the gradients"
+          - "It adds non-linearity to the backward pass"
+        answer: 1
+        why: "No activity, no responsibility, no update. Only neurons that fired for an example share the blame for that example's error."
+    explain: "Explain backpropagation as 'credit assignment' in two sentences."
+    key: |
+      - The loss is produced by all parameters together; backprop walks the graph backwards to work out how much each one contributed to the error.
+      - Blame is passed back in proportion to the connecting weights (`dZ2 @ W2.T`) and blocked by inactive neurons, giving every parameter its gradient in one pass.
+
+  9:
+    questions:
+      - q: "Why is there a **minus** sign in $w \\leftarrow w - \\eta\\, \\partial L/\\partial w$?"
+        options:
+          - "To keep weights small"
+          - "The gradient points uphill (towards higher loss), and we want to go down"
+          - "Because the loss is negative"
+          - "It is a convention with no effect"
+        answer: 1
+        why: "The gradient points in the direction where the loss increases fastest; subtracting it moves downhill."
+      - q: "Would $\\eta = 5.0$ reduce the loss ten times more than $\\eta = 0.5$?"
+        options:
+          - "Yes, the reduction is proportional to $\\eta$"
+          - "No: the gradient is only a local slope, so a big step can overshoot and even raise the loss"
+          - "Yes, but only on the first step"
+          - "No, the loss cannot change by more than 0.03"
+        answer: 1
+        why: "The slope is only valid near the current point. Large steps leave that neighbourhood and can land higher up the other side."
+
+  10:
+    questions:
+      - q: "The training loop reaches loss 0.019 on the four examples. What does that prove about generalisation?"
+        options:
+          - "The model generalises well"
+          - "Nothing: it is training loss on the same four points it memorised"
+          - "The model will be 98% accurate on new data"
+          - "The learning rate was ideal"
+        answer: 1
+        why: "Loss measured on the training data says nothing about unseen data. Lesson 1.3 introduces a proper split."
+    explain: "Name the three moves of every training step, in order, and what each one does."
+    key: |
+      - Forward: run the inputs through the network to get predictions and the loss.
+      - Backward: compute the gradient of the loss with respect to every parameter.
+      - Update: move each parameter a small step against its gradient, scaled by the learning rate.
+
+  11:
+    questions:
+      - q: "A loss curve falls steadily but extremely slowly, and nothing looks broken. The most likely cause is…"
+        options: ["Learning rate too large", "Learning rate too small", "A bug in backprop", "Too much data"]
+        answer: 1
+        why: "Too small a learning rate crawls. It wastes time precisely because nothing looks wrong. Too large oscillates, plateaus high or diverges."
+      - q: "Which signature matches a learning rate that is **too large**?"
+        options:
+          - "Smooth, steep drop then flattening"
+          - "Very slow, steady decline"
+          - "Loss oscillates, plateaus at a bad value or blows up"
+          - "Loss is exactly constant"
+        answer: 2
+        why: "Steps overshoot the valley and land further up the opposite side."
+    explain: "Why might a large learning rate help early in training but hurt later?"
+    key: |
+      - Early on the parameters are far from a good solution and gradients are large, so big steps make fast progress.
+      - Near a minimum, big steps overshoot the narrow valley and bounce around it, so the step size should shrink (warm-up then decay schedules do this).
+
+  12:
+    questions:
+      - q: "Your hand-computed gradients and PyTorch's differ by exactly 0. What is `loss.backward()` actually doing?"
+        options:
+          - "Estimating gradients by finite differences"
+          - "Walking the recorded graph in reverse, applying each operation's local derivative rule (the same walk you did by hand)"
+          - "Running the forward pass again"
+          - "Updating the weights"
+        answer: 1
+        why: "Autograd is bookkeeping: every operation recorded itself on the forward pass and knows its local rule. The update is a separate step (the optimizer)."
+      - q: "Why is `binary_cross_entropy_with_logits(z, y)` preferred to applying sigmoid and then BCE?"
+        options:
+          - "It is shorter to type"
+          - "It combines both steps in a numerically stable form that avoids $\\log(0)$ for extreme logits"
+          - "It gives a different, better gradient"
+          - "It works without labels"
+        answer: 1
+        why: "Computing sigmoid first can round to exactly 0 or 1 for large logits, and then the log blows up. The fused version uses a stable formula."

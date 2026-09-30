@@ -1,0 +1,64 @@
+# Module 2 challenge (see module-1.challenge.yaml for the format).
+title: "Module 2 challenge: building a network you can defend"
+pass_mark: 0.75
+questions:
+  - q: "A regression model outputs shape (64, 1) and the targets are shape (64,). You use nn.MSELoss. The code runs. What is actually being optimised?"
+    options:
+      - "The mean squared error over 64 pairs"
+      - "The mean over a 64 × 64 grid of every prediction against every target, so the model is pushed toward the mean target"
+      - "Nothing: PyTorch raises an error"
+      - "The error on the first row only"
+    answer: 1
+    why: "Broadcasting aligns from the right to (64, 64) with only a warning (Lesson 2.1 §4). Assert shapes before every loss."
+  - q: "You receive an image batch of shape (16, 224, 224, 3). What is the one-line fix before a PyTorch convolution?"
+    options: ["x.view(16, 3, 224, 224)", "x.permute(0, 3, 1, 2)", "x.reshape(16, -1)", "x.squeeze()"]
+    answer: 1
+    why: "view/reshape would scramble the pixels into the wrong axes; permute reorders the axes to (N, C, H, W) (Lesson 2.1 §3, §7)."
+  - q: "You standardise features with statistics computed on the full dataset, then split into train and validation. What is wrong, and how big is the damage likely to be?"
+    options:
+      - "Nothing is wrong"
+      - "It leaks validation information into preprocessing; often small for a scaler on large data, but the evaluation method is incorrect and similar steps (e.g. target encoding) can be expensive"
+      - "It will crash when the model trains"
+      - "It only matters for images"
+    answer: 1
+    why: "Split first, fit preprocessing on training only (Lesson 2.2 §2; Lesson 4.1 §5 measures both cases)."
+  - q: "Your training DataLoader uses shuffle=False on a file sorted by date, and the positive rate climbs through the file. What happens during each epoch?"
+    options:
+      - "Nothing: order never matters"
+      - "Consecutive updates see very different class mixes, so the gradient direction drifts with file order"
+      - "The model cannot learn at all"
+      - "The validation loss becomes exactly zero"
+    answer: 1
+    why: "Shuffle training data so each batch is representative; keep validation unshuffled and deterministic (Lesson 2.2 §6)."
+  - q: "A model stores its hidden layers in a Python dict: `self.layers = {'a': nn.Linear(...), 'b': nn.Linear(...)}`. Training runs and the loss moves a little. What is going on?"
+    options:
+      - "Everything is fine"
+      - "The layers in the plain dict are not registered, so the optimizer never updates them; use nn.ModuleDict"
+      - "The dict makes training slower"
+      - "PyTorch copies dicts to the GPU automatically"
+    answer: 1
+    why: "Registration is what model.parameters(), .to(), state_dict() and train()/eval() rely on (Lesson 2.3 §1). Count parameters to catch it."
+  - q: "A call centre can phone 15% of customers. Two models: A has AUC 0.80 and accuracy 0.88; B has AUC 0.77 and accuracy 0.89. Which evaluation should decide?"
+    options:
+      - "Accuracy at 0.5: pick B"
+      - "Ranking: recall or lift among the top 15% by score, which favours the better ranker (usually A)"
+      - "Training loss"
+      - "Whichever trains faster"
+    answer: 1
+    why: "The team acts on the top k, so ordering matters, not a 0.5 threshold (Lesson 2.3 §7)."
+  - q: "Early stopping keeps `best = model.state_dict()` (no copy) and training continues for 10 more epochs. What do you restore at the end?"
+    options:
+      - "The best weights, as intended"
+      - "The latest weights: state_dict() tensors share storage with the live model, so 'best' kept changing"
+      - "Random weights"
+      - "An error is raised"
+    answer: 1
+    why: "Use copy.deepcopy(model.state_dict()) for a real snapshot (Lesson 2.3 §9)."
+  - q: "Running `python src/training/train.py` fails with `No module named 'src'`, while `python -m src.training.train` works. What is the robust fix for a real project?"
+    options:
+      - "Copy all files into one folder"
+      - "Make the project installable (pyproject.toml, `pip install -e .`) and run it as a module"
+      - "Add sys.path hacks at the top of every file"
+      - "Rename src to lib"
+    answer: 1
+    why: "Running a file directly puts its own folder on the path, not the project root. An editable install makes imports work from anywhere (Lesson 2.4 §5)."

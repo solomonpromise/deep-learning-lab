@@ -5,9 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ course.title }}{% endblock %}</title>
   <meta name="description" content="{% block description %}{{ course.tagline }}{% endblock %}">
+  {% if site_url != "/" %}<link rel="canonical" href="{{ site_url }}{{ page_path }}">{% endif %}
+  <meta property="og:type" content="{{ 'article' if page == 'lesson' else 'website' }}">
+  <meta property="og:site_name" content="{{ course.short_title }}">
+  <meta property="og:title" content="{{ self.title() }}">
+  <meta property="og:description" content="{{ self.description() }}">
+  {% if site_url != "/" %}<meta property="og:url" content="{{ site_url }}{{ page_path }}">{% endif %}
+  <meta property="og:image" content="{{ site_url if site_url != '/' else root }}{{ og_image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ self.title() }}">
+  <meta name="twitter:description" content="{{ self.description() }}">
+  <meta name="twitter:image" content="{{ site_url if site_url != '/' else root }}{{ og_image }}">
   <meta name="theme-color" content="#0e0f12" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
   <link rel="icon" href="{{ root }}static/img/favicon.svg" type="image/svg+xml">
+  {% block head %}{% endblock %}
   <script>
     (function () {
       try { var t = localStorage.getItem('dlp-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
@@ -20,6 +34,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ root }}static/css/site.css?v={{ v }}">
   <link rel="stylesheet" href="{{ root }}static/css/widgets.css?v={{ v }}">
+  <link rel="stylesheet" href="{{ root }}static/css/learn.css?v={{ v }}">
 </head>
 <body class="page-{{ page }}" data-root="{{ root }}">
 {% include "_icons.html" %}
@@ -37,6 +52,7 @@
   <button class="search-btn" data-search-open aria-label="Search the course">
     <svg class="ic"><use href="#i-search"/></svg><span>Search lessons, terms…</span><kbd>⌘K</kbd>
   </button>
+  <a class="icon-btn review-link" href="{{ root }}review.html" title="Daily review" aria-label="Daily review" data-review-link><svg class="ic"><use href="#i-cards"/></svg><span class="due-badge" data-due-badge hidden></span></a>
   <a class="icon-btn hide-sm" href="{{ root }}glossary.html" title="Glossary" aria-label="Glossary"><svg class="ic"><use href="#i-book"/></svg></a>
   <a class="icon-btn hide-sm" href="{{ root }}guide.html" title="How to use this platform" aria-label="How to use this platform"><svg class="ic"><use href="#i-help"/></svg></a>
   <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
@@ -74,8 +90,11 @@
       </div>
       {% endfor %}
       <div class="side-foot">
-        <a href="{{ root }}glossary.html"><svg class="ic"><use href="#i-book"/></svg> Glossary</a>
-        <a href="{{ root }}guide.html"><svg class="ic"><use href="#i-help"/></svg> How to use this platform</a>
+        <a href="{{ root }}progress.html"{% if page == 'progress' %} class="is-active"{% endif %}><svg class="ic"><use href="#i-chart"/></svg> My progress</a>
+        <a href="{{ root }}review.html"{% if page == 'review' %} class="is-active"{% endif %}><svg class="ic"><use href="#i-cards"/></svg> Daily review <span class="due-badge inline" data-due-badge hidden></span></a>
+        <a href="{{ root }}concepts.html"{% if page == 'concepts' %} class="is-active"{% endif %}><svg class="ic"><use href="#i-map"/></svg> Concept map</a>
+        <a href="{{ root }}glossary.html"{% if page == 'glossary' %} class="is-active"{% endif %}><svg class="ic"><use href="#i-book"/></svg> Glossary</a>
+        <a href="{{ root }}guide.html"{% if page == 'guide' %} class="is-active"{% endif %}><svg class="ic"><use href="#i-help"/></svg> How to use this platform</a>
       </div>
     </div>
   </nav>
@@ -85,7 +104,7 @@
     {% block main %}{% endblock %}
     <footer class="site-foot">
       <p><strong>{{ course.title }}</strong> · {{ course.hours }} hours · {{ course.hands_on }} hands-on.</p>
-      <p class="muted">Generated from the course notebooks on {{ now }}. Progress and notes are stored only in this browser.</p>
+      <p class="muted">Generated from the course notebooks on {{ now }}. Your progress and notes are stored in this browser{% if services.api %}; if you turn on sync (on <a href="{{ root }}progress.html#sync">My progress</a>), a copy is kept under your private code{% endif %}.{% if services.api and services.anonymous_stats %} Anonymous answer counts (a question id and right or wrong, never a name or device id) help improve the course; you can switch them off there too.{% endif %}</p>
     </footer>
   </main>
 </div>
@@ -110,10 +129,15 @@
 
 <script>window.DLP_GLOSSARY = {{ glossary_js | safe }};</script>
 <script type="application/json" id="dlp-tutor-config">{{ tutor_js | safe }}</script>
+<script type="application/json" id="dlp-services">{{ services_js | safe }}</script>
 {% if lesson_ctx is defined %}<script type="application/json" id="dlp-lesson-ctx">{{ lesson_ctx | safe }}</script>{% elif module is defined %}<script type="application/json" id="dlp-module-ctx">{"module": {{ module.number }}}</script>{% endif %}
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
 {% block scripts %}{% endblock %}
+<script defer src="{{ root }}static/js/record.js?v={{ v }}"></script>
 <script defer src="{{ root }}static/js/app.js?v={{ v }}"></script>
+<script defer src="{{ root }}static/js/progress.js?v={{ v }}"></script>
+{% if services.api %}<script defer src="{{ root }}static/js/sync.js?v={{ v }}"></script>{% endif %}
 <script defer src="{{ root }}static/js/tutor.js?v={{ v }}"></script>
+{% block late_scripts %}{% endblock %}
 </body>
 </html>

@@ -61,6 +61,13 @@
   <div class="widget-mount"><div class="widget-loading">Loading interactive…</div></div>
   <noscript><p class="muted">This interactive needs JavaScript.</p></noscript>
   {% if b.caption_html %}<figcaption class="widget-caption prose">{{ b.caption_html | safe }}</figcaption>{% endif %}
+  {% if b.challenge %}
+  <div class="lab-challenge" data-lab-challenge="{{ b.challenge.spec }}">
+    <div class="lch-head"><span class="lch-badge"><svg class="ic"><use href="#i-trophy"/></svg> Challenge</span><strong>{{ b.challenge.title }}</strong><span class="lch-state" data-lch-state></span></div>
+    <div class="lch-goal prose">{{ b.challenge.goal_html | safe }}</div>
+    <div class="lch-result" data-lch-result aria-live="polite" hidden></div>
+  </div>
+  {% endif %}
 </figure>
 
 {% elif b.kind == 'explainer' %}
@@ -139,6 +146,32 @@
 {% elif b.kind == 'quiz' %}
 {{ quiz(b) }}
 
+{% elif b.kind == 'checkpoint' %}
+{{ checkpoint(b) }}
+
+{% elif b.kind == 'exercise' %}
+<div class="exercise reveal" data-exercise="{{ b.id }}">
+  <div class="ex-head">
+    <span class="badge-lab"><svg class="ic"><use href="#i-code"/></svg> Code exercise</span>
+    <h4 class="widget-title">{{ b.title | md_inline | safe }}</h4>
+    <span class="ex-meta">Python · runs in your browser</span>
+  </div>
+  <div class="ex-prompt prose">{{ b.prompt_html | safe }}</div>
+  <div class="ex-editor"><noscript><pre class="code"><code>{{ b.spec.starter }}</code></pre></noscript></div>
+  <div class="ex-actions">
+    <button class="btn btn-sm" data-ex-check><svg class="ic"><use href="#i-check"/></svg> Check my code</button>
+    <button class="chip-btn" data-ex-run><svg class="ic"><use href="#i-play"/></svg> Run</button>
+    {% if b.spec.hints %}<button class="chip-btn" data-ex-hint><svg class="ic"><use href="#i-bulb"/></svg> Hint</button>{% endif %}
+    <button class="chip-btn" data-ex-reset><svg class="ic"><use href="#i-refresh"/></svg> Reset</button>
+    {% if b.spec.solution %}<button class="chip-btn" data-ex-solution hidden><svg class="ic"><use href="#i-eye"/></svg> Show solution</button>{% endif %}
+    <span class="py-status" hidden aria-live="polite"></span>
+  </div>
+  <ol class="ex-hints" hidden></ol>
+  <div class="ex-verdict" hidden aria-live="polite"></div>
+  <div class="py-out" hidden></div>
+  <script type="application/json" data-ex-spec>{{ b.spec | tojson }}</script>
+</div>
+
 {% elif b.kind == 'raw' %}
 {{ b.html | safe }}
 {% endif %}
@@ -147,11 +180,13 @@
 {# ------------------------------------------------------------------ code cell #}
 {% macro code_cell(b) %}
 {% set long = b.n_lines > 26 %}
-<div class="code-cell role-{{ b.role }}{% if long %} is-long{% endif %}{% if b.explain %} has-explain{% endif %}" data-code>
+<div class="code-cell role-{{ b.role }}{% if long %} is-long{% endif %}{% if b.explain %} has-explain{% endif %}" data-code{% if b.runnable %} data-runnable{% endif %}>
   <div class="code-head">
     <span class="code-lang">{% if b.file %}<svg class="ic"><use href="#i-pencil"/></svg> Writes {{ b.file }}{% elif b.lang == 'bash' %}<svg class="ic"><use href="#i-terminal"/></svg> Terminal{% elif b.role == 'inspect' %}<svg class="ic"><use href="#i-eye"/></svg> Inspect a value{% elif b.role == 'setup' %}<svg class="ic"><use href="#i-gear"/></svg> Setup{% else %}<svg class="ic"><use href="#i-code"/></svg> Python{% endif %}</span>
     <span class="code-meta">{{ b.n_lines }} line{{ 's' if b.n_lines != 1 }}</span>
     <span class="code-actions">
+      {% if b.runnable %}<button class="chip-btn py-run" data-py-run title="Run this cell in your browser (earlier cells run first)"><svg class="ic"><use href="#i-play"/></svg> Run</button>
+      <button class="chip-btn" data-py-edit title="Edit the code, then run your version"><svg class="ic"><use href="#i-pencil"/></svg> <span>Edit</span></button>{% endif %}
       {% if b.explain %}<button class="chip-btn accent" data-explain-toggle aria-expanded="true"><svg class="ic"><use href="#i-bulb"/></svg> <span>Hide explanation</span></button>{% endif %}
       <button class="icon-btn sm" data-copy aria-label="Copy code" title="Copy code"><svg class="ic"><use href="#i-copy"/></svg></button>
     </span>
@@ -159,6 +194,7 @@
   <pre class="code"><code>{% for line in b.lines %}<span class="ln"{% if b.note_map and loop.index0 in b.note_map %} data-note="{{ b.note_map[loop.index0] }}"{% endif %}>{{ line | safe }}</span>{% endfor %}</code></pre>
   {% if long %}<button class="code-expand" data-code-expand><svg class="ic"><use href="#i-chevron-down"/></svg> <span>Show all {{ b.n_lines }} lines</span></button>{% endif %}
   <textarea class="code-src" hidden>{{ b.source }}</textarea>
+  {% if b.runnable %}<div class="py-status" hidden aria-live="polite"></div><div class="py-out" hidden aria-live="polite"></div>{% endif %}
   {% if b.explain %}
   <div class="code-explain">
     <div class="code-explain-head"><svg class="ic"><use href="#i-bulb"/></svg> {{ b.explain.title }}</div>
@@ -195,7 +231,7 @@
     <span class="quiz-score" data-quiz-score></span>
   </div>
   {% for q in b.questions %}
-  <div class="quiz-q" data-quiz-q data-answer="{{ q.answer }}">
+  <div class="quiz-q" data-quiz-q data-answer="{{ q.answer }}"{% if q.id %} data-qid="{{ q.id }}"{% endif %}>
     <div class="quiz-qtext prose"><span class="quiz-n">{{ loop.index }}</span>{{ q.q_html | safe }}</div>
     <div class="quiz-options">
       {% for o in q.options %}<button class="opt" data-opt="{{ loop.index0 }}"><span class="opt-letter">{{ 'ABCDEFG'[loop.index0] }}</span><span>{{ o | safe }}</span></button>{% endfor %}
@@ -203,5 +239,74 @@
     <div class="quiz-why prose" hidden>{{ q.why_html | safe }}</div>
   </div>
   {% endfor %}
+  <div class="quiz-foot" hidden data-quiz-foot><button class="chip-btn" data-quiz-retry><svg class="ic"><use href="#i-refresh"/></svg> Try the quiz again</button></div>
 </div>
+{% endmacro %}
+
+{# ------------------------------------------------------------------ checkpoint (end of a section) #}
+{% macro checkpoint(b) %}
+<div class="checkpoint reveal" id="cp-{{ b.sec }}" data-checkpoint="{{ b.id }}" data-sec="{{ b.sec }}">
+  <div class="cp-head">
+    <span class="cp-badge no-gloss"><svg class="ic"><use href="#i-flag"/></svg> Checkpoint</span>
+    <span class="cp-title">Before you move on from §{{ b.sec }}</span>
+    <span class="cp-score" data-cp-score aria-live="polite"></span>
+  </div>
+  {% for q in b.questions %}
+  <div class="cp-q" data-cp-q="{{ q.id }}" data-answer="{{ q.answer }}">
+    <div class="cp-qtext prose">{% if b.questions|length > 1 %}<span class="quiz-n">{{ loop.index }}</span>{% endif %}{{ q.q_html | safe }}</div>
+    <div class="quiz-options" role="group" aria-label="Answer options">
+      {% for o in q.options %}<button class="opt" data-opt="{{ loop.index0 }}"><span class="opt-letter">{{ 'ABCDEFG'[loop.index0] }}</span><span>{{ o | safe }}</span></button>{% endfor %}
+    </div>
+    <div class="cp-why prose" hidden>{{ q.why_html | safe }}</div>
+  </div>
+  {% endfor %}
+  {% if b.explain %}
+  <div class="cp-explain" data-cp-explain="{{ b.explain.id }}">
+    <div class="cp-explain-head"><svg class="ic"><use href="#i-pencil"/></svg> Explain it back <span class="muted">· two sentences, in your own words</span></div>
+    <div class="cp-prompt prose">{{ b.explain.prompt_html | safe }}</div>
+    <textarea class="cp-input" rows="3" data-note-key="cp-{{ b.sec }}" placeholder="Write it as if explaining to a colleague. It is saved in this browser."></textarea>
+    <div class="cp-actions">
+      <button class="btn btn-sm" data-cp-check><svg class="ic"><use href="#i-sparkles"/></svg> <span>Check with the tutor</span></button>
+      <button class="chip-btn" data-cp-key aria-expanded="false"><svg class="ic"><use href="#i-eye"/></svg> <span>Show key points</span></button>
+    </div>
+    <div class="cp-feedback prose" data-cp-feedback hidden aria-live="polite"></div>
+    <div class="cp-key" data-cp-keybox hidden>
+      <div class="cp-key-head">Key points</div>
+      <div class="prose">{{ b.explain.key_html | safe }}</div>
+      <div class="cp-self" data-cp-self>
+        <span>How close was yours?</span>
+        <button class="chip-btn" data-self="solid">Nailed it</button>
+        <button class="chip-btn" data-self="partly">Partly</button>
+        <button class="chip-btn" data-self="notyet">Not yet</button>
+      </div>
+    </div>
+    <script type="application/json" data-cp-ref>{{ {"prompt": b.explain.prompt, "key": b.explain.key} | tojson }}</script>
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{# ------------------------------------------------------------------ module challenge (module page) #}
+{% macro mchallenge(b, module) %}
+<section class="mchallenge" id="challenge" data-mchallenge="{{ b.id }}" data-pass="{{ b.pass_mark }}" data-module="{{ module.number }}">
+  <div class="mc-head">
+    <span class="mc-badge" aria-hidden="true"><svg class="ic"><use href="#i-award"/></svg></span>
+    <div>
+      <span class="mc-kicker">Module challenge · {{ b.questions|length }} scenario questions · pass mark {{ (b.pass_mark * 100)|round|int }}%</span>
+      <h2>{{ b.title }}</h2>
+      <p class="muted">Harder than the checkpoints: each question mixes ideas from several lessons. Pass it to earn the Module {{ module.number }} badge, which counts toward your certificate.</p>
+    </div>
+    <span class="mc-status" data-mc-status aria-live="polite"></span>
+  </div>
+  {% for q in b.questions %}
+  <div class="quiz-q" data-quiz-q data-mc-q="{{ q.id }}" data-answer="{{ q.answer }}">
+    <div class="quiz-qtext prose"><span class="quiz-n">{{ loop.index }}</span>{{ q.q_html | safe }}</div>
+    <div class="quiz-options">
+      {% for o in q.options %}<button class="opt" data-opt="{{ loop.index0 }}"><span class="opt-letter">{{ 'ABCDEFG'[loop.index0] }}</span><span>{{ o | safe }}</span></button>{% endfor %}
+    </div>
+    <div class="quiz-why prose" hidden>{{ q.why_html | safe }}</div>
+  </div>
+  {% endfor %}
+  <div class="mc-foot" data-mc-foot hidden></div>
+</section>
 {% endmacro %}

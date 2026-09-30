@@ -439,6 +439,43 @@
   });
   window.addEventListener('scroll', function () { selBtn.hidden = true; }, { passive: true });
 
+  /* ------------------------------------------------------------ grading "explain it back" answers */
+  // Streams feedback on a learner's short explanation, judged against the course's key points.
+  // onDelta(textSoFar); onDone(err, verdict: 'solid'|'partly'|'notyet', text).
+  function grade(o, onDelta, onDone) {
+    if (!connected()) return onDone('not-connected');
+    loadLibs(function () {
+      var sec = o.section, h = sec ? $('h2', sec) : null, text = '';
+      if (sec) {
+        var clone = sec.cloneNode(true);
+        $$('.widget, .code-cell pre, .qactions, textarea, script, .qanswer, .checkpoint', clone).forEach(function (n) { n.remove(); });
+        text = (clone.innerText || clone.textContent || '').replace(/\n{3,}/g, '\n\n').trim().slice(0, 7000);
+      }
+      var sys = [
+        'You are checking a learner\'s short "explain it back" answer in the course "' + (CFG.course || 'Deep Learning Lab') + '".',
+        'Judge it against the key points below. Be warm, specific and brief (at most 90 words).',
+        'Reply in exactly this shape:',
+        'VERDICT: solid | partly | not yet   (one of these three, on the first line)',
+        'Then: one sentence on what is right; one on what is missing or wrong (if anything); one hint that moves them toward the missing idea.',
+        'Do not paste the key points. Do not ask a follow-up question. Use $...$ for maths.',
+        '"solid" = the main idea is right and nothing important is wrong, even if worded differently or briefer. "partly" = on the way but a key idea is missing or muddled. "not yet" = the main idea is missing or wrong.',
+        lesson ? '\n# Lesson ' + lesson.id + ': ' + lesson.title : '',
+        h ? '# Section: ' + h.textContent.trim() + '\n' + text : '',
+        '\n# The prompt the learner answered\n' + (o.prompt || ''),
+        '\n# Key points (reference, do not paste)\n' + (o.key || '')
+      ].join('\n');
+      var out = '';
+      stream([{ role: 'system', content: sys }, { role: 'user', content: 'My explanation: ' + o.answer }],
+        function (d) { out += d; onDelta(out); },
+        function (err) {
+          if (err && !out) return onDone(err);
+          var m = /VERDICT:\s*(solid|partly|not\s*yet)/i.exec(out), v = m ? m[1].toLowerCase().replace(/\s+/g, '') : 'partly';
+          onDone(null, v, out);
+        });
+    });
+  }
+
   window.DLP = window.DLP || {};
-  window.DLP.tutor = { open: function () { toggle(true); }, ask: function (q, o) { toggle(true); send(q, o); } };
+  window.DLP.tutor = { open: function () { toggle(true); }, ask: function (q, o) { toggle(true); send(q, o); },
+    grade: grade, render: function (t) { return md(t); }, connected: connected };
 })();

@@ -639,6 +639,7 @@ details.explainer:not([open]) { padding-bottom: 14px; }
 /* ------------------------------------------------------------------ reveal on scroll */
 .js .reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s ease-out, transform .5s ease-out; }
 .js .reveal.is-in { opacity: 1; transform: none; }
+.js .reveal.no-anim { transition: none; }
 
 /* ------------------------------------------------------------------ home */
 .home { padding: 0 32px; max-width: 1180px; margin: 0 auto; }

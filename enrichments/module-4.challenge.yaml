@@ -1,0 +1,64 @@
+# Module 4 challenge (see module-1.challenge.yaml for the format).
+title: "Module 4 challenge: experiments you can defend"
+pass_mark: 0.75
+questions:
+  - q: "A hospital readmission model is evaluated on a random row split; several rows belong to each patient. The validation AUC is excellent. What is the concern and the fix?"
+    options:
+      - "No concern: random splits are standard"
+      - "Group leakage: the same patient appears on both sides; split by patient (a group split)"
+      - "Class imbalance; use class weights"
+      - "The model is too small"
+    answer: 1
+    why: "Rows from one group are more alike than random rows, so the model can recognise the patient (Lesson 4.1 §9)."
+  - q: "Rows are stored in date order and the success rate rose tenfold over three years. The bank will use the model on next month's customers. Which split answers that question?"
+    options: ["Stratified random", "Random without stratification", "Chronological: train on the past, test on the latest period", "K-fold on all rows"]
+    answer: 2
+    why: "The random split's 0.78 became 0.61 on the chronological split (Lesson 4.1 §7). Test the deployment condition."
+  - q: "Between the training period and the test period, the yes-rate went from 6.7% to 47.1%, and the customers phoned changed too. Which statement is right?"
+    options:
+      - "Only covariate shift"
+      - "Only label shift"
+      - "Both: label shift breaks the size of the probabilities (calibration); covariate shift breaks the model where it has little experience"
+      - "Neither; this is noise"
+    answer: 2
+    why: "Lesson 4.1 §8. Adversarial validation (AUC 0.94) confirmed the periods look very different."
+  - q: "You set `seed_everything(42)` once at the top of a notebook, then rerun a training cell. The result differs from the first run. Why?"
+    options:
+      - "PyTorch ignores seeds"
+      - "Random numbers continue along the sequence; seed at the start of every run and give the DataLoader its own generator"
+      - "The GPU is faulty"
+      - "The data changed"
+    answer: 1
+    why: "Lesson 4.2 §2."
+  - q: "Seed-to-seed spread of test AUC is 0.001; split-to-split spread is 0.013. A change improves test AUC by 0.004 on one split. What can you conclude?"
+    options:
+      - "It is a real improvement"
+      - "Not yet: compare both versions on the same several splits (paired) before claiming anything"
+      - "It is definitely noise"
+      - "Rerun with three seeds and average"
+    answer: 1
+    why: "The unpaired noise (0.013) swamps 0.004, but a paired comparison cancels the shared split difficulty and can detect it (Lessons 4.2 §8, 4.4 §2)."
+  - q: "Fine-tuning a 7B model in fp32 with AdamW, before activations. Roughly how much memory, and what would change the picture most?"
+    options:
+      - "About 28 GB; mixed precision"
+      - "About 104 GB (4× the weights); LoRA, which removes gradients and optimizer state for frozen weights"
+      - "About 14 GB; a smaller batch"
+      - "About 56 GB; gradient checkpointing"
+    answer: 1
+    why: "Weights + gradients + two AdamW moments = 4 copies of 28 GB (Lesson 4.3 §1–2)."
+  - q: "Training in fp16 without a loss scaler, many small weights stop changing and nothing warns you. What is happening?"
+    options:
+      - "The learning rate is too small"
+      - "Gradients below fp16's smallest value round to exactly 0; use GradScaler, or bf16 which keeps fp32's range"
+      - "The weights overflowed"
+      - "Dropout is on"
+    answer: 1
+    why: "Lesson 4.3 §3; try it in the precision lab."
+  - q: "Model B beats model A on 10 of 10 paired splits by +0.008 AUC, but A is 2× faster at prediction and one file smaller, and under the chronological split A wins by 0.03. What should the decision memo say?"
+    options:
+      - "Ship B: it wins on accuracy"
+      - "State the trade-offs with numbers, test the deployment condition, and name the shift as the bigger problem; choose for this problem at this size, with what would change your mind"
+      - "Ship both"
+      - "Report only the best test AUC"
+    answer: 1
+    why: "Lesson 4.4 §10: a decision rule, not a winner. Accuracy is one column; robustness under shift can matter more."

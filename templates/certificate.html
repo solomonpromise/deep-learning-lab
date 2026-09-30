@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Certificate — {{ course.short_title }}{% endblock %}
+{% block description %}A certificate listing the {{ course.title }} modules whose challenges have been passed.{% endblock %}
+{% block late_scripts %}<script defer src="{{ root }}static/js/certificate.js?v={{ v }}"></script>{% endblock %}
+{% block main %}
+<div class="plain-page cert-page" data-cert-page data-course="{{ course.title }}" data-brand="{{ course.short_title }}" data-site="{{ site_url }}">
+  <header class="plain-hero cert-hero">
+    <span class="eyebrow"><svg class="ic"><use href="#i-trophy"/></svg> Certificate</span>
+    <h1 data-cert-heading>Your certificate</h1>
+    <p class="lead" data-cert-lead>It lists every module whose challenge you have passed, and grows as you pass more.</p>
+  </header>
+  <div class="cert-controls" data-cert-controls>
+    <label class="sr-only" for="cert-name-input">Name on the certificate</label>
+    <input id="cert-name-input" type="text" maxlength="60" placeholder="Your name as it should appear" data-cert-name>
+    <button class="btn btn-ghost" data-cert-print><svg class="ic"><use href="#i-download"/></svg> Print or save as PDF</button>
+    <button class="btn btn-ghost" data-cert-png><svg class="ic"><use href="#i-image"/></svg> Download image</button>
+    <button class="btn" data-cert-issue hidden><svg class="ic"><use href="#i-share"/></svg> Get a verifiable link</button>
+  </div>
+  <div class="cert-share" data-cert-share hidden aria-live="polite"></div>
+  <div class="cert-frame"><canvas data-cert-canvas role="img" aria-label="Certificate"></canvas></div>
+  <p class="muted cert-note" data-cert-note></p>
+</div>
+{% endblock %}

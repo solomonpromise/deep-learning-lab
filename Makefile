@@ -5,7 +5,7 @@
 
 PY ?= python3
 
-.PHONY: build sync update serve publish clean questions defs docstrings
+.PHONY: build sync update serve publish clean questions defs docstrings widgets
 
 build:
 	$(PY) scripts/build.py
@@ -23,6 +23,10 @@ questions:
 
 defs:
 	@$(PY) scripts/build.py --defs $(L)
+
+# Rewrite the README's table of interactive labs
+widgets:
+	@$(PY) scripts/list_widgets.py --readme
 
 # Draft docstrings for undocumented functions/classes with the AI model (needs GROQ_API_KEY)
 docstrings:

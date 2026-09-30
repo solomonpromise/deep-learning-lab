@@ -1,0 +1,59 @@
+# Module 1 challenge: scenario questions that combine the module's lessons.
+# Shown on the module overview page. Passing (pass_mark of the questions right) earns the module badge.
+# Question ids are m:<module>:<n>; options are shuffled at build time like the quizzes.
+title: "Module 1 challenge: from features to a trained network"
+pass_mark: 0.75
+questions:
+  - q: "A colleague's logistic regression scores 0.60 on a problem whose classes form concentric rings. They propose collecting five times more data. What do you say?"
+    options:
+      - "Good idea: more data always helps a linear model"
+      - "It won't help: one straight line cannot separate rings; change the representation (e.g. add the radius) or use a model that can bend its boundary"
+      - "Switch to accuracy instead of AUC"
+      - "Train for more iterations"
+    answer: 1
+    why: "Lesson 1.1: the limit is the model class's expressiveness, not the data. A radius feature makes the rings linearly separable; a network can learn such a feature itself."
+  - q: "You have 12,000 rows of well-curated tabular data (income, tenure, contract type…) and need a defensible model by Friday. What is the strong first choice, and why?"
+    options:
+      - "A deep MLP, because networks learn their own features"
+      - "Gradient-boosted trees: the columns already carry meaning, so there is little representation left to learn"
+      - "A convolutional network"
+      - "k-nearest neighbours, because it needs no training"
+    answer: 1
+    why: "Lesson 1.1 §7: on curated tables boosting is typically as good or better, faster, and easier to explain. Deep learning pays off on raw, high-dimensional signals."
+  - q: "A network has layers [100, 50, 50, 1] and **no** activation functions. How many parameters does it have, and how expressive is it?"
+    options:
+      - "7,651 parameters; as expressive as a single linear layer"
+      - "7,651 parameters; far more expressive than logistic regression"
+      - "7,600 parameters; as expressive as a single linear layer"
+      - "5,101 parameters; as expressive as a 2-layer ReLU network"
+    answer: 0
+    why: "(100·50+50) + (50·50+50) + (50·1+1) = 5,050 + 2,550 + 51 = 7,651. Without activations the layers compose into one linear map (Lesson 1.2 §4)."
+  - q: "For one example, a ReLU neuron's pre-activation is −0.4. During backpropagation, what does that neuron pass back for this example?"
+    options: ["The full upstream gradient", "Half of it", "Nothing: ReLU's slope is 0 for negative inputs", "A negative gradient"]
+    answer: 2
+    why: "The ReLU mask cuts the path: no activity, no responsibility, no update from this example (Lesson 1.2 §8)."
+  - q: "Your binary classifier's training loop starts at loss 3.9 before any training step. The labels are 30% positive. What is your first suspicion?"
+    options:
+      - "The learning rate is too small"
+      - "A bug: an untrained model should start near the base-rate entropy (≈ 0.61) or log 2 (≈ 0.69); check shapes, the loss function and the labels"
+      - "The model needs more layers"
+      - "This is normal for deep networks"
+    answer: 1
+    why: "Lesson 1.3 §6's sanity check costs nothing. Common causes: a sigmoid before BCEWithLogitsLoss, float labels in the wrong shape, or a label-encoding error."
+  - q: "Training loss falls smoothly to a plateau; validation accuracy sits at 0.61 on the spirals, where the reference model reaches 0.95. Nothing crashes. Which silent bug fits best?"
+    options: ["Learning rate 500× too large", "Forgetting optimizer.zero_grad()", "No activation functions between the layers", "Data on the wrong device"]
+    answer: 2
+    why: "A smooth, healthy-looking curve that plateaus at logistic-regression accuracy is the signature of collapsed linear layers (Lesson 1.3 §13). A huge learning rate thrashes; missing zero_grad is erratic."
+  - q: "Which order of lines inside one training step is correct?"
+    options:
+      - "optimizer.zero_grad(); out = model(X); loss = loss_fn(out, y); loss.backward(); optimizer.step()"
+      - "out = model(X); loss.backward(); optimizer.zero_grad(); optimizer.step()"
+      - "optimizer.step(); loss.backward(); optimizer.zero_grad()"
+      - "loss = loss_fn(out, y); optimizer.zero_grad(); out = model(X); optimizer.step(); loss.backward()"
+    answer: 0
+    keep_order: false
+    why: "Clear old gradients, forward, loss, backward to fill .grad, then update (Lesson 1.3 §8)."
+  - q: "Your loss curve oscillates wildly from the first epoch and ends higher than it started. Gradients were checked and are correct. What do you change first?"
+    options: ["Add more layers", "Lower the learning rate by about 10×", "Collect more data", "Switch from BCE to MSE"]
+    answer: 1
+    why: "Every step overshoots the valley and lands further up the other side: the too-large learning-rate signature (Lesson 1.2 §11)."

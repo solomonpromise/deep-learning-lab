@@ -121,6 +121,84 @@ inserts:
       every number in a record from the result object, and write by hand only what a program cannot know: the hypothesis, the
       interpretation and the lesson.
 
+  # ------------------------------------------------------------------ added: labs, walkthrough and predictions
+  - section: 3
+    after: "The protocol below is therefore ordered by **cost**"
+    type: steps
+    title: "The protocol, one tier at a time"
+    steps:
+      - title: "Tier 0: read what the run already gave you (free)"
+        md: |
+          1. Are the losses finite? 2. Is the metric above chance, and accuracy above the majority rate? 3. What do the predictions look like:
+          range, spread, number of distinct values? 4. Is the result implausibly better than a sensible baseline?
+
+          **Rules out or flags:** NaNs, collapse to a constant, over-regularisation, and "too good to be true" results (leakage).
+      - title: "Tier 1: look inside the model (no retraining)"
+        md: |
+          5. Total gradient norm. 6. The per-layer gradient profile. 7. The fraction of dead ReLU units.
+
+          **Rules out or flags:** exploding and vanishing gradients, dead layers, a bad initialisation.
+      - title: "Tier 2: run something (costs a training cycle)"
+        md: |
+          8. Can the model memorise 20 rows? 9. A learning-rate sweep across orders of magnitude. 10. Regularisation or capacity changes,
+          only when the evidence points there.
+
+          **Rules out or flags:** structural bugs in model, data or loss (if 20 rows can't be memorised), and learning-rate problems.
+      - title: "Then: one change, and check the prediction"
+        md: |
+          State the diagnosis, make the smallest change that tests it, and check the result moves the way your hypothesis predicted. If it
+          does not, the diagnosis was wrong, which is also information.
+
+  - section: 4
+    after: "Before reading the diagnosis below the output, pause"
+    type: predict
+    mode: choice
+    prompt: "Case 1 raises the learning rate from 1e-3 to **0.5**. Before running it: what will its final validation AUC be? (The reference reaches 0.72 final, 0.82 best.)"
+    options: ["About 0.85: bigger steps, better model", "About 0.72, the same as the reference", "About 0.50: chance", "NaN: the run crashes"]
+    answer: 2
+    reveal: |
+      **0.5029.** Nothing crashes and the loss looks calm, but the model has collapsed to almost one prediction. The loss settles at 0.6158,
+      right next to the 0.6109 of a constant base-rate prediction.
+
+  - section: 7
+    after: "The result can look excellent precisely because the evaluation has stopped being independent"
+    type: predict
+    mode: choice
+    prompt: "Case 4 draws its validation rows from the training rows. Its validation AUC will be…"
+    options: ["About 0.72, like the reference", "About 0.82", "About 0.90", "1.0000"]
+    answer: 3
+    reveal: |
+      **1.0000**, with validation tracking training exactly. A beautiful number is the most dangerous kind of broken result, because nobody
+      goes looking for the bug.
+
+  - section: 9
+    after: "You must understand what the features mean and when they exist in the real process"
+    type: predict
+    mode: choice
+    prompt: "Case 6 keeps the `duration` column in Bank Marketing. Validation AUC without it is 0.785. With it?"
+    options: ["About 0.79", "About 0.83", "About 0.93", "About 0.99"]
+    answer: 2
+    reveal: |
+      **0.926**, and every Tier 0 and Tier 1 check passes. Only the plausibility check fires: +0.14 AUC from one column needs an explanation.
+
+  - section: 10
+    after: "Resist the urge to guess and immediately re-run"
+    type: widget
+    name: case-library
+    title: "Case library: twelve broken runs to diagnose"
+    challenge:
+      id: case-library
+      title: "Attending physician"
+      goal: "Finish a round of all twelve cases with **at least 45 of 60 points**."
+      require: [["done", "==", true, "finish the round"], ["roundScore", ">=", 45, "score at least 45 points"]]
+      score: roundScore
+      better: higher
+      unit: points
+      share: "I diagnosed twelve broken training runs and scored {roundScore}/60"
+    intro: |
+      More practice before the two mysteries. Each case shows the curves and the free Tier 0 evidence; deeper evidence costs points, just as
+      it costs time in a real project. A correct diagnosis earns 3 points and the right first fix 2.
+
 answers:
   "1-1":
     - |

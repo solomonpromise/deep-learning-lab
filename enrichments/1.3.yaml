@@ -240,6 +240,62 @@ inserts:
       - q: "**Practical.** Regenerate the spirals with `noise=0.20` and retrain. How does the boundary change, and does the loss curve tell you the data got harder?"
         a: "The arms blur into each other, so the boundary becomes rougher and the best possible accuracy drops (some points genuinely sit on the wrong arm). The curves show it: both losses flatten at a **higher** value and the train/validation gap widens as the network tries to fit the noise. A higher loss floor with healthy-looking curves is the signature of a harder (noisier) task, not a bug."
 
+  # ------------------------------------------------------------------ added: prediction
+  - section: 13
+    before: "# ---------- BUG 1: forgetting optimizer.zero_grad() ----------"
+    type: predict
+    mode: choice
+    prompt: "Bug 2 removes every activation from the 4,417-parameter SpiralNet and trains it as usual. Its validation accuracy will be about…"
+    options: ["0.95, like the working model", "0.80", "0.61", "0.50"]
+    answer: 2
+    reveal: |
+      **About 0.61**, the same as logistic regression's 0.592 in Lesson 1.1: three stacked linear layers collapse into one. The loss curve
+      looks perfectly healthy while it happens.
+
+  # ------------------------------------------------------------------ added: code exercise
+  - section: 6
+    at: end
+    type: exercise
+    title: "The initial-loss sanity check, computed"
+    prompt: |
+      §6 says an untrained binary classifier should start near $-\log 0.5$. Write `bce(y, p)` (clip `p` away from 0 and 1) and
+      `uniform_ce(n_classes)`, the cross-entropy of a model that gives every class the same probability.
+    starter: |
+      import numpy as np
+
+      def bce(y, p, eps=1e-7):
+          """Mean binary cross-entropy of probabilities p for labels y (both 1-D arrays)."""
+          p = np.clip(p, eps, 1 - eps)
+          return ___
+
+      def uniform_ce(n_classes):
+          """Cross-entropy when every class gets probability 1 / n_classes."""
+          return ___
+
+      print(bce(np.array([1, 0, 1, 0]), np.array([0.5, 0.5, 0.5, 0.5])), uniform_ce(10))
+    check: |
+      assert np.isclose(bce(np.array([1, 0]), np.array([0.5, 0.5])), np.log(2)), "Random guessing on a binary task should give log 2 ≈ 0.693"
+      assert np.isclose(bce(np.array([1.0]), np.array([0.9])), -np.log(0.9)), "For y = 1 the loss is −log p"
+      assert np.isfinite(bce(np.array([1.0]), np.array([0.0]))), "A prediction of exactly 0 must not give infinity: clip p first"
+      assert np.isclose(uniform_ce(10), np.log(10)), "With 10 equally likely classes the loss is log 10 ≈ 2.303"
+    solution: |
+      import numpy as np
+
+      def bce(y, p, eps=1e-7):
+          """Mean binary cross-entropy of probabilities p for labels y (both 1-D arrays)."""
+          p = np.clip(p, eps, 1 - eps)
+          return -np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))
+
+      def uniform_ce(n_classes):
+          """Cross-entropy when every class gets probability 1 / n_classes."""
+          return -np.log(1 / n_classes)
+
+      print(bce(np.array([1, 0, 1, 0]), np.array([0.5, 0.5, 0.5, 0.5])), uniform_ce(10))
+    hints:
+      - 'Binary cross-entropy is $-\,\text{mean}\big(y\log p + (1-y)\log(1-p)\big)$.'
+      - 'If every class has probability $1/K$, the true class also gets $1/K$, so the loss is $-\log(1/K)$.'
+    success: "So a 10-class model that starts near 2.30 is sane, and one that starts at 4.2 has a bug."
+
 answers:
   "1-1":
     - "`(16, 3, 64, 64)`: batch of 16, 3 colour channels (RGB), 64 × 64 pixels, the (batch, channels, height, width) layout PyTorch uses for images."

@@ -22,6 +22,7 @@
         {% if used_in is defined and used_in.get(e.key) %}
         <div class="gloss-used">Used in: {% for label, url in used_in[e.key][:6] %}<a href="{{ url }}">{{ label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</div>
         {% endif %}
+        <a class="gloss-map" href="concepts.html#c={{ e.key }}"><svg class="ic"><use href="#i-map"/></svg> What it builds on, and what builds on it</a>
       </dd>
     </div>
     {% endfor %}

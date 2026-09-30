@@ -1,0 +1,153 @@
+# Checkpoints for Lesson 4.3 (see 1.1.checkpoints.yaml for the format).
+skill: Memory & precision
+
+sections:
+  1:
+    questions:
+      - q: "Training with AdamW in fp32 needs roughly how many times the model's own memory, before activations?"
+        options: ["1×", "2×", "4×", "8×"]
+        answer: 2
+        why: "Weights, gradients (one copy) and AdamW's two running averages: four copies of the model."
+      - q: "You switch from AdamW to plain SGD with no momentum. What does the 'four times' become?"
+        options: ["Still 4×", "About 2×: weights plus gradients", "1×", "3×"]
+        answer: 1
+        why: "Plain SGD keeps no optimizer state. Momentum would add one copy; Adam(W) adds two."
+    explain: "Which of the four kinds of memory does inference need, and which does it not?"
+    key: |
+      - Inference needs the weights and (short-lived) activations of the current forward pass.
+      - It needs no gradients and no optimizer state, and under `torch.no_grad()` it doesn't keep activations for a backward pass.
+
+  2:
+    questions:
+      - q: "A model has 1 million weights. Roughly how much memory do weights, gradients and AdamW state take in fp32?"
+        options: ["4 MB", "8 MB", "16 MB", "32 MB"]
+        answer: 2
+        why: "1M × 4 bytes = 4 MB per copy; four copies ≈ 16 MB, before activations."
+      - q: "Why can you run a 7B model on a free Colab GPU but not fully fine-tune it?"
+        options:
+          - "Inference is faster"
+          - "Inference in fp16 needs about 13 GB (weights only); full AdamW fine-tuning needs over 100 GB for weights, gradients and optimizer state"
+          - "Colab blocks training"
+          - "Fine-tuning needs a CPU"
+        answer: 1
+        why: "LoRA trains ~0.2% of parameters, so gradients and optimizer state almost vanish; what's left is the frozen model."
+    explain: "In the LoRA row, why does the total barely fall if you make the adapters even smaller?"
+    key: |
+      - With LoRA almost all memory is the frozen base model's weights (≈13 GB in fp16); the adapters' weights, gradients and optimizer state are already tiny.
+      - Shrinking them further saves almost nothing; to go lower you must shrink the frozen weights themselves (quantisation, i.e. QLoRA).
+
+  3:
+    questions:
+      - q: "Why does fp16 training need a loss scaler while bf16 does not?"
+        options:
+          - "bf16 is more precise"
+          - "fp16's narrow range turns tiny gradients into exactly 0; bf16 keeps fp32's range"
+          - "bf16 is always slower"
+          - "fp16 cannot represent negative numbers"
+        answer: 1
+        why: "Loss scaling multiplies the loss (and so every gradient) into fp16's range, then divides back before the optimizer step."
+      - q: "70,000 stored in fp16 becomes…"
+        options: ["70,000", "65,504", "inf", "0"]
+        answer: 2
+        why: "fp16's largest value is 65,504. bf16 stores it (as 70,144) because it has fp32's range with less precision."
+    explain: "Explain the trade between range and precision for fp16 and bf16 in two sentences."
+    key: |
+      - fp16 spends its bits on precision (finer steps near 1.0) but has a narrow range: overflow above 65,504, tiny values vanish.
+      - bf16 keeps fp32's huge range and gives up precision (it can't tell 1.0001 from 1.0), which is usually harmless for training and needs no scaler.
+
+  4:
+    questions:
+      - q: "A model fits at batch 64 and not at batch 128. Which memory term changed?"
+        options: ["Weights", "Gradients", "Optimizer state", "Activations"]
+        answer: 3
+        why: "Activations are linear in batch size; the other three are fixed once the architecture is chosen."
+      - q: "Why is sequence length even worse than batch size for a Transformer's activation memory?"
+        options:
+          - "It isn't"
+          - "Attention keeps intermediate results that grow with the square of the sequence length"
+          - "Longer sequences need more parameters"
+          - "Tokens are stored in fp64"
+        answer: 1
+        why: "Doubling the sequence can roughly quadruple attention's intermediate storage. Context windows are a memory conversation."
+
+  5:
+    questions:
+      - q: "Why does throughput (rows per second) flatten at large batch sizes?"
+        options:
+          - "The model overfits"
+          - "Fixed per-step overhead is already amortised and the hardware is saturated; bigger batches add work in a straight line"
+          - "The learning rate drops"
+          - "Memory is freed"
+        answer: 1
+        why: "Past the bend, a bigger batch buys no speed and costs memory. The bend belongs to the machine, so measure it on your hardware."
+    explain: "You halve the batch size to fit a GPU. What should you consider doing to the learning rate, and why?"
+    key: |
+      - Consider lowering it (or re-tuning it), because smaller batches give noisier gradient estimates and the best learning rate usually scales with batch size.
+      - Alternatively keep the effective batch the same with gradient accumulation, so the optimisation behaves as before.
+
+  6:
+    questions:
+      - q: "You accumulate over 8 small batches with AdamW and forget to divide each loss by 8. What happens?"
+        options:
+          - "Nothing changes"
+          - "Gradients come out 8× too large, which behaves much like an 8× learning rate"
+          - "Training stops"
+          - "Memory use grows 8×"
+        answer: 1
+        why: "Each small batch's loss is already an average, so their gradients must be averaged too. (Adam's normalisation softens but doesn't remove the effect.)"
+      - q: "Where does gradient accumulation stop being exactly equivalent to one big batch?"
+        options: ["With LayerNorm", "With BatchNorm, whose statistics depend on the small batch", "With ReLU", "With AdamW"]
+        answer: 1
+        why: "LayerNorm works one row at a time and is unaffected."
+
+  7:
+    questions:
+      - q: "Autocast leaves the weights in fp32. Which memory term does it actually reduce?"
+        options: ["Weights", "Gradients", "Optimizer state", "Activations"]
+        answer: 3
+        why: "Operations run in the smaller format and return smaller results, so activations shrink. Speed-up is a hardware property; this saving is arithmetic."
+      - q: "Wrapping autocast around the whole training loop dropped validation AUC from 0.7847 to 0.7584. Why?"
+        options:
+          - "bf16 is too imprecise"
+          - "Autocast caches low-precision copies of weights for one block; stretched across many steps, part of the network trains on stale weights"
+          - "The loss scaler was missing"
+          - "The learning rate changed"
+        answer: 1
+        why: "With `cache_enabled=False` it recovered to 0.7848. Put autocast around the forward pass, not the loop."
+
+  8:
+    questions:
+      - q: "`del big_tensor` runs, but `nvidia-smi` still shows the memory in use. Most likely?"
+        options:
+          - "A memory leak in your code"
+          - "PyTorch keeps freed memory in its own pool for reuse; `empty_cache()` returns it to the driver"
+          - "The GPU is broken"
+          - "`del` does nothing"
+        answer: 1
+        why: "`nvidia-smi` shows what the process reserved; `memory_allocated()` shows what tensors use. A caught OOM's traceback can also keep tensors alive."
+    explain: "You hit an out-of-memory error at batch 64 that didn't happen yesterday with the same code. Name three things that could have changed."
+    key: |
+      - Another process (or a leftover notebook kernel) is using GPU memory; or tensors/graphs are being kept alive (e.g. appending `loss` instead of `loss.item()`, a traceback from a caught OOM).
+      - The inputs grew (longer sequences, larger images), a different GPU/runtime was assigned, or a library/precision setting changed.
+
+  9:
+    questions:
+      - q: "On an Apple Silicon Mac, why doesn't the lesson demonstrate a deliberate out-of-memory error?"
+        options:
+          - "Macs never run out of memory"
+          - "Memory is unified with system RAM, so an oversized job tends to swap and slow the whole machine rather than raise a clean error"
+          - "MPS doesn't support training"
+          - "PyTorch hides the error"
+        answer: 1
+        why: "Raise batch sizes gradually and watch memory pressure. CUDA-only libraries (bitsandbytes, vLLM, flash-attn) go to Colab/Kaggle."
+
+  10:
+    questions:
+      - q: "According to the playbook, what should you try **first** after an out-of-memory error?"
+        options:
+          - "Buy a bigger GPU"
+          - "Gradient checkpointing"
+          - "Free fixes: restart, look for tensors kept alive (e.g. `loss` in a list), and `torch.no_grad()` for scoring"
+          - "Quantise the model"
+        answer: 2
+        why: "Tier 0 is free and changes nothing about the model. Then batch size and accumulation, mixed precision; then checkpointing and freezing; hardware last."

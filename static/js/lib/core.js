@@ -179,6 +179,8 @@
       else if (attrs[k] !== null && attrs[k] !== undefined && attrs[k] !== false) e.setAttribute(k, attrs[k]);
     });
     (kids || []).forEach(function (c) { if (c != null) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    // result and explanation panels are read out when they change (screen readers)
+    if (/(^|\s)w-msg(\s|$)/.test(e.className) && !e.hasAttribute('role')) e.setAttribute('role', 'status');
     return e;
   };
   L.icon = function (name) { return '<svg class="ic"><use href="#i-' + name + '"/></svg>'; };
@@ -188,7 +190,11 @@
     var out = L.el('output', { class: 'w-val' });
     var input = L.el('input', { type: 'range', min: o.min, max: o.max, step: o.step || 1, value: o.value, 'aria-label': o.label });
     var fmt = o.format || function (v) { return v; };
-    function paint() { out.textContent = fmt(+input.value); var p = (input.value - o.min) / (o.max - o.min) * 100; input.style.setProperty('--p', p + '%'); }
+    function paint() {
+      var text = String(fmt(+input.value)).replace(/<[^>]+>/g, '');
+      out.textContent = fmt(+input.value); input.setAttribute('aria-valuetext', text);
+      var p = (input.value - o.min) / (o.max - o.min) * 100; input.style.setProperty('--p', p + '%');
+    }
     input.addEventListener('input', function () { paint(); if (o.onInput) o.onInput(+input.value); });
     input.addEventListener('change', function () { if (o.onChange) o.onChange(+input.value); });
     paint();
@@ -207,10 +213,18 @@
     });
     function set(v, fire) {
       val = v;
-      btns.forEach(function (b) { var on = b._v === v; b.classList.toggle('is-on', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
+      btns.forEach(function (b) { var on = b._v === v; b.classList.toggle('is-on', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
       if (fire && o.onChange) o.onChange(v);
     }
+    wrap.addEventListener('keydown', function (e) {
+      var step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      var i = btns.findIndex(function (b) { return b._v === val; }), next = btns[(i + step + btns.length) % btns.length];
+      set(next._v, true); next.focus();
+    });
     set(val, false);
+    if (!btns.some(function (b) { return b.tabIndex === 0; }) && btns[0]) btns[0].tabIndex = 0;
     return { el: wrap, get: function () { return val; }, set: set };
   };
   L.button = function (label, onClick, cls) {
@@ -243,7 +257,7 @@
   // Responsive HiDPI canvas. aspect = height / width. Calls draw(ctx, w, h) on resize.
   L.canvas = function (parent, aspect, draw, opts) {
     opts = opts || {};
-    var c = L.el('canvas', { class: 'w-canvas' + (opts.cls ? ' ' + opts.cls : '') });
+    var c = L.el('canvas', { class: 'w-canvas' + (opts.cls ? ' ' + opts.cls : ''), role: 'img', 'aria-label': opts.label || null });
     parent.appendChild(c);
     var ctx = c.getContext('2d'), api = { el: c, ctx: ctx, w: 0, h: 0 };
     function resize() {
