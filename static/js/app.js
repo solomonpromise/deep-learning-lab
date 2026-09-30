@@ -45,9 +45,10 @@
   /* ------------------------------------------------------------ sidebar */
   // Wide screens: the menu button collapses the sidebar and the choice sticks across pages (see <head>).
   // Narrow screens: it opens the sidebar as a drawer over the page, as before.
-  // Lesson pages keep the course tree as a drawer at every width: the lesson's own outline (the spine) takes its place.
+  // Lesson and module pages keep the course tree as a drawer at every width (the lesson's spine, or the module's own
+  // list of lessons, takes its place).
   var wideNav = window.matchMedia('(width > 980px)');
-  var lessonPage = document.body.classList.contains('page-lesson');
+  var lessonPage = /\bpage-(lesson|module)\b/.test(document.body.className);
   function inPlace() { return wideNav.matches && !lessonPage; }
   function navShown() {
     return inPlace() ? !document.documentElement.classList.contains('nav-collapsed') : document.body.classList.contains('nav-open');
@@ -97,12 +98,6 @@
       d.classList.toggle('is-done', !!s.done);
       d.classList.toggle('is-started', !s.done && (s.pct || 0) > 0.03);
       if (s.done) d.innerHTML = '<svg class="ic"><use href="#i-check"/></svg>';
-    });
-    $$('[data-module-progress]').forEach(function (el) {
-      var ids = (el.getAttribute('data-lessons') || '').split(',').filter(Boolean);
-      var done = ids.filter(function (i) { return p[i] && p[i].done; }).length;
-      $('.bar span', el).style.width = (ids.length ? 100 * done / ids.length : 0) + '%';
-      $('.label', el).textContent = done + ' of ' + ids.length + ' lessons complete';
     });
     var cont = $('[data-continue]');
     if (cont) {

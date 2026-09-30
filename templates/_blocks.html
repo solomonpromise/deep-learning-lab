@@ -289,25 +289,38 @@
 
 {# ------------------------------------------------------------------ module challenge (module page) #}
 {% macro mchallenge(b, module) %}
+{% set n = b.questions|length %}{% set need = (b.pass_mark * n) | round(0, 'ceil') | int %}
 <section class="mchallenge" id="challenge" data-mchallenge="{{ b.id }}" data-pass="{{ b.pass_mark }}" data-module="{{ module.number }}">
-  <div class="mc-head">
-    <span class="mc-badge" aria-hidden="true"><svg class="ic"><use href="#i-award"/></svg></span>
-    <div>
-      <span class="mc-kicker">Module challenge · {{ b.questions|length }} scenario questions · pass mark {{ (b.pass_mark * 100)|round|int }}%</span>
+  <div class="mc-intro" data-mc-intro>
+    <div class="mc-copy">
+      <span class="mono-label mc-kicker"><svg class="ic"><use href="#i-award"/></svg> Earns the Module {{ module.number }} badge{% if features.certificate %} · counts toward your certificate{% endif %}</span>
       <h2>{{ b.title }}</h2>
-      <p class="muted">Harder than the checkpoints: each question mixes ideas from several lessons. Pass it to earn the Module {{ module.number }} badge{% if features.certificate %}, which counts toward your certificate{% endif %}.</p>
+      <p>{{ n }} scenario questions that mix ideas from all {{ module.lessons|length }} lessons. One question at a time, an explanation after each, and your score at the end. Pass mark {{ (b.pass_mark * 100)|round|int }}%, so {{ need }} of {{ n }}.</p>
+      <div class="mc-dots-row"><span class="mc-dots" data-mc-dots aria-hidden="true">{% for q in b.questions %}<i></i>{% endfor %}</span><span class="mc-status" data-mc-status aria-live="polite">not attempted</span></div>
     </div>
-    <span class="mc-status" data-mc-status aria-live="polite"></span>
-  </div>
-  {% for q in b.questions %}
-  <div class="quiz-q" data-quiz-q data-mc-q="{{ q.id }}" data-answer="{{ q.answer }}">
-    <div class="quiz-qtext prose"><span class="quiz-n">{{ loop.index }}</span>{{ q.q_html | safe }}</div>
-    <div class="quiz-options">
-      {% for o in q.options %}<button class="opt" data-opt="{{ loop.index0 }}"><span class="opt-letter">{{ 'ABCDEFG'[loop.index0] }}</span><span>{{ o | safe }}</span></button>{% endfor %}
+    <div class="mc-cta">
+      <button type="button" class="btn btn-lg btn-bright" data-mc-start>Start the challenge</button>
+      <button type="button" class="mc-review" data-mc-review hidden>Review your answers</button>
+      <p class="mc-hint">Best after you have practised all {{ module.lessons|length }} lessons.</p>
     </div>
-    <div class="quiz-why prose" hidden>{{ q.why_html | safe }}</div>
   </div>
-  {% endfor %}
+  <div class="mc-run" data-mc-run hidden>
+    <div class="mc-run-head"><span class="mono-label" data-mc-count>Question 1 of {{ n }}</span><span class="mc-dots" data-mc-dots aria-hidden="true">{% for q in b.questions %}<i></i>{% endfor %}</span>
+      <button type="button" class="mc-close" data-mc-close>Leave the challenge</button></div>
+    {% for q in b.questions %}
+    <div class="quiz-q" data-quiz-q data-mc-q="{{ q.id }}" data-answer="{{ q.answer }}"{% if not loop.first %} hidden{% endif %}>
+      <div class="quiz-qtext prose"><span class="quiz-n">{{ loop.index }}</span>{{ q.q_html | safe }}</div>
+      <div class="quiz-options">
+        {% for o in q.options %}<button class="opt" data-opt="{{ loop.index0 }}"><span class="opt-letter">{{ 'ABCDEFG'[loop.index0] }}</span><span>{{ o | safe }}</span></button>{% endfor %}
+      </div>
+      <div class="quiz-why prose" hidden>{{ q.why_html | safe }}</div>
+    </div>
+    {% endfor %}
+    <div class="mc-nav">
+      <button type="button" class="btn btn-ghost btn-sm" data-mc-back><svg class="ic"><use href="#i-arrow-left"/></svg> Back</button>
+      <button type="button" class="btn btn-sm" data-mc-next disabled><span>Next question</span> <svg class="ic"><use href="#i-arrow-right"/></svg></button>
+    </div>
+  </div>
   <div class="mc-foot" data-mc-foot hidden></div>
 </section>
 {% endmacro %}

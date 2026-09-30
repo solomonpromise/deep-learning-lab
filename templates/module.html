@@ -3,50 +3,63 @@
 {% block title %}Module {{ module.number }} · {{ module.title }} — {{ course.short_title }}{% endblock %}
 {% block description %}Module {{ module.number }}: {{ module.question }} {{ module.lessons|length }} lessons: {{ module.lessons|map(attribute='title')|join('; ') }}.{% endblock %}
 {% block main %}
-<div class="module-page" style="--mc: {{ module.color }}">
-  <header class="module-hero">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="{{ root }}index.html">Course</a><svg class="ic"><use href="#i-chevron-right"/></svg><span>Module {{ module.number }}</span></nav>
-    <div class="module-hero-grid">
-      <div class="module-big-num" aria-hidden="true">{{ '%02d' % module.number }}</div>
-      <div>
-        <span class="eyebrow"><svg class="ic"><use href="#i-{{ module.icon }}"/></svg> Module {{ module.number }} · {{ module.lessons|length }} lessons · ~{{ (module.minutes / 60)|round(1) }} hours of study</span>
-        <h1>{{ module.title }}</h1>
-        <p class="module-question"><span>The question this module answers</span>{{ module.question }}</p>
-      </div>
+<div class="mod2" data-module-page="{{ module.number }}">
+  <!-- ======================= header: numeral, title, question, your progress -->
+  <header class="m-hero">
+    <div class="m-num" aria-hidden="true">{{ '%02d' % module.number }}</div>
+    <div class="m-title">
+      <nav class="mono-label m-crumbs" aria-label="Breadcrumb"><a href="{{ root }}index.html">Course</a> <span aria-hidden="true">/</span> Module {{ module.number }}</nav>
+      <span class="mono-label m-k">Module {{ module.number }} · {{ module.lessons|length }} lessons · ~{{ (module.minutes / 60)|round(1) }} hours</span>
+      <h1>{{ module.title }}</h1>
+      <p class="m-q">{{ module.question }}</p>
     </div>
-    <div class="module-facts">
-      <div class="info-card"><div class="info-head"><svg class="ic"><use href="#i-layers"/></svg> Topics</div><ul class="chips">{% for t in module.topics %}<li>{{ t }}</li>{% endfor %}</ul></div>
-      <div class="info-card"><div class="info-head"><svg class="ic"><use href="#i-flask"/></svg> Hands-on</div><p>{{ module.hands_on }}</p>
-        {% if module.engineering %}<div class="info-head" style="margin-top:.8rem"><svg class="ic"><use href="#i-gear"/></svg> Engineering</div><p>{{ module.engineering }}</p>{% endif %}</div>
-    </div>
-    <div class="module-progress" data-module-progress="{{ module.number }}" data-lessons="{{ module.lessons|map(attribute='id')|join(',') }}"><span class="bar"><span></span></span><span class="label">0 of {{ module.lessons|length }} lessons complete</span></div>
+    <aside class="m-prog" aria-label="Your progress in this module">
+      <span class="mono-label">Your progress</span>
+      <span class="segs">{% for l in lessons %}<a href="{{ l.slug }}.html" data-seg="{{ l.id }}" title="{{ l.id }}"><span class="sr-only">Lesson {{ l.id }}</span></a>{% endfor %}</span>
+      <p class="m-prog-t" data-m-prog-t>0 of {{ lessons|length }} mastered</p>
+      <a class="btn m-go" href="{{ lessons[0].slug }}.html" data-m-go><svg class="ic"><use href="#i-play"/></svg> <span>Start Lesson {{ lessons[0].id }}</span></a>
+    </aside>
   </header>
 
-  <ol class="lesson-cards">
-    {% for l in lessons %}
-    {% set e = extras[l.id] %}
-    <li>
-      <a class="lesson-card" href="{{ l.slug }}.html">
-        <div class="lc-num">{{ l.id }}</div>
-        <div class="lc-body">
-          <h2>{{ l.title_html | safe }}</h2>
-          {% if e.summary_html %}<div class="lc-summary">{{ e.summary_html | striptags | truncate(260) }}</div>
-          {% elif l.preamble.goal_html %}<div class="lc-summary">{{ l.preamble.goal_html | striptags | truncate(260) }}</div>{% endif %}
-          {% if l.preamble.objectives %}
-          <ul class="lc-obj">{% for o in l.preamble.objectives[:3] %}<li>{{ o | striptags | truncate(120) }}</li>{% endfor %}{% if l.preamble.objectives|length > 3 %}<li class="muted">+ {{ l.preamble.objectives|length - 3 }} more objectives</li>{% endif %}</ul>
-          {% endif %}
-          <ul class="meta-chips small">
-            <li><svg class="ic"><use href="#i-clock"/></svg> ~{{ reading(l) }} min</li>
-            <li><svg class="ic"><use href="#i-list-check"/></svg> {{ l.sections|length }} sections</li>
-            <li><svg class="ic"><use href="#i-code"/></svg> {{ l.code_cells }} code cells</li>
-            {% if e.widgets %}<li class="chip-accent"><svg class="ic"><use href="#i-flask"/></svg> {{ e.widgets|length }} labs</li>{% endif %}
-          </ul>
+  <!-- ======================= what you will learn -->
+  <section class="m-row" aria-labelledby="m-learn">
+    <h2 class="mono-label m-side" id="m-learn">You will learn</h2>
+    <div class="m-main">
+      <ul class="tags">{% for t in module.topics %}<li>{{ t }}</li>{% endfor %}</ul>
+      <p class="m-note"><strong>Hands-on:</strong> {{ module.hands_on }}</p>
+      {% if module.engineering %}<p class="m-note"><strong>Engineering:</strong> {{ module.engineering }}</p>{% endif %}
+    </div>
+  </section>
+
+  <!-- ======================= lessons as a connected list -->
+  <section class="m-row" aria-labelledby="m-lessons">
+    <h2 class="mono-label m-side" id="m-lessons">Lessons</h2>
+    <ol class="m-main m-lessons">
+      {% for l in lessons %}
+      {% set e = extras[l.id] %}
+      <li class="ml" data-ml="{{ l.id }}">
+        <span class="ml-node" aria-hidden="true"></span>
+        <span class="ml-num" aria-hidden="true">{{ l.id }}</span>
+        <div class="ml-body">
+          <h3><a href="{{ l.slug }}.html"><span class="sr-only">Lesson {{ l.id }}: </span>{{ l.title_html | safe }}</a></h3>
+          {% if e.summary_html %}<p class="ml-sum">{{ e.summary_html | striptags | truncate(260) }}</p>
+          {% elif l.preamble.goal_html %}<p class="ml-sum">{{ l.preamble.goal_html | striptags | truncate(260) }}</p>{% endif %}
+          <span class="ml-meta">~{{ reading(l) }} min · {{ l.sections|length }} sections · {{ l.code_cells }} code cells{% if e.widgets %} · {{ e.widgets|length }} lab{{ 's' if e.widgets|length != 1 }}{% endif %}</span>
         </div>
-        <div class="lc-status" data-lesson-status="{{ l.id }}"><svg class="ic"><use href="#i-arrow-right"/></svg></div>
-      </a>
-    </li>
-    {% endfor %}
-  </ol>
-  {% if module.challenge %}{{ mchallenge(module.challenge, module) }}{% endif %}
+        <div class="ml-side">
+          <span class="ml-state" data-ml-state>Not started</span>
+          <a class="btn btn-ghost btn-sm" href="{{ l.slug }}.html" data-ml-go><span>Start</span> <svg class="ic"><use href="#i-arrow-right"/></svg></a>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  {% if module.challenge %}
+  <section class="m-row" aria-labelledby="m-challenge">
+    <h2 class="mono-label m-side" id="m-challenge">Module challenge</h2>
+    <div class="m-main">{{ mchallenge(module.challenge, module) }}</div>
+  </section>
+  {% endif %}
 </div>
 {% endblock %}

@@ -651,25 +651,6 @@ details.explainer:not([open]) { padding-bottom: 14px; }
 .chips li { font-size: .75rem; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
 
 /* ------------------------------------------------------------------ module page */
-.module-page { padding: 0 32px; max-width: 1040px; margin: 0 auto; }
-.module-hero { margin: 28px 0 24px; padding: 34px 36px 28px; border-radius: var(--radius-lg); border: 1px solid var(--line); background: radial-gradient(800px 320px at 100% 0%, color-mix(in srgb, var(--mc) 20%, transparent), transparent 60%), var(--surface); }
-.module-hero-grid { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; }
-.module-big-num { font-size: 6.5rem; font-weight: 900; line-height: .85; letter-spacing: -.06em; color: transparent; -webkit-text-stroke: 2px var(--mc); opacity: .85; }
-.module-hero h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); letter-spacing: -.03em; line-height: 1.1; margin: 14px 0 12px; }
-.module-question { margin: 0; font-size: 1.2rem; font-style: italic; color: var(--ink-2); }
-.module-question span { display: block; font-style: normal; font-size: .72rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
-.module-facts { display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; margin-top: 24px; }
-.module-facts p { margin: 0; font-size: .93rem; color: var(--ink-2); }
-.lesson-cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-.lesson-card { display: grid; grid-template-columns: 70px 1fr 40px; gap: 18px; padding: 22px 22px; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--line); text-decoration: none; color: var(--ink); transition: all .2s; }
-.lesson-card:hover { color: var(--ink); transform: translateY(-2px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--mc) 40%, var(--line)); }
-.lc-num { font-size: 1.6rem; font-weight: 850; color: var(--mc); letter-spacing: -.03em; }
-.lc-body h2 { margin: 0 0 6px; font-size: 1.3rem; letter-spacing: -.015em; line-height: 1.25; }
-.lc-summary { color: var(--ink-2); font-size: .95rem; line-height: 1.55; }
-.lc-obj { margin: 10px 0 12px; padding-left: 1.1em; font-size: .86rem; color: var(--ink-2); line-height: 1.5; }
-.lc-status { display: grid; place-items: center; align-self: center; width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); color: var(--ink-3); }
-.lc-status.is-done { background: var(--green); color: #fff; }
-.lc-status.is-started { background: color-mix(in srgb, var(--mc) 15%, transparent); color: var(--mc); }
 
 /* ------------------------------------------------------------------ plain pages */
 .plain-page { max-width: 880px; margin: 0 auto; padding: 0 32px; }
@@ -715,13 +696,9 @@ details.explainer:not([open]) { padding-bottom: 14px; }
   .topbar { padding: 0 10px; gap: 4px; }
   .brand-text span { display: none; }
   .hide-sm { display: none; }
-  .lesson-layout, .home, .module-page, .plain-page { padding: 0 16px; }
-  .lesson-hero, .module-hero { padding: 24px 20px 20px; border-radius: 18px; margin-top: 16px; }
-  .obj-list, .module-facts { grid-template-columns: 1fr; }
-  .module-hero-grid { grid-template-columns: 1fr; gap: 6px; }
-  .module-big-num { font-size: 4rem; }
-  .lesson-card { grid-template-columns: 1fr; gap: 8px; padding: 18px; }
-  .lc-status { display: none; }
+  .lesson-layout, .plain-page { padding: 0 16px; }
+  .lesson-hero { padding: 24px 20px 20px; border-radius: 18px; margin-top: 16px; }
+  .obj-list { grid-template-columns: 1fr; }
   .sec-num { width: 36px; height: 36px; font-size: .95rem; }
   .qcard, .explainer, .predict { padding: 16px; }
   .qitem { padding: 12px 12px 12px 42px; }

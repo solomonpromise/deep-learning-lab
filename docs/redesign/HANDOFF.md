@@ -11,8 +11,8 @@ This is everything needed to continue the redesign in a local Claude Code sessio
 | 2 | Foundation: colour tokens, fonts, top bar, footer, dark mode, shared components (`static/css/activation.css`) | Done, PR #7 |
 | 3 | Lesson page: spine, margin notes, terminals, benches, prompts, read mode, phone | Done (see notes under Phase 3) |
 | 4 | Home: today band, "Your network", module rows, first visit, phone tab bar | Done (see notes under Phase 4) |
-| 5 | Module page and one-question-at-a-time module challenge | **Next** |
-| 6 | Daily review opens on the first question | To do |
+| 5 | Module page and one-question-at-a-time module challenge | Done (see notes under Phase 5) |
+| 6 | Daily review opens on the first question | **Next** |
 | 7 | Training log (progress), concept map, glossary, guide, 404 | To do |
 | 8 | Final QA and CSS clean-up | To do |
 
@@ -189,7 +189,21 @@ Boards: `Home`, `HomeFirst`, `HomePhone`. Files: `templates/home.html`, new `sta
 - Phones: bottom tab bar (Learn, Review with count, Progress, Tutor) on non-lesson pages; then the brand name can
   come back in the top bar (it is hidden below 480px in `activation.css`).
 
-## Phase 5: module page
+## Phase 5: module page (done)
+
+What was built:
+- `templates/module.html`: numeral, title, question, `aside.m-prog` (segments `[data-seg]`, `[data-m-prog-t]`,
+  `[data-m-go]`), topics as `.tags`, lessons as `ol.m-lessons > li.ml[data-ml]` (`[data-ml-state]`, `[data-ml-go]`).
+  Module pages keep the course tree as a drawer, like lessons (`app.js` and the drawer rules in `activation.css`).
+- `progress.js` `paintModule(mods)`: each lesson's state (Not started / In progress · n% read / Practised or
+  Mastered · strength n%) and action (Start / Continue at §n / Practise / Revisit); the panel's action is the lesson
+  you are in, else the first not mastered, else the challenge, else daily review. `resumeAt(id)` uses `secs` from
+  the course map.
+- `_blocks.html` `mchallenge`: an intro card (`[data-mc-intro]`, dots `[data-mc-dots]`, `[data-mc-start]`,
+  `[data-mc-review]`) and a run (`[data-mc-run]`: one `.quiz-q` visible, `[data-mc-back]`, `[data-mc-next]`,
+  `[data-mc-close]`). Answering the last question calls `R.challenge(id, right, true, {passed})` as before.
+
+Original spec:
 
 Board: `Module`. Files: `templates/module.html`, `_blocks.html` (`mchallenge`), `progress.js` (challenge logic).
 Giant outlined numeral, title, the module's question in serif italic, progress panel with "Continue", topics as tags,
