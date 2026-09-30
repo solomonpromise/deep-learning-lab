@@ -142,26 +142,7 @@
     paint(false);
   });
 
-  /* ------------------------------------------------------------ home page: today at a glance, once the learner has started */
-  var todayEl = $('[data-home-today]');
-  function paintHome(mods) {
-    if (!todayEl) return;
-    if (!Object.keys(R.days()).length) { todayEl.hidden = true; return; }
-    var st = R.streak(), wk = R.week(), due = R.due().length, mastered = 0, total = 0;
-    mods.forEach(function (m) { mastered += m.mastered; total += m.lessons.length; });
-    function item(icon, cls, big, small, href) {
-      return '<a class="' + cls + '" href="' + ROOT + href + '"><svg class="ic"><use href="#i-' + icon + '"/></svg><strong>' + big + '</strong><small>' + small + '</small></a>';
-    }
-    todayEl.innerHTML =
-      item('fire', st.current ? 'is-hot' : '', st.current ? st.current + '-day streak' : 'No streak yet',
-        st.today ? 'you studied today' : st.current ? 'study today to keep it' : 'study today to start one', 'progress.html') +
-      item('cards', due ? 'is-due' : '', due ? due + ' to review' : 'Review done', due ? 'a few minutes today' : 'nothing due today', due ? 'review.html#start' : 'review.html') +
-      item('calendar', wk.active >= wk.goal ? 'is-met' : '', wk.active + ' of ' + wk.goal + ' days', wk.active >= wk.goal ? 'weekly goal met' : 'this week\'s goal', 'progress.html') +
-      item('award', mastered ? 'is-met' : '', mastered + ' of ' + total, 'lessons mastered', 'progress.html');
-    todayEl.hidden = false;
-  }
-
-  function refresh() { all(function (mods) { paintSidebar(mods); paintPanel(mods); paintHome(mods); document.dispatchEvent(new CustomEvent('dlp:mastery', { detail: mods })); }); }
+  function refresh() { all(function (mods) { paintSidebar(mods); paintPanel(mods); document.dispatchEvent(new CustomEvent('dlp:mastery', { detail: mods })); }); }
   refresh();
   var t; document.addEventListener('dlp:record', function () { clearTimeout(t); t = setTimeout(refresh, 150); });
   window.addEventListener('scroll', function () { clearTimeout(t); t = setTimeout(refresh, 800); }, { passive: true });

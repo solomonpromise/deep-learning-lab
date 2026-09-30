@@ -429,15 +429,3 @@ body.focus-mode .tutor-fab { bottom: 96px; }
 .guide-keys .muted { margin: 10px 0 0; font-size: .9rem; }
 
 /* home: today at a glance */
-.home-today { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 20px 0 6px; max-width: 780px; }
-.home-today[hidden] { display: none; }
-.home-today a { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 7px; row-gap: 1px; align-items: center; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--surface) 88%, transparent); border: 1px solid var(--line); color: var(--ink); text-decoration: none; backdrop-filter: blur(6px); transition: border-color .15s, transform .15s; }
-.home-today a:hover { border-color: var(--accent); transform: translateY(-1px); }
-.home-today .ic { width: 17px; height: 17px; color: var(--ink-3); }
-.home-today strong { font-size: .92rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.home-today small { grid-column: 1 / -1; font-size: .76rem; color: var(--ink-3); }
-.home-today .is-hot .ic { color: var(--orange); }
-.home-today .is-due .ic { color: var(--accent); }
-.home-today .is-due { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
-.home-today .is-met .ic { color: var(--green); }
-@media (max-width: 760px) { .home-today { grid-template-columns: 1fr 1fr; } }

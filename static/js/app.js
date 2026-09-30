@@ -104,13 +104,6 @@
       $('.bar span', el).style.width = (ids.length ? 100 * done / ids.length : 0) + '%';
       $('.label', el).textContent = done + ' of ' + ids.length + ' lessons complete';
     });
-    $$('[data-module-ring]').forEach(function (ring) {
-      var card = ring.closest('.path-node');
-      var dots = $$('[data-progress-dot]', card);
-      if (!dots.length) return;
-      var done = dots.filter(function (d) { return d.classList.contains('is-done'); }).length;
-      $('.ring-fill', ring).setAttribute('stroke-dasharray', (100 * done / dots.length) + ' 100');
-    });
     var cont = $('[data-continue]');
     if (cont) {
       var last = store.get('last', null);
@@ -740,50 +733,4 @@
   } else widgets.forEach(mountWidget);
   window.DLP.mountAll = function () { widgets.forEach(mountWidget); };   // e.g. before printing
 
-  /* ------------------------------------------------------------ home hero animation */
-  var hc = $('[data-hero-canvas]');
-  if (hc) heroNetwork(hc);
-  function heroNetwork(canvas) {
-    var ctx = canvas.getContext('2d'), W, H, dpr = Math.min(2, window.devicePixelRatio || 1), nodes = [], layers = [4, 6, 6, 3], t0 = performance.now();
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function size() {
-      var r = canvas.getBoundingClientRect(); W = r.width; H = r.height; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      nodes = [];
-      var x0 = 12, x1 = W - 12;   // the canvas is its own column; keep the node rings inside it
-      layers.forEach(function (n, li) {
-        for (var i = 0; i < n; i++) nodes.push({ l: li, x: x0 + (x1 - x0) * li / (layers.length - 1), y: H * (0.04 + 0.92 * (i + 0.5) / n) });
-      });
-      if (reduce) requestAnimationFrame(draw);
-    }
-    function col(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-    function draw(now) {
-      var t = (now - t0) / 1000;
-      ctx.clearRect(0, 0, W, H);
-      if (W < 160) { if (!reduce) requestAnimationFrame(draw); return; }   // column hidden on narrow heroes
-      var line = col('--line-2'), a = col('--c0'), b = col('--c1');
-      for (var i = 0; i < nodes.length; i++) for (var j = 0; j < nodes.length; j++) {
-        var p = nodes[i], q = nodes[j];
-        if (q.l !== p.l + 1) continue;
-        ctx.strokeStyle = line; ctx.globalAlpha = 0.55; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
-        var phase = ((t * 0.45 + (i * 7 + j * 3) % 10 / 10) % 1);
-        if (((i + j) % 3) === 0) {
-          ctx.globalAlpha = 0.9; ctx.fillStyle = (i + j) % 2 ? a : b;
-          ctx.beginPath(); ctx.arc(p.x + (q.x - p.x) * phase, p.y + (q.y - p.y) * phase, 2.2, 0, 7); ctx.fill();
-        }
-      }
-      ctx.globalAlpha = 1;
-      nodes.forEach(function (n, k) {
-        var pulse = 0.5 + 0.5 * Math.sin(t * 1.6 + k);
-        ctx.fillStyle = col('--surface'); ctx.strokeStyle = n.l === 0 ? a : n.l === layers.length - 1 ? b : col('--violet');
-        ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(n.x, n.y, 7 + pulse * 1.5, 0, 7); ctx.fill(); ctx.stroke();
-      });
-      if (!reduce) requestAnimationFrame(draw);
-    }
-    // The column changes width without a window resize too (the sidebar collapsing), so watch the canvas itself
-    size();
-    if (window.ResizeObserver) new ResizeObserver(size).observe(canvas); else window.addEventListener('resize', size);
-    if (!reduce) requestAnimationFrame(draw);
-    document.addEventListener('dlp:theme', function () { if (reduce) requestAnimationFrame(draw); });
-  }
 })();

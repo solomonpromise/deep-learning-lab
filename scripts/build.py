@@ -263,7 +263,8 @@ class Builder:
         # the tutor's map of the whole course, so it can answer about lessons other than the open one
         by_id = {l.id: l for l in lessons}
         course_map = {"modules": [{
-            "number": m["number"], "title": m["title"], "available": m["available"], "color": m["color"], "url": m["url"],
+            "number": m["number"], "title": m["title"], "short": m.get("short") or m["title"], "question": m.get("question", ""),
+            "available": m["available"], "color": m["color"], "url": m["url"],
             "challenge": {"id": m["challenge"]["id"], "title": m["challenge"]["title"], "n": len(m["challenge"]["questions"]),
                           "pass_mark": m["challenge"]["pass_mark"]} if m.get("challenge") else None,
             "lessons": [{
@@ -279,6 +280,10 @@ class Builder:
                 "challenges": [{"id": b["challenge"]["id"], "title": b["challenge"]["title"], "lab": b.get("title", "")}
                                for s in by_id[le["id"]].sections for b in s.blocks if b["kind"] == "widget" and b.get("challenge")],
                 "n_sections": sum(1 for s in by_id[le["id"]].sections),
+                # every section the lesson page tracks as read ([id, number, title]), for "pick up where you left off"
+                "secs": [[s.id, s.num, strip(s.title_html)] for s in by_id[le["id"]].sections]
+                        + ([["wrap-up", None, "Wrap-up"]] if extras[le["id"]]["takeaways"] or extras[le["id"]]["quiz"] else []),
+                "minutes": extras[le["id"]]["minutes"],
             } for le in m["lessons"]],
         } for m in nav]}
         (self.dist / "static" / "course-map.js").write_text(

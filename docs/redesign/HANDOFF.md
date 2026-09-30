@@ -10,8 +10,8 @@ This is everything needed to continue the redesign in a local Claude Code sessio
 | 1 | Certificate switched off (`features.certificate: false`), three bugs from the UI review | Done, PR #7 |
 | 2 | Foundation: colour tokens, fonts, top bar, footer, dark mode, shared components (`static/css/activation.css`) | Done, PR #7 |
 | 3 | Lesson page: spine, margin notes, terminals, benches, prompts, read mode, phone | Done (see notes under Phase 3) |
-| 4 | Home: today band, "Your network", module rows, first visit, phone tab bar | **Next** |
-| 5 | Module page and one-question-at-a-time module challenge | To do |
+| 4 | Home: today band, "Your network", module rows, first visit, phone tab bar | Done (see notes under Phase 4) |
+| 5 | Module page and one-question-at-a-time module challenge | **Next** |
 | 6 | Daily review opens on the first question | To do |
 | 7 | Training log (progress), concept map, glossary, guide, 404 | To do |
 | 8 | Final QA and CSS clean-up | To do |
@@ -156,7 +156,23 @@ Check: 1440, 1280, 1024, 390, light and dark. Answer a checkpoint and a quiz que
 predict, stepper, a code exercise, Run and Edit a cell in lesson 1.1 (Pyodide), explanation toggle, tutor from a
 code cell, glossary popover, search, read mode, lesson progress %, mark complete, discussion button.
 
-## Phase 4: home
+## Phase 4: home (done)
+
+What was built:
+- `templates/home.html` (no course sidebar: `{% block sidebar %}{% endblock %}`) and `static/js/home.js` (instead of
+  the planned `network.js`; it also paints the today band and the module rows). The old hero canvas (`heroNetwork` in
+  `app.js`), the path rings, `paintHome` in `progress.js` and the old home CSS are gone.
+- Returning learner = at least one study day in `DLP.record.days()`; otherwise the `[data-welcome]` parts show.
+- The course map (`dist/static/course-map.js`, built in `scripts/build.py`) now carries each module's `short` name
+  (new `short:` field per module in `course.yaml`, used for the network's labels) and `question`, and each lesson's
+  `secs` ([id, number, title] for every section the lesson page tracks, plus wrap-up) and `minutes`.
+- Network: SVG, viewBox 1200×330 on wide screens, a vertical version below 640px of panel width (redrawn on resize).
+  Travelling dots are `animateMotion` on lit edges (skipped under reduced motion); "You are here" is the last lesson
+  opened (`store.get('last')`), "Start here" on a first visit.
+- Phones: `nav.tabbar` in `base.html` on every page but lessons (`body.has-tabbar`); the brand name is back in the
+  top bar; Review and tutor move from the top bar to the tab bar.
+
+Original spec:
 
 Boards: `Home`, `HomeFirst`, `HomePhone`. Files: `templates/home.html`, new `static/js/network.js`,
 `static/css/activation.css`, remove `heroNetwork` from `app.js` and the old hero CSS.

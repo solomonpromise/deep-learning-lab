@@ -1,80 +1,91 @@
 {% extends "base.html" %}
+{% set live = nav | selectattr('available') | list %}
+{% set soon = nav | rejectattr('available') | list %}
+{% block sidebar %}{% endblock %}
+{% block late_scripts %}<script defer src="{{ root }}static/js/home.js?v={{ v }}"></script>{% endblock %}
 {% block main %}
-<div class="home">
-  <section class="home-hero">
-    <div class="home-hero-inner">
-      <div class="hero-copy">
-        <span class="eyebrow"><svg class="ic"><use href="#i-sparkles"/></svg> {{ course.hours }}-hour engineering course · {{ course.hands_on }} hands-on</span>
-        <h1>{{ course.title }}</h1>
-        <p class="lead">{{ course.tagline }}</p>
-        <div class="hero-actions">
-          <a class="btn btn-lg" href="{{ nav[0].lessons[0].url }}" data-continue><svg class="ic"><use href="#i-play"/></svg> <span>Start with Lesson 1.1</span></a>
-          <a class="btn btn-lg btn-ghost" href="guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
-        </div>
+<div class="home2" data-home>
+  <!-- ======================= returning learner: today (filled by home.js once there is a study day on record) -->
+  <section class="today" data-today aria-label="Your study today" hidden>
+    <article class="t-card t-resume" data-resume></article>
+    <article class="t-card t-review" data-review></article>
+    <article class="t-card t-week" data-week></article>
+  </section>
+
+  <!-- ======================= first visit: what this is -->
+  <section class="welcome" data-welcome>
+    <div class="welcome-copy">
+      <span class="mono-label welcome-k">{{ course.hours }}-hour engineering course · {{ course.hands_on }} hands-on</span>
+      <h1>{{ course.title }}</h1>
+      <p class="lead">{{ course.tagline }}</p>
+      <div class="hero-actions">
+        <a class="btn btn-lg btn-bright" href="{{ live[0].lessons[0].url }}"><svg class="ic"><use href="#i-play"/></svg> Start Lesson {{ live[0].lessons[0].id }}</a>
+        <a class="btn btn-lg btn-ghost" href="guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
       </div>
-      <div class="hero-visual" aria-hidden="true"><canvas data-hero-canvas></canvas></div>
-      <nav class="home-today" data-home-today aria-label="Your study today" hidden></nav>
-      <ul class="stat-row">
-        <li><strong>{{ stats.modules }}</strong><span>modules live</span></li>
-        <li><strong>{{ stats.lessons }}</strong><span>lessons</span></li>
-        <li><strong>{{ stats.sections }}</strong><span>sections</span></li>
-        <li><strong>{{ stats.figures }}</strong><span>figures &amp; plots</span></li>
-        <li><strong>{{ stats.code }}</strong><span>code cells</span></li>
-        <li><strong>{{ stats.questions }}</strong><span>question sets</span></li>
+    </div>
+    <dl class="welcome-facts">
+      <div><dt class="mono-label">You need</dt><dd>{{ course.prerequisites | join(', ') }}</dd></div>
+      <div><dt class="mono-label">Published</dt><dd>{{ stats.modules }} modules · {{ stats.lessons }} lessons · {{ stats.labs }} interactive labs</dd></div>
+      <div><dt class="mono-label">Account</dt><dd>None. Progress stays in your browser.</dd></div>
+      <div><dt class="mono-label">Followed by</dt><dd>{{ course.followed_by }}</dd></div>
+    </dl>
+  </section>
+
+  <!-- ======================= your network: the course drawn as a network, lit by what you have mastered -->
+  <section class="net" data-net aria-labelledby="net-title">
+    <div class="net-head">
+      <div>
+        <span class="mono-label net-k" data-net-k>The whole course, untrained</span>
+        <h2 id="net-title" data-net-title>{{ stats.lessons }} lessons, one node each</h2>
+        <p data-net-lead>Each node is a lesson. Master one and it lights up; as you learn, signals travel through what you know.</p>
+      </div>
+      <ul class="net-legend" aria-hidden="true">
+        <li><i class="st-none"></i> Not started</li><li><i class="st-started"></i> Started</li><li><i class="st-practised"></i> Practised</li>
+        <li><i class="st-mastered"></i> Mastered</li>{% if soon %}<li><i class="st-soon"></i> Coming soon</li>{% endif %}
       </ul>
     </div>
+    <div class="net-stage" data-net-stage></div>
+    <p class="sr-only" data-net-summary></p>
   </section>
 
-  <section class="home-section">
-    <div class="section-intro">
-      <h2>Your learning path</h2>
-      <p>Ten modules, each built around one question. Work through them in order: every module uses what the previous one built. Modules unlock here as soon as their lessons are published.</p>
-    </div>
-    <ol class="path">
-      {% for m in nav %}
-      <li class="path-node{% if not m.available %} is-locked{% endif %}" style="--mc: {{ m.color }}">
-        <div class="path-marker"><span>{{ m.number }}</span><svg class="ring" viewBox="0 0 44 44" data-module-ring="{{ m.number }}"><circle cx="22" cy="22" r="20"/><circle class="ring-fill" cx="22" cy="22" r="20" pathLength="100" stroke-dasharray="0 100"/></svg></div>
-        {% if m.available %}<a class="path-card" href="{{ m.url }}">{% else %}<div class="path-card">{% endif %}
-          <div class="path-card-head">
-            <span class="path-icon"><svg class="ic"><use href="#i-{{ m.icon }}"/></svg></span>
-            <div>
-              <span class="path-kicker">Module {{ m.number }}{% if not m.available %} · coming soon{% else %} · {{ m.lessons|length }} lessons · ~{{ (m.minutes / 60)|round(1) }} h{% endif %}</span>
-              <h3>{{ m.title }}</h3>
-            </div>
+  <!-- ======================= modules and what is coming -->
+  <div class="home-cols">
+    <section class="mods" aria-labelledby="mods-title">
+      <div class="h-head"><h2 id="mods-title">Modules</h2><span class="mono-label">{{ live|length }} of {{ nav|length }} published</span></div>
+      <ol class="mrows">
+        {% for m in live %}
+        <li class="mrow" data-mrow="{{ m.number }}">
+          <span class="mrow-num" aria-hidden="true">{{ '%02d' % m.number }}</span>
+          <div class="mrow-body">
+            <h3><a href="{{ m.url }}">{{ m.title }}</a></h3>
+            <p class="mrow-q">{{ m.question }}</p>
+            <span class="mrow-meta">{{ m.lessons|length }} lessons · ~{{ (m.minutes / 60)|round(1) }} h</span>
           </div>
-          <p class="path-q">“{{ m.question }}”</p>
-          <ul class="chips">{% for t in m.topics[:6] %}<li>{{ t }}</li>{% endfor %}</ul>
-          {% if m.available %}
-          <ol class="path-lessons">
-            {% for le in m.lessons %}<li><span class="side-dot" data-progress-dot="{{ le.id }}"></span><span class="pl-id">{{ le.id }}</span> {{ le.title }}</li>{% endfor %}
-          </ol>
-          <span class="path-go">Open module <svg class="ic"><use href="#i-arrow-right"/></svg></span>
-          {% endif %}
-        {% if m.available %}</a>{% else %}</div>{% endif %}
-      </li>
-      {% endfor %}
-    </ol>
-  </section>
+          <div class="mrow-side">
+            <span class="segs">{% for le in m.lessons %}<a href="{{ le.url }}" data-seg="{{ le.id }}" title="{{ le.id }} · {{ le.title }}"><span class="sr-only">Lesson {{ le.id }}</span></a>{% endfor %}</span>
+            <span class="mrow-count" data-mrow-count>0 of {{ m.lessons|length }} mastered</span>
+            <a class="btn btn-ghost btn-sm mrow-go" href="{{ m.url }}" data-mrow-go>Open <svg class="ic"><use href="#i-arrow-right"/></svg></a>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+    {% if soon %}
+    <aside class="coming" aria-labelledby="coming-title">
+      <div class="h-head"><h2 id="coming-title">Coming next</h2><span class="mono-label">{{ soon|length }} modules</span></div>
+      <ol class="crows">
+        {% for m in soon %}<li><span class="crow-n">{{ '%02d' % m.number }}</span><div><strong>{{ m.title }}</strong><em>{{ m.question }}</em></div></li>{% endfor %}
+      </ol>
+    </aside>
+    {% endif %}
+  </div>
 
-  <section class="home-section">
-    <div class="section-intro">
-      <h2>Built so nothing is left for you to guess</h2>
-      <p>Each lesson is the complete teaching note, restructured for reading and enriched with visuals and interactive labs.</p>
-    </div>
-    <div class="feature-grid">
-      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-book"/></svg></span><h3>The full notes</h3><p>Every explanation, derivation and result from the course notebooks, organised into numbered sections with a live table of contents.</p></div>
-      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-flask"/></svg></span><h3>Interactive labs</h3><p>Train tiny networks in your browser, drag sliders, step through backpropagation and watch the ideas move.</p></div>
-      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-help"/></svg></span><h3>Every question explained</h3><p>Write your own answer first, then reveal a full worked explanation. Your notes stay in your browser.</p></div>
-      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-code"/></svg></span><h3>Code you can read</h3><p>Every code cell with its real output, and key cells annotated line by line. Copy anything with one click.</p></div>
-      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-link"/></svg></span><h3>Built-in glossary</h3><p>Hover or tap any underlined term for a plain-English definition. The full glossary lives one click away.</p></div>
-      <div class="feature"><span class="feature-icon"><svg class="ic"><use href="#i-download"/></svg></span><h3>Run it yourself</h3><p>Download the original notebook for every lesson and run it locally or in Colab.</p></div>
-    </div>
-  </section>
-
-  <section class="home-section facts">
-    <div class="fact"><span class="fact-k">Prerequisites</span><span class="fact-v">{{ course.prerequisites | join(' · ') }}</span></div>
-    <div class="fact"><span class="fact-k">Length</span><span class="fact-v">{{ course.hours }} hours, {{ course.hands_on }} hands-on</span></div>
-    <div class="fact"><span class="fact-k">Followed by</span><span class="fact-v">{{ course.followed_by }}</span></div>
+  <!-- ======================= first visit: how a lesson works -->
+  <section class="how" data-welcome aria-label="How a lesson works">
+    <div><span class="mono-label"><svg class="ic"><use href="#i-book"/></svg> Read</span><p>The complete teaching notes, set like a good textbook, with plain-English notes in the margin.</p></div>
+    <div><span class="mono-label"><svg class="ic"><use href="#i-help"/></svg> Answer</span><p>A checkpoint closes every section, and what you answer comes back in your daily review.</p></div>
+    <div><span class="mono-label"><svg class="ic"><use href="#i-flask"/></svg> Experiment</span><p>{{ stats.labs }} live labs: train tiny networks, drag the learning rate, watch a gradient vanish.</p></div>
+    <div><span class="mono-label"><svg class="ic"><use href="#i-code"/></svg> Run</span><p>Every notebook cell with its real output; early lessons run Python right in the page.</p></div>
   </section>
 </div>
 {% endblock %}
