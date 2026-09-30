@@ -9,8 +9,8 @@ This is everything needed to continue the redesign in a local Claude Code sessio
 |---|---|---|
 | 1 | Certificate switched off (`features.certificate: false`), three bugs from the UI review | Done, PR #7 |
 | 2 | Foundation: colour tokens, fonts, top bar, footer, dark mode, shared components (`static/css/activation.css`) | Done, PR #7 |
-| 3 | Lesson page: spine, margin notes, terminals, benches, prompts, read mode, phone | **Next** |
-| 4 | Home: today band, "Your network", module rows, first visit, phone tab bar | To do |
+| 3 | Lesson page: spine, margin notes, terminals, benches, prompts, read mode, phone | Done (see notes under Phase 3) |
+| 4 | Home: today band, "Your network", module rows, first visit, phone tab bar | **Next** |
 | 5 | Module page and one-question-at-a-time module challenge | To do |
 | 6 | Daily review opens on the first question | To do |
 | 7 | Training log (progress), concept map, glossary, guide, 404 | To do |
@@ -91,7 +91,27 @@ into `static/css/activation.css` as each page is rebuilt; don't link it from the
    Look at every screenshot. Also click through the features the page carries (list per phase below).
 5. Commit with a message that says what changed for the learner; open a PR with a Testing section.
 
-## Phase 3: lesson page (next)
+## Phase 3: lesson page (done)
+
+What was built (all lesson CSS is the "lesson page (phase 3)" block at the end of `static/css/activation.css`):
+- `base.html` wraps the course sidebar in `{% block sidebar %}`; `lesson.html` adds `aside.spine` after it. On lesson
+  pages the course tree is a drawer at every width (`app.js`: `inPlace()` is false on `page-lesson`).
+- Spine: `.sp-list[data-toc]` of `a.sp[data-toc-link]` (node, number, title). `app.js` marks `.is-active`/`.is-read`,
+  `cp-done`; scroll container is `.spine-inner`. Fold to a rail with `[data-spine-toggle]` (`dlp:spine-collapsed`,
+  class `spine-collapsed` on `<html>`, set in the head script). ≤980px the spine is a bottom sheet (`body.spine-open`,
+  opened by `[data-spine-open]`, closed by `[data-spine-close]`, Esc, or following a link).
+- Margin mode is a container query on `.lesson-layout` (`container: lesson`, min 1018px): sections get
+  `padding-right: 298px`, `.mnote` floats into the margin, `.widget` spans text plus margin. Short explainers get
+  `.mnote` in `_blocks.html` (styles plain/analogy/why/remember/tip/warning/recap, under 480 characters, no code,
+  images, tables or display maths); collapsed ones get `.annot`.
+- Read mode: `focus.js` creates a toggle in each `[data-focus-slot]` (spine and header); `F` toggles, `Esc` leaves;
+  `body.focus-mode` hides the spine, top bar and footer.
+- Phone: `nav.lesson-bar` (sections sheet, `[data-sec-step]` previous/next section, tutor). `[data-lb-where]` shows
+  "n of N · title".
+- Not done from the list below (small, can go in phase 8): code cell ⋯ menu (secondary actions are icon-only chips
+  instead), reflective questions as margin notes, the end-of-lesson row.
+
+Original spec:
 
 Boards: `Lesson`, `LessonSection`, `LessonRead`, `LessonPhone`, `LessonPhoneSheet`.
 Files: `templates/lesson.html`, `templates/_blocks.html`, `templates/base.html`, `static/js/app.js`,

@@ -12,32 +12,59 @@
 {% if ex.challenges %}<script defer src="{{ root }}static/js/challenges.js?v={{ v }}"></script>{% endif %}
 {% if discussions %}<script defer src="{{ root }}static/js/discussion.js?v={{ v }}"></script>{% endif %}{% endblock %}
 
+{% block sidebar %}{{ super() }}
+  <aside class="spine" id="spine" aria-label="This lesson" data-spine>
+    <div class="spine-inner">
+      <div class="spine-top">
+        <a class="mono-label spine-mod" href="{{ root }}{{ module.url }}">Module {{ module.number }}</a>
+        <button type="button" class="icon-btn sm spine-toggle" data-spine-toggle aria-controls="spine" aria-expanded="true" aria-label="Collapse the lesson outline" title="Collapse the lesson outline"><svg class="ic"><use href="#i-sidebar"/></svg></button>
+        <button type="button" class="icon-btn sm spine-close" data-spine-close aria-label="Close the lesson outline"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="spine-head">
+        <div class="spine-label">Lesson {{ lesson.id }}</div>
+        <div class="spine-title">{{ lesson.title }}</div>
+        <div class="lesson-progress" data-lesson-progress><span class="bar"><span></span></span><span class="label">0% read</span></div>
+      </div>
+      <div class="spine-actions">
+        <span data-focus-slot="spine"></span>
+        <button type="button" class="sa" data-nav-toggle aria-controls="sidebar"><svg class="ic"><use href="#i-menu"/></svg> All lessons</button>
+        <a class="sa" href="{{ notebook_url }}" download><svg class="ic"><use href="#i-download"/></svg> Notebook</a>
+        {% if colab_url %}<a class="sa" href="{{ colab_url }}" target="_blank" rel="noopener"><svg class="ic"><use href="#i-rocket"/></svg> Colab</a>{% endif %}
+      </div>
+      <ol class="sp-list" data-toc>
+        <li><a class="sp" href="#start" data-toc-link="start" title="Before you start"><span class="node" aria-hidden="true"></span><small>·</small><span class="sp-t">Before you start</span></a></li>
+        {% for s in lesson.sections %}
+        <li><a class="sp kind-{{ s.kind }}" href="#{{ s.id }}" data-toc-link="{{ s.id }}" title="{{ s.title_html | striptags }}"><span class="node" aria-hidden="true"></span><small>{% if s.num is not none %}{{ s.num }}{% elif s.kind == 'transition' %}→{% else %}·{% endif %}</small><span class="sp-t">{{ s.title_html | safe }}</span></a>
+          {% if s.subs %}<ol class="sp-sub">{% for sub in s.subs %}<li><a href="#{{ sub.id }}">{{ sub.title | md_inline | safe }}</a></li>{% endfor %}</ol>{% endif %}
+        </li>
+        {% endfor %}
+        {% if ex.takeaways or ex.quiz %}<li><a class="sp" href="#wrap-up" data-toc-link="wrap-up" title="Wrap-up"><span class="node" aria-hidden="true"></span><small>★</small><span class="sp-t">Wrap-up</span></a></li>{% endif %}
+      </ol>
+    </div>
+  </aside>
+  <div class="spine-scrim" data-spine-close></div>
+{% endblock %}
+
 {% block main %}
 <div class="lesson-layout" style="--mc: {{ module.color }}" data-lesson="{{ lesson.id }}">
 <article class="lesson" data-gloss-root>
   <!-- ======================= hero -->
   <header class="lesson-hero">
-    <nav class="crumbs" aria-label="Breadcrumb">
-      <a href="{{ root }}index.html">Course</a><svg class="ic"><use href="#i-chevron-right"/></svg>
-      <a href="{{ root }}{{ module.url }}">Module {{ module.number }}</a><svg class="ic"><use href="#i-chevron-right"/></svg>
-      <span>Lesson {{ lesson.id }}</span>
-    </nav>
-    <div class="hero-kicker"><span class="mod-pill">Module {{ module.number }} · {{ module.title }}</span></div>
-    <h1 class="lesson-title"><span class="lesson-num">{{ lesson.id }}</span>{{ lesson.title_html | safe }}</h1>
+    <a class="mono-label hero-mod" href="{{ root }}{{ module.url }}">Module {{ module.number }} · {{ module.title }}</a>
+    <h1 class="lesson-title">{{ lesson.title_html | safe }}</h1>
+    <dl class="hero-facts mnote">
+      <div class="mnote-lbl mono-label">In this lesson</div>
+      <div><dt>Time</dt><dd>~{{ minutes }} min</dd></div>
+      <div><dt>Sections</dt><dd>{{ lesson.sections|length }}</dd></div>
+      <div><dt>Code cells</dt><dd>{{ lesson.code_cells }}</dd></div>
+      {% if widgets %}<div><dt>Labs</dt><dd>{{ widgets|length }}</dd></div>{% endif %}
+      <div><dt>Figures</dt><dd>{{ lesson.figures }}</dd></div>
+    </dl>
     {% if ex.summary_html %}<div class="lesson-summary prose">{{ ex.summary_html | safe }}</div>{% endif %}
-    <ul class="meta-chips">
-      <li><svg class="ic"><use href="#i-clock"/></svg> ~{{ minutes }} min</li>
-      <li><svg class="ic"><use href="#i-list-check"/></svg> {{ lesson.sections|length }} sections</li>
-      <li><svg class="ic"><use href="#i-code"/></svg> {{ lesson.code_cells }} code cells</li>
-      <li><svg class="ic"><use href="#i-image"/></svg> {{ lesson.figures }} figures</li>
-      {% if widgets %}<li class="chip-accent"><svg class="ic"><use href="#i-flask"/></svg> {{ widgets|length }} interactive lab{{ 's' if widgets|length != 1 }}</li>{% endif %}
-    </ul>
     <div class="hero-actions">
       <a class="btn" href="#start"><svg class="ic"><use href="#i-play"/></svg> Start the lesson</a>
-      <a class="btn btn-ghost" href="{{ notebook_url }}" download><svg class="ic"><use href="#i-download"/></svg> Download notebook</a>
-      {% if colab_url %}<a class="btn btn-ghost" href="{{ colab_url }}" target="_blank" rel="noopener"><svg class="ic"><use href="#i-rocket"/></svg> Open in Colab</a>{% endif %}
+      <span data-focus-slot="hero"></span>
     </div>
-    <div class="lesson-progress" data-lesson-progress><span class="bar"><span></span></span><span class="label">0% read</span></div>
   </header>
 
   {% if ex.big_picture %}<div class="big-picture">{{ block(ex.big_picture) }}</div>{% endif %}
@@ -45,28 +72,17 @@
   <!-- ======================= before you start -->
   <section class="lesson-start" id="start">
     {% set pre = lesson.preamble %}
-    {% if pre.goal_html or pre.outcome_html %}
-    <div class="goal-grid">
-      {% if pre.goal_html %}<div class="goal-card"><div class="goal-head"><svg class="ic"><use href="#i-target"/></svg> Goal</div><div class="prose">{{ pre.goal_html | safe }}</div></div>{% endif %}
-      {% if pre.outcome_html %}<div class="goal-card outcome"><div class="goal-head"><svg class="ic"><use href="#i-flag"/></svg> Outcome</div><div class="prose">{{ pre.outcome_html | safe }}</div></div>{% endif %}
-    </div>
-    {% elif pre.goal_extra_html %}
-    <div class="goal-card wide"><div class="goal-head"><svg class="ic"><use href="#i-target"/></svg> Learning goal</div><div class="prose">{{ pre.goal_extra_html | safe }}</div></div>
-    {% endif %}
-
-    {% if pre.objectives %}
-    <div class="objectives">
-      <div class="objectives-head"><svg class="ic"><use href="#i-list-check"/></svg> By the end of this lesson you will be able to</div>
-      <ul class="obj-list">
+    <h2 class="start-h mono-label">Before you start</h2>
+    <dl class="defs">
+      {% if pre.goal_html %}<div class="def"><dt><svg class="ic"><use href="#i-target"/></svg> Goal</dt><dd class="prose">{{ pre.goal_html | safe }}</dd></div>{% endif %}
+      {% if pre.outcome_html %}<div class="def"><dt><svg class="ic"><use href="#i-flag"/></svg> Outcome</dt><dd class="prose">{{ pre.outcome_html | safe }}</dd></div>{% endif %}
+      {% if not (pre.goal_html or pre.outcome_html) and pre.goal_extra_html %}<div class="def"><dt><svg class="ic"><use href="#i-target"/></svg> Learning goal</dt><dd class="prose">{{ pre.goal_extra_html | safe }}</dd></div>{% endif %}
+      {% if pre.objectives %}<div class="def"><dt><svg class="ic"><use href="#i-list-check"/></svg> You will be able to</dt><dd><ul class="obj-list">
         {% for o in pre.objectives %}<li><span class="obj-check" aria-hidden="true"><svg class="ic"><use href="#i-check"/></svg></span><span>{{ o | safe }}</span></li>{% endfor %}
-      </ul>
-    </div>
-    {% endif %}
-
-    <div class="info-grid">
-      {% if pre.dataset_html %}<div class="info-card"><div class="info-head"><svg class="ic"><use href="#i-database"/></svg> Data used in this lesson</div><div class="prose">{{ pre.dataset_html | safe }}</div></div>{% endif %}
-      {% if pre.runtime_html %}<div class="info-card"><div class="info-head"><svg class="ic"><use href="#i-clock"/></svg> Runtime budget</div><div class="prose">{{ pre.runtime_html | safe }}</div></div>{% endif %}
-    </div>
+      </ul></dd></div>{% endif %}
+      {% if pre.runtime_html %}<div class="def"><dt><svg class="ic"><use href="#i-clock"/></svg> Runtime</dt><dd class="prose">{{ pre.runtime_html | safe }}</dd></div>{% endif %}
+    </dl>
+    {% if pre.dataset_html %}<aside class="mnote start-data"><div class="mnote-lbl mono-label"><svg class="ic"><use href="#i-database"/></svg> Data used</div><div class="prose">{{ pre.dataset_html | safe }}</div></aside>{% endif %}
 
     {% for part in pre.intro %}
     {% if part.blocks %}
@@ -141,21 +157,13 @@
   </section>
   {% endif %}
 </article>
-
-<!-- ======================= on this page -->
-<aside class="toc" aria-label="On this page">
-  <div class="toc-inner">
-    <div class="toc-title">On this page</div>
-    <ol class="toc-list" data-toc>
-      <li><a href="#start" data-toc-link="start"><span class="toc-n">·</span> Before you start</a></li>
-      {% for s in lesson.sections %}
-      <li><a href="#{{ s.id }}" data-toc-link="{{ s.id }}"><span class="toc-n">{{ s.num if s.num is not none else '·' }}</span> {{ s.title_html | safe }}</a>
-        {% if s.subs %}<ol class="toc-sub">{% for sub in s.subs %}<li><a href="#{{ sub.id }}">{{ sub.title | md_inline | safe }}</a></li>{% endfor %}</ol>{% endif %}
-      </li>
-      {% endfor %}
-      {% if ex.takeaways or ex.quiz %}<li><a href="#wrap-up" data-toc-link="wrap-up"><span class="toc-n">★</span> Wrap-up</a></li>{% endif %}
-    </ol>
-  </div>
-</aside>
 </div>
+
+<!-- ======================= phone: lesson bar -->
+<nav class="lesson-bar" aria-label="Lesson">
+  <button type="button" class="lb-where" data-spine-open aria-controls="spine" aria-expanded="false"><svg class="ic"><use href="#i-list-check"/></svg><span><small>Lesson {{ lesson.id }}</small><span data-lb-where>Before you start</span></span></button>
+  <button type="button" class="icon-btn" data-sec-step="-1" aria-label="Previous section"><svg class="ic"><use href="#i-arrow-left"/></svg></button>
+  <button type="button" class="icon-btn" data-sec-step="1" aria-label="Next section"><svg class="ic"><use href="#i-arrow-right"/></svg></button>
+  {% if tutor_on %}<button type="button" class="icon-btn" data-tutor-open aria-label="Ask the AI tutor"><svg class="ic"><use href="#i-sparkles"/></svg></button>{% endif %}
+</nav>
 {% endblock %}

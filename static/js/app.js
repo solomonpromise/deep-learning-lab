@@ -45,9 +45,12 @@
   /* ------------------------------------------------------------ sidebar */
   // Wide screens: the menu button collapses the sidebar and the choice sticks across pages (see <head>).
   // Narrow screens: it opens the sidebar as a drawer over the page, as before.
+  // Lesson pages keep the course tree as a drawer at every width: the lesson's own outline (the spine) takes its place.
   var wideNav = window.matchMedia('(width > 980px)');
+  var lessonPage = document.body.classList.contains('page-lesson');
+  function inPlace() { return wideNav.matches && !lessonPage; }
   function navShown() {
-    return wideNav.matches ? !document.documentElement.classList.contains('nav-collapsed') : document.body.classList.contains('nav-open');
+    return inPlace() ? !document.documentElement.classList.contains('nav-collapsed') : document.body.classList.contains('nav-open');
   }
   function syncNavToggle() {
     var shown = navShown(), label = (shown ? 'Hide' : 'Show') + ' course navigation';
@@ -55,11 +58,11 @@
   }
   $$('[data-nav-toggle]').forEach(function (b) {
     b.addEventListener('click', function () {
-      if (wideNav.matches) {
+      if (inPlace()) {
         var collapsed = document.documentElement.classList.toggle('nav-collapsed');
         store.set('nav-collapsed', collapsed);
         if (!collapsed && activeSide) { try { activeSide.scrollIntoView({ block: 'center' }); } catch (e) {} }
-      } else document.body.classList.toggle('nav-open');
+      } else { document.body.classList.remove('spine-open'); document.body.classList.toggle('nav-open'); }
       syncNavToggle();
     });
   });
@@ -158,6 +161,36 @@
   paintDue();
   document.addEventListener('dlp:record', paintDue);
 
+  /* ------------------------------------------------------------ lesson spine */
+  // Wide screens: the button folds the outline to a rail of section nodes (remembered, applied in <head>).
+  // Phones: the outline is a bottom sheet opened from the lesson bar.
+  var spine = $('[data-spine]');
+  if (spine) {
+    var spineToggle = $('[data-spine-toggle]');
+    var paintSpine = function () {
+      var folded = document.documentElement.classList.contains('spine-collapsed');
+      var label = folded ? 'Expand the lesson outline' : 'Collapse the lesson outline';
+      spineToggle.setAttribute('aria-expanded', folded ? 'false' : 'true'); spineToggle.setAttribute('aria-label', label); spineToggle.title = label;
+    };
+    spineToggle.addEventListener('click', function () {
+      store.set('spine-collapsed', document.documentElement.classList.toggle('spine-collapsed'));
+      paintSpine();
+    });
+    paintSpine();
+    var closeSheet = function () { document.body.classList.remove('spine-open'); $$('[data-spine-open]').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); }); };
+    $$('[data-spine-open]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var open = document.body.classList.toggle('spine-open');
+        b.setAttribute('aria-expanded', open ? 'true' : 'false');
+        var cur = $('.sp.is-active', spine), inner = $('.spine-inner', spine);
+        if (open && cur && inner) inner.scrollTop += cur.getBoundingClientRect().top - inner.getBoundingClientRect().top - inner.clientHeight / 2;
+      });
+    });
+    $$('[data-spine-close]').forEach(function (b) { b.addEventListener('click', closeSheet); });
+    spine.addEventListener('click', function (e) { if (e.target.closest('a[href^="#"]')) closeSheet(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && document.body.classList.contains('spine-open')) closeSheet(); });
+  }
+
   /* ------------------------------------------------------------ lesson page */
   var lessonEl = $('[data-lesson]');
   if (lessonEl) {
@@ -171,7 +204,18 @@
     sections.forEach(function (s) { if (readSet.has(s.id)) { s.classList.add('is-read'); if (tocLinks[s.id]) tocLinks[s.id].classList.add('is-read'); } });
     var bar = $('.read-progress span');
     var lp = $('[data-lesson-progress]');
+    var where = $('[data-lb-where]'), whereFor;
     var ticking = false;
+    // phone lesson bar: step to the previous or next section
+    $$('[data-sec-step]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var step = +b.getAttribute('data-sec-step'), line = window.innerHeight * 0.35, cur = -1;
+        sections.forEach(function (s, i) { if (s.getBoundingClientRect().top < line) cur = i; });
+        var to = sections[Math.max(0, Math.min(sections.length - 1, cur + step))];
+        if (step < 0 && cur <= 0) to = $('#start') || to;
+        if (to) window.scrollTo({ top: to.getBoundingClientRect().top + window.scrollY - 64, behavior: 'instant' });
+      });
+    });
     function onScroll() {
       ticking = false;
       var doc = document.documentElement;
@@ -194,8 +238,14 @@
         }
       }
       Object.keys(tocLinks).forEach(function (k) { tocLinks[k].classList.toggle('is-active', k === active); });
+      if (where && active !== whereFor) {
+        whereFor = active;
+        var i = sections.map(function (s) { return s.id; }).indexOf(active), t = active && tocLinks[active] ? $('.sp-t', tocLinks[active]) : null;
+        where.textContent = i >= 0 ? (i + 1) + ' of ' + sections.length + ' · ' + (t ? t.textContent.trim() : '') : 'Before you start';
+      }
       if (active && tocLinks[active]) {
-        var inner = $('.toc-inner');
+        var inner = $('.spine-inner') || $('.toc-inner');
+        if (!inner) return;
         var ar = tocLinks[active].getBoundingClientRect(), ir = inner.getBoundingClientRect();
         if (ar.top < ir.top + 20 || ar.bottom > ir.bottom - 20) inner.scrollTop += ar.top - ir.top - ir.height / 3;
       }
