@@ -49,7 +49,6 @@
 .cp-key .prose > :first-child { margin-top: 0; } .cp-key .prose > :last-child { margin-bottom: 0; }
 .cp-self { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: .85rem; color: var(--ink-2); }
 .cp-self span { margin-right: 4px; }
-.toc-list a.cp-done::after { content: "✓"; margin-left: 6px; font-size: .75em; font-weight: 800; color: var(--green); }
 @media (max-width: 640px) {
   .cp-head, .cp-q, .cp-explain { padding-left: 14px; padding-right: 14px; }
 }
@@ -130,7 +129,6 @@ body.focus-mode .main { padding-bottom: 96px; }
 .focus-bar [data-focus-next].is-waiting { background: var(--surface-2); color: var(--ink-2); border-color: var(--line-2); }
 .focus-skip { border: 0; background: none; padding: 0; font: inherit; font-size: .75rem; color: var(--ink-3); cursor: pointer; text-decoration: underline; }
 .focus-toggle[aria-pressed="true"] { border-color: var(--mc, var(--accent)); }
-.toc-list a.focus-current { background: var(--accent-soft); }
 .checkpoint.focus-nudge { animation: nudge .45s; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cpc) 35%, transparent), var(--shadow); }
 body.focus-mode .tutor-fab { bottom: 96px; }
 @media (max-width: 640px) {

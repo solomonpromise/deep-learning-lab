@@ -1,4 +1,4 @@
-/* Focus mode — one section of a lesson at a time.
+/* Read mode (formerly focus mode) — one section of a lesson at a time, in a centred column without the spine.
    Page 0 is the lesson's opening (hero and "Before you start"); then one page per section; the wrap-up
    (takeaways and quiz) is the last page. "Next" waits until the section's checkpoint questions are answered,
    with "Skip for now" always available. The choice to use focus mode, and the page each lesson was left on,
@@ -16,10 +16,17 @@
   var nums = [''].concat($$('[data-section]').map(function (s) { var n = $('.sec-num', s); return n && /\d/.test(n.textContent) ? n.textContent.trim() : ''; }));
   var on = false, page = 0, skipped = {};
 
-  var toggle = document.createElement('button');
-  toggle.type = 'button'; toggle.className = 'btn btn-ghost focus-toggle'; toggle.setAttribute('aria-pressed', 'false');
-  var actions = $('.hero-actions');
-  if (actions) actions.appendChild(toggle);
+  // one toggle per slot: the lesson header and the spine's action row (falls back to the header's actions)
+  var slots = $$('[data-focus-slot]');
+  if (!slots.length && $('.hero-actions')) slots = [$('.hero-actions')];
+  var toggles = slots.map(function (slot) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'F');
+    b.className = slot.getAttribute('data-focus-slot') === 'spine' ? 'sa focus-toggle' : 'btn btn-ghost focus-toggle';
+    b.setAttribute('data-where', slot.getAttribute('data-focus-slot') || 'hero');
+    slot.replaceWith ? slot.replaceWith(b) : slot.appendChild(b);
+    return b;
+  });
 
   var bar = document.createElement('nav');
   bar.className = 'focus-bar'; bar.setAttribute('aria-label', 'Section navigation'); bar.hidden = true;
@@ -27,7 +34,7 @@
     '<div class="focus-where"><span class="focus-count" data-focus-count></span><span class="focus-title" data-focus-title></span><span class="focus-dots" data-focus-dots aria-hidden="true"></span></div>' +
     '<div class="focus-next-wrap"><button type="button" class="btn btn-sm" data-focus-next><span>Next</span> <svg class="ic"><use href="#i-arrow-right"/></svg></button>' +
     '<button type="button" class="focus-skip" data-focus-skip hidden>Skip for now</button></div>' +
-    '<button type="button" class="icon-btn sm focus-exit" data-focus-exit title="Show the whole lesson" aria-label="Show the whole lesson"><svg class="ic"><use href="#i-list-check"/></svg></button>';
+    '<button type="button" class="icon-btn sm focus-exit" data-focus-exit title="Show the whole lesson (Esc)" aria-label="Show the whole lesson"><svg class="ic"><use href="#i-list-check"/></svg></button>';
   document.body.appendChild(bar);
   var prevBtn = $('[data-focus-prev]', bar), nextBtn = $('[data-focus-next]', bar), skipBtn = $('[data-focus-skip]', bar);
 
@@ -43,8 +50,12 @@
     return n;
   }
   function paintToggle() {
-    toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
-    toggle.innerHTML = on ? '<svg class="ic"><use href="#i-list-check"/></svg> Show the whole lesson' : '<svg class="ic"><use href="#i-eye"/></svg> Focus mode: one section at a time';
+    toggles.forEach(function (b) {
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.innerHTML = b.getAttribute('data-where') === 'spine'
+        ? (on ? '<svg class="ic"><use href="#i-list-check"/></svg> Whole lesson' : '<svg class="ic"><use href="#i-eye"/></svg> Read mode <kbd>F</kbd>')
+        : (on ? '<svg class="ic"><use href="#i-list-check"/></svg> Show the whole lesson' : '<svg class="ic"><use href="#i-eye"/></svg> Read one section at a time');
+    });
   }
   function show(i, scroll) {
     page = Math.max(0, Math.min(pages.length - 1, i));
@@ -102,7 +113,7 @@
     }
   }
 
-  toggle.addEventListener('click', function () { setMode(!on); });
+  toggles.forEach(function (b) { b.addEventListener('click', function () { setMode(!on); }); });
   $('[data-focus-exit]', bar).addEventListener('click', function () { setMode(false); });
   prevBtn.addEventListener('click', function () { show(page - 1); });
   nextBtn.addEventListener('click', next);
@@ -120,6 +131,13 @@
     setTimeout(function () { target.scrollIntoView({ block: 'start' }); if (window.DLP.revealAround) window.DLP.revealAround(); }, 0);
     history.replaceState(null, '', '#' + target.id);
   }, true);
+  // F toggles read mode, Esc leaves it (unless a dialog or the search is open)
+  document.addEventListener('keydown', function (e) {
+    var t = document.activeElement || {};
+    if (e.ctrlKey || e.metaKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test(t.tagName || '') || t.isContentEditable) return;
+    if ((e.key === 'f' || e.key === 'F') && !e.shiftKey) { e.preventDefault(); setMode(!on); }
+    else if (e.key === 'Escape' && on && !$('[data-search-modal]:not([hidden])') && !$('.tutor-panel:not([hidden])')) setMode(false);
+  });
   document.addEventListener('keydown', function (e) {
     if (!on || !e.altKey || /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) return;
     if (e.key === 'ArrowRight') { e.preventDefault(); e.stopImmediatePropagation(); next(); }

@@ -73,12 +73,13 @@
 {% elif b.kind == 'explainer' %}
 {% set em = EXMETA.get(b.style, EXMETA['plain']) %}
 {% if b.collapsed %}
-<details class="explainer ex-{{ b.style }} reveal">
+<details class="explainer annot ex-{{ b.style }} reveal">
   <summary class="ex-head"><span class="ex-icon"><svg class="ic"><use href="#{{ em.icon }}"/></svg></span><span class="ex-tag">{{ em.tag }}</span>{% if b.title %}<span class="ex-title">{{ b.title | md_inline | safe }}</span>{% endif %}<svg class="ic chev"><use href="#i-chevron-down"/></svg></summary>
   <div class="prose">{{ b.html | safe }}</div>
 </details>
 {% else %}
-<aside class="explainer ex-{{ b.style }} reveal">
+{% set bh = b.html or '' %}{% set short = b.style in ['plain', 'analogy', 'why', 'remember', 'tip', 'warning', 'recap'] and (bh | striptags | length) < 480 and '<pre' not in bh and '<img' not in bh and '<table' not in bh and '$$' not in bh and '\\[' not in bh %}
+<aside class="explainer ex-{{ b.style }}{% if short %} mnote{% endif %} reveal">
   <div class="ex-head"><span class="ex-icon"><svg class="ic"><use href="#{{ em.icon }}"/></svg></span><span class="ex-tag">{{ em.tag }}</span>{% if b.title %}<span class="ex-title">{{ b.title | md_inline | safe }}</span>{% endif %}</div>
   <div class="prose">{{ b.html | safe }}</div>
 </aside>

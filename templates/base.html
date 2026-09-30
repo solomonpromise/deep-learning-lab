@@ -25,7 +25,7 @@
   <script>
     (function () {
       try { var t = localStorage.getItem('dlp-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
-      try { if (localStorage.getItem('dlp:nav-collapsed') === 'true') document.documentElement.classList.add('nav-collapsed'); } catch (e) {}
+      try { if (localStorage.getItem('dlp:nav-collapsed') === 'true') document.documentElement.classList.add('nav-collapsed'); if (localStorage.getItem('dlp:spine-collapsed') === 'true') document.documentElement.classList.add('spine-collapsed'); } catch (e) {}
       document.documentElement.classList.add('js');
     })();
   </script>
@@ -72,6 +72,7 @@
 </header>
 
 <div class="shell">
+  {% block sidebar %}
   <nav class="sidebar" id="sidebar" aria-label="Course navigation" data-sidebar>
     <div class="sidebar-inner">
       <a class="side-home{% if page == 'home' %} is-active{% endif %}" href="{{ root }}index.html"><svg class="ic"><use href="#i-home"/></svg> Course home</a>
@@ -109,6 +110,7 @@
     </div>
   </nav>
   <div class="scrim" data-nav-close></div>
+  {% endblock %}
 
   <main id="main" class="main">
     {% block main %}{% endblock %}

@@ -193,3 +193,227 @@ pre.code .ln.is-hl, .line-notes li:hover, .line-notes li.is-hl { background: rgb
 @media print {
   .site-foot { display: none; }
 }
+
+/* ================================================================== lesson page (phase 3)
+   The spine (this lesson's outline) replaces the course sidebar and the contents panel; the course tree becomes a
+   drawer. The reading area is a 720px text column plus a 250px margin for short notes whenever the lesson column
+   is wide enough (a container query, so it also follows the spine folding to a rail). Read mode = focus.js. */
+.mono-label { font-family: var(--mono); font-weight: 600; font-size: .7rem; letter-spacing: .09em; text-transform: uppercase; }
+
+/* ---- course tree as a drawer on lesson pages */
+@media (width > 980px) {
+  body.page-lesson .sidebar {
+    display: block; position: fixed; left: 0; top: var(--topbar-h); z-index: 60; background: var(--surface); box-shadow: var(--shadow-lg);
+    transform: translateX(-102%); visibility: hidden; transition: transform .25s ease, visibility .25s;
+  }
+  body.page-lesson.nav-open .sidebar { transform: none; visibility: visible; }
+  body.page-lesson.nav-open .scrim { display: block; position: fixed; inset: var(--topbar-h) 0 0 0; z-index: 55; background: rgba(0, 0, 0, .35); }
+}
+
+/* ---- the spine */
+.spine { flex: none; width: 272px; position: sticky; top: var(--topbar-h); align-self: flex-start; height: calc(100vh - var(--topbar-h)); border-right: 1px solid var(--line); background: var(--bg); }
+.spine-inner { height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 16px 14px 28px 20px; display: flex; flex-direction: column; gap: 16px; }
+.spine-top { display: flex; align-items: center; gap: 6px; min-height: 30px; }
+.spine-mod { margin-right: auto; color: var(--ink-3); text-decoration: none; }
+.spine-mod:hover { color: var(--ink); }
+.spine-close, .spine-scrim { display: none; }
+.spine-label { font: 600 .7rem var(--mono); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); }
+.spine-title { font: 700 1.02rem/1.25 var(--display); font-stretch: 108%; letter-spacing: -.01em; margin: 4px 0 12px; color: var(--ink); }
+.spine .lesson-progress { margin: 0; display: grid; gap: 6px; font-size: .74rem; }
+.spine .lesson-progress .bar { height: 4px; }
+.spine-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.sa { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink-2); font: 500 .8rem var(--font); text-decoration: none; cursor: pointer; white-space: nowrap; }
+.sa:hover { color: var(--ink); border-color: var(--ink-3); }
+.sa .ic { width: 14px; height: 14px; }
+.sa kbd { font: 600 .64rem var(--mono); padding: 1px 5px; border: 1px solid var(--line-2); border-radius: 4px; color: var(--ink-3); background: var(--bg); }
+.sa[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.sp-list { list-style: none; margin: 0; padding: 0; position: relative; display: grid; gap: 1px; }
+.sp-list::before { content: ""; position: absolute; left: 5.5px; top: 12px; bottom: 12px; width: 2px; background: var(--line); }
+.sp-list > li { margin: 0; }
+.sp { position: relative; display: grid; grid-template-columns: 13px 26px minmax(0, 1fr); gap: 8px; align-items: start; padding: 5px 6px 5px 0; font: 500 .82rem/1.35 var(--font); color: var(--ink-2); text-decoration: none; border-radius: 6px; }
+.sp:hover { color: var(--ink); }
+.sp .node { position: relative; z-index: 1; width: 13px; height: 13px; margin-top: 2px; border-radius: 50%; background: var(--bg); border: 2px solid var(--line-2); box-sizing: border-box; transition: background .3s, border-color .3s; }
+.sp small { font: 500 .7rem/1.75 var(--mono); color: var(--ink-3); }
+.sp.is-read .node { background: var(--a2); border-color: var(--a2); }
+.sp.cp-done .sp-t::after { content: " ✓"; color: var(--a2); font-weight: 700; }
+.sp.is-active { color: var(--ink); font-weight: 650; }
+.sp.is-active small { color: var(--ink); }
+.sp.is-active .node { border-color: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 14%, transparent); }
+.sp.is-active::after { content: ""; position: absolute; left: -20px; top: 4px; bottom: 4px; width: 3px; border-radius: 0 3px 3px 0; background: var(--ink); }
+.sp.focus-current { background: var(--surface-2); }
+.sp-sub { list-style: none; margin: 0 0 4px 47px; padding: 0; display: none; }
+.sp.is-active + .sp-sub { display: block; }
+.sp-sub a { display: block; padding: 3px 4px; font-size: .76rem; line-height: 1.35; color: var(--ink-3); text-decoration: none; }
+.sp-sub a:hover { color: var(--ink); }
+@media (width > 980px) {
+  .spine-collapsed .spine { width: 52px; }
+  .spine-collapsed .spine-inner { padding: 14px 0 20px; align-items: center; overflow-x: hidden; }
+  .spine-collapsed .spine-mod, .spine-collapsed .spine-head, .spine-collapsed .spine-actions,
+  .spine-collapsed .sp small, .spine-collapsed .sp-t, .spine-collapsed .sp-sub { display: none; }
+  .spine-collapsed .sp { grid-template-columns: 13px; gap: 0; padding: 6px 0; }
+  .spine-collapsed .sp.is-active::after { left: -19px; }
+}
+
+/* ---- reading area */
+.page-lesson .lesson-layout { display: block; padding: 0 40px; container: lesson / inline-size; }
+.page-lesson .lesson { max-width: 720px; margin: 0 auto; }
+.page-lesson .lesson-hero { background: none; border: 0; border-radius: 0; box-shadow: none; padding: 44px 0 4px; margin: 0; overflow: visible; }
+.hero-mod { color: var(--ink-2); text-decoration: none; }
+.hero-mod:hover { color: var(--ink); text-decoration: underline; }
+.page-lesson .lesson-title { font-size: clamp(2.1rem, 4vw, 3.3rem); line-height: 1.05; margin: 14px 0 20px; }
+.page-lesson .lesson-summary { max-width: none; color: var(--ink-2); }
+.mnote { border-top: 2px solid var(--ink); padding-top: 10px; font-size: .9rem; line-height: 1.55; color: var(--ink-2); }
+.mnote-lbl { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; color: var(--ink); }
+.mnote-lbl .ic { width: 14px; height: 14px; }
+.hero-facts { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 18px; font-size: .84rem; }
+.hero-facts .mnote-lbl { flex-basis: 100%; margin-bottom: 2px; }
+.hero-facts > div:not(.mnote-lbl) { display: flex; gap: 6px; }
+.hero-facts dt { color: var(--ink-3); }
+.hero-facts dd { margin: 0; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.page-lesson .hero-actions { margin-top: 22px; }
+
+/* before you start: definition rows */
+.page-lesson .lesson-start { padding-top: 34px; }
+.start-h { margin: 0 0 12px; color: var(--ink-3); }
+.defs { margin: 0; border-top: 1px solid var(--line); }
+.def { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.def dt { display: flex; align-items: flex-start; gap: 8px; padding-top: 5px; font: 600 .7rem/1.4 var(--mono); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); }
+.def dt .ic { width: 14px; height: 14px; flex: none; margin-top: -1px; }
+.def dd { margin: 0; min-width: 0; }
+.def dd.prose > :first-child { margin-top: 0; }
+.def dd.prose > :last-child { margin-bottom: 0; }
+.def .obj-list { margin: 0; grid-template-columns: 1fr; gap: 8px; }
+.start-data { margin: 18px 0 0; }
+.start-data .prose { font-family: var(--font); font-size: .9rem; max-width: none; }
+.start-data .prose > :first-child { margin-top: 0; }
+
+/* sections */
+.page-lesson .lsec { padding-top: 40px; margin-top: 44px; }
+.page-lesson .sec-head { display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: baseline; gap: 0; margin-bottom: 14px; }
+.page-lesson .sec-num { display: block; width: auto; height: auto; margin: 0; border-radius: 0; background: none; color: var(--ink-3); font: 600 .95rem var(--mono); }
+.page-lesson .lsec.is-read .sec-num { background: none; color: var(--a2); }
+.page-lesson .sec-icon .ic { width: 16px; height: 16px; }
+.page-lesson .sec-head h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); line-height: 1.12; margin: 0; }
+
+/* explainers: short ones are margin notes, collapsed ones are annotation rows, the rest plain blocks */
+.explainer[class] { --ex: var(--ink-2); --ex-soft: var(--surface); }
+.explainer.ex-warning { --ex: var(--red); }
+.explainer.mnote { margin: 1.4em 0; padding: 10px 0 0; background: none; border: 0; border-top: 2px solid var(--ink); border-radius: 0; }
+.explainer.mnote.ex-warning { border-top-color: var(--red); }
+.explainer.mnote .ex-icon { display: none; }
+.explainer.mnote .ex-tag { color: var(--ink); }
+.explainer.mnote.ex-warning .ex-tag { color: var(--red); }
+.explainer.mnote .ex-title { flex-basis: 100%; margin: 0; font: 650 .95rem/1.35 var(--font); color: var(--ink); }
+.explainer.mnote > .prose { font: 400 .92rem/1.55 var(--font); color: var(--ink-2); }
+.explainer.mnote > .prose > :first-child { margin-top: .35em; }
+.explainer.annot { margin: 1.4em 0; padding: 0; background: none; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; }
+.explainer.annot > summary { padding: 12px 0; align-items: center; column-gap: 12px; }
+.explainer.annot .ex-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--surface-2); color: var(--ink); }
+.explainer.annot .ex-tag { color: var(--ink-3); }
+.explainer.annot .ex-title { font: 600 .98rem/1.35 var(--font); color: var(--ink); margin-left: 44px; }
+.explainer.annot[open] > summary { border-bottom: 1px dashed var(--line); }
+.explainer.annot > .prose { padding: 4px 0 14px 44px; }
+details.explainer.annot:not([open]) { padding-bottom: 0; }
+.explainer:not(.mnote):not(.annot) { border: 1px solid var(--line); background: var(--surface); }
+.explainer:not(.mnote):not(.annot) .ex-icon { background: var(--ink); color: var(--bg); }
+
+/* code cells: terminal header with Run in teal, secondary actions as icons */
+.code-lang, .code-meta { font-family: var(--mono); font-size: .74rem; letter-spacing: .02em; }
+.code-actions .py-run { background: var(--a2); border-color: var(--a2); color: #fff; }
+.code-actions .py-run .ic { color: #fff; }
+.code-actions .chip-btn:not(.py-run):not(.is-on) { background: transparent; border-color: #3b3549; color: #d8d5e2; }
+.code-actions .chip-btn:not(.py-run) .ic { color: currentColor; }
+.code-actions [data-py-edit] span, .code-actions [data-explain-toggle] span, .code-head .tutor-chip span {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* labs as benches: dotted ground, a plate for the title, the caption at the foot */
+.page-lesson .widget {
+  --bench-dot: color-mix(in srgb, var(--ink) 13%, transparent);
+  background-color: var(--surface-2); background-image: radial-gradient(circle, var(--bench-dot) 1px, transparent 1.4px); background-size: 16px 16px;
+  border: 1px solid var(--line); border-radius: 16px; box-shadow: none;
+}
+.page-lesson .widget-head { background: var(--surface); padding: 12px 18px; border-bottom: 1px solid var(--line); }
+.page-lesson .widget-intro { background: var(--surface); padding: 10px 18px 14px; border-bottom: 1px solid var(--line); }
+.page-lesson .widget-intro > :first-child { margin-top: 0; }
+.page-lesson .widget-caption { background: var(--surface); }
+
+/* questions as prompts */
+.qcard, .predict, .checkpoint, .quiz { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-sm); }
+.qcard::before { display: none; }
+.predict { --qc: var(--ink); --qc-soft: var(--surface-2); }
+.qcard-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--ink); color: var(--bg); }
+.qcard-tag { color: var(--ink-2); }
+.checkpoint { --cpc: var(--ink); }
+.cp-badge { background: var(--ink); color: var(--bg); border-radius: 6px; font-family: var(--mono); font-weight: 600; letter-spacing: .08em; }
+.checkpoint.is-done { border-color: var(--a2); }
+.cp-score { color: var(--a2); }
+.cp-explain { background: var(--surface); }
+.opt { min-height: 46px; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; }
+.opt:hover:not(:disabled) { border-color: var(--ink); transform: none; }
+.opt-letter { border: 1px solid var(--line-2); background: var(--surface); font-family: var(--mono); font-weight: 600; color: var(--ink-3); border-radius: 6px; }
+.opt.is-correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+.opt.is-wrong .opt-letter { background: var(--red); border-color: var(--red); color: #fff; }
+.opt.is-picked { box-shadow: inset 0 0 0 1px var(--ink); }
+.quiz-why, .cp-why { background: none; border-top: 1px dashed var(--line-2); border-radius: 0; padding: 12px 0 0; }
+.quiz-n { border-radius: 6px; font-family: var(--mono); }
+
+/* ---- margin mode: text column plus margin, when the lesson column has room */
+@container lesson (min-width: 1018px) {
+  body:not(.focus-mode) .lesson { max-width: 1018px; }
+  body:not(.focus-mode) :is(.lesson-hero, .lesson-start, .lsec, .big-picture, .lesson-end, .mastery-panel, .discussion) { padding-right: 298px; }
+  body:not(.focus-mode) :is(.lsec, .intro-part, .lesson-start, .lesson-hero) > .mnote { float: right; clear: right; width: 250px; margin: 6px -298px 18px 0; }
+  body:not(.focus-mode) .hero-facts { display: block; }
+  body:not(.focus-mode) .hero-facts > div:not(.mnote-lbl) { justify-content: space-between; padding: 5px 0; border-bottom: 1px dotted var(--line-2); }
+  body:not(.focus-mode) .lsec > .widget { clear: right; margin-right: -298px; }
+}
+
+/* ---- read mode: no spine, no top bar, one centred column */
+body.focus-mode .spine, body.focus-mode .topbar, body.focus-mode .site-foot { display: none; }
+body.focus-mode .lesson { max-width: 700px; }
+body.focus-mode .lesson-hero { padding-top: 32px; }
+.focus-bar { background: var(--surface); border-color: var(--line); }
+.focus-dots i.is-past, .focus-dots i.is-now { background: var(--a2); }
+.focus-dots i.is-past { opacity: .5; }
+.focus-toggle[aria-pressed="true"] { border-color: var(--ink); }
+
+/* ---- phone lesson bar and the spine as a bottom sheet */
+.lesson-bar { display: none; }
+@media (max-width: 980px) {
+  .spine {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; width: auto; height: min(78vh, 640px); z-index: 66;
+    border: 1px solid var(--line); border-radius: 18px 18px 0 0; background: var(--surface); box-shadow: var(--shadow-lg);
+    transform: translateY(105%); visibility: hidden; transition: transform .25s ease, visibility .25s;
+  }
+  body.spine-open .spine { transform: none; visibility: visible; }
+  body.spine-open .spine-scrim { display: block; position: fixed; inset: 0; z-index: 65; background: rgba(0, 0, 0, .4); }
+  .spine-toggle { display: none; }
+  .spine-close { display: inline-grid; }
+  .sp { font-size: .9rem; padding: 7px 6px 7px 0; }
+  .sp.is-active::after { display: none; }
+  .lesson-bar {
+    display: flex; align-items: center; gap: 2px; position: fixed; left: 10px; right: 10px; bottom: 10px; z-index: 50;
+    padding: 6px; border-radius: 16px; background: var(--ink); color: var(--bg); box-shadow: var(--shadow-lg);
+  }
+  .lesson-bar .icon-btn { color: var(--bg); width: 42px; height: 42px; }
+  .lesson-bar .icon-btn:hover { background: color-mix(in srgb, var(--bg) 14%, transparent); }
+  .lb-where { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 10px; border: 0; border-radius: 10px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .lb-where > span { display: grid; min-width: 0; }
+  .lb-where small { font: 600 .62rem var(--mono); letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+  .lb-where [data-lb-where] { font-size: .86rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .page-lesson .main { padding-bottom: 72px; }
+  body.focus-mode .lesson-bar { display: none; }
+  .page-lesson .tutor-fab { bottom: 76px; }
+}
+@media (max-width: 720px) {
+  .page-lesson .lesson-layout { padding: 0 16px; }
+  .page-lesson .lesson-hero { padding-top: 24px; }
+  .page-lesson .lesson-title { font-size: 2rem; margin: 10px 0 14px; }
+  .hero-facts { border-top-width: 1px; gap: 2px 14px; font-size: .8rem; }
+  .def { grid-template-columns: 1fr; gap: 8px; padding: 14px 0; }
+  .def dt { padding-top: 0; }
+  .page-lesson .sec-head { grid-template-columns: 40px minmax(0, 1fr); }
+  .page-lesson .sec-head h2 { font-size: 1.5rem; }
+  .page-lesson .lsec { margin-top: 32px; padding-top: 30px; }
+}
+@media print { .spine, .lesson-bar, .spine-scrim { display: none !important; } }
