@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="{{ root }}static/css/learn.css?v={{ v }}">
   <link rel="stylesheet" href="{{ root }}static/css/activation.css?v={{ v }}">
 </head>
-<body class="page-{{ page }}" data-root="{{ root }}"{% if features.certificate %} data-cert{% endif %}>
+<body class="page-{{ page }}{% if page != 'lesson' %} has-tabbar{% endif %}" data-root="{{ root }}"{% if features.certificate %} data-cert{% endif %}>
 {% include "_icons.html" %}
 <a class="skip" href="#main">Skip to content</a>
 
@@ -120,6 +120,16 @@
     </footer>
   </main>
 </div>
+
+{% if page != 'lesson' %}
+<!-- phones: bottom tab bar -->
+<nav class="tabbar" aria-label="Main">
+  <a href="{{ root }}index.html"{% if page in ['home', 'module'] %} aria-current="page"{% endif %}><svg class="ic"><use href="#i-layers"/></svg><span>Learn</span></a>
+  <a href="{{ root }}review.html"{% if page == 'review' %} aria-current="page"{% endif %}><span class="tab-ic"><svg class="ic"><use href="#i-cards"/></svg><span class="due-badge" data-due-badge hidden></span></span><span>Review</span></a>
+  <a href="{{ root }}progress.html"{% if page == 'progress' %} aria-current="page"{% endif %}><svg class="ic"><use href="#i-chart"/></svg><span>Progress</span></a>
+  {% if tutor_on %}<button type="button" data-tutor-open aria-label="Ask the AI tutor"><svg class="ic"><use href="#i-sparkles"/></svg><span>Tutor</span></button>{% endif %}
+</nav>
+{% endif %}
 
 <!-- search -->
 <div class="search-modal" data-search-modal hidden>

@@ -93,10 +93,58 @@
         : 'To master it: ' + todo.join('; ') + '.') + '</p>';
   }
 
-  /* ------------------------------------------------------------ module page: the challenge */
+  /* ------------------------------------------------------------ module page: progress panel and each lesson's state */
+  var modPage = $('[data-module-page]');
+  function resumeAt(lid) {   // the first section of a started lesson not yet read, as { id, label }
+    var C = window.DLP_COURSE, l = null;
+    (C ? C.modules : []).forEach(function (m) { m.lessons.forEach(function (x) { if (x.id === lid) l = x; }); });
+    var read = ((store.get('progress', {})[lid]) || {}).read || [];
+    if (!l || !l.secs || !read.length) return null;
+    for (var i = 0; i < l.secs.length; i++) if (read.indexOf(l.secs[i][0]) < 0) return { id: l.secs[i][0], label: l.secs[i][1] != null ? '§' + l.secs[i][1] : l.secs[i][2] };
+    return null;
+  }
+  function paintModule(mods) {
+    if (!modPage) return;
+    var num = +modPage.getAttribute('data-module-page'), m = mods.filter(function (x) { return x.number === num; })[0];
+    if (!m) return;
+    var last = store.get('last', null), practised = 0, target = null;
+    m.lessons.forEach(function (l) {
+      if (l.status === 'practised') practised++;
+      if (last && last.id === l.id && l.status !== 'mastered') target = l;
+      $$('[data-seg="' + l.id + '"]', modPage).forEach(function (sg) { sg.className = 'st-' + l.status; sg.title = l.id + ' · ' + l.title + ' · ' + STATUS_LABEL[l.status]; });
+      var row = $('[data-ml="' + l.id + '"]', modPage);
+      if (!row) return;
+      var at = l.status === 'started' ? resumeAt(l.id) : null, go = $('[data-ml-go]', row), url = go.getAttribute('href').split('#')[0];
+      row.className = 'ml st-' + l.status + (last && last.id === l.id ? ' is-current' : '');
+      $('[data-ml-state]', row).textContent = l.status === 'none' ? 'Not started' : l.status === 'started' ? 'In progress · ' + Math.round(l.read * 100) + '% read'
+        : STATUS_LABEL[l.status] + ' · strength ' + Math.round(l.strength * 100) + '%';
+      go.href = url + (at ? '#' + at.id : '');
+      $('span', go).textContent = l.status === 'none' ? 'Start' : l.status === 'started' ? (at ? 'Continue at ' + at.label : 'Continue') : l.status === 'practised' ? 'Practise' : 'Revisit';
+      go.className = 'btn btn-sm' + (last && last.id === l.id && l.status !== 'mastered' ? '' : ' btn-ghost');
+    });
+    $('[data-m-prog-t]', modPage).textContent = m.mastered + ' of ' + m.lessons.length + ' mastered' + (practised ? ' · ' + practised + ' practised' : '');
+    target = target || m.lessons.filter(function (l) { return l.status !== 'mastered'; })[0];
+    var go = $('[data-m-go]', modPage);
+    if (target) {
+      var at = target.status === 'started' ? resumeAt(target.id) : null, row = $('[data-ml="' + target.id + '"] [data-ml-go]', modPage);
+      go.href = (row ? row.getAttribute('href').split('#')[0] : go.getAttribute('href')) + (at ? '#' + at.id : '');
+      $('span', go).textContent = target.status === 'none' ? 'Start Lesson ' + target.id : target.status === 'started' ? 'Continue ' + target.id + (at ? ' at ' + at.label : '') : 'Practise Lesson ' + target.id;
+    } else if (m.challenge && !m.challenge.passed && $('#challenge')) {
+      go.href = '#challenge'; $('span', go).textContent = 'Take the module challenge';
+    } else { go.href = ROOT + 'review.html'; $('span', go).textContent = 'Keep it fresh: daily review'; }
+  }
+
+  /* ------------------------------------------------------------ module page: the challenge, one question at a time
+     The intro card shows the best score and a dot per question; Start opens the questions one by one (Back and Next,
+     an explanation after each answer), and the score comes at the end. Answering the last question records the attempt
+     (R.challenge) and awards the badge at the pass mark. "Review your answers" steps through a finished attempt. */
   $$('[data-mchallenge]').forEach(function (box) {
     var id = box.getAttribute('data-mchallenge'), pass = parseFloat(box.getAttribute('data-pass')) || 0.75, mod = box.getAttribute('data-module');
     var qs = $$('[data-mc-q]', box), status = $('[data-mc-status]', box), foot = $('[data-mc-foot]', box), picks = {};
+    var intro = $('[data-mc-intro]', box), run = $('[data-mc-run]', box), startBtn = $('[data-mc-start]', box), reviewBtn = $('[data-mc-review]', box);
+    var back = $('[data-mc-back]', box), next = $('[data-mc-next]', box), count = $('[data-mc-count]', box), cur = 0, need = Math.ceil(pass * qs.length);
+    function qid(i) { return qs[i].getAttribute('data-mc-q'); }
+    function tally() { var n = 0, right = 0; qs.forEach(function (q, i) { var p = picks[qid(i)]; if (p) { n++; if (p.ok) right++; } }); return { n: n, right: right }; }
     function mark(q, pick) {
       var ans = q.getAttribute('data-answer');
       q.classList.add('is-answered');
@@ -108,60 +156,82 @@
       });
       var why = $('.quiz-why', q); why.hidden = false; if (window.DLP.renderMath) window.DLP.renderMath(why);
     }
-    function paint(fresh) {
-      var n = Object.keys(picks).length, right = Object.keys(picks).filter(function (k) { return picks[k].ok; }).length, ok = right / qs.length >= pass;
-      if (fresh && n === qs.length) R.challenge(id, right, true, { passed: ok });
-      var best = R.challengeOf(id);
-      status.innerHTML = best && best.passed ? '<span class="mc-passed"><svg class="ic"><use href="#i-award"/></svg> Badge earned</span>' : n ? right + ' / ' + qs.length + ' right' : '';
-      if (n < qs.length) { foot.hidden = true; return; }
-      if (fresh && ok && window.DLP.confetti) window.DLP.confetti(status);
-      foot.hidden = false;
-      foot.className = 'mc-foot ' + (ok ? 'good' : 'warn');
-      foot.innerHTML = (ok ? '<strong>Passed: ' + right + ' of ' + qs.length + '.</strong> The Module ' + mod + ' badge is yours. ' + (document.body.hasAttribute('data-cert') ? '<a href="' + ROOT + 'progress.html#certificate">See your certificate</a>.' : '<a href="' + ROOT + 'progress.html">See your badges</a>.')
-        : '<strong>' + right + ' of ' + qs.length + ' right; the pass mark is ' + Math.ceil(pass * qs.length) + '.</strong> Read the explanations, revisit the lessons they point to, and try again.') +
-        ' <button class="chip-btn" data-mc-retry><svg class="ic"><use href="#i-refresh"/></svg> Try again</button>';
-      $('[data-mc-retry]', foot).addEventListener('click', function () {
-        picks = {};
-        qs.forEach(function (q) { q.classList.remove('is-answered'); $$('.opt', q).forEach(function (x) { x.disabled = false; x.classList.remove('is-correct', 'is-picked', 'is-wrong'); }); $('.quiz-why', q).hidden = true; });
-        paint(false); qs[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    function clear() {
+      picks = {};
+      qs.forEach(function (q) { q.classList.remove('is-answered'); $$('.opt', q).forEach(function (x) { x.disabled = false; x.classList.remove('is-correct', 'is-picked', 'is-wrong'); }); $('.quiz-why', q).hidden = true; });
+    }
+    function paintDots() {
+      var running = !run.hidden;
+      $$('[data-mc-dots]', box).forEach(function (d) {
+        $$('i', d).forEach(function (dot, i) { var p = picks[qid(i)]; dot.className = (p ? (p.ok ? 'is-right' : 'is-wrong') : '') + (running && i === cur ? ' is-now' : ''); });
       });
     }
-    qs.forEach(function (q) {
-      var qid = q.getAttribute('data-mc-q'), prev = R.answerOf(qid);
-      if (prev && prev.pick != null && R.challengeOf(id)) { picks[qid] = { ok: prev.ok }; mark(q, prev.pick); }
+    function paintIntro() {
+      var best = R.challengeOf(id), t = tally(), done = t.n === qs.length;
+      status.textContent = best && best.passed ? 'Badge earned · best ' + best.best + ' of ' + qs.length
+        : best ? 'Best ' + best.best + ' of ' + qs.length + ' · pass mark ' + need
+        : t.n ? t.n + ' of ' + qs.length + ' answered' : 'not attempted';
+      startBtn.textContent = t.n && !done ? 'Continue the challenge' : best || done ? 'Try again' : 'Start the challenge';
+      reviewBtn.hidden = !done;
+      box.classList.toggle('is-passed', !!(best && best.passed));
+      paintDots();
+    }
+    function show(i) {
+      cur = Math.max(0, Math.min(qs.length - 1, i));
+      qs.forEach(function (q, k) { q.hidden = k !== cur; });
+      count.textContent = 'Question ' + (cur + 1) + ' of ' + qs.length;
+      back.disabled = cur === 0;
+      next.disabled = !picks[qid(cur)];
+      $('span', next).textContent = cur === qs.length - 1 ? 'See your score' : 'Next question';
+      paintDots();
+    }
+    function open(fromStart) {
+      if (fromStart) clear();
+      intro.hidden = true; foot.hidden = true; run.hidden = false; box.classList.add('is-running');
+      var first = 0; while (!fromStart && first < qs.length - 1 && picks[qid(first)] && tally().n < qs.length) first++;
+      show(fromStart ? 0 : first);
+      box.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      var o = $('.opt:not(:disabled)', qs[cur]) || next; try { o.focus({ preventScroll: true }); } catch (e) {}
+    }
+    function close() { run.hidden = true; intro.hidden = false; box.classList.remove('is-running'); paintIntro(); }
+    function finish(fresh) {
+      var t = tally(), ok = t.right >= need;
+      close();
+      foot.hidden = false;
+      foot.className = 'mc-foot ' + (ok ? 'good' : 'warn');
+      foot.innerHTML = (ok ? '<strong>Passed: ' + t.right + ' of ' + qs.length + '.</strong> The Module ' + mod + ' badge is yours. ' + (document.body.hasAttribute('data-cert') ? '<a href="' + ROOT + 'progress.html#certificate">See your certificate</a>.' : '<a href="' + ROOT + 'progress.html">See your badges</a>.')
+        : '<strong>' + t.right + ' of ' + qs.length + ' right; the pass mark is ' + need + '.</strong> Read the explanations, revisit the lessons they point to, and try again.');
+      if (fresh && ok && window.DLP.confetti) window.DLP.confetti(status);
+    }
+    startBtn.addEventListener('click', function () { var t = tally(); open(!(t.n && t.n < qs.length)); });
+    reviewBtn.addEventListener('click', function () { open(false); show(0); });
+    $('[data-mc-close]', box).addEventListener('click', close);
+    back.addEventListener('click', function () { show(cur - 1); });
+    next.addEventListener('click', function () {
+      if (cur < qs.length - 1) { show(cur + 1); var o = $('.opt:not(:disabled)', qs[cur]) || next; try { o.focus({ preventScroll: true }); } catch (e) {} }
+      else finish(false);
+    });
+    qs.forEach(function (q, i) {
+      var prev = R.answerOf(qid(i));
+      if (prev && prev.pick != null && R.challengeOf(id)) { picks[qid(i)] = { ok: prev.ok }; mark(q, prev.pick); }
       $$('.opt', q).forEach(function (o) {
         o.addEventListener('click', function () {
           if (q.classList.contains('is-answered')) return;
           var pick = o.getAttribute('data-opt'), ok = pick === q.getAttribute('data-answer');
-          mark(q, pick); picks[qid] = { ok: ok };
-          R.answer(qid, ok, { kind: 'challenge', pick: pick });
-          paint(Object.keys(picks).length === qs.length);
+          mark(q, pick); picks[qid(i)] = { ok: ok };
+          R.answer(qid(i), ok, { kind: 'challenge', pick: pick });
+          var t = tally();
+          if (t.n === qs.length) R.challenge(id, t.right, true, { passed: t.right >= need });
+          next.disabled = false; paintDots();
+          try { next.focus({ preventScroll: true }); } catch (e) {}
+          if (t.n === qs.length && t.right >= need && window.DLP.confetti) window.DLP.confetti(next);
         });
       });
     });
-    paint(false);
+    paintIntro();
   });
 
-  /* ------------------------------------------------------------ home page: today at a glance, once the learner has started */
-  var todayEl = $('[data-home-today]');
-  function paintHome(mods) {
-    if (!todayEl) return;
-    if (!Object.keys(R.days()).length) { todayEl.hidden = true; return; }
-    var st = R.streak(), wk = R.week(), due = R.due().length, mastered = 0, total = 0;
-    mods.forEach(function (m) { mastered += m.mastered; total += m.lessons.length; });
-    function item(icon, cls, big, small, href) {
-      return '<a class="' + cls + '" href="' + ROOT + href + '"><svg class="ic"><use href="#i-' + icon + '"/></svg><strong>' + big + '</strong><small>' + small + '</small></a>';
-    }
-    todayEl.innerHTML =
-      item('fire', st.current ? 'is-hot' : '', st.current ? st.current + '-day streak' : 'No streak yet',
-        st.today ? 'you studied today' : st.current ? 'study today to keep it' : 'study today to start one', 'progress.html') +
-      item('cards', due ? 'is-due' : '', due ? due + ' to review' : 'Review done', due ? 'a few minutes today' : 'nothing due today', due ? 'review.html#start' : 'review.html') +
-      item('calendar', wk.active >= wk.goal ? 'is-met' : '', wk.active + ' of ' + wk.goal + ' days', wk.active >= wk.goal ? 'weekly goal met' : 'this week\'s goal', 'progress.html') +
-      item('award', mastered ? 'is-met' : '', mastered + ' of ' + total, 'lessons mastered', 'progress.html');
-    todayEl.hidden = false;
-  }
-
-  function refresh() { all(function (mods) { paintSidebar(mods); paintPanel(mods); paintHome(mods); document.dispatchEvent(new CustomEvent('dlp:mastery', { detail: mods })); }); }
+  function refresh() { all(function (mods) { paintSidebar(mods); paintPanel(mods); paintModule(mods); document.dispatchEvent(new CustomEvent('dlp:mastery', { detail: mods })); }); }
   refresh();
   var t; document.addEventListener('dlp:record', function () { clearTimeout(t); t = setTimeout(refresh, 150); });
   window.addEventListener('scroll', function () { clearTimeout(t); t = setTimeout(refresh, 800); }, { passive: true });

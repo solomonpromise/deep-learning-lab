@@ -125,12 +125,14 @@ sources:
 modules:
   - number: 1
     title: From Machine Learning to Deep Learning
+    short: "ML → DL"               # the network diagram on the home page
     question: What changes when models learn representations from raw data?
     topics: [ML vs DL pipelines, Anatomy of a neuron, Forward propagation, Loss, Backpropagation, Gradient descent]
     hands_on: A first PyTorch network, trained until you can watch the loss fall.
     icon: spark
   - number: 2
     title: "PyTorch: Building Neural Networks"
+    short: "PyTorch"
     question: How do I actually build a deep learning model?
     topics: [Tensors, Shape / dtype / device, Broadcasting, nn.Module, Dataset & DataLoader, Training & validation loops]
     hands_on: An MLP on tabular data, written without fit().
@@ -138,48 +140,56 @@ modules:
     icon: blocks
   - number: 3
     title: Training Dynamics & Optimization
+    short: "Training dynamics"
     question: Why does a network learn well, badly, or not at all?
     topics: [SGD, Momentum, Adam & AdamW, Learning-rate schedules, Overfitting, Dropout, Weight decay, Early stopping, Exploding & vanishing gradients]
     hands_on: Diagnosing learning curves and fixing deliberately broken experiments.
     icon: pulse
   - number: 4
     title: Deep Learning Engineering
+    short: "DL engineering"
     question: How do I run deep learning experiments professionally?
     topics: [Splits & leakage, Class imbalance, Distribution shift, Seeds & configs, Checkpoints & tracking, GPU memory, Mixed precision]
     hands_on: A gradient-boosting vs neural-network bake-off — choose on constraints, not hype.
     icon: gear
   - number: 5
     title: Representation Learning & Embeddings
+    short: "Representations"
     question: How do networks learn useful representations?
     topics: [Encoders, Embeddings, Cosine similarity, Self-supervised learning, Contrastive learning, CLIP]
     hands_on: Create embeddings, run similarity search, inspect embedding neighbourhoods.
     icon: layers
   - number: 6
     title: Transformers
+    short: "Transformers"
     question: How does a Transformer actually work?
     topics: [Tokenization, Positional information, Q/K/V, Self-attention, Multi-head attention, Transformer block, Encoder vs decoder]
     hands_on: Implement simplified self-attention by hand.
     icon: attention
   - number: 7
     title: Pretrained Models & Hugging Face
+    short: "Pretrained models"
     question: How do engineers leverage models that are already trained?
     topics: [Pretraining vs fine-tuning, Transfer learning, Hugging Face Hub, Transformers & Datasets, Tokenizers, PEFT, Model cards]
     hands_on: Fine-tune a pretrained encoder end to end, from loading to inference.
     icon: cloud
   - number: 8
     title: Efficient Fine-Tuning & Data Engineering
+    short: "Fine-tuning"
     question: How do we adapt large models without updating every parameter?
     topics: [Adapters, LoRA, QLoRA, SFT, Data quality, Contamination, Synthetic data, Catastrophic forgetting]
     hands_on: LoRA / QLoRA adaptation, with a LoRA-only fallback for Mac.
     icon: tune
   - number: 9
     title: Evaluation, Inference & Model Economics
+    short: "Evaluation"
     question: When is a model good enough to use?
     topics: [Evaluation design, Calibration, LLM-as-judge, Error analysis, Latency & throughput, KV cache, Quantization, vLLM serving]
     hands_on: Structured evaluation plus hands-on vLLM serving and cost per request.
     icon: gauge
   - number: 10
     title: Keras 3 / TensorFlow & Model Engineering
+    short: "Keras 3"
     question: Does the syntax change the concepts?
     topics: [Keras 3 with TensorFlow, PyTorch → Keras mapping, Professional repo structure, The 12-part README]
     hands_on: Recreate an earlier model in Keras, then ship an end-to-end project.
