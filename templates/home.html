@@ -2,15 +2,17 @@
 {% block main %}
 <div class="home">
   <section class="home-hero">
-    <div class="hero-bg" aria-hidden="true"><canvas data-hero-canvas></canvas></div>
     <div class="home-hero-inner">
-      <span class="eyebrow"><svg class="ic"><use href="#i-sparkles"/></svg> {{ course.hours }}-hour engineering course · {{ course.hands_on }} hands-on</span>
-      <h1>{{ course.title }}</h1>
-      <p class="lead">{{ course.tagline }}</p>
-      <div class="hero-actions">
-        <a class="btn btn-lg" href="{{ nav[0].lessons[0].url }}" data-continue><svg class="ic"><use href="#i-play"/></svg> <span>Start with Lesson 1.1</span></a>
-        <a class="btn btn-lg btn-ghost" href="guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
+      <div class="hero-copy">
+        <span class="eyebrow"><svg class="ic"><use href="#i-sparkles"/></svg> {{ course.hours }}-hour engineering course · {{ course.hands_on }} hands-on</span>
+        <h1>{{ course.title }}</h1>
+        <p class="lead">{{ course.tagline }}</p>
+        <div class="hero-actions">
+          <a class="btn btn-lg" href="{{ nav[0].lessons[0].url }}" data-continue><svg class="ic"><use href="#i-play"/></svg> <span>Start with Lesson 1.1</span></a>
+          <a class="btn btn-lg btn-ghost" href="guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
+        </div>
       </div>
+      <div class="hero-visual" aria-hidden="true"><canvas data-hero-canvas></canvas></div>
       <nav class="home-today" data-home-today aria-label="Your study today" hidden></nav>
       <ul class="stat-row">
         <li><strong>{{ stats.modules }}</strong><span>modules live</span></li>

@@ -195,7 +195,6 @@ kbd { font-family: var(--mono); font-size: .75em; padding: .1em .45em; border: 1
 }
 .search-btn span { flex: 1; text-align: left; }
 .search-btn:hover { border-color: var(--ink-3); color: var(--ink-2); }
-.nav-toggle { display: none; }
 .show-dark { display: none; }
 :root[data-theme="dark"] .show-dark { display: block; }
 :root[data-theme="dark"] .show-light { display: none; }
@@ -243,6 +242,11 @@ button.side-module-head:hover { background: var(--surface-2); }
 .side-foot a { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; color: var(--ink-2); text-decoration: none; font-size: .86rem; }
 .side-foot a:hover { background: var(--surface-2); color: var(--ink); }
 .scrim { display: none; }
+/* Desktop: the menu button hides the sidebar (remembered per browser, applied in <head> so it never flashes);
+   on narrow screens the sidebar is an off-canvas drawer instead, see the 980px breakpoint. */
+@media (width > 980px) {
+  .nav-collapsed .sidebar { display: none; }
+}
 
 .main { flex: 1; min-width: 0; }
 .site-foot { padding: 40px 32px 60px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: .88rem; margin-top: 60px; }
@@ -643,12 +647,22 @@ details.explainer:not([open]) { padding-bottom: 14px; }
 
 /* ------------------------------------------------------------------ home */
 .home { padding: 0 32px; max-width: 1180px; margin: 0 auto; }
-.home-hero { position: relative; margin: 28px 0 10px; border-radius: 28px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
-.hero-bg { position: absolute; inset: 0; }
-.hero-bg canvas { width: 100%; height: 100%; display: block; }
-.home-hero-inner { position: relative; padding: 64px 56px 44px; max-width: 820px; }
+/* The network animation gets its own column so it can never sit on top of the text;
+   below 820px of hero width there is no room for it and the copy takes the full width. */
+.home-hero { position: relative; margin: 28px 0 10px; border-radius: 28px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); container: hero / inline-size; }
+.home-hero-inner { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "copy" "today" "stats"; padding: 64px 56px 44px; }
+.hero-copy { grid-area: copy; min-width: 0; max-width: 760px; container-type: inline-size; }
+.hero-visual { grid-area: visual; display: none; position: relative; }
+.hero-visual canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.home-hero .home-today { grid-area: today; }
+.home-hero .stat-row { grid-area: stats; }
+@container hero (min-width: 820px) {
+  .home-hero-inner { grid-template-columns: minmax(0, 1fr) minmax(240px, 32%); grid-template-areas: "copy visual" "today today" "stats stats"; column-gap: 36px; }
+  .hero-visual { display: block; }
+}
 .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: .8rem; font-weight: 650; color: var(--mc); padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--mc) 12%, var(--surface)); }
-.home-hero h1 { font-size: clamp(2.3rem, 5.2vw, 3.9rem); line-height: 1.04; letter-spacing: -.035em; margin: 18px 0 14px; font-weight: 850; }
+/* sized to its column (cqi) so the title keeps to two lines whether or not the sidebar is open */
+.home-hero h1 { font-size: clamp(2.3rem, 5.2vw, 3.9rem); font-size: clamp(2.3rem, 9cqi, 3.9rem); line-height: 1.04; letter-spacing: -.035em; margin: 18px 0 14px; font-weight: 850; text-wrap: balance; }
 .lead { font-size: 1.18rem; color: var(--ink-2); max-width: 660px; margin: 0; line-height: 1.55; }
 .stat-row { display: flex; flex-wrap: wrap; gap: 10px 28px; list-style: none; padding: 0; margin: 36px 0 0; }
 .stat-row li { display: flex; flex-direction: column; }
@@ -754,7 +768,6 @@ a.path-card:hover { color: var(--ink); transform: translateY(-2px); box-shadow: 
 }
 @media (max-width: 980px) {
   :root { --sidebar-w: 300px; }
-  .nav-toggle { display: inline-grid; }
   .sidebar { position: fixed; left: 0; top: var(--topbar-h); z-index: 60; transform: translateX(-102%); transition: transform .25s ease; box-shadow: var(--shadow-lg); background: var(--surface); }
   body.nav-open .sidebar { transform: none; }
   body.nav-open .scrim { display: block; position: fixed; inset: var(--topbar-h) 0 0 0; z-index: 55; background: rgba(0,0,0,.35); }
