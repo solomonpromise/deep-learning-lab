@@ -18,8 +18,8 @@
   <meta name="twitter:title" content="{{ self.title() }}">
   <meta name="twitter:description" content="{{ self.description() }}">
   <meta name="twitter:image" content="{{ site_url if site_url != '/' else root }}{{ og_image }}">
-  <meta name="theme-color" content="#0e0f12" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f0d15" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f4f3f7" media="(prefers-color-scheme: light)">
   <link rel="icon" href="{{ root }}static/img/favicon.svg" type="image/svg+xml">
   {% block head %}{% endblock %}
   <script>
@@ -31,32 +31,41 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=JetBrains+Mono:wght@400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ root }}static/css/site.css?v={{ v }}">
   <link rel="stylesheet" href="{{ root }}static/css/widgets.css?v={{ v }}">
   <link rel="stylesheet" href="{{ root }}static/css/learn.css?v={{ v }}">
+  <link rel="stylesheet" href="{{ root }}static/css/activation.css?v={{ v }}">
 </head>
-<body class="page-{{ page }}" data-root="{{ root }}">
+<body class="page-{{ page }}" data-root="{{ root }}"{% if features.certificate %} data-cert{% endif %}>
 {% include "_icons.html" %}
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="topbar">
   <button class="icon-btn nav-toggle" aria-label="Show course navigation" title="Show course navigation" aria-controls="sidebar" aria-expanded="false" data-nav-toggle><svg class="ic"><use href="#i-menu"/></svg></button>
   <a class="brand" href="{{ root }}index.html">
-    <span class="brand-mark" aria-hidden="true">
-      <svg viewBox="0 0 32 32"><circle cx="7" cy="9" r="3"/><circle cx="7" cy="23" r="3"/><circle cx="16" cy="16" r="3.4"/><circle cx="25" cy="9" r="3"/><circle cx="25" cy="23" r="3"/><path d="M9.6 10.4 13.3 14M9.6 21.6l3.7-3.6M18.7 14l3.7-3.6M18.7 18l3.7 3.6"/></svg>
-    </span>
-    <span class="brand-text"><strong>{{ course.short_title }}</strong><span>{{ course.title }}</span></span>
+    <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" aria-hidden="true"><g class="bm-edges"><path d="M6 10 16 6M6 10 16 16M6 10 16 26M6 22 16 6M6 22 16 16M6 22 16 26M16 6 26 16M16 16 26 16M16 26 26 16"/></g><circle cx="6" cy="10" r="3.2" fill="#3b528b"/><circle cx="6" cy="22" r="3.2" fill="#3b528b"/><circle cx="16" cy="6" r="3.2" fill="#21918c"/><circle cx="16" cy="16" r="3.2" fill="#5ec962"/><circle cx="16" cy="26" r="3.2" fill="#21918c"/><circle class="bm-out" cx="26" cy="16" r="4" fill="#fde725"/></svg></span>
+    <span class="brand-text"><strong>{{ course.short_title }}</strong></span>
   </a>
   <div class="topbar-spacer"></div>
   <button class="search-btn" data-search-open aria-label="Search the course">
-    <svg class="ic"><use href="#i-search"/></svg><span>Search lessons, terms…</span><kbd>⌘K</kbd>
+    <svg class="ic"><use href="#i-search"/></svg><span>Search lessons, terms, code…</span><kbd>⌘K</kbd>
   </button>
-  <a class="icon-btn review-link" href="{{ root }}review.html" title="Daily review" aria-label="Daily review" data-review-link><svg class="ic"><use href="#i-cards"/></svg><span class="due-badge" data-due-badge hidden></span></a>
-  <a class="icon-btn hide-sm" href="{{ root }}glossary.html" title="Glossary" aria-label="Glossary"><svg class="ic"><use href="#i-book"/></svg></a>
-  <a class="icon-btn hide-sm" href="{{ root }}guide.html" title="How to use this platform" aria-label="How to use this platform"><svg class="ic"><use href="#i-help"/></svg></a>
-  <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
+  <a class="tb-link review-link{% if page == 'review' %} is-active{% endif %}" href="{{ root }}review.html" title="Daily review" data-review-link><svg class="ic"><use href="#i-cards"/></svg><span class="tb-label">Review</span><span class="due-badge" data-due-badge hidden></span></a>
+  <a class="tb-link hide-sm{% if page == 'progress' %} is-active{% endif %}" href="{{ root }}progress.html"><svg class="ic"><use href="#i-chart"/></svg><span class="tb-label">Progress</span></a>
+  {% if tutor_on %}<button class="tutor-launch" type="button" data-tutor-open aria-label="Ask the AI tutor" title="Ask the AI tutor"><svg class="ic"><use href="#i-sparkles"/></svg><span>Ask the tutor</span></button>{% endif %}
+  <details class="tb-menu" data-tb-menu>
+    <summary class="icon-btn" aria-label="Glossary, concept map and guide" title="More"><svg class="ic"><use href="#i-more"/></svg></summary>
+    <div class="tb-menu-list">
+      <a href="{{ root }}progress.html" class="show-sm"><svg class="ic"><use href="#i-chart"/></svg> My progress</a>
+      <a href="{{ root }}glossary.html"><svg class="ic"><use href="#i-book"/></svg> Glossary</a>
+      <a href="{{ root }}concepts.html"><svg class="ic"><use href="#i-map"/></svg> Concept map</a>
+      <a href="{{ root }}guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
+      <button type="button" class="show-sm" data-theme-toggle><svg class="ic show-light"><use href="#i-moon"/></svg><svg class="ic show-dark"><use href="#i-sun"/></svg> Switch light or dark</button>
+    </div>
+  </details>
+  <button class="icon-btn tb-theme" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
     <svg class="ic show-light"><use href="#i-moon"/></svg><svg class="ic show-dark"><use href="#i-sun"/></svg>
   </button>
   <div class="read-progress" aria-hidden="true"><span></span></div>
@@ -104,8 +113,8 @@
   <main id="main" class="main">
     {% block main %}{% endblock %}
     <footer class="site-foot">
-      <p><strong>{{ course.title }}</strong> · {{ course.hours }} hours · {{ course.hands_on }} hands-on.</p>
-      <p class="muted">Generated from the course notebooks on {{ now }}. Your progress and notes are stored in this browser{% if services.api %}; if you turn on sync (on <a href="{{ root }}progress.html#sync">My progress</a>), a copy is kept under your private code{% endif %}.{% if services.api and services.anonymous_stats %} Anonymous answer counts (a question id and right or wrong, never a name or device id) help improve the course; you can switch them off there too.{% endif %}</p>
+      <p><strong>{{ course.short_title }}</strong> <span class="muted">{{ course.hours }} hours · {{ course.hands_on }} hands-on · built from the course notebooks on {{ now }}</span></p>
+      <p class="muted">Your progress stays in this browser. <a href="{{ root }}progress.html#sync">Sync and privacy</a></p>
     </footer>
   </main>
 </div>

@@ -1,0 +1,195 @@
+/* ==========================================================================
+   Deep Learning Lab — "Activation" foundation
+   Loaded after site.css, widgets.css and learn.css. The colour tokens live at the top of site.css;
+   this file carries the type system and the shared components of the new design. Page layouts move
+   here as each page is rebuilt.
+   Three voices: Archivo for the interface and headings, Source Serif 4 for the lesson notes,
+   JetBrains Mono for code, labels and anything you can measure.
+   ========================================================================== */
+
+/* Module colours are retired: colour now means progress. Every module accent points at --mod,
+   including the inline --mc styles that templates and scripts still set. */
+[style*="--mc"] { --mc: var(--mod) !important; }
+
+/* ------------------------------------------------------------------ type */
+body { font-family: var(--font); }
+h1, h2, h3, h4, h5,
+.lesson-title, .widget-title, .path-card h3, .lc-body h2, .compare-title, .takeaways-head, .next-title, .pager-t { font-family: var(--display); }
+h1, .lesson-title, .home-hero h1, .plain-hero h1, .module-hero h1 { font-weight: 800; font-stretch: 116%; letter-spacing: -.03em; }
+h2, .sec-head h2, .section-intro h2 { font-weight: 760; font-stretch: 110%; letter-spacing: -.02em; }
+.path-card h3, .lc-body h2, .guide-step h3, .feature h3 { font-weight: 700; font-stretch: 104%; letter-spacing: -.01em; }
+
+/* the notes read like a well-set book */
+.prose, .lesson-summary, .lead, .path-q, .module-question { font-family: var(--serif); font-optical-sizing: auto; }
+.lsec > .prose, .intro-part > .prose, .lesson-start > .prose, .lsec > .intro-part > .prose { font-size: 1.14rem; line-height: 1.7; }
+.lesson-summary { font-size: 1.2rem; line-height: 1.55; }
+.lead { font-size: 1.22rem; line-height: 1.5; }
+.prose strong { font-weight: 650; }
+.prose code, .qtext code, .obj-list code, .lesson-title code, .sec-head code, .toc code, .compare code, .quiz code, .term-pop code, .gloss-list code {
+  font-size: .8em; border: 0; border-radius: 4px; padding: .12em .38em;
+}
+/* interface text inside the notes stays in the interface voice */
+.tutor-panel .prose, .qactions, .opt, .quiz-qtext, .cp-qtext, .qtext, .term-pop { font-family: var(--font); }
+
+/* labels: small mono capitals, no pills */
+.eyebrow, .mod-pill, .path-kicker, .toc-title, .goal-head, .info-head, .objectives-head, .qcard-tag, .ex-tag, .fact-k,
+.out-label, .code-explain-head, .pager-k, .next-kicker, .sr-meta, .module-question span, .takeaways-head {
+  font-family: var(--mono); font-weight: 600; font-size: .7rem; letter-spacing: .09em; text-transform: uppercase;
+}
+.eyebrow, .mod-pill { padding: 0; background: none; border-radius: 0; color: var(--ink-2); gap: 7px; }
+.eyebrow .ic, .mod-pill .ic { width: 14px; height: 14px; }
+.takeaways-head { font-size: .74rem; }
+
+/* numbers you can measure */
+.stat-row strong, .quiz-score, .stepper-count, .side-lnum, .toc-n, .pl-id, .lc-num, .obj-check, .sec-num { font-variant-numeric: tabular-nums; }
+.stat-row strong { font-family: var(--display); font-weight: 900; font-stretch: 70%; font-size: 2.1rem; letter-spacing: -.01em; }
+
+/* ------------------------------------------------------------------ controls */
+.btn { border-radius: 9px; font-family: var(--font); font-weight: 650; }
+.btn:hover { transform: none; box-shadow: none; opacity: .9; }
+.btn-ghost:hover { opacity: 1; background: var(--surface-2); }
+.chip-btn { border-radius: 8px; font-family: var(--font); }
+.meta-chips li, .chips li {
+  border-radius: 6px; background: var(--surface); border-color: var(--line); font-family: var(--mono); font-size: .72rem; font-weight: 500; color: var(--ink-2);
+}
+.meta-chips li.chip-accent { background: var(--surface); color: var(--ink); border-color: var(--ink); }
+.badge-lab {
+  border-radius: 6px; background: var(--ink); color: var(--bg); font-family: var(--mono); font-weight: 600; font-size: .66rem; letter-spacing: .09em; padding: 4px 8px;
+}
+kbd { border-bottom-width: 1px; border-radius: 5px; background: var(--bg); }
+:focus-visible { outline-color: var(--a2); }
+::selection { background: color-mix(in srgb, var(--a4) 55%, transparent); color: var(--ink); }
+.t-dark ::selection, :root[data-theme="dark"] ::selection { color: #15131c; }
+
+/* fills that used to be a module colour with white text: text follows the theme */
+.path-marker span, .lsec.is-read .sec-num, .stepper-dots button.is-active, .cm-node.is-sel, .w-btn.primary { color: var(--on-mod); }
+
+/* ------------------------------------------------------------------ top bar */
+.topbar { height: var(--topbar-h); gap: 6px; padding: 0 18px; background: color-mix(in srgb, var(--bg) 88%, transparent); }
+.brand { gap: 10px; margin-right: 8px; }
+.brand-mark { width: 30px; height: 30px; border-radius: 0; background: none; }
+.brand-mark svg { width: 30px; height: 30px; fill: none; stroke: none; }
+.brand-mark .bm-edges { stroke: var(--ink); stroke-opacity: .35; stroke-width: 1.2; }
+.brand-mark .bm-out { stroke: var(--ink); stroke-width: 1.4; }
+.brand-text strong { font-family: var(--display); font-weight: 760; font-stretch: 112%; font-size: 1rem; letter-spacing: -.01em; white-space: nowrap; }
+.search-btn { height: 38px; min-width: 280px; border-radius: 9px; background: var(--surface-2); border-color: transparent; font-family: var(--font); }
+.search-btn:hover { border-color: var(--line-2); }
+.search-btn kbd { font-size: .68rem; }
+.tb-link {
+  position: relative; display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 11px; border-radius: 9px;
+  color: var(--ink-2); text-decoration: none; font-weight: 600; font-size: .86rem; white-space: nowrap; border: 1px solid transparent;
+}
+.tb-link:hover { background: var(--surface-2); color: var(--ink); }
+.tb-link.is-active { color: var(--ink); background: var(--surface-2); }
+.review-link { border-color: var(--line-2); color: var(--ink); }
+.due-badge, .review-link .due-badge, .topbar .due-badge {
+  position: static; min-width: 0; height: auto; padding: 3px 6px; border-radius: 5px; background: var(--ink); color: var(--bg);
+  font: 700 .66rem/1 var(--mono); box-shadow: none;
+}
+.tutor-launch { border-radius: 9px; background: transparent; border-color: transparent; color: var(--ink-2); font-family: var(--font); }
+.tutor-launch .ic { color: currentColor; }
+.tutor-launch:hover, .tutor-launch.is-on { background: var(--surface-2); border-color: transparent; color: var(--ink); }
+.tb-menu { position: relative; }
+.tb-menu > summary { list-style: none; }
+.tb-menu > summary::-webkit-details-marker { display: none; }
+.tb-menu[open] > summary { background: var(--surface-2); color: var(--ink); }
+.tb-menu-list {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 50; min-width: 240px; padding: 6px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-lg); display: grid; gap: 2px;
+}
+.tb-menu-list a, .tb-menu-list button { width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; font-family: var(--font); }
+.tb-menu-list a, .tb-menu-list button { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; color: var(--ink); text-decoration: none; font-size: .9rem; font-weight: 500; }
+.tb-menu-list a:hover, .tb-menu-list button:hover { background: var(--surface-2); }
+.tb-menu-list .ic { color: var(--ink-3); }
+.show-sm { display: none !important; }
+.read-progress span { background: var(--a2); }
+
+/* ------------------------------------------------------------------ sidebar */
+.sidebar { background: var(--bg); }
+.side-home { font-weight: 600; }
+.side-num { width: 28px; height: 22px; border-radius: 6px; background: transparent; color: var(--ink-2); font-family: var(--mono); font-size: .72rem; font-weight: 600; }
+.side-module.is-open .side-num { background: var(--ink); color: var(--bg); }
+.side-module.is-locked .side-num { background: transparent; }
+.side-module-head { font-weight: 600; }
+.side-lessons a.is-active { background: var(--surface-2); box-shadow: inset 2px 0 0 var(--ink); border-radius: 0 8px 8px 0; }
+.side-lnum { font-family: var(--mono); font-size: .7rem; }
+.side-overview { font-style: normal; }
+/* progress marks follow the activation scale */
+.side-dot { width: 9px; height: 9px; border: 1.5px solid var(--ink-3); background: transparent; }
+.side-dot.is-started { border-color: var(--a1); background: var(--a1); }
+.side-dot.is-done { border-color: var(--a2); background: var(--a2); }
+.side-dot.is-mastered { border-color: var(--ink) !important; background: var(--a4) !important; box-shadow: none !important; }
+.side-foot a { font-size: .86rem; }
+
+/* ------------------------------------------------------------------ surfaces */
+.lesson-hero, .module-hero { background: var(--surface); }
+.home-hero { border-radius: 18px; }
+.next-card { background: var(--ink); color: var(--bg); box-shadow: none; }
+.next-card:hover { color: var(--bg); }
+.takeaways { background: var(--surface); border-color: var(--line); }
+.takeaways-head .ic, .takeaways li::marker { color: var(--ink); }
+.goal-card { border-top-color: var(--ink); }
+.goal-card.outcome { border-top-color: var(--a2); }
+.obj-check { background: transparent; color: var(--ink-3); border: 1.5px solid var(--line-2); border-radius: 50%; }
+.lesson-progress .bar span, .module-progress .bar span { background: var(--a2); }
+.path-marker .ring .ring-fill { stroke: var(--a2); }
+.path-icon, .feature-icon, .feature:nth-child(n) .feature-icon, .guide-n { background: var(--surface-2); color: var(--ink); }
+.lc-status.is-done { background: var(--a2); color: #fff; }
+.pager-link:hover { border-color: var(--ink); }
+
+/* ------------------------------------------------------------------ code: the terminal */
+.code-cell, .code-explain { font-family: var(--font); }
+.code-explain { background: var(--code-bg-2); border-top-color: var(--code-line); }
+.code-explain-head, .code-explain-head .ic { color: #9fd8cf; }
+pre.code .ln[data-note] { background: rgba(33, 145, 140, .12); box-shadow: inset 3px 0 0 #21918c; }
+pre.code .ln[data-note]::after, .note-num { background: #21918c; font-family: var(--mono); }
+pre.code .ln.is-hl, .line-notes li:hover, .line-notes li.is-hl { background: rgba(33, 145, 140, .2); }
+.code-head .py-run { background: #21918c; border-color: #21918c; color: #fff; }
+.code-head .py-run:hover { background: #1c7f7a; }
+.code-head .chip-btn.accent { background: transparent; border-color: #3b3549; color: #d8d5e2; }
+.code-head .tutor-chip { background: transparent; border-color: #3b3549; color: #d8d5e2; }
+.code-head .tutor-chip .ic { color: #d8d5e2; }
+.code-expand { color: #9fd8cf; }
+.code .k, .code .kn, .code .kd, .code .kr, .code .ow, .hl .k, .hl .kn, .hl .ow { color: #c7adff; }
+.code .nf, .code .fm, .hl .nf, .code .nd, .hl .nd { color: #7fd8c6; }
+.code .nc, .hl .nc, .code .nb, .code .bp, .hl .nb { color: #f2c77f; }
+.code .s, .code .s1, .code .s2, .code .sa, .code .sb, .code .sc, .code .sh, .hl .s, .hl .s1, .hl .s2 { color: #f2c77f; }
+.code .sd, .hl .sd { color: #b8b39a; }
+.code .mi, .code .mf, .code .mh, .code .mo, .code .il, .hl .mi, .hl .mf { color: #ffb48f; }
+.code .c, .code .c1, .code .cm, .code .ch, .code .cs, .hl .c, .hl .c1 { color: #7f7a96; }
+.code .o, .hl .o, .code .p, .hl .p { color: #a7a2b9; }
+
+/* ------------------------------------------------------------------ tutor */
+.tutor-head { background: var(--surface); }
+.tutor-avatar, .tutor-send, .tutor-select, .tutor-fab { background: var(--ink); color: var(--bg); box-shadow: none; }
+.tutor-panel { border-radius: 16px; }
+.tutor-chip .ic { color: currentColor; }
+
+/* ------------------------------------------------------------------ footer */
+.site-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 24px; padding: 22px 32px 28px; margin-top: 64px; font-size: .86rem; }
+.site-foot p { margin: 0; }
+.site-foot strong { font-family: var(--display); font-stretch: 110%; margin-right: 8px; }
+
+/* ------------------------------------------------------------------ responsive */
+@media (max-width: 980px) {
+  .search-btn { min-width: 0; background: transparent; }
+}
+@media (max-width: 720px) {
+  .topbar { padding: 0 8px; gap: 2px; }
+  .brand { margin-right: 0; }
+  .brand-text strong { font-size: .95rem; }
+  .tb-link { padding: 0 9px; }
+  .tb-link .tb-label { display: none; }
+  .review-link { border-color: transparent; }
+  .show-sm { display: flex !important; }
+  .tb-link.hide-sm { display: none; }
+  .tb-theme { display: none; }
+  .site-foot { padding: 20px 16px 26px; }
+}
+/* phones: the mark alone until the bottom tab bar (home redesign) frees the top bar */
+@media (max-width: 480px) {
+  .brand-text { display: none; }
+}
+@media print {
+  .site-foot { display: none; }
+}
