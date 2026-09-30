@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Concept map — {{ course.short_title }}{% endblock %}
+{% block description %}How the ideas of {{ course.title }} connect: what each concept builds on, where it is introduced, and where it comes back.{% endblock %}
+{% block late_scripts %}<script defer src="{{ root }}static/concepts.js?v={{ v }}"></script><script defer src="{{ root }}static/js/concepts.js?v={{ v }}"></script>{% endblock %}
+{% block main %}
+<div class="plain-page concepts-page" data-concepts-page>
+  <header class="plain-hero">
+    <span class="eyebrow"><svg class="ic"><use href="#i-map"/></svg> Concept map</span>
+    <h1>How the ideas connect</h1>
+    <p class="lead">Every concept from the glossary, placed in the module whose lessons teach it. Pick one to see what it builds on, what builds on it, which lessons use it, and where it comes back later in the course.</p>
+  </header>
+  <div class="cm-tools">
+    <label class="sr-only" for="cm-search">Find a concept</label>
+    <input id="cm-search" type="search" placeholder="Find a concept, e.g. learning rate" data-cm-search autocomplete="off">
+    <label class="cm-toggle"><input type="checkbox" data-cm-lines checked> Show connections</label>
+    <span class="cm-legend"><i class="up"></i> builds on <i class="down"></i> leads to <i class="known"></i> in a lesson you have mastered</span>
+  </div>
+  <div class="cm-layout">
+    <div class="cm-map" data-cm-map>
+      <svg class="cm-lines" data-cm-svg aria-hidden="true"></svg>
+      <div class="cm-cols" data-cm-cols></div>
+    </div>
+    <aside class="cm-panel" data-cm-panel aria-live="polite">
+      <p class="muted">Select a concept.</p>
+    </aside>
+  </div>
+</div>
+{% endblock %}

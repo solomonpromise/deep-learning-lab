@@ -245,6 +245,8 @@ class Builder:
                                         "x": " ".join(s.plain)[:1400]})
                 search_docs.append({"l": l.id, "lt": l.title, "s": "Overview", "u": url,
                                     "x": re.sub(r"<[^>]+>", " ", " ".join(l.preamble["objectives"]))[:800]})
+        # concept map: glossary terms, where each appears (known now that every lesson is annotated), how they connect
+        self._concepts(nav, lessons, common)
         # glossary page again now that usage is known
         self._page("glossary.html", "glossary.html", root="", page="glossary",
                    entries=sorted(self.glossary.entries, key=lambda e: e["term"].lower()),
@@ -324,6 +326,49 @@ class Builder:
         target = self.dist / out
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(html, encoding="utf-8")
+
+    def _concepts(self, nav: list, lessons: list, common: dict) -> None:
+        """Write static/concepts.js and concepts.html from glossary.yaml, its usage, and concepts.yaml."""
+        spec = yaml.safe_load((ROOT / "concepts.yaml").read_text(encoding="utf-8")) if (ROOT / "concepts.yaml").exists() else {}
+        by_term = {e["term"]: e for e in self.glossary.entries}
+        for term, info in (spec or {}).items():
+            if term not in by_term:
+                self.enricher.warnings.append(f"[concepts] '{term}' is not a glossary term")
+            for dep in (info or {}).get("builds_on", []) or []:
+                if dep not in by_term:
+                    self.enricher.warnings.append(f"[concepts] '{term}' builds on unknown term '{dep}'")
+        order = {l.id: i for i, l in enumerate(lessons)}
+        n_sections = {l.id: len(l.sections) for l in lessons}
+        titles = {m["number"]: m["title"] for m in nav}
+        nodes = []
+        for e in self.glossary.entries:
+            info = (spec or {}).get(e["term"]) or {}
+            used = [label.replace("Lesson ", "") for label, _ in self.glossary.used_in.get(e["key"], []) if label.startswith("Lesson ")]
+            used = sorted(set(used), key=lambda x: order.get(x, 999))
+            # the lesson that teaches it: the earliest one where the term is in (nearly) the largest share of sections
+            counts = {k.replace("Lesson ", ""): v for k, v in self.glossary.sections_using.get(e["key"], {}).items()}
+            share = {x: counts.get(x, 0) / max(1, n_sections.get(x, 1)) for x in used}
+            top = max(share.values(), default=0)
+            home = next((x for x in used if share[x] >= 0.75 * top), None) if top else (used[0] if used else None)
+            if info.get("home"):                             # concepts.yaml can name it where prose only says it in code
+                home = str(info["home"])
+                if home not in order:
+                    self.enricher.warnings.append(f"[concepts] '{e['term']}' home {home} is not a lesson")
+                    home = None
+                elif home not in used:
+                    used = sorted(used + [home], key=lambda x: order.get(x, 999))
+            nodes.append({"key": e["key"], "term": e["term"], "def": e["def_html"], "lessons": used, "home": home,
+                          "module": int(home.split(".")[0]) if home else None,
+                          "builds_on": [by_term[d]["key"] for d in (info.get("builds_on") or []) if d in by_term],
+                          "later": [{"module": int(k), "title": titles.get(int(k), f"Module {k}"), "why": v} for k, v in (info.get("later") or {}).items()]})
+        mod_of = {n["key"]: n["module"] for n in nodes}
+        for n in nodes:
+            for d in n["builds_on"]:
+                if n["module"] and mod_of.get(d) and mod_of[d] > n["module"]:
+                    self.enricher.warnings.append(f"[concepts] '{n['term']}' (Module {n['module']}) builds on '{self.glossary.by_key[d]['term']}' from Module {mod_of[d]}")
+        (self.dist / "static" / "concepts.js").write_text(
+            "window.DLP_CONCEPTS=" + json.dumps({"nodes": nodes}, ensure_ascii=False, separators=(",", ":")) + ";", encoding="utf-8")
+        self._page("concepts.html", "concepts.html", root="", page="concepts", **common)
 
     def _mark_runnable(self, lesson: Lesson) -> bool:
         """Flag the code cells that can run in the browser (course.yaml → run_in_browser)."""

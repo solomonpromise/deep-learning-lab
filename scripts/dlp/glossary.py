@@ -39,6 +39,7 @@ class Glossary:
             self.pattern = re.compile(rf"(?<![\w-])({alt})(?![\w-])", re.I)
         self.lookup = {f.lower(): k for f, k in pairs}
         self.used_in: dict[str, list[tuple[str, str]]] = {}
+        self.sections_using: dict[str, dict[str, int]] = {}   # key -> page label -> number of sections that use it
 
     def as_js(self) -> dict:
         return {e["key"]: {"t": e["term"], "d": e["def_html"]} for e in self.entries}
@@ -71,6 +72,8 @@ class Glossary:
                     pieces.append(f'<span class="term" tabindex="0" role="button" data-term="{key}">'
                                   f'{html.escape(m.group(1), quote=False)}</span>')
                     pos = m.end()
+                    counts = self.sections_using.setdefault(key, {})
+                    counts[page_label] = counts.get(page_label, 0) + 1
                     refs = self.used_in.setdefault(key, [])
                     if (page_label, page_url) not in refs:
                         refs.append((page_label, page_url))
