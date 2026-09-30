@@ -2,7 +2,7 @@
    A lesson is MASTERED when at least 80% of it has been read, 80% of its checkpoint questions are answered
    with at least 70% right, and its quiz is fully answered with at least 70% right. PRACTISED means at least
    half the checkpoints are answered or the quiz is finished; STARTED means anything at all has happened.
-   Module challenges (on each module page) award a badge at their pass mark; badges fill the certificate.
+   Module challenges (on each module page) award a badge at their pass mark; badges fill the certificate when it is switched on.
    Loaded on every page, after app.js. Exposes window.DLP.mastery. */
 (function () {
   'use strict';
@@ -117,7 +117,7 @@
       if (fresh && ok && window.DLP.confetti) window.DLP.confetti(status);
       foot.hidden = false;
       foot.className = 'mc-foot ' + (ok ? 'good' : 'warn');
-      foot.innerHTML = (ok ? '<strong>Passed: ' + right + ' of ' + qs.length + '.</strong> The Module ' + mod + ' badge is yours. <a href="' + ROOT + 'progress.html#certificate">See your certificate</a>.'
+      foot.innerHTML = (ok ? '<strong>Passed: ' + right + ' of ' + qs.length + '.</strong> The Module ' + mod + ' badge is yours. ' + (document.body.hasAttribute('data-cert') ? '<a href="' + ROOT + 'progress.html#certificate">See your certificate</a>.' : '<a href="' + ROOT + 'progress.html">See your badges</a>.')
         : '<strong>' + right + ' of ' + qs.length + ' right; the pass mark is ' + Math.ceil(pass * qs.length) + '.</strong> Read the explanations, revisit the lessons they point to, and try again.') +
         ' <button class="chip-btn" data-mc-retry><svg class="ic"><use href="#i-refresh"/></svg> Try again</button>';
       $('[data-mc-retry]', foot).addEventListener('click', function () {

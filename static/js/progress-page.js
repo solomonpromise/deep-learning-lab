@@ -88,6 +88,7 @@
   function paintCert(mods) {
     var earned = mods.filter(function (m) { return m.challenge && m.challenge.passed; }), name = store.get('cert:name', '');
     var box = $('[data-pg-cert]');
+    if (!box) return;   // certificate switched off in course.yaml
     if (!earned.length) {
       box.innerHTML = '<p class="muted">Pass a module challenge (on each module\'s overview page) to earn its badge. Your certificate lists every module you have passed, so it grows with you.</p>' +
         '<div class="pg-cert-locked">' + icon('lock') + ' No modules passed yet: ' + mods.filter(function (m) { return m.challenge; }).map(function (m) { return '<a href="' + ROOT + m.url + '#challenge">Module ' + m.number + '</a>'; }).join(' · ') + '</div>';

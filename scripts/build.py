@@ -189,6 +189,8 @@ class Builder:
                   "glossary_js": json.dumps(self.glossary.as_js()),
                   "tutor_js": json.dumps(tutor).replace("</", "<\\/"),
                   "services": self.cfg.get("services") or {},
+                  "features": self.features(),
+                  "tutor_on": bool(tutor.get("enabled")),
                   "discussions": self.cfg.get("discussions") or None,
                   "services_js": json.dumps(self.cfg.get("services") or {}).replace("</", "<\\/")}
 
@@ -203,7 +205,8 @@ class Builder:
         self._page("guide.html", "guide.html", root="", page="guide", **common)
         self._page("review.html", "review.html", root="", page="review", **common)
         self._page("progress.html", "progress.html", root="", page="progress", **common)
-        self._page("certificate.html", "certificate.html", root="", page="certificate", **common)
+        if common["features"]["certificate"]:
+            self._page("certificate.html", "certificate.html", root="", page="certificate", **common)
         self._page("instructor.html", "instructor.html", root="", page="instructor", **common)
         search_docs = []
         for m in nav:
@@ -316,6 +319,11 @@ class Builder:
         shown = self.dist.relative_to(ROOT) if self.dist.is_relative_to(ROOT) else self.dist
         print(f"\nBuilt {len(lessons)} lessons in {time.time() - t0:.1f}s → {shown}/")
         return 0
+
+    def features(self) -> dict:
+        """Optional parts of the platform (course.yaml `features:`), with their defaults."""
+        f = self.cfg.get("features") or {}
+        return {"certificate": bool(f.get("certificate", True))}
 
     def _page(self, template: str, out: str, **ctx) -> None:
         ctx.setdefault("og_image", "assets/og/home.png")

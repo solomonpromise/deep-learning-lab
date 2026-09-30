@@ -58,12 +58,15 @@
       '<button class="tutor-send" type="submit" aria-label="Send" data-t-send>' + icon('arrow-right') + '</button>' +
     '</form>' +
     '<div class="tutor-foot">AI answers can be wrong. Check them against the lesson.</div>';
-  document.body.appendChild(fab);
+  // The top bar carries the launcher, so nothing floats over the page. Pages without one fall back to the floating button.
+  var launchers = $$('[data-tutor-open]');
+  if (!launchers.length) document.body.appendChild(fab);
   document.body.appendChild(panel);
   var body = $('[data-t-body]', panel), input = $('[data-t-input]', panel), ctxEl = $('[data-t-context]', panel);
 
   $('[data-t-sub]', panel).textContent = (CFG.model_label || CFG.model || '') + (CFG.provider ? ' · ' + CFG.provider : '');
   fab.addEventListener('click', function () { toggle(true); });
+  launchers.forEach(function (b) { b.setAttribute('aria-expanded', 'false'); b.addEventListener('click', function () { toggle(panel.hidden); }); });
   $('[data-t-close]', panel).addEventListener('click', function () { toggle(false); });
   $('[data-t-clear]', panel).addEventListener('click', function () { if (controller) controller.abort(); history = []; sessionSet(chatKey, history); render(); });
   $('[data-t-settings]', panel).addEventListener('click', function () { showSettings(); });
@@ -75,6 +78,8 @@
   function autosize() { input.style.height = 'auto'; input.style.height = Math.min(160, input.scrollHeight) + 'px'; }
   function toggle(open) {
     panel.hidden = !open; fab.hidden = open; document.body.classList.toggle('tutor-open', open);
+    launchers.forEach(function (b) { b.setAttribute('aria-expanded', open ? 'true' : 'false'); b.classList.toggle('is-on', open); });
+    if (!open && launchers[0] && panel.contains(document.activeElement)) launchers[0].focus();
     if (open) { loadLibs(function () { render(); }); loadCourse(function () {}); updateContext(); setTimeout(function () { input.focus(); }, 30); }
   }
 

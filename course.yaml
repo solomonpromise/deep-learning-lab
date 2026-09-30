@@ -42,6 +42,12 @@ tutor:
 # The course API: the same Cloudflare Worker as the tutor (tutor-proxy/api.js, D1 database). It keeps
 # synced progress under private codes, anonymous answer counts and issued certificates. Leave `api`
 # empty to turn all three off; the site then keeps everything in each learner's browser.
+# Optional parts of the platform. The certificate is off for now: its page is not built and nothing links
+# to it. Module badges still work. The course API keeps its certificate endpoints and records, so setting
+# this back to true restores everything, including links issued earlier.
+features:
+  certificate: false
+
 services:
   api: "https://deep-learning-lab-tutor.solomonpromise51.workers.dev"
   anonymous_stats: true     # learners can switch it off on My progress; off by default with Do Not Track

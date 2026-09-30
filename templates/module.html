@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_blocks.html" import mchallenge %}
+{% from "_blocks.html" import mchallenge with context %}
 {% block title %}Module {{ module.number }} · {{ module.title }} — {{ course.short_title }}{% endblock %}
 {% block description %}Module {{ module.number }}: {{ module.question }} {{ module.lessons|length }} lessons: {{ module.lessons|map(attribute='title')|join('; ') }}.{% endblock %}
 {% block main %}

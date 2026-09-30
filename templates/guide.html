@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}How to use this platform — {{ course.short_title }}{% endblock %}
-{% block description %}A short tour of {{ course.title }}: lessons, checkpoints, labs, code you can run, daily review, progress and the certificate.{% endblock %}
+{% block description %}A short tour of {{ course.title }}: lessons, checkpoints, labs, code you can run, daily review and progress{% if features.certificate %}, and the certificate{% endif %}.{% endblock %}
 {% block main %}
 <div class="plain-page">
   <header class="plain-hero">
@@ -57,7 +57,7 @@
     <div class="guide-step">
       <span class="guide-n">8</span>
       <div><h3>Master each lesson, pass each module</h3>
-      <p>A lesson is <strong>mastered</strong> when you have read it through, answered most of its checkpoints and got at least 70% right, and finished its quiz with the same score. The panel at the end of each lesson shows what is left; mastered lessons get a gold dot in the sidebar. Each module ends with a <strong>module challenge</strong>: harder questions that mix ideas from several lessons. Pass all of them to earn the <a href="certificate.html"><svg class="ic"><use href="#i-award"/></svg> certificate</a>{% if services.api %}, which carries a link anyone can use to check it is genuine{% endif %}.</p></div>
+      <p>A lesson is <strong>mastered</strong> when you have read it through, answered most of its checkpoints and got at least 70% right, and finished its quiz with the same score. The panel at the end of each lesson shows what is left; mastered lessons get a gold dot in the sidebar. Each module ends with a <strong>module challenge</strong>: harder questions that mix ideas from several lessons. {% if features.certificate %}Pass all of them to earn the <a href="certificate.html"><svg class="ic"><use href="#i-award"/></svg> certificate</a>{% if services.api %}, which carries a link anyone can use to check it is genuine{% endif %}.{% else %}Pass it to earn that module's badge; <a href="progress.html">My progress</a> shows the badges you have.{% endif %}</p></div>
     </div>
     <div class="guide-step">
       <span class="guide-n">9</span>

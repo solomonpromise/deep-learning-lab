@@ -294,7 +294,7 @@
     <div>
       <span class="mc-kicker">Module challenge · {{ b.questions|length }} scenario questions · pass mark {{ (b.pass_mark * 100)|round|int }}%</span>
       <h2>{{ b.title }}</h2>
-      <p class="muted">Harder than the checkpoints: each question mixes ideas from several lessons. Pass it to earn the Module {{ module.number }} badge, which counts toward your certificate.</p>
+      <p class="muted">Harder than the checkpoints: each question mixes ideas from several lessons. Pass it to earn the Module {{ module.number }} badge{% if features.certificate %}, which counts toward your certificate{% endif %}.</p>
     </div>
     <span class="mc-status" data-mc-status aria-live="polite"></span>
   </div>

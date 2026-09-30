@@ -3,8 +3,9 @@
 An interactive learning platform generated from the course notebooks of **Modern Deep Learning & AI Engineering**.
 Every lesson is the full teaching note, restructured for the web and enriched with explainers, animations,
 interactive labs, worked answers to every question, and a quiz. Learners answer a checkpoint at the end of every section,
-run Python in the browser, review what they answered with spaced repetition, earn module badges and a verifiable
-certificate, and can carry their progress between devices with a private code.
+run Python in the browser, review what they answered with spaced repetition, earn module badges, and can carry their
+progress between devices with a private code. (A verifiable certificate is built in but switched off for now: see
+`features.certificate` below.)
 
 The site is **static** (plain HTML, CSS and JavaScript), so it can be hosted for free on GitHub Pages, Netlify or any web server.
 It also opens straight from disk.
@@ -228,7 +229,7 @@ course API is on) and a share button.
 ### Module challenges (`enrichments/module-N.challenge.yaml`)
 
 Harder scenario questions that mix a module's lessons, shown on the module's overview page. Passing (`pass_mark`
-of them right) earns the module badge; all badges together unlock the certificate.
+of them right) earns the module badge. With the certificate switched on, the badges are what it lists.
 
 ```yaml
 title: "Module 3 challenge: why a network learns well, badly, or not at all"
@@ -394,7 +395,7 @@ record (`static/js/record.js`). No account is needed. The pages built on it:
 |---|---|
 | `review.html` | Today's daily review, and practice for any lesson |
 | `progress.html` | Streak and weekly goal, a 16-week calendar, the skills map, badges, lab challenge results, and sync |
-| `certificate.html` | The certificate, once every module challenge is passed; printable, downloadable as PNG |
+| `certificate.html` | The certificate, listing the modules passed; printable, downloadable as PNG. Only built when `features.certificate` is `true` |
 | `concepts.html` | The concept map |
 | `instructor.html` | Answer counts per question, for the course author (not linked, not indexed; needs the stats token) |
 
@@ -405,7 +406,11 @@ the D1 database from `tutor-proxy/schema.sql`):
   the link it gives) on another device merges the two records. The tutor key is never synced.
 - **Anonymous answer counts**: a question id and right or wrong, nothing else. Learners can switch it off, and it is
   off for browsers that send Do Not Track and on local previews (`make serve`), so testing doesn't skew the counts. The instructor page reads them with a token.
-- **Certificates** get an id and a public verification link.
+- **Certificates** get an id and a public verification link (when `features.certificate` is on).
+
+`features.certificate` in `course.yaml` switches the certificate on or off. It is off for now: `certificate.html` is not
+built, and the progress page, the module challenges and the guide stop mentioning it. Module badges keep working. The
+Worker's certificate endpoints and records are untouched, so setting it back to `true` restores everything.
 - **Lab challenges** report the share of earlier results a new one beats.
 
 One-time setup, after the tutor proxy (below) is deployed:

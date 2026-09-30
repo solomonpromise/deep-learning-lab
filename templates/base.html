@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="{{ root }}static/css/widgets.css?v={{ v }}">
   <link rel="stylesheet" href="{{ root }}static/css/learn.css?v={{ v }}">
 </head>
-<body class="page-{{ page }}" data-root="{{ root }}">
+<body class="page-{{ page }}" data-root="{{ root }}"{% if features.certificate %} data-cert{% endif %}>
 {% include "_icons.html" %}
 <a class="skip" href="#main">Skip to content</a>
 
@@ -56,6 +56,7 @@
   <a class="icon-btn review-link" href="{{ root }}review.html" title="Daily review" aria-label="Daily review" data-review-link><svg class="ic"><use href="#i-cards"/></svg><span class="due-badge" data-due-badge hidden></span></a>
   <a class="icon-btn hide-sm" href="{{ root }}glossary.html" title="Glossary" aria-label="Glossary"><svg class="ic"><use href="#i-book"/></svg></a>
   <a class="icon-btn hide-sm" href="{{ root }}guide.html" title="How to use this platform" aria-label="How to use this platform"><svg class="ic"><use href="#i-help"/></svg></a>
+  {% if tutor_on %}<button class="tutor-launch" type="button" data-tutor-open aria-label="Ask the AI tutor" title="Ask the AI tutor"><svg class="ic"><use href="#i-sparkles"/></svg><span>Ask the tutor</span></button>{% endif %}
   <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
     <svg class="ic show-light"><use href="#i-moon"/></svg><svg class="ic show-dark"><use href="#i-sun"/></svg>
   </button>
