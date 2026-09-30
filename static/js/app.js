@@ -182,7 +182,8 @@
       b.addEventListener('click', function () {
         var open = document.body.classList.toggle('spine-open');
         b.setAttribute('aria-expanded', open ? 'true' : 'false');
-        if (open) { var cur = $('.sp.is-active', spine); if (cur) try { cur.scrollIntoView({ block: 'center' }); } catch (e) {} }
+        var cur = $('.sp.is-active', spine), inner = $('.spine-inner', spine);
+        if (open && cur && inner) inner.scrollTop += cur.getBoundingClientRect().top - inner.getBoundingClientRect().top - inner.clientHeight / 2;
       });
     });
     $$('[data-spine-close]').forEach(function (b) { b.addEventListener('click', closeSheet); });
@@ -212,7 +213,7 @@
         sections.forEach(function (s, i) { if (s.getBoundingClientRect().top < line) cur = i; });
         var to = sections[Math.max(0, Math.min(sections.length - 1, cur + step))];
         if (step < 0 && cur <= 0) to = $('#start') || to;
-        if (to) window.scrollTo({ top: to.getBoundingClientRect().top + window.scrollY - 64 });
+        if (to) window.scrollTo({ top: to.getBoundingClientRect().top + window.scrollY - 64, behavior: 'instant' });
       });
     });
     function onScroll() {
