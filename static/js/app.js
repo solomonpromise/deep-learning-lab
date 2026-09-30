@@ -36,6 +36,12 @@
     });
   }
 
+  /* ------------------------------------------------------------ top-bar menu */
+  $$('[data-tb-menu]').forEach(function (m) {
+    document.addEventListener('click', function (e) { if (m.open && !m.contains(e.target)) m.open = false; });
+    m.addEventListener('keydown', function (e) { if (e.key === 'Escape' && m.open) { m.open = false; m.querySelector('summary').focus(); } });
+  });
+
   /* ------------------------------------------------------------ sidebar */
   // Wide screens: the menu button collapses the sidebar and the choice sticks across pages (see <head>).
   // Narrow screens: it opens the sidebar as a drawer over the page, as before.
