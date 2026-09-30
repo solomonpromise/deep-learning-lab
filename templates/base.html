@@ -25,6 +25,7 @@
   <script>
     (function () {
       try { var t = localStorage.getItem('dlp-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+      try { if (localStorage.getItem('dlp:nav-collapsed') === 'true') document.documentElement.classList.add('nav-collapsed'); } catch (e) {}
       document.documentElement.classList.add('js');
     })();
   </script>
@@ -41,7 +42,7 @@
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="topbar">
-  <button class="icon-btn nav-toggle" aria-label="Open navigation" data-nav-toggle><svg class="ic"><use href="#i-menu"/></svg></button>
+  <button class="icon-btn nav-toggle" aria-label="Show course navigation" title="Show course navigation" aria-controls="sidebar" aria-expanded="false" data-nav-toggle><svg class="ic"><use href="#i-menu"/></svg></button>
   <a class="brand" href="{{ root }}index.html">
     <span class="brand-mark" aria-hidden="true">
       <svg viewBox="0 0 32 32"><circle cx="7" cy="9" r="3"/><circle cx="7" cy="23" r="3"/><circle cx="16" cy="16" r="3.4"/><circle cx="25" cy="9" r="3"/><circle cx="25" cy="23" r="3"/><path d="M9.6 10.4 13.3 14M9.6 21.6l3.7-3.6M18.7 14l3.7-3.6M18.7 18l3.7 3.6"/></svg>
@@ -62,7 +63,7 @@
 </header>
 
 <div class="shell">
-  <nav class="sidebar" aria-label="Course navigation" data-sidebar>
+  <nav class="sidebar" id="sidebar" aria-label="Course navigation" data-sidebar>
     <div class="sidebar-inner">
       <a class="side-home{% if page == 'home' %} is-active{% endif %}" href="{{ root }}index.html"><svg class="ic"><use href="#i-home"/></svg> Course home</a>
       {% for m in nav %}

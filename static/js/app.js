@@ -37,8 +37,29 @@
   }
 
   /* ------------------------------------------------------------ sidebar */
-  $$('[data-nav-toggle]').forEach(function (b) { b.addEventListener('click', function () { document.body.classList.toggle('nav-open'); }); });
-  $$('[data-nav-close]').forEach(function (b) { b.addEventListener('click', function () { document.body.classList.remove('nav-open'); }); });
+  // Wide screens: the menu button collapses the sidebar and the choice sticks across pages (see <head>).
+  // Narrow screens: it opens the sidebar as a drawer over the page, as before.
+  var wideNav = window.matchMedia('(width > 980px)');
+  function navShown() {
+    return wideNav.matches ? !document.documentElement.classList.contains('nav-collapsed') : document.body.classList.contains('nav-open');
+  }
+  function syncNavToggle() {
+    var shown = navShown(), label = (shown ? 'Hide' : 'Show') + ' course navigation';
+    $$('[data-nav-toggle]').forEach(function (b) { b.setAttribute('aria-expanded', shown ? 'true' : 'false'); b.setAttribute('aria-label', label); b.title = label; });
+  }
+  $$('[data-nav-toggle]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (wideNav.matches) {
+        var collapsed = document.documentElement.classList.toggle('nav-collapsed');
+        store.set('nav-collapsed', collapsed);
+        if (!collapsed && activeSide) { try { activeSide.scrollIntoView({ block: 'center' }); } catch (e) {} }
+      } else document.body.classList.toggle('nav-open');
+      syncNavToggle();
+    });
+  });
+  $$('[data-nav-close]').forEach(function (b) { b.addEventListener('click', function () { document.body.classList.remove('nav-open'); syncNavToggle(); }); });
+  if (wideNav.addEventListener) wideNav.addEventListener('change', syncNavToggle);
+  syncNavToggle();
   $$('[data-side-toggle]').forEach(function (b) {
     b.addEventListener('click', function () {
       var m = b.closest('.side-module');
@@ -618,7 +639,7 @@
     var typing = /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '');
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); modal.hidden ? openSearch() : closeSearch(); }
     else if (e.key === '/' && !typing && modal && modal.hidden) { e.preventDefault(); openSearch(); }
-    else if (e.key === 'Escape') { if (modal) closeSearch(); if (lb) lb.hidden = true; if (pop) pop.hidden = true; document.body.classList.remove('nav-open'); }
+    else if (e.key === 'Escape') { if (modal) closeSearch(); if (lb) lb.hidden = true; if (pop) pop.hidden = true; document.body.classList.remove('nav-open'); syncNavToggle(); }
   });
 
   /* ------------------------------------------------------------ math */
@@ -672,16 +693,17 @@
     function size() {
       var r = canvas.getBoundingClientRect(); W = r.width; H = r.height; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       nodes = [];
-      var x0 = W * 0.58, x1 = W * 0.95;
+      var x0 = 12, x1 = W - 12;   // the canvas is its own column; keep the node rings inside it
       layers.forEach(function (n, li) {
-        for (var i = 0; i < n; i++) nodes.push({ l: li, x: x0 + (x1 - x0) * li / (layers.length - 1), y: H * (0.18 + 0.64 * (i + 0.5) / n) });
+        for (var i = 0; i < n; i++) nodes.push({ l: li, x: x0 + (x1 - x0) * li / (layers.length - 1), y: H * (0.04 + 0.92 * (i + 0.5) / n) });
       });
+      if (reduce) requestAnimationFrame(draw);
     }
     function col(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
     function draw(now) {
       var t = (now - t0) / 1000;
       ctx.clearRect(0, 0, W, H);
-      if (W < 700) { if (!reduce) requestAnimationFrame(draw); return; }
+      if (W < 160) { if (!reduce) requestAnimationFrame(draw); return; }   // column hidden on narrow heroes
       var line = col('--line-2'), a = col('--c0'), b = col('--c1');
       for (var i = 0; i < nodes.length; i++) for (var j = 0; j < nodes.length; j++) {
         var p = nodes[i], q = nodes[j];
@@ -702,7 +724,10 @@
       });
       if (!reduce) requestAnimationFrame(draw);
     }
-    size(); window.addEventListener('resize', size); requestAnimationFrame(draw);
+    // The column changes width without a window resize too (the sidebar collapsing), so watch the canvas itself
+    size();
+    if (window.ResizeObserver) new ResizeObserver(size).observe(canvas); else window.addEventListener('resize', size);
+    if (!reduce) requestAnimationFrame(draw);
     document.addEventListener('dlp:theme', function () { if (reduce) requestAnimationFrame(draw); });
   }
 })();
