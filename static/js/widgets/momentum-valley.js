@@ -1,5 +1,6 @@
-/* Momentum Valley — Lesson 3.1's stretched bowl f(x, y) = 0.05·x² + y², with plain SGD and SGD + momentum
-   run side by side at the same learning rate (PyTorch's rule: v ← β·v + g,  p ← p − lr·v).
+/* Momentum Valley — plain SGD and SGD with momentum, side by side in a long, narrow valley. The valley is
+   Lesson 3.1's stretched bowl f(x, y) = 0.05·x² + y², both run at the same learning rate (PyTorch's rule:
+   v ← β·v + g,  p ← p − lr·v).
    Per direction the update is linear, so its fate is set by the roots of z² − (1 + β − lr·h)·z + β = 0
    (h = curvature: 0.1 along x, 2 along y). The largest |z| is the per-step shrink factor; above 1 it diverges. */
 (function () {

@@ -1,5 +1,5 @@
-/* LR Schedules — the learning rate each epoch trains with, for four common schedules, exactly as PyTorch
-   computes them when scheduler.step() is called once per epoch: constant, StepLR, CosineAnnealingLR, and
+/* LR Schedules — the learning rate each epoch trains with, under four common schedules. The values are exactly
+   what PyTorch computes when scheduler.step() is called once per epoch: constant, StepLR, CosineAnnealingLR, and
    linear warmup followed by cosine (LinearLR + CosineAnnealingLR chained with SequentialLR). */
 (function () {
   'use strict';

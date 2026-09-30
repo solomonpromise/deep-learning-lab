@@ -24,7 +24,9 @@
   }
 
   /* ------------------------------------------------------------ anonymous answer counts */
-  var statsOn = store.get('stats:on', navigator.doNotTrack !== '1' && CFG.anonymous_stats !== false);
+  // a local preview (make serve, or the files opened from disk) doesn't count unless switched on, so testing leaves the real counts alone
+  var LOCAL = location.protocol === 'file:' || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  var statsOn = store.get('stats:on', !LOCAL && navigator.doNotTrack !== '1' && CFG.anonymous_stats !== false);
   var queue = [], flushTimer = null;
   function enqueue(ev) {
     if (!statsOn) return;
