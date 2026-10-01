@@ -352,8 +352,9 @@ details.explainer.annot:not([open]) { padding-bottom: 0; }
 .opt { min-height: 46px; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; }
 .opt:hover:not(:disabled) { border-color: var(--ink); transform: none; }
 .opt-letter { border: 1px solid var(--line-2); background: var(--surface); font-family: var(--mono); font-weight: 600; color: var(--ink-3); border-radius: 6px; }
-.opt.is-correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
-.opt.is-wrong .opt-letter { background: var(--red); border-color: var(--red); color: #fff; }
+/* the letter takes the page colour: white on light green fails in dark mode */
+.opt.is-correct .opt-letter { background: var(--green); border-color: var(--green); color: var(--bg); }
+.opt.is-wrong .opt-letter { background: var(--red); border-color: var(--red); color: var(--bg); }
 .opt.is-picked { box-shadow: inset 0 0 0 1px var(--ink); }
 .quiz-why, .cp-why { background: none; border-top: 1px dashed var(--line-2); border-radius: 0; padding: 12px 0 0; }
 .quiz-n { border-radius: 6px; font-family: var(--mono); }
@@ -706,3 +707,153 @@ body.focus-mode .lesson-hero { padding-top: 32px; }
   .mc-run { margin: 6px; padding: 16px 16px 14px; }
   .mc-close { margin-left: 0; }
 }
+
+/* ================================================================== daily review (phase 6)
+   The page opens on the first question of a round: segmented progress (right, missed, skipped), the question as a
+   prompt, and after each answer why and when it comes back. The side panel says what is due, by lesson. On a phone
+   a running round takes the whole screen: a close button and the segments on top, the actions in a bar at the foot. */
+.page-review .nav-toggle { display: none; }
+.rv2 { max-width: 1280px; margin: 0 auto; padding: 40px 40px 0; display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; align-items: start; }
+.rv2 [hidden] { display: none !important; }
+.rv-col { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+
+/* ---- the round: where you are */
+.rv-round { display: grid; gap: 18px; }
+.rv-head { display: flex; align-items: center; gap: 16px; min-height: 22px; }
+.rv-where { color: var(--ink); white-space: nowrap; }
+.rv-segs { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(var(--n, 15), minmax(0, 1fr)); gap: 4px; }
+.rv-segs i { height: 6px; border-radius: 3px; background: var(--surface-3); }
+.rv-segs i.is-ok { background: var(--green); }
+.rv-segs i.is-bad { background: var(--red); }
+.rv-segs i.is-now { background: var(--ink); }
+.rv-segs i.is-skip { background: transparent; box-shadow: inset 0 0 0 1.5px var(--line-2); }
+.rv-tally { font: 500 .76rem var(--mono); color: var(--ink-3); white-space: nowrap; }
+.rv-x, .rv-frac { display: none; }
+
+/* ---- the question as a prompt */
+.rv-prompt { position: relative; padding: 30px 32px 26px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); }
+.rv-phead { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.qmark { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--ink); color: var(--bg); font: 800 16px/1 var(--display); }
+.rv-from { color: var(--ink); }
+.rv-seen { margin-left: auto; font: 500 .75rem var(--mono); color: var(--ink-3); white-space: nowrap; }
+.rv-q { margin: 0 0 18px; font: 620 1.375rem/1.4 var(--display); letter-spacing: -.005em; color: var(--ink); outline: none; }
+.rv-q p { margin: 0 0 .5em; }
+.rv-q > :last-child { margin-bottom: 0; }
+.rv-q code, .rv-why code, .rv-opts code { font: 500 .8em var(--mono); background: var(--surface-2); padding: .1em .35em; border-radius: 4px; border: 0; }
+.rv-opts { display: grid; gap: 8px; }
+.rv-opts .opt { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; min-height: 48px; padding: 10px 14px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: 500 .97rem/1.4 var(--font); }
+.rv-opts .opt-letter { width: 24px; height: 24px; }
+.rv-opts .opt.is-picked { box-shadow: none; }
+.rv-opts .opt.is-correct { border-color: var(--green); background: var(--green-soft); }
+.rv-opts .opt.is-wrong { border-color: var(--red); background: var(--red-soft); }
+.rv-opts .opt.is-dim { color: var(--ink-3); }
+.opt-mark { display: inline-flex; align-items: center; gap: 6px; font: 600 .8rem var(--font); white-space: nowrap; }
+.opt-mark .ic { width: 14px; height: 14px; }
+.is-correct .opt-mark { color: var(--green); }
+.is-wrong .opt-mark { color: var(--red); }
+.rv-hint { display: none; }
+.rv-why { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line-2); font: 400 1.06rem/1.6 var(--serif); color: var(--ink-2); }
+.rv-why p { margin: 0 0 .6em; }
+.rv-why > :last-child { margin-bottom: 0; }
+.rv-why b { color: var(--ink); font-weight: 650; }
+.rv-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 18px; }
+.rv-when { display: inline-flex; align-items: center; gap: 7px; margin: 0; padding: 7px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface);
+  font: 500 .76rem/1 var(--mono); color: var(--ink-2); }
+.rv-when .ic { width: 14px; height: 14px; }
+.rv-acts { margin-left: auto; display: flex; align-items: center; gap: 10px; scroll-margin-bottom: 24px; }
+.rv-acts .btn { height: 38px; padding: 0 14px; border-radius: 8px; font-size: .86rem; }
+.rv-acts .btn .ic { width: 16px; height: 16px; }
+.btn-quiet { background: transparent; border-color: transparent; color: var(--ink-2); }
+.btn-quiet:hover { background: var(--surface-2); color: var(--ink); opacity: 1; }
+.rv-next kbd { padding: 2px 5px; border: 1px solid currentColor; border-radius: 4px; background: transparent; color: inherit; opacity: .6; font-size: .7rem; }
+.rv-short { display: none; }
+.rv-keys { margin: 0; font-size: .86rem; color: var(--ink-2); }
+.rv-keys kbd { font-size: .72rem; }
+.rv-stop { margin-left: 6px; padding: 0; border: 0; background: none; color: var(--ink-2); font: inherit; text-decoration: underline; cursor: pointer; }
+.rv-stop:hover { color: var(--ink); }
+
+/* ---- between rounds */
+.rv-state { padding: 30px 32px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); outline: none; }
+.rv-k { color: var(--ink-2); }
+.rv-state .rv-segs { margin-top: 14px; }
+.rv-score { margin: 16px 0 10px; font: 800 clamp(1.8rem, 3vw, 2.4rem)/1.05 var(--display); font-stretch: 112%; letter-spacing: -.02em; color: var(--ink); }
+.rv-sum { margin: 0; max-width: 640px; font: 400 1.1rem/1.55 var(--serif); color: var(--ink-2); }
+.rv-sub { display: block; margin: 24px 0 8px; color: var(--ink-2); }
+.rv-missed { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.rv-missed li { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.rv-missed .rv-l { font: 500 .76rem var(--mono); color: var(--ink-3); white-space: nowrap; }
+.rv-mq { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: .92rem; line-height: 1.45; color: var(--ink); }
+.rv-missed a { font-weight: 600; font-size: .86rem; color: var(--ink); }
+.rv-state-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 24px; }
+.rv-left { font: 500 .78rem var(--mono); color: var(--ink-3); }
+.rv-clear { flex-basis: 100%; display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 600; color: var(--ink); }
+.rv-clear .ic { width: 18px; height: 18px; color: var(--green); }
+.rv-deck { margin: 20px 0 0; font: 500 .76rem var(--mono); color: var(--ink-3); }
+
+/* ---- practise a lesson */
+.rv-practice { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); scroll-margin-top: calc(var(--topbar-h) + 16px); }
+.rv-practice h2 { margin: 0 0 6px; font-size: 1.3rem; }
+.rv-practice p { margin: 0; max-width: 640px; font-size: .95rem; color: var(--ink-2); }
+.rv-practice-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.rv-practice-row select { flex: 1; min-width: 0; height: 42px; padding: 0 12px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--surface); color: var(--ink); font: 500 .92rem var(--font); }
+
+/* ---- side panel */
+.rv-side { position: sticky; top: calc(var(--topbar-h) + 32px); display: grid; gap: 24px; }
+.rv-count { display: grid; gap: 6px; }
+.rv-count .mono-label, .rv-list .mono-label { color: var(--ink-3); }
+.rv-big { display: flex; align-items: flex-end; gap: 10px; }
+.rv-big strong { font: 900 5.25rem/.82 var(--display); font-stretch: 62%; letter-spacing: -.01em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.rv-big span { padding-bottom: 6px; font-size: .95rem; line-height: 1.4; color: var(--ink-2); }
+.rv-list ol { list-style: none; margin: 8px 0 0; padding: 0; }
+.rv-list li { display: grid; grid-template-columns: 34px minmax(0, 1fr) 28px; gap: 8px; align-items: baseline; padding: 7px 0; border-top: 1px solid var(--line); }
+.rv-list li.is-day { grid-template-columns: minmax(0, 1fr) 28px; }
+.rv-list .rv-l { font: 500 .75rem var(--mono); color: var(--ink-3); }
+.rv-list .rv-t { font: 500 .85rem/1.35 var(--font); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rv-list .rv-n { font: 500 .78rem var(--mono); color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.rv-how { border-top-width: 1px; border-color: var(--line-2); font-size: .92rem; }
+.rv-how .mnote-lbl { display: block; margin-bottom: 6px; color: var(--ink-3); }
+
+@media (max-width: 1100px) {
+  .rv2 { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .rv-side { position: static; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 40px; }
+  .rv-count, .rv-how { grid-column: 1; }
+  .rv-list { grid-column: 2; grid-row: 1 / span 2; }
+}
+@media (max-width: 720px) {
+  .rv2 { padding: 20px 16px 0; gap: 32px; }
+  .rv-side { grid-template-columns: minmax(0, 1fr); }
+  .rv-practice-row > * { flex: 1 1 100%; justify-content: center; }
+  .rv-list { grid-column: 1; grid-row: auto; }
+  .rv-prompt, .rv-state { padding: 20px 18px; }
+  .rv-seen, .rv-keys { display: none; }
+  .rv-q { font-size: 1.25rem; }
+  .rv-opts { gap: 10px; }
+  .rv-opts .opt { min-height: 58px; }
+  .rv-missed li { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; }
+  .rv-missed .rv-l { grid-column: 1 / -1; }
+  .rv-big strong { font-size: 4rem; }
+
+  /* a running round takes the screen: close, segments and count on top; the question on the page; actions at the foot */
+  body.rv-running :is(.topbar, .tabbar, .site-foot, .rv-side, .rv-practice) { display: none !important; }
+  body.rv-running .main { padding-bottom: 96px; }
+  body.rv-running .rv2 { padding-top: 0; }
+  .rv-head { position: sticky; top: 0; z-index: 5; height: 56px; margin: 0 -16px; padding: 0 12px 0 4px; gap: 10px; background: var(--bg); }
+  .rv-where, .rv-tally { display: none; }
+  .rv-x { display: inline-grid; flex: none; width: 44px; height: 44px; color: var(--ink); }
+  .rv-frac { display: inline; font: 500 .75rem var(--mono); color: var(--ink-2); }
+  .rv-segs { gap: 3px; }
+  .rv-segs i { height: 5px; }
+  .rv-prompt { padding: 8px 0 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+  .rv-prompt .qmark { display: none; }
+  .rv-hint { display: block; margin: 16px 0 0; text-align: center; font-size: .85rem; color: var(--ink-2); }
+  .rv-why, .rv-when { scroll-margin-bottom: 104px; }
+  .rv-foot { margin-top: 16px; }
+  .rv-acts { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; margin: 0; padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--bg); }
+  .rv-acts .btn { height: 46px; }
+  .rv-skip, .rv-next { flex: 1; justify-content: center; }
+  .rv-reread { order: 2; }
+  .rv-long, .rv-next kbd { display: none; }
+  .rv-short { display: inline; }
+}
+@media print { .rv-acts, .rv-head { display: none !important; } }

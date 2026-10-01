@@ -289,18 +289,20 @@ class Builder:
         (self.dist / "static" / "course-map.js").write_text(
             "window.DLP_COURSE=" + json.dumps(course_map, ensure_ascii=False, separators=(",", ":")) + ";",
             encoding="utf-8")
-        # every checkpoint and quiz question, for the review page
+        # every checkpoint and quiz question, for the review page ("u" is the question itself, "r" where to reread)
         bank = []
         for l in lessons:
             url = f"module-{l.module}/{l.slug}.html"
+            sec_ids = {str(s.num): s.id for s in l.sections if s.num is not None}
             for c in extras[l.id]["checkpoints"]:
                 for q in c["questions"]:
                     bank.append({"id": q["id"], "l": l.id, "lt": l.title, "s": c["sec"], "st": strip(c["title"]),
-                                 "u": f"{url}#cp-{c['sec']}", "q": q["q_html"], "o": q["options"], "a": q["answer"],
-                                 "w": q["why_html"]})
+                                 "u": f"{url}#cp-{c['sec']}", "r": f"{url}#{sec_ids.get(c['sec'], 'cp-' + c['sec'])}",
+                                 "q": q["q_html"], "o": q["options"], "a": q["answer"], "w": q["why_html"]})
             for q in (extras[l.id]["quiz"] or {}).get("questions", []):
                 bank.append({"id": q["id"], "l": l.id, "lt": l.title, "s": "quiz", "st": "End-of-lesson quiz",
-                             "u": f"{url}#wrap-up", "q": q["q_html"], "o": q["options"], "a": q["answer"], "w": q["why_html"]})
+                             "u": f"{url}#wrap-up", "r": f"{url}#wrap-up", "q": q["q_html"], "o": q["options"], "a": q["answer"],
+                             "w": q["why_html"]})
         (self.dist / "static" / "question-bank.js").write_text(
             "window.DLP_BANK=" + json.dumps(bank, ensure_ascii=False, separators=(",", ":")) + ";", encoding="utf-8")
         (self.dist / ".nojekyll").write_text("")

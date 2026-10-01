@@ -12,8 +12,8 @@ This is everything needed to continue the redesign in a local Claude Code sessio
 | 3 | Lesson page: spine, margin notes, terminals, benches, prompts, read mode, phone | Done (see notes under Phase 3) |
 | 4 | Home: today band, "Your network", module rows, first visit, phone tab bar | Done (see notes under Phase 4) |
 | 5 | Module page and one-question-at-a-time module challenge | Done (see notes under Phase 5) |
-| 6 | Daily review opens on the first question | **Next** |
-| 7 | Training log (progress), concept map, glossary, guide, 404 | To do |
+| 6 | Daily review opens on the first question | Done (see notes under Phase 6) |
+| 7 | Training log (progress), concept map, glossary, guide, 404 | **Next** |
 | 8 | Final QA and CSS clean-up | To do |
 
 Approved by the owner on 30 September 2026. Decisions already made (don't reopen them):
@@ -211,7 +211,27 @@ lessons as a connected list (node, number, title, 2-line summary, meta, state an
 becomes one question at a time (show one `.quiz-q`, Next and Back, a score and explanations at the end); keep
 `R.challenge(id, right, true, {passed})` so badges still record.
 
-## Phase 6: daily review
+## Phase 6: daily review (done)
+
+What was built (all review CSS is the "daily review (phase 6)" block at the end of `static/css/activation.css`; the old
+`.rv-*` rules are gone from `learn.css`, except `.rv-stats`/`.rv-stat`, which the instructor page still uses):
+- `templates/review.html` (no course sidebar): `section[data-rv-round]` (head with `[data-rv-where]`, `[data-rv-segs]`,
+  `[data-rv-tally]`, and for phones `[data-rv-stop]` and `[data-rv-frac]`), the prompt `[data-rv-card]` (`[data-rv-from]`,
+  `[data-rv-seen]`, `[data-rv-q]`, `[data-rv-options]`, `[data-rv-why]`, `[data-rv-when]`, `[data-rv-link]`, `[data-rv-skip]`,
+  `[data-rv-next]`), `section[data-rv-state]` (between rounds) and the side panel (`[data-rv-due]`, `[data-rv-rows]`).
+- `review.js` starts a round of up to 15 due questions on load (`#practice=<lesson>` still starts practice; `#start` is
+  no longer needed). Answers record exactly as before (`R.reviewAnswer`, or `R.answer(…, {kind: 'practice'})`).
+  Skip leaves a question due; Esc or the close button ends the round and keeps the answers. Between rounds:
+  the score, what you missed with reread links, "Start round n" while anything is due (Enter starts it), otherwise
+  continue the lesson or practise. Nothing due shows "Coming up" by day in the side panel.
+- The question bank (`scripts/build.py`) has a new field `r`: the start of the question's section (`#s<n>`) or
+  `#wrap-up` for quiz questions. `u` still points at the question itself (the instructor page uses it).
+- On phones a running round adds `body.rv-running`, which hides the top bar, tab bar, footer, side panel and
+  practice; the actions become a fixed bar at the foot.
+- Shared change: the letter on a right or wrong option (`.opt.is-correct/.is-wrong .opt-letter`) now uses the page
+  colour instead of white, which was unreadable on the light green and rust of dark mode. Lessons get this too.
+
+Original spec:
 
 Boards: `Review`, `ReviewPhone`. Files: `templates/review.html`, `static/js/review.js`.
 Open straight into a 15-question round when anything is due. Segmented progress (green and rust per answer), the
