@@ -7,14 +7,16 @@
 //   node scripts/dev/screenshots.mjs index.html module-1/lesson-1-1.html   # just these pages
 //
 // Options (environment): BASE=http://localhost:8000/  OUT=.shots  FRESH=1 (no learner data)
+//   CHANNEL=chrome uses the installed Google Chrome instead of Playwright's own Chromium (no browser download)
 // Prints each page's scroll width (anything wider than the viewport is a sideways-scroll bug) and any JS errors.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const BASE = process.env.BASE || 'http://localhost:8000/';
 const OUT = process.env.OUT || '.shots';
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');   // decoded, so paths with spaces work
 fs.mkdirSync(OUT, { recursive: true });
 
 // ---------------------------------------------------------------- the sample learner
@@ -59,7 +61,7 @@ const views = [
 ];
 
 const learner = process.env.FRESH ? null : sampleLearner();
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.CHANNEL ? { channel: process.env.CHANNEL } : {});
 const errors = [];
 for (const url of (pages.length ? pages : standard)) {
   for (const v of views) {

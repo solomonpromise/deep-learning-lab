@@ -1,55 +1,69 @@
 {% extends "base.html" %}
 {% block title %}My progress — {{ course.short_title }}{% endblock %}
-{% block description %}Your streak, weekly goal, skills map, lesson mastery and module badges{% if features.certificate %}, and your certificate{% endif %}.{% endblock %}
+{% block description %}Your training log: streak and weekly goal, study days, a skills map of every lesson, module badges and lab challenges{% if features.certificate %}, and your certificate{% endif %}.{% endblock %}
+{% block sidebar %}{% endblock %}
 {% block late_scripts %}<script defer src="{{ root }}static/js/progress-page.js?v={{ v }}"></script>{% endblock %}
 {% block main %}
-<div class="plain-page progress-page" data-progress-page>
-  <header class="plain-hero">
-    <span class="eyebrow"><svg class="ic"><use href="#i-chart"/></svg> My progress</span>
-    <h1>Where you are, and what to do next</h1>
-    <p class="lead">Everything here is worked out from what you have actually done: sections read, checkpoints and quizzes answered, labs tried and module challenges passed.</p>
+<div class="log" data-progress-page>
+  <header class="log-head">
+    <div>
+      <span class="mono-label log-k">My progress</span>
+      <h1>Training log</h1>
+      <p class="lead">Worked out from what you have actually done: sections read, questions answered, labs tried.</p>
+    </div>
+    <dl class="log-nums" data-pg-nums>
+      <div><dt class="mono-label">Mastered</dt><dd><strong>–</strong></dd></div>
+      <div><dt class="mono-label">Right first time</dt><dd><strong>–</strong></dd></div>
+      <div><dt class="mono-label">Questions</dt><dd><strong>–</strong></dd></div>
+    </dl>
   </header>
 
-  <section class="pg-top">
-    <div class="pg-card pg-streak" data-pg-streak></div>
-    <div class="pg-card pg-goal" data-pg-goal></div>
-    <div class="pg-card pg-next" data-pg-next></div>
+  <section class="log-top">
+    <article class="log-card log-week" data-pg-week aria-label="This week"></article>
+    <article class="log-card log-next" aria-labelledby="log-next-k">
+      <span class="mono-label" id="log-next-k">Do next</span>
+      <div data-pg-next></div>
+    </article>
   </section>
 
-  <section class="pg-section">
-    <h2><svg class="ic"><use href="#i-calendar"/></svg> Your last 16 weeks</h2>
-    <div class="pg-heat" data-pg-heat role="img"></div>
+  <section class="log-sec" aria-labelledby="log-days-h">
+    <div class="log-sec-head">
+      <h2 id="log-days-h">Study days</h2>
+      <span class="log-sub" data-pg-days-note></span>
+      <span class="log-scale" aria-hidden="true">Less <i></i><i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i> More</span>
+    </div>
+    <div class="log-card log-heat-card"><div class="log-heat" data-pg-heat role="img"></div></div>
   </section>
 
-  <section class="pg-section">
-    <h2><svg class="ic"><use href="#i-map"/></svg> Skills map</h2>
-    <p class="muted">One tile per lesson. The colour is how much of it you have shown you can do: checkpoints and quiz answered correctly, reading and labs.</p>
-    <div class="pg-skills" data-pg-skills></div>
-    <div class="pg-weak" data-pg-weak></div>
+  <section class="log-sec" aria-labelledby="log-skills-h">
+    <div class="log-sec-head">
+      <h2 id="log-skills-h">Skills map</h2>
+      <span class="log-sub">One tile per lesson, coloured by how much of it you have shown you can do.</span>
+    </div>
+    <div class="log-skills" data-pg-skills></div>
   </section>
 
-  <section class="pg-section">
-    <h2><svg class="ic"><use href="#i-award"/></svg> Module badges</h2>
-    <div class="pg-badges" data-pg-badges></div>
-  </section>
-
-  <section class="pg-section">
-    <h2><svg class="ic"><use href="#i-trophy"/></svg> Lab challenges</h2>
-    <div class="pg-challenges" data-pg-challenges></div>
-  </section>
-
-  <section class="pg-section">
-    <h2><svg class="ic"><use href="#i-list-check"/></svg> Lesson by lesson</h2>
-    <div class="table-wrap"><table class="pg-table" data-pg-table></table></div>
+  <section class="log-pair">
+    <div class="log-sec" aria-labelledby="log-badges-h">
+      <h2 id="log-badges-h">Module badges</h2>
+      <div class="log-badges" data-pg-badges></div>
+    </div>
+    <div class="log-sec" aria-labelledby="log-ch-h">
+      <h2 id="log-ch-h">Lab challenges</h2>
+      <div class="log-card log-ch" data-pg-challenges></div>
+    </div>
   </section>
 
   {% if features.certificate %}
-  <section class="pg-section" id="certificate">
-    <h2><svg class="ic"><use href="#i-trophy"/></svg> Certificate</h2>
-    <div data-pg-cert></div>
+  <section class="log-sec" id="certificate" aria-labelledby="log-cert-h">
+    <h2 id="log-cert-h">Certificate</h2>
+    <div class="log-card" data-pg-cert></div>
   </section>
   {% endif %}
 
-  <section class="pg-section" id="sync" data-pg-sync></section>
+  <section class="log-card log-sync" id="sync" data-pg-sync>
+    <svg class="ic log-sync-ic"><use href="#i-sync"/></svg>
+    <div><h2>Sync and privacy</h2><p>Your progress lives in this browser and is never sent anywhere.</p></div>
+  </section>
 </div>
 {% endblock %}

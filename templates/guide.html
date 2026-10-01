@@ -1,92 +1,115 @@
 {% extends "base.html" %}
 {% block title %}How to use this platform — {{ course.short_title }}{% endblock %}
 {% block description %}A short tour of {{ course.title }}: lessons, checkpoints, labs, code you can run, daily review and progress{% if features.certificate %}, and the certificate{% endif %}.{% endblock %}
+{% block sidebar %}{% endblock %}
 {% block main %}
-<div class="plain-page">
-  <header class="plain-hero">
-    <span class="eyebrow"><svg class="ic"><use href="#i-help"/></svg> Start here</span>
-    <h1>How to use this platform</h1>
-    <p class="lead">A short tour of what is on every lesson page, and how the pieces fit together. Nothing needs an account: your progress lives in this browser.</p>
+<div class="guide2">
+  <header class="g-head">
+    <span class="mono-label g-k">Start here</span>
+    <h1>How this platform works</h1>
+    <p class="lead">What is on every lesson page, and how the pieces fit together. Nothing needs an account: your progress lives in this browser.</p>
   </header>
 
-  <h2 class="guide-h">Learn</h2>
-  <div class="guide-steps">
-    <div class="guide-step">
-      <span class="guide-n">1</span>
-      <div><h3>Read a lesson, or take it one section at a time</h3>
-      <p>Each lesson opens with its <strong>goal</strong>, what you will be able to do by the end, the data it uses and an honest time estimate. The <strong>On this page</strong> panel tracks where you are. If a long page feels like a lot, press <strong><svg class="ic"><use href="#i-eye"/></svg> Focus mode</strong> at the top of the lesson: you see one section at a time, and the lesson remembers where you stopped.</p></div>
+  <!-- the four materials and the one colour scale, as the pages draw them -->
+  <section class="g-look" aria-labelledby="g-look-h">
+    <h2 id="g-look-h">What things look like</h2>
+    <div class="g-ex-grid">
+      <figure class="g-ex">
+        <div class="g-ex-stage">
+          <div class="g-prompt">
+            <div class="g-prompt-head"><span class="qmark" aria-hidden="true">?</span><span class="mono-label">Checkpoint</span></div>
+            <p class="g-prompt-q">A model scores 99% on training data and 61% on new data. What is happening?</p>
+            <div class="g-opts">
+              <span class="opt is-dim"><span class="opt-letter">A</span><span>Underfitting</span><span></span></span>
+              <span class="opt is-correct"><span class="opt-letter">B</span><span>Overfitting</span><span class="opt-mark"><svg class="ic"><use href="#i-check"/></svg> Correct</span></span>
+            </div>
+          </div>
+        </div>
+        <figcaption><strong>Questions</strong> are white cards with a <b>?</b>. Every answer is explained, right or wrong, and joins your daily review.</figcaption>
+      </figure>
+      <figure class="g-ex">
+        <div class="g-ex-stage">
+          <div class="code-cell g-term">
+            <div class="code-head"><span class="code-lang"><svg class="ic"><use href="#i-code"/></svg> Python</span><span class="code-meta">2 lines</span>
+              <span class="code-actions"><span class="chip-btn py-run"><svg class="ic"><use href="#i-play"/></svg> Run</span></span></div>
+            <pre class="code"><code><span class="ln"><span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">y</span><span class="p">)</span></span><span class="ln"><span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span></span></code></pre>
+          </div>
+        </div>
+        <figcaption><strong>Code</strong> is a dark terminal with the output it really produced. <b>Run</b> appears where a cell runs in your browser.</figcaption>
+      </figure>
+      <figure class="g-ex">
+        <div class="g-ex-stage">
+          <div class="g-bench"><div class="g-bench-plate"><span class="mono-label">Lab · 1.2</span><strong>Gradient descent, step by step</strong></div><div class="g-bench-ground" aria-hidden="true"><i></i><i></i><i></i></div></div>
+        </div>
+        <figcaption><strong>Labs</strong> sit on a dotted bench, wider than the text. Move the controls and break things on purpose.</figcaption>
+      </figure>
+      <figure class="g-ex">
+        <div class="g-ex-stage">
+          <ul class="g-scale">
+            <li><i class="cn-dot st-none"></i>Not started</li>
+            <li><i class="cn-dot st-started"></i>Started</li>
+            <li><i class="cn-dot st-practised"></i>Practised</li>
+            <li><i class="cn-dot st-mastered"></i>Mastered</li>
+          </ul>
+        </div>
+        <figcaption><strong>Colour means progress</strong>, and only progress: from blue through teal to yellow as you master a lesson. Green and rust mark right and wrong answers.</figcaption>
+      </figure>
     </div>
-    <div class="guide-step">
-      <span class="guide-n">2</span>
-      <div><h3>Play with the interactive labs</h3>
-      <p>Boxes marked <span class="badge-lab inline"><svg class="ic"><use href="#i-flask"/></svg> Interactive</span> are live experiments that run in your browser, placed where the idea they show is explained. Move the sliders, press play, break things on purpose. Some labs carry a <strong><svg class="ic"><use href="#i-trophy"/></svg> challenge</strong>: hit the goal and see where your result sits among everyone who has tried, then share it.</p></div>
-    </div>
-    <div class="guide-step">
-      <span class="guide-n">3</span>
-      <div><h3>Run the code, then write some</h3>
-      <p>Every code cell from the notebook is here with the output it actually produced; numbered markers on some cells match line-by-line notes underneath. In the early lessons, cells marked <strong><svg class="ic"><use href="#i-play"/></svg> Run</strong> run in your browser (the first run loads Python, which takes a few seconds). Press <em>Edit</em> to change a cell and run it again. <strong>Exercises</strong> ask you to fill in the blanks; <em>Check</em> tests your code, and hints and a solution are there when you need them.</p></div>
-    </div>
-    <div class="guide-step">
-      <span class="guide-n">4</span>
-      <div><h3>Look up any term, and see how the ideas connect</h3>
-      <p>Words with a dotted underline have a definition: hover, or tap on a phone. The <a href="glossary.html">glossary</a> lists them all, and the <a href="concepts.html">concept map</a> shows what each idea builds on, what builds on it, and where it comes back later in the course.</p></div>
-    </div>
-  </div>
+  </section>
 
-  <h2 class="guide-h">Practise</h2>
-  <div class="guide-steps">
-    <div class="guide-step">
-      <span class="guide-n">5</span>
-      <div><h3>Answer the checkpoint at the end of each section</h3>
-      <p>A <strong><svg class="ic"><use href="#i-flag"/></svg> Checkpoint</strong> closes every section: a few quick questions with an explanation for each answer, right or wrong. Some ask you to <strong>explain an idea in your own words</strong>; the tutor reads your answer and tells you what is solid and what is missing. In focus mode, the next section waits until you have answered, and <em>Skip for now</em> is always there.</p></div>
-    </div>
-    <div class="guide-step">
-      <span class="guide-n">6</span>
-      <div><h3>Think before you look</h3>
-      <p>Question cards in the text come in three flavours: <strong>Check your understanding</strong>, <strong>Pause &amp; think</strong> and <strong>Try it yourself</strong>. Press <em>Write my answer</em> to jot down your thinking (kept on this device), then <em>Show explanation</em> to compare it with a worked answer. The quiz at the end of the lesson draws the threads together.</p></div>
-    </div>
-    <div class="guide-step">
-      <span class="guide-n">7</span>
-      <div><h3>Come back for a daily review</h3>
-      <p>Every question you answer joins your <a href="review.html"><svg class="ic"><use href="#i-cards"/></svg> daily review</a>. Questions you miss come back tomorrow; ones you get right come back after longer and longer gaps (a week, then two weeks, a month, and so on). A few minutes a day is what turns a lesson you read into one you remember. The number beside <em>Daily review</em> in the sidebar shows how many are due.</p></div>
-    </div>
-  </div>
+  <section class="g-part" aria-labelledby="g-learn">
+    <h2 id="g-learn"><span class="mono-label">Learn</span></h2>
+    <ol class="g-steps" start="1" style="counter-reset: step 0">
+      <li><h3>Read a lesson, or one section at a time</h3>
+        <p>Each lesson opens with its <strong>goal</strong>, what you will be able to do by the end, the data it uses and an honest time estimate. The <strong>spine</strong> on the left lists the sections; each node fills in as you read it, and you can fold the spine to a thin rail. Short notes sit in the margin beside the text they explain. Press <kbd>F</kbd> for <strong>read mode</strong>: everything but the text goes away and you read one section at a time; <kbd>Esc</kbd> brings the page back. On a phone, the bar at the bottom of a lesson opens the sections and steps between them.</p></li>
+      <li><h3>Play with the labs</h3>
+        <p>Labs are live experiments that run in your browser, placed where the idea they show is explained. Some carry a <strong>challenge</strong>: hit the goal and see where your result sits among everyone who has tried.</p></li>
+      <li><h3>Run the code, then write some</h3>
+        <p>Every code cell from the notebook is here with the output it actually produced; numbered markers match line-by-line notes underneath. In the early lessons, <strong>Run</strong> runs a cell in your browser (the first run loads Python, which takes a few seconds), and the pencil lets you edit it and run your version. <strong>Exercises</strong> ask you to fill in the blanks; <em>Check</em> tests your code, with hints and a solution when you need them.</p></li>
+      <li><h3>Look up any term, and see how the ideas connect</h3>
+        <p>Words with a <span class="term demo">dotted underline</span> have a definition: hover, or tap on a phone. The <a href="glossary.html">glossary</a> lists them all, and the <a href="concepts.html">concept map</a> shows what each idea builds on and what it leads to.</p></li>
+    </ol>
+  </section>
 
-  <h2 class="guide-h">Track and share</h2>
-  <div class="guide-steps">
-    <div class="guide-step">
-      <span class="guide-n">8</span>
-      <div><h3>Master each lesson, pass each module</h3>
-      <p>A lesson is <strong>mastered</strong> when you have read it through, answered most of its checkpoints and got at least 70% right, and finished its quiz with the same score. The panel at the end of each lesson shows what is left; mastered lessons get a gold dot in the sidebar. Each module ends with a <strong>module challenge</strong>: harder questions that mix ideas from several lessons. {% if features.certificate %}Pass all of them to earn the <a href="certificate.html"><svg class="ic"><use href="#i-award"/></svg> certificate</a>{% if services.api %}, which carries a link anyone can use to check it is genuine{% endif %}.{% else %}Pass it to earn that module's badge; <a href="progress.html">My progress</a> shows the badges you have.{% endif %}</p></div>
-    </div>
-    <div class="guide-step">
-      <span class="guide-n">9</span>
-      <div><h3>Keep a streak going</h3>
-      <p><a href="progress.html">My progress</a> shows your streak, a weekly goal you set yourself, a calendar of the days you studied, a map of your skills with the weakest ones first, the badges you have earned and your best lab challenge results.</p></div>
-    </div>
-    {% if services.api %}
-    <div class="guide-step">
-      <span class="guide-n">10</span>
-      <div><h3>Carry your progress to another device</h3>
-      <p>On <a href="progress.html#sync"><svg class="ic"><use href="#i-sync"/></svg> My progress</a>, turn on sync to get a private code. Enter it (or open the link it gives you) on your phone or another computer and your answers, notes, streak and badges follow you. There is no account and no email: whoever has the code has the progress, so keep it to yourself. The tutor key, if you entered one, never leaves the browser it was typed into.</p></div>
-    </div>
-    {% endif %}
-    <div class="guide-step">
-      <span class="guide-n">{% if services.api %}11{% else %}10{% endif %}</span>
-      <div><h3>Ask, discuss, and run it for real</h3>
-      <p>The <strong>Ask the tutor</strong> button answers questions about the lesson you are on.{% if discussions %} Under every lesson there is a <strong><svg class="ic"><use href="#i-message"/></svg> discussion</strong> (a GitHub account is needed to post) for questions other learners may share.{% endif %} Every lesson also has a <strong>Download notebook</strong> button: open it in Jupyter, VS Code or Google Colab, run it, change it. Reading builds understanding; running the code is where it sticks.</p></div>
-    </div>
-  </div>
+  <section class="g-part" aria-labelledby="g-practise">
+    <h2 id="g-practise"><span class="mono-label">Practise</span></h2>
+    <ol class="g-steps" start="5" style="counter-reset: step 4">
+      <li><h3>Answer the checkpoint at the end of each section</h3>
+        <p>A <strong>checkpoint</strong> closes every section: a few quick questions with an explanation for each answer. Some ask you to <strong>explain an idea in your own words</strong>; the tutor reads your answer and tells you what is solid and what is missing. In read mode the next section waits until you have answered, and <em>Skip for now</em> is always there.</p></li>
+      <li><h3>Think before you look</h3>
+        <p>Question cards in the text ask you to check your understanding, pause and think, or try it yourself. Press <em>Write my answer</em> to jot down your thinking (kept on this device), then <em>Show explanation</em> to compare. The quiz at the end of the lesson draws the threads together.</p></li>
+      <li><h3>Come back for a daily review</h3>
+        <p>Every question you answer joins your <a href="review.html">daily review</a>, which opens straight on the first question due. A miss comes back tomorrow; a right answer comes back after longer and longer gaps: a few days, a week, two weeks, a month, then three months. The number beside <strong>Review</strong> in the top bar (or the tab bar on a phone) shows how many are due.</p></li>
+    </ol>
+  </section>
 
-  <div class="guide-keys">
-    <h3>Keyboard shortcuts</h3>
-    <ul>
-      <li><kbd>⌘</kbd> <kbd>K</kbd> or <kbd>/</kbd>: search</li>
-      <li><kbd>Alt</kbd> + <kbd>←</kbd> <kbd>→</kbd>: previous or next lesson (in focus mode: previous or next section)</li>
-      <li><kbd>Shift</kbd> + <kbd>Enter</kbd> in a code editor: run the cell</li>
-      <li><kbd>Esc</kbd>: close search, images and pop-ups</li>
-    </ul>
-    <p class="muted">The labs work with the keyboard too: <kbd>Tab</kbd> to a control, then use the arrow keys to change it.</p>
-  </div>
+  <section class="g-part" aria-labelledby="g-track">
+    <h2 id="g-track"><span class="mono-label">Track{% if services.api %} and carry{% endif %}</span></h2>
+    <ol class="g-steps" start="8" style="counter-reset: step 7">
+      <li><h3>Master each lesson, pass each module</h3>
+        <p>A lesson is <strong>mastered</strong> when you have read it through, answered most of its checkpoints with at least 70% right, and finished its quiz with the same score. The panel at the end of each lesson shows what is left. Each module page ends with a <strong>module challenge</strong>, one question at a time, that mixes ideas from several lessons. {% if features.certificate %}Pass all of them to earn the <a href="certificate.html">certificate</a>{% if services.api %}, which carries a link anyone can use to check it is genuine{% endif %}.{% else %}Pass it to earn that module's badge.{% endif %}</p></li>
+      <li><h3>Keep a training log</h3>
+        <p><a href="progress.html">My progress</a> is your training log: how many lessons you have mastered, a weekly goal you set yourself, the days you studied, a skills map of every lesson coloured by strength, your badges and your best lab challenge results. It also says what to do next.</p></li>
+      {% if services.api %}
+      <li><h3>Carry your progress to another device</h3>
+        <p>At the foot of <a href="progress.html#sync">My progress</a>, turn on sync to get a private code. Enter it (or open the link it gives you) on your phone or another computer and your answers, notes, streak and badges follow you. There is no account and no email: whoever has the code has the progress, so keep it to yourself. The tutor key, if you entered one, never leaves the browser it was typed into.</p></li>
+      {% endif %}
+      <li><h3>Ask, discuss, and run it for real</h3>
+        <p><strong>Ask the tutor</strong> in the top bar answers questions about the lesson you are on.{% if discussions %} Under every lesson there is a <strong>discussion</strong> (a GitHub account is needed to post) for questions other learners may share.{% endif %} Every lesson can be downloaded as a notebook from its spine: open it in Jupyter, VS Code or Google Colab, run it, change it. Reading builds understanding; running the code is where it sticks.</p></li>
+    </ol>
+  </section>
+
+  <section class="g-keys" aria-labelledby="g-keys-h">
+    <h2 id="g-keys-h">Keyboard shortcuts</h2>
+    <dl>
+      <div><dt><kbd>⌘</kbd> <kbd>K</kbd> or <kbd>/</kbd></dt><dd>Search lessons, sections and terms</dd></div>
+      <div><dt><kbd>F</kbd></dt><dd>Read mode on a lesson; <kbd>Esc</kbd> leaves it</dd></div>
+      <div><dt><kbd>Alt</kbd> <kbd>←</kbd> <kbd>→</kbd></dt><dd>Previous or next lesson; in read mode, previous or next section</dd></div>
+      <div><dt><kbd>A</kbd>–<kbd>D</kbd> or <kbd>1</kbd>–<kbd>4</kbd></dt><dd>Answer in the daily review; <kbd>↵</kbd> for the next question, <kbd>Esc</kbd> to stop</dd></div>
+      <div><dt><kbd>Shift</kbd> <kbd>↵</kbd></dt><dd>Run the cell you are editing</dd></div>
+      <div><dt><kbd>Esc</kbd></dt><dd>Close search, images and pop-ups</dd></div>
+    </dl>
+    <p>The labs work with the keyboard too: <kbd>Tab</kbd> to a control, then use the arrow keys to change it.</p>
+  </section>
 </div>
 {% endblock %}

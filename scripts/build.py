@@ -253,7 +253,7 @@ class Builder:
         # glossary page again now that usage is known
         self._page("glossary.html", "glossary.html", root="", page="glossary",
                    entries=sorted(self.glossary.entries, key=lambda e: e["term"].lower()),
-                   used_in=self.glossary.used_in, **common)
+                   used_in=self.glossary.used_in, homes=self.concept_home, **common)
         for e in self.glossary.entries:
             search_docs.append({"l": "Glossary", "lt": "Glossary", "s": e["term"], "u": f"glossary.html#{e['key']}",
                                 "x": e["def_text"]})
@@ -376,6 +376,7 @@ class Builder:
                           "module": int(home.split(".")[0]) if home else None,
                           "builds_on": [by_term[d]["key"] for d in (info.get("builds_on") or []) if d in by_term],
                           "later": [{"module": int(k), "title": titles.get(int(k), f"Module {k}"), "why": v} for k, v in (info.get("later") or {}).items()]})
+        self.concept_home = {n["key"]: n["home"] for n in nodes}   # the glossary page says where each term is taught
         mod_of = {n["key"]: n["module"] for n in nodes}
         for n in nodes:
             for d in n["builds_on"]:

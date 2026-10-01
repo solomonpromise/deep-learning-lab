@@ -142,18 +142,26 @@
     var el = $('[data-pg-sync]');
     if (!el) return;
     var link = (location.origin + location.pathname).replace(/[^/]*$/, '') + 'progress.html#sync=' + code;
-    el.innerHTML = '<h2>' + icon('sync') + ' Sync across devices</h2>' +
-      (code ? '<div class="sy-card on"><p><strong>Sync is on.</strong> This browser saves your answers, reading progress and notes under your private code' +
+    el.classList.toggle('is-on', !!code);
+    el.innerHTML = '<svg class="ic log-sync-ic"><use href="#i-sync"/></svg>' +
+      '<div class="sy-body"><h2>Sync and privacy</h2>' +
+      (code ? '<p><strong>Sync is on.</strong> This browser saves your answers, reading progress and notes under your private code' +
           (lastSync ? ' (last synced ' + new Date(lastSync).toLocaleString() + ')' : '') + '.</p>' +
           '<div class="sy-code" aria-label="Your sync code">' + esc(fmtCode(code)) + '</div>' +
-          '<div class="sy-actions"><button class="btn btn-sm" data-sy-copy-link>' + icon('link') + ' Copy link for another device</button><button class="chip-btn" data-sy-copy>' + icon('copy') + ' Copy code</button>' +
-          '<button class="chip-btn" data-sy-now>' + icon('refresh') + ' Sync now</button><button class="chip-btn" data-sy-off>Turn off on this browser</button></div>' +
-          '<p class="muted sy-small">Keep the code private: anyone who has it can see and change this progress. To stop syncing everywhere, turn it off on each device.</p></div>'
-        : '<div class="sy-card"><p>Your progress lives in this browser. Turn on sync to keep it under a private code that you can use on your phone, another computer, or after clearing this browser. No account, no email.</p>' +
-          '<div class="sy-actions"><button class="btn btn-sm" data-sy-on>' + icon('sync') + ' Turn on sync</button></div>' +
-          '<div class="sy-connect"><label for="sy-code-in">Already have a code from another device?</label><input id="sy-code-in" data-sy-in placeholder="XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="chip-btn" data-sy-connect>Connect</button></div></div>') +
+          '<p class="sy-small">Keep the code private: anyone who has it can see and change this progress. To stop syncing everywhere, turn it off on each device.</p>'
+        : '<p>Your progress lives in this browser. Turn on sync to carry it to another device under a private code: no account, no email.</p>' +
+          '<div class="sy-connect" data-sy-connect-row hidden><label for="sy-code-in">Your code from another device</label><input id="sy-code-in" data-sy-in placeholder="XXXX-XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false"><button class="btn btn-sm btn-ghost" type="button" data-sy-connect>Connect</button></div>') +
       (note ? '<p class="sy-note" role="status">' + esc(note) + '</p>' : '') +
-      '<label class="sy-stats"><input type="checkbox" data-sy-stats' + (statsOn ? ' checked' : '') + '> Share anonymous answer counts to help improve the course. Only a question id and right or wrong are sent: no name, code or device id.</label>';
+      '<label class="sy-stats"><input type="checkbox" data-sy-stats' + (statsOn ? ' checked' : '') + '> Share anonymous answer counts to help improve the course. Only a question id and right or wrong are sent: no name, code or device id.</label></div>' +
+      '<div class="sy-actions">' + (code
+        ? '<button class="btn btn-sm" type="button" data-sy-copy-link>' + icon('link') + ' Copy link for another device</button><button class="btn btn-sm btn-ghost" type="button" data-sy-copy>' + icon('copy') + ' Copy code</button>' +
+          '<button class="btn btn-sm btn-ghost" type="button" data-sy-now>' + icon('refresh') + ' Sync now</button><button class="btn btn-sm btn-quiet" type="button" data-sy-off>Turn off here</button>'
+        : '<button class="btn btn-sm btn-ghost" type="button" data-sy-have aria-expanded="false">I have a code</button><button class="btn btn-sm" type="button" data-sy-on>Turn on sync</button>') + '</div>';
+    var have = $('[data-sy-have]', el); if (have) have.addEventListener('click', function () {
+      var row = $('[data-sy-connect-row]', el), open = row.hidden;
+      row.hidden = !open; have.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) $('[data-sy-in]', el).focus();
+    });
     var on = $('[data-sy-on]', el); if (on) on.addEventListener('click', turnOn);
     var cn = $('[data-sy-connect]', el); if (cn) cn.addEventListener('click', function () { connect($('[data-sy-in]', el).value); });
     var cp = $('[data-sy-copy]', el); if (cp) cp.addEventListener('click', function () { navigator.clipboard && navigator.clipboard.writeText(fmtCode(code)); cp.innerHTML = icon('check') + ' Copied'; });

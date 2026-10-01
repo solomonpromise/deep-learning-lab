@@ -41,19 +41,20 @@
   }
   function moduleState(m) {
     var lessons = m.lessons.map(lessonState), ch = m.challenge ? R.challengeOf(m.challenge.id) : null;
-    return { number: m.number, title: m.title, color: m.color, url: m.url, available: m.available, lessons: lessons,
+    return { number: m.number, title: m.title, short: m.short || m.title, color: m.color, url: m.url, available: m.available, lessons: lessons,
              mastered: lessons.filter(function (l) { return l.status === 'mastered'; }).length,
              challenge: m.challenge ? { id: m.challenge.id, title: m.challenge.title, n: m.challenge.n, pass: m.challenge.pass_mark, best: ch ? ch.best : null, passed: !!(ch && ch.passed), t: ch ? ch.t : null } : null };
   }
   function all(cb) { loadCourse(function (c) { cb(c.modules.filter(function (m) { return m.available; }).map(moduleState)); }); }
-  window.DLP.mastery = { all: all, label: STATUS_LABEL, loadCourse: loadCourse };
+  window.DLP.mastery = { all: all, label: STATUS_LABEL, loadCourse: loadCourse, resumeAt: resumeAt };
 
   /* ------------------------------------------------------------ sidebar: mastered lessons get a filled mark */
   function paintSidebar(mods) {
     mods.forEach(function (m) {
       m.lessons.forEach(function (l) {
         $$('[data-progress-dot="' + l.id + '"]').forEach(function (d) { d.classList.toggle('is-mastered', l.status === 'mastered'); d.title = STATUS_LABEL[l.status]; });
-        $$('[data-lesson-status="' + l.id + '"]').forEach(function (d) { d.classList.toggle('is-mastered', l.status === 'mastered'); d.setAttribute('title', STATUS_LABEL[l.status]); });
+        // a status dot anywhere (glossary terms): class st-none | st-started | st-practised | st-mastered
+        $$('[data-st-lesson="' + l.id + '"]').forEach(function (d) { d.className = d.className.replace(/\s*\bst-\w+/g, '') + ' st-' + l.status; d.title = 'Lesson ' + l.id + ': ' + STATUS_LABEL[l.status].toLowerCase(); });
       });
     });
   }
@@ -95,12 +96,12 @@
 
   /* ------------------------------------------------------------ module page: progress panel and each lesson's state */
   var modPage = $('[data-module-page]');
-  function resumeAt(lid) {   // the first section of a started lesson not yet read, as { id, label }
+  function resumeAt(lid) {   // the first section of a started lesson not yet read, as { id, label, title }
     var C = window.DLP_COURSE, l = null;
     (C ? C.modules : []).forEach(function (m) { m.lessons.forEach(function (x) { if (x.id === lid) l = x; }); });
     var read = ((store.get('progress', {})[lid]) || {}).read || [];
     if (!l || !l.secs || !read.length) return null;
-    for (var i = 0; i < l.secs.length; i++) if (read.indexOf(l.secs[i][0]) < 0) return { id: l.secs[i][0], label: l.secs[i][1] != null ? '§' + l.secs[i][1] : l.secs[i][2] };
+    for (var i = 0; i < l.secs.length; i++) if (read.indexOf(l.secs[i][0]) < 0) return { id: l.secs[i][0], label: l.secs[i][1] != null ? '§' + l.secs[i][1] : l.secs[i][2], title: l.secs[i][2] };
     return null;
   }
   function paintModule(mods) {
