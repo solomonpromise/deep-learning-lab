@@ -1,31 +1,45 @@
 {% extends "base.html" %}
 {% block title %}Glossary — {{ course.short_title }}{% endblock %}
+{% block description %}Every technical term in {{ course.title }}, in plain English, with where it is taught and where it is used.{% endblock %}
+{% block sidebar %}{% endblock %}
 {% block main %}
-<div class="plain-page">
-  <header class="plain-hero">
-    <span class="eyebrow"><svg class="ic"><use href="#i-book"/></svg> Reference</span>
-    <h1>Glossary</h1>
-    <p class="lead">Every technical term used in the lessons, in plain English. Inside a lesson, hover or tap any <span class="term demo">underlined term</span> to see its definition without leaving the page.</p>
-    <input class="gloss-filter" type="search" placeholder="Filter terms…" data-gloss-filter>
-    <nav class="alpha" aria-label="Jump to letter">
-      {% for letter in entries|map(attribute='term')|map('first')|map('upper')|unique %}<a href="#letter-{{ letter }}">{{ letter }}</a>{% endfor %}
-    </nav>
-  </header>
-  <dl class="gloss-list">
-    {% set ns = namespace(letter='') %}
-    {% for e in entries %}
-    {% set L = e.term[0]|upper %}
-    {% if L != ns.letter %}{% set ns.letter = L %}<div class="gloss-letter" id="letter-{{ L }}">{{ L }}</div>{% endif %}
-    <div class="gloss-item" id="{{ e.key }}" data-gloss-item="{{ e.term|lower }} {{ e.def_text|lower }}">
-      <dt>{{ e.term }}</dt>
-      <dd>{{ e.def_html | safe }}
-        {% if used_in is defined and used_in.get(e.key) %}
-        <div class="gloss-used">Used in: {% for label, url in used_in[e.key][:6] %}<a href="{{ url }}">{{ label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</div>
-        {% endif %}
-        <a class="gloss-map" href="concepts.html#c={{ e.key }}"><svg class="ic"><use href="#i-map"/></svg> What it builds on, and what builds on it</a>
-      </dd>
-    </div>
+{% set letters = entries|map(attribute='term')|map('first')|map('upper')|unique|list %}
+{% set homes = homes if homes is defined else {} %}
+<div class="gl">
+  <nav class="gl-rail" aria-label="Jump to letter" data-gloss-rail>
+    {% for L in letters %}<a href="#letter-{{ L }}">{{ L }}</a>{% endfor %}
+  </nav>
+  <div class="gl-main">
+    <header class="gl-head">
+      <div>
+        <span class="mono-label gl-k">Reference · {{ entries|length }} terms</span>
+        <h1>Glossary</h1>
+        <p class="lead">Every technical term in the lessons, in plain English. Inside a lesson, hover or tap a <span class="term demo">dotted term</span> to see its definition without leaving the page.</p>
+      </div>
+      <label class="gl-filter"><svg class="ic"><use href="#i-search"/></svg><span class="sr-only">Filter terms</span>
+        <input type="search" placeholder="Filter terms, e.g. gradient" data-gloss-filter autocomplete="off"></label>
+    </header>
+    <p class="gl-none" data-gloss-none hidden>No term matches that. Try part of a word, or <a href="concepts.html">browse the concept map</a>.</p>
+    {% for L in letters %}
+    <section class="gl-group" id="letter-{{ L }}" data-gloss-group>
+      <span class="gl-letter" aria-hidden="true">{{ L }}</span>
+      <dl class="gl-list">
+        {% for e in entries if e.term[0]|upper == L %}
+        {% set home = homes.get(e.key) %}
+        <div class="gl-item" id="{{ e.key }}" data-gloss-item="{{ e.term|lower }} {{ e.def_text|lower }}">
+          <dt>{% if home %}<i class="cn-dot st-none" data-st-lesson="{{ home }}"></i>{% else %}<i class="cn-dot gl-nodot" title="Not in the published lessons yet"></i>{% endif %}{{ e.term }}</dt>
+          <dd class="gl-def">{{ e.def_html | safe }}</dd>
+          <dd class="gl-meta">
+            {% set used = used_in.get(e.key, []) if used_in is defined else [] %}
+            {% if home %}<span>Taught in {{ home }}{% if used %} · used in{% endif %}</span>{% elif used %}<span>Used in</span>{% endif %}
+            {% if used %}<span class="gl-used">{% for label, url in used[:8] %}<a href="{{ url }}">{{ label|replace('Lesson ', '') }}</a>{% if not loop.last %} · {% endif %}{% endfor %}{% if used|length > 8 %} · …{% endif %}</span>{% endif %}
+            <a class="gl-map" href="concepts.html#c={{ e.key }}"><svg class="ic"><use href="#i-map"/></svg>On the map</a>
+          </dd>
+        </div>
+        {% endfor %}
+      </dl>
+    </section>
     {% endfor %}
-  </dl>
+  </div>
 </div>
 {% endblock %}

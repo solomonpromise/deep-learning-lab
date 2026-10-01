@@ -13,8 +13,8 @@ This is everything needed to continue the redesign in a local Claude Code sessio
 | 4 | Home: today band, "Your network", module rows, first visit, phone tab bar | Done (see notes under Phase 4) |
 | 5 | Module page and one-question-at-a-time module challenge | Done (see notes under Phase 5) |
 | 6 | Daily review opens on the first question | Done (see notes under Phase 6) |
-| 7 | Training log (progress), concept map, glossary, guide, 404 | **Next** |
-| 8 | Final QA and CSS clean-up | To do |
+| 7 | Training log (progress), concept map, glossary, guide, 404 | Done (see notes under Phase 7) |
+| 8 | Final QA and CSS clean-up | **Next** |
 
 Approved by the owner on 30 September 2026. Decisions already made (don't reopen them):
 - Colour means progress only. Per-module colours are retired; modules are identified by their number.
@@ -88,6 +88,7 @@ into `static/css/activation.css` as each page is rebuilt; don't link it from the
 3. Build the page to match its mockup board. Reuse the existing JS hooks.
 4. Check it: `node scripts/dev/screenshots.mjs <pages>` writes full-page screenshots to `.shots/` at 1440 and 1280
    (desktop, laptop), 390 (phone) and 1440 dark, with a sample learner, and reports sideways scroll and JS errors.
+   `CHANNEL=chrome` drives the installed Google Chrome, so `npm install --no-save playwright` is all it needs.
    Look at every screenshot. Also click through the features the page carries (list per phase below).
 5. Commit with a message that says what changed for the learner; open a PR with a Testing section.
 
@@ -239,7 +240,33 @@ question as a prompt, keys A–D and 1–4, Enter for next, Esc to stop. After e
 ("Missed, so it comes back tomorrow", "Right: back in 7 days", from `record.reviewOf(qid)`), with a link to reread the
 section. Side panel: due count, due by lesson, how spacing works. Practise-a-lesson stays below.
 
-## Phase 7: progress, concept map, glossary, guide, 404
+## Phase 7: progress, concept map, glossary, guide, 404 (done)
+
+What was built (one CSS block per page at the end of `activation.css`; the old `pg-`, `sk-`, `sy-card`, `cm-`,
+`gloss-`, `alpha` and `guide-` rules are gone from `site.css` and `learn.css`). None of these pages has the course
+sidebar any more.
+- **Training log** (`progress.html`, `progress-page.js`): headline numbers (`[data-pg-nums]`; questions are answer ids
+  starting `c:`, `q:` or `m:`), this week and goal (`[data-goal]`), "Do next" (uses `DLP.mastery.resumeAt`, which now
+  also returns the section title), 26 weeks of study days (a CSS grid placed cell by cell), the skills map (tile colour
+  by strength: `s1` under 45%, `s2`, `s3` from 70%, `s4` from 85%; not started is `s0`), badges as numerals, lab
+  challenges in lessons you have reached. The lesson-by-lesson table is gone (each tile's title has those numbers).
+  The certificate section still renders only when `features.certificate` is on.
+- **Sync and privacy**: `sync.js` draws the card into `[data-pg-sync]` ("I have a code" opens the connect row,
+  `[data-sy-have]`); the template has a static fallback when no API is configured.
+- **Concept map** (`concepts.js`): a dark panel in both themes; `concepts.js` positions every node (`.cn`) and draws
+  the links in one SVG, re-laid out when the map's width changes. Below 640px of map width it is a list per module.
+  "Selected" fades unrelated concepts; "All links" (`[data-cm-links]`) shows every link. Direct links only (the old
+  transitive highlight is gone).
+- **Glossary**: rows grouped by letter (`[data-gloss-group]`), a sticky A–Z rail (`[data-gloss-rail]`, marked in
+  `app.js`), "Taught in" from the concept map's home lesson (`build.py` passes `homes`). A new hook paints status
+  dots anywhere: `data-st-lesson="1.2"` gets `st-none|started|practised|mastered` from `progress.js`. The unused
+  `data-lesson-status` code in `app.js` and `progress.js` is gone.
+- **Guide**: rewritten for the spine, read mode, top bar and the new review; "What things look like" shows a real
+  question card, terminal, bench and the activation scale.
+- **404**: outlined numeral, "Course home" and "Search the course".
+- `.seg` (segmented control) and `.cn-dot` (status dot) are shared components now.
+
+Original spec:
 
 Boards: `Progress`, `Concepts`, `Glossary`. Files: the matching templates, `progress-page.js`, `concepts.js`.
 - Training log: headline numbers (mastered, right first time, questions), this week and goal, "Do next", study days

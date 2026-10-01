@@ -1,117 +1,162 @@
-/* The "My progress" page: streak and weekly goal, a 16-week activity calendar, the skills map,
-   module badges, lesson-by-lesson mastery and the certificate. All computed in this browser from the
-   learning record (record.js) and the mastery model (progress.js). */
+/* The "My progress" page, a training log: headline numbers, this week and the weekly goal, what to do next,
+   26 weeks of study days, the skills map (one tile per lesson, coloured by strength on the activation scale),
+   module badges and lab challenges. All computed in this browser from the learning record (record.js) and the
+   mastery model (progress.js). The sync panel at the foot is drawn by sync.js. */
 (function () {
   'use strict';
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var page = $('[data-progress-page]');
   if (!page) return;
   var R = window.DLP.record, M = window.DLP.mastery, store = window.DLP.store, ROOT = document.body.getAttribute('data-root') || '';
+  var DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function icon(n) { return '<svg class="ic"><use href="#i-' + n + '"/></svg>'; }
+  function plural(n, one, many) { return n + ' ' + (n === 1 ? one : (many || one + 's')); }
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  // the activation scale, by how much of a lesson you have shown you can do
+  function band(l) { return l.status === 'none' ? 0 : l.strength >= 0.85 ? 4 : l.strength >= 0.7 ? 3 : l.strength >= 0.45 ? 2 : 1; }
 
-  function paintStreak() {
-    var s = R.streak();
-    $('[data-pg-streak]').innerHTML = '<div class="pg-big">' + icon('fire') + '<strong>' + s.current + '</strong></div><div class="pg-cap">day streak' + (s.today ? '' : s.current ? ': study today to keep it' : '') + '</div><div class="pg-sub">Best: ' + s.best + ' day' + (s.best === 1 ? '' : 's') + '</div>';
+  /* ---------------------------------------------------------- headline numbers */
+  function paintNums(mods) {
+    var lessons = 0, mastered = 0, answers = R.get().answers, asked = 0, first = 0;
+    mods.forEach(function (m) { lessons += m.lessons.length; mastered += m.mastered; });
+    Object.keys(answers).forEach(function (k) {   // checkpoint, quiz and module challenge questions; code exercises are not questions
+      if (!/^[cqm]:/.test(k)) return;
+      asked++; if (answers[k].first) first++;
+    });
+    var dd = page.querySelectorAll('[data-pg-nums] dd');
+    dd[0].innerHTML = '<strong>' + mastered + '</strong><span> / ' + lessons + '</span>';
+    dd[1].innerHTML = '<strong>' + (asked ? Math.round(100 * first / asked) + '%' : '–') + '</strong>';
+    dd[2].innerHTML = '<strong>' + asked + '</strong>';
   }
-  function paintGoal() {
-    var w = R.week(), pct = Math.min(1, w.active / w.goal), C = 2 * Math.PI * 34;
-    var days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    $('[data-pg-goal]').innerHTML =
-      '<div class="pg-ring"><svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="34" class="ring-bg"/><circle cx="40" cy="40" r="34" class="ring-fg" stroke-dasharray="' + (C * pct) + ' ' + C + '" transform="rotate(-90 40 40)"/></svg><span>' + w.active + '/' + w.goal + '</span></div>' +
-      '<div><div class="pg-cap">study days this week</div><div class="pg-days">' + w.days.map(function (d, i) { return '<i class="' + (d.n ? 'on' : d.future ? 'future' : '') + '" title="' + d.day + '">' + days[i] + '</i>'; }).join('') + '</div>' +
-      '<label class="pg-goal-set">Weekly goal <select data-goal>' + [1, 2, 3, 4, 5, 6, 7].map(function (n) { return '<option value="' + n + '"' + (n === w.goal ? ' selected' : '') + '>' + n + ' day' + (n > 1 ? 's' : '') + '</option>'; }).join('') + '</select></label></div>';
-    $('[data-goal]').addEventListener('change', function (e) { R.setGoal(+e.target.value); paintGoal(); });
+
+  /* ---------------------------------------------------------- this week, and the goal */
+  function paintWeek() {
+    var st = R.streak(), wk = R.week();
+    $('[data-pg-week]').innerHTML =
+      '<div class="log-week-main"><span class="mono-label">This week</span>' +
+        '<div class="log-streak">' + icon('fire') + '<strong>' + (st.current ? st.current + '-day streak' : 'No streak yet') + '</strong></div>' +
+        '<ol class="t-days">' + wk.days.map(function (d, i) {
+          var lv = d.n >= 6 ? 3 : d.n >= 3 ? 2 : d.n ? 1 : 0;
+          return '<li class="lv-' + lv + (d.future ? ' is-future' : '') + '" title="' + d.day + (d.n ? ' · ' + plural(d.n, 'thing') + ' done' : '') + '"><i></i><span>' + DAYS[i] + '</span></li>';
+        }).join('') + '</ol></div>' +
+      '<div class="log-goal"><label for="log-goal">Weekly goal</label>' +
+        '<select id="log-goal" data-goal>' + [1, 2, 3, 4, 5, 6, 7].map(function (n) {
+          return '<option value="' + n + '"' + (n === wk.goal ? ' selected' : '') + '>' + plural(n, 'day') + ' a week</option>';
+        }).join('') + '</select>' +
+        '<span class="log-goal-note">' + wk.active + ' done · best streak ' + plural(st.best, 'day') + '</span></div>';
+    $('[data-goal]').addEventListener('change', function (e) { R.setGoal(+e.target.value); paintWeek(); });
   }
+
+  /* ---------------------------------------------------------- do next */
   function paintNext(mods) {
-    var due = R.due().length, last = store.get('last', null), weakest = null;
+    var due = R.due().length, last = store.get('last', null), weakest = null, items = [];
     mods.forEach(function (m) { m.lessons.forEach(function (l) { if (l.status !== 'none' && l.status !== 'mastered' && (!weakest || l.strength < weakest.strength)) weakest = l; }); });
-    var items = [];
-    if (due) items.push('<a class="pg-todo" href="' + ROOT + 'review.html#start">' + icon('cards') + '<span><strong>' + due + ' question' + (due === 1 ? '' : 's') + ' due</strong> in your daily review</span></a>');
-    if (last && last.url) items.push('<a class="pg-todo" href="' + ROOT + last.url + '">' + icon('play') + '<span><strong>Continue Lesson ' + esc(last.id) + '</strong> where you left off</span></a>');
-    if (weakest) items.push('<a class="pg-todo" href="' + ROOT + weakest.url + '">' + icon('target') + '<span><strong>Strengthen ' + esc(weakest.skill) + '</strong> (Lesson ' + weakest.id + ', ' + M.label[weakest.status].toLowerCase() + ')</span></a>');
-    if (!items.length) items.push('<a class="pg-todo" href="' + ROOT + 'module-1/lesson-1-1.html">' + icon('play') + '<span><strong>Start with Lesson 1.1</strong></span></a>');
-    $('[data-pg-next]').innerHTML = '<div class="pg-cap">Next up</div>' + items.join('');
-  }
-  function paintHeat() {
-    var days = R.days(), el = $('[data-pg-heat]'), today = new Date(), cells = [], total = 0, active = 0;
-    var start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - ((today.getDay() + 6) % 7) - 7 * 15);
-    for (var w = 0; w < 16; w++) {
-      var col = '<div class="hc">';
-      for (var d = 0; d < 7; d++) {
-        var date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + w * 7 + d), key = R.dayKey(date), n = days[key] || 0;
-        var lvl = date > today ? 'f' : n === 0 ? 0 : n < 5 ? 1 : n < 15 ? 2 : n < 40 ? 3 : 4;
-        if (n) { active++; total += n; }
-        col += '<i class="l' + lvl + '" title="' + key + (n ? ': ' + n + ' activit' + (n === 1 ? 'y' : 'ies') : '') + '"></i>';
-      }
-      cells.push(col + '</div>');
+    function row(href, ic, html) { return '<a class="log-do" href="' + href + '">' + icon(ic) + '<span>' + html + '</span>' + icon('chevron-right') + '</a>'; }
+    if (due) items.push(row(ROOT + 'review.html', 'cards', '<strong>' + plural(due, 'question') + ' due</strong> in your daily review'));
+    if (last && last.url) {
+      var at = M.resumeAt(last.id);
+      items.push(row(ROOT + esc(last.url) + (at ? '#' + at.id : ''), 'play', '<strong>Continue Lesson ' + esc(last.id) + '</strong>' +
+        (at ? ' at ' + esc(at.label) + (at.label !== at.title ? ', ' + esc(at.title) : '') : ' where you left off')));
     }
-    el.innerHTML = cells.join('');
-    el.setAttribute('aria-label', active + ' active days in the last 16 weeks');
+    if (weakest) items.push(row(ROOT + 'review.html#practice=' + weakest.id, 'target', '<strong>Strengthen ' + esc(weakest.skill) + '</strong>, your weakest skill so far (' + Math.round(weakest.strength * 100) + '%)'));
+    if (!items.length) {
+      var first = mods[0] && mods[0].lessons[0];
+      if (first) items.push(row(ROOT + first.url, 'play', '<strong>Start Lesson ' + first.id + '</strong>, ' + esc(first.title)));
+    }
+    $('[data-pg-next]').innerHTML = items.join('');
   }
+
+  /* ---------------------------------------------------------- study days: 26 weeks, Monday first */
+  function paintHeat() {
+    var WEEKS = 26, days = R.days(), el = $('[data-pg-heat]'), today = new Date(), todayKey = R.dayKey(), active = 0, cells = [];
+    var start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - ((today.getDay() + 6) % 7) - 7 * (WEEKS - 1)), lastMonth = -1;
+    ['Mon', '', 'Wed', '', 'Fri', '', 'Sun'].forEach(function (d, i) { if (d) cells.push('<span class="lh-d" style="grid-area:' + (i + 2) + '/1">' + d + '</span>'); });
+    for (var w = 0; w < WEEKS; w++) {
+      var monday = new Date(start.getFullYear(), start.getMonth(), start.getDate() + w * 7);
+      if (monday.getMonth() !== lastMonth) {
+        lastMonth = monday.getMonth();
+        if (w < WEEKS - 2) cells.push('<span class="lh-m" style="grid-area:1/' + (w + 2) + '">' + monday.toLocaleDateString(undefined, { month: 'short' }) + '</span>');
+      }
+      for (var d = 0; d < 7; d++) {
+        var date = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + d), key = R.dayKey(date), n = days[key] || 0;
+        if (key > todayKey) continue;
+        if (n) active++;
+        var lv = !n ? '' : n < 3 ? 'h1' : n < 5 ? 'h2' : n < 8 ? 'h3' : 'h4';
+        cells.push('<i class="' + lv + '" style="grid-area:' + (d + 2) + '/' + (w + 2) + '" title="' + date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + (n ? ': ' + plural(n, 'thing') + ' done' : '') + '"></i>');
+      }
+    }
+    el.style.setProperty('--weeks', WEEKS);
+    el.innerHTML = cells.join('');
+    el.setAttribute('aria-label', plural(active, 'study day') + ' in the last ' + WEEKS + ' weeks');
+    $('[data-pg-days-note]').textContent = plural(active, 'day') + ' in the last ' + WEEKS + ' weeks';
+  }
+
+  /* ---------------------------------------------------------- skills map: modules down, lessons across */
   function paintSkills(mods) {
-    var box = $('[data-pg-skills]');
-    box.innerHTML = mods.map(function (m) {
-      return '<div class="sk-mod" style="--mc:' + m.color + '"><div class="sk-mod-title">Module ' + m.number + ' · ' + esc(m.title) + '</div><div class="sk-row">' +
+    var cols = Math.max.apply(null, mods.map(function (m) { return m.lessons.length; }));
+    $('[data-pg-skills]').innerHTML = mods.map(function (m) {
+      return '<div class="sk2-row" style="--cols:' + cols + '"><a class="sk2-mod" href="' + ROOT + m.url + '"><strong>' + pad2(m.number) + '</strong><span>' + esc(m.short) + '</span></a>' +
         m.lessons.map(function (l) {
           var pct = Math.round(l.strength * 100);
-          return '<a class="sk-tile s-' + l.status + '" href="' + ROOT + l.url + '" style="--p:' + pct + '%" title="' + esc(l.title) + ': ' + M.label[l.status] + ', ' + pct + '%">' +
-            '<span class="sk-id">' + l.id + '</span><span class="sk-name">' + esc(l.skill) + '</span><span class="sk-meter"><span></span></span><span class="sk-status">' + M.label[l.status] + '</span></a>';
-        }).join('') + '</div></div>';
+          var detail = 'read ' + Math.round(l.read * 100) + '%' + (l.cp.total ? ', checkpoints ' + l.cp.right + ' of ' + l.cp.total + ' right' : '') +
+            (l.quiz.total ? ', quiz ' + l.quiz.right + ' of ' + l.quiz.total : '') + (l.labs.total ? ', labs ' + l.labs.tried + ' of ' + l.labs.total : '');
+          return '<a class="sk2 s' + band(l) + '" href="' + ROOT + l.url + '" title="Lesson ' + l.id + ' · ' + esc(l.title) + ': ' + detail + '">' +
+            '<span class="sk2-top"><span>' + l.id + '</span><span>' + pct + '%</span></span>' +
+            '<span class="sk2-name">' + esc(l.skill) + '</span><span class="sk2-st">' + M.label[l.status] + '</span></a>';
+        }).join('') + '</div>';
     }).join('');
-    var started = [];
-    mods.forEach(function (m) { m.lessons.forEach(function (l) { if (l.status !== 'none' && l.status !== 'mastered') started.push(l); }); });
-    started.sort(function (a, b) { return a.strength - b.strength; });
-    $('[data-pg-weak]').innerHTML = started.length ? '<div class="pg-cap">Weakest skills you have started</div><div class="pg-weak-row">' + started.slice(0, 3).map(function (l) {
-      return '<span class="pg-weak-item"><strong>' + esc(l.skill) + '</strong> ' + Math.round(l.strength * 100) + '% <a href="' + ROOT + 'review.html#practice=' + l.id + '">Practise</a> · <a href="' + ROOT + l.url + '">Open lesson</a></span>';
-    }).join('') + '</div>' : '';
   }
+
+  /* ---------------------------------------------------------- module badges */
   function paintBadges(mods) {
     $('[data-pg-badges]').innerHTML = mods.map(function (m) {
-      var c = m.challenge;
-      return '<a class="pg-badge' + (c && c.passed ? ' earned' : '') + '" style="--mc:' + m.color + '" href="' + ROOT + m.url + '#challenge">' +
-        '<span class="pg-badge-medal">' + icon('award') + '<b>' + m.number + '</b></span><span class="pg-badge-t">' + esc(m.title) + '</span>' +
-        '<span class="pg-badge-s">' + (!c ? 'No challenge yet' : c.passed ? 'Earned · best ' + c.best + '/' + c.n : c.best != null ? 'Best ' + c.best + '/' + c.n + ' · pass ' + Math.ceil(c.pass * c.n) : 'Take the challenge') + '</span>' +
-        '<span class="pg-badge-l">' + m.mastered + ' of ' + m.lessons.length + ' lessons mastered</span></a>';
+      var c = m.challenge, earned = c && c.passed;
+      var note = !c ? 'No challenge yet' : earned ? 'Earned · ' + c.best + ' of ' + c.n
+        : c.best != null ? 'Best ' + c.best + ' of ' + c.n + ' · pass ' + Math.ceil(c.pass * c.n) : 'Take the challenge';
+      return '<a class="log-badge' + (earned ? ' is-earned' : '') + '" href="' + ROOT + m.url + (c ? '#challenge' : '') + '" title="Module ' + m.number + ' · ' + esc(m.title) + '">' +
+        '<span class="log-medal" aria-hidden="true">' + pad2(m.number) + '</span><span class="sr-only">Module ' + m.number + ': </span><span class="log-badge-t">' + note + '</span></a>';
     }).join('');
   }
-  function paintTable(mods) {
-    var rows = '<thead><tr><th>Lesson</th><th>Status</th><th>Read</th><th>Checkpoints</th><th>Quiz</th><th>Labs</th></tr></thead><tbody>';
-    mods.forEach(function (m) {
-      m.lessons.forEach(function (l) {
-        rows += '<tr><td><a href="' + ROOT + l.url + '">' + l.id + ' · ' + esc(l.title) + '</a></td><td><span class="mp-status s-' + l.status + '">' + M.label[l.status] + '</span></td>' +
-          '<td>' + Math.round(l.read * 100) + '%</td><td>' + (l.cp.total ? l.cp.right + '/' + l.cp.total : '—') + '</td><td>' + (l.quiz.total ? l.quiz.right + '/' + l.quiz.total : '—') + '</td><td>' + (l.labs.total ? l.labs.tried + '/' + l.labs.total : '—') + '</td></tr>';
-      });
+
+  /* ---------------------------------------------------------- lab challenges in the lessons you have reached */
+  function paintChallenges(mods) {
+    var status = {};
+    mods.forEach(function (m) { m.lessons.forEach(function (l) { status[l.id] = l.status; }); });
+    M.loadCourse(function (course) {
+      var shown = [], later = 0;
+      course.modules.forEach(function (m) { m.lessons.forEach(function (l) { (l.challenges || []).forEach(function (c) {
+        var r = R.challengeOf(c.id);
+        if (r || (status[l.id] && status[l.id] !== 'none')) shown.push({ c: c, l: l, r: r }); else later++;
+      }); }); });
+      if (!shown.length && !later) { $('[data-pg-challenges]').innerHTML = '<p class="log-empty">No lab challenges yet.</p>'; return; }
+      $('[data-pg-challenges]').innerHTML = shown.map(function (it) {
+        var r = it.r, best = r && r.best != null ? (Number.isInteger(r.best) ? r.best : +r.best.toFixed(3)) : null;
+        return '<div class="log-ch-row' + (r && r.passed ? ' is-passed' : '') + '"><span class="log-ch-t">' + esc(it.c.title) + ' <span>· ' + it.l.id + ' ' + esc(it.c.lab.split(':')[0]) + '</span></span>' +
+          '<span class="log-ch-r">' + (r && r.passed ? icon('check') : '') + (best != null ? best : '–') + '</span>' +
+          '<a href="' + ROOT + it.l.url + '">' + (r ? (r.passed ? 'Improve' : 'Try again') : 'Try it') + '<span class="sr-only">: ' + esc(it.c.title) + '</span></a></div>';
+      }).join('') + (later ? '<div class="log-ch-row is-later">' + (shown.length ? plural(later, 'more', 'more') : plural(later, 'challenge')) + ' in lessons you have not reached</div>' : '');
     });
-    $('[data-pg-table]').innerHTML = rows + '</tbody>';
   }
+
+  /* ---------------------------------------------------------- certificate (only when switched on in course.yaml) */
   function paintCert(mods) {
-    var earned = mods.filter(function (m) { return m.challenge && m.challenge.passed; }), name = store.get('cert:name', '');
     var box = $('[data-pg-cert]');
-    if (!box) return;   // certificate switched off in course.yaml
+    if (!box) return;
+    var earned = mods.filter(function (m) { return m.challenge && m.challenge.passed; }), name = store.get('cert:name', '');
     if (!earned.length) {
-      box.innerHTML = '<p class="muted">Pass a module challenge (on each module\'s overview page) to earn its badge. Your certificate lists every module you have passed, so it grows with you.</p>' +
-        '<div class="pg-cert-locked">' + icon('lock') + ' No modules passed yet: ' + mods.filter(function (m) { return m.challenge; }).map(function (m) { return '<a href="' + ROOT + m.url + '#challenge">Module ' + m.number + '</a>'; }).join(' · ') + '</div>';
+      box.innerHTML = '<p>Pass a module challenge, on each module\'s page, to earn its badge. Your certificate lists every module you have passed, so it grows with you.</p>';
       return;
     }
-    box.innerHTML = '<p class="muted">You have passed ' + earned.length + ' module challenge' + (earned.length === 1 ? '' : 's') + '. Add the name you want on it, then open the certificate to print it, save it as a PDF, download an image, or get a link that anyone can verify.</p>' +
+    box.innerHTML = '<p>You have passed ' + plural(earned.length, 'module challenge') + '. Add the name you want on it, then open the certificate to print it, save it as a PDF, or get a link that anyone can verify.</p>' +
       '<div class="pg-cert-row"><label class="sr-only" for="cert-name">Name on the certificate</label><input id="cert-name" data-cert-name type="text" maxlength="60" placeholder="Your name as it should appear" value="' + esc(name) + '">' +
       '<a class="btn" data-cert-open href="' + ROOT + 'certificate.html">' + icon('trophy') + ' Open my certificate</a></div>';
     $('[data-cert-name]').addEventListener('input', function (e) { store.set('cert:name', e.target.value.trim()); });
   }
-  function paintChallenges() {
-    M.loadCourse(function (course) {
-      var items = [];
-      course.modules.forEach(function (m) { m.lessons.forEach(function (l) { (l.challenges || []).forEach(function (c) { items.push({ c: c, l: l }); }); }); });
-      $('[data-pg-challenges]').innerHTML = items.length ? items.map(function (it) {
-        var r = R.challengeOf(it.c.id), done = r && r.passed;
-        return '<a class="pg-ch' + (done ? ' done' : '') + '" href="' + ROOT + it.l.url + '">' + icon(done ? 'trophy' : 'target') + '<span><strong>' + esc(it.c.title) + '</strong><span class="pg-ch-where">Lesson ' + it.l.id + ' · ' + esc(it.c.lab) + '</span></span>' +
-          '<span class="pg-ch-state">' + (done ? 'Passed' + (r.best != null ? ' · best ' + (Math.round(r.best * 1000) / 1000) : '') : 'Not yet') + '</span></a>';
-      }).join('') : '<p class="muted">No lab challenges yet.</p>';
-    });
-  }
+
   function paintAll(mods) {
-    paintChallenges(); paintStreak(); paintGoal(); paintNext(mods); paintHeat(); paintSkills(mods); paintBadges(mods); paintTable(mods); paintCert(mods); }
+    paintNums(mods); paintWeek(); paintNext(mods); paintHeat(); paintSkills(mods); paintBadges(mods); paintChallenges(mods); paintCert(mods);
+  }
   M.all(paintAll);
   document.addEventListener('dlp:mastery', function (e) { paintAll(e.detail); });
 })();

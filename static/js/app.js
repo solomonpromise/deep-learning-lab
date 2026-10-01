@@ -93,12 +93,6 @@
       d.classList.toggle('is-done', !!s.done);
       d.classList.toggle('is-started', !s.done && (s.pct || 0) > 0.03);
     });
-    $$('[data-lesson-status]').forEach(function (d) {
-      var s = p[d.getAttribute('data-lesson-status')] || {};
-      d.classList.toggle('is-done', !!s.done);
-      d.classList.toggle('is-started', !s.done && (s.pct || 0) > 0.03);
-      if (s.done) d.innerHTML = '<svg class="ic"><use href="#i-check"/></svg>';
-    });
     var cont = $('[data-continue]');
     if (cont) {
       var last = store.get('last', null);
@@ -615,13 +609,24 @@
   if (pop) { pop.addEventListener('mouseenter', function () { clearTimeout(hideTimer); }); pop.addEventListener('mouseleave', hideTerm); }
   window.addEventListener('scroll', function () { if (pop && !pop.hidden) { pop.hidden = true; popFor = null; } }, { passive: true });
 
-  // glossary page filter
+  // glossary page: filter the terms (a letter with no match hides), and mark the letter you are reading in the A–Z rail
   var gf = $('[data-gloss-filter]');
   if (gf) gf.addEventListener('input', function () {
-    var q = gf.value.trim().toLowerCase();
-    $$('[data-gloss-item]').forEach(function (it) { it.hidden = q && it.getAttribute('data-gloss-item').indexOf(q) === -1; });
-    $$('.gloss-letter').forEach(function (l) { l.hidden = !!q; });
+    var q = gf.value.trim().toLowerCase(), any = false;
+    $$('[data-gloss-item]').forEach(function (it) { it.hidden = !!q && it.getAttribute('data-gloss-item').indexOf(q) === -1; });
+    $$('[data-gloss-group]').forEach(function (g) { g.hidden = !$('[data-gloss-item]:not([hidden])', g); any = any || !g.hidden; });
+    var none = $('[data-gloss-none]'); if (none) none.hidden = any;
   });
+  var rail = $('[data-gloss-rail]');
+  if (rail) {
+    var railMark = function () {
+      var at = null;
+      $$('[data-gloss-group]:not([hidden])').forEach(function (g) { if (g.getBoundingClientRect().top < 160) at = g.id; });
+      $$('a', rail).forEach(function (a, i) { a.classList.toggle('is-on', at ? a.getAttribute('href') === '#' + at : i === 0); });
+    };
+    window.addEventListener('scroll', railMark, { passive: true });
+    railMark();
+  }
 
   /* ------------------------------------------------------------ search */
   var modal = $('[data-search-modal]'), input = $('[data-search-input]'), results = $('[data-search-results]');

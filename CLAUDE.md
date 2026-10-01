@@ -7,7 +7,8 @@ A static site generated from course notebooks: `notes/` + `enrichments/` + `cour
 - `make serve`: build and serve at http://localhost:8000
 - `python3 scripts/build.py`: build only (about 20 s)
 - `node scripts/dev/screenshots.mjs [pages…]`: screenshots at desktop, laptop, phone and dark with a sample
-  learner, into `.shots/` (needs `make serve` running and `npm install --no-save playwright`)
+  learner, into `.shots/` (needs `make serve` running and `npm install --no-save playwright`; add `CHANNEL=chrome` to
+  use the installed Google Chrome instead of downloading Playwright's browser)
 
 ## UI redesign in progress
 A full redesign ("Activation") was approved and is being built phase by phase.
