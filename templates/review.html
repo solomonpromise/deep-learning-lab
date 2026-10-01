@@ -1,44 +1,76 @@
 {% extends "base.html" %}
 {% block title %}Daily review — {{ course.short_title }}{% endblock %}
 {% block description %}Spaced review of every checkpoint and quiz question you have answered, a few minutes a day.{% endblock %}
+{% block sidebar %}{% endblock %}
 {% block late_scripts %}<script defer src="{{ root }}static/js/review.js?v={{ v }}"></script>{% endblock %}
 {% block main %}
-<div class="plain-page review-page" data-review-page>
-  <header class="plain-hero">
-    <span class="eyebrow"><svg class="ic"><use href="#i-cards"/></svg> Daily review</span>
-    <h1>Remember what you learned</h1>
-    <p class="lead">Questions you have answered come back just before you would forget them: the ones you missed tomorrow, the ones you got right a week later, then further apart each time you get them right again. A few minutes a day keeps the whole course fresh.</p>
-  </header>
+<div class="rv2" data-review-page>
+  <div class="rv-col">
+    <h1 class="sr-only">Daily review</h1>
 
-  <section class="rv-summary" data-rv-summary aria-live="polite"></section>
+    <!-- a round of questions (review.js opens straight into one when anything is due) -->
+    <section class="rv-round" data-rv-round aria-label="Review round" hidden>
+      <div class="rv-head">
+        <button class="icon-btn rv-x" type="button" data-rv-stop aria-label="Stop the round"><svg class="ic"><use href="#i-x"/></svg></button>
+        <span class="mono-label rv-where" data-rv-where></span>
+        <div class="rv-segs" data-rv-segs aria-hidden="true"></div>
+        <span class="rv-tally" data-rv-tally></span>
+        <span class="rv-frac" data-rv-frac aria-hidden="true"></span>
+      </div>
 
-  <section class="rv-card" data-rv-card hidden>
-    <div class="rv-top">
-      <span class="rv-from" data-rv-from></span>
-      <span class="rv-count" data-rv-count></span>
+      <article class="rv-prompt" data-rv-card>
+        <div class="rv-phead">
+          <span class="qmark" aria-hidden="true">?</span>
+          <span class="mono-label rv-from" data-rv-from></span>
+          <span class="rv-seen" data-rv-seen></span>
+        </div>
+        <div class="rv-q" data-rv-q tabindex="-1"></div>
+        <div class="rv-opts" data-rv-options role="group" aria-label="Answer options"></div>
+        <p class="rv-hint" data-rv-hint>Tap an answer. You will see why straight after.</p>
+        <div class="rv-why" data-rv-why hidden></div>
+        <div class="rv-foot">
+          <p class="rv-when" data-rv-when hidden><svg class="ic"><use href="#i-calendar"/></svg><span></span></p>
+          <div class="rv-acts">
+            <a class="btn btn-quiet rv-reread" data-rv-link href="#"><svg class="ic"><use href="#i-book"/></svg><span class="rv-long" data-rv-link-long></span><span class="rv-short" data-rv-link-short></span></a>
+            <button class="btn btn-ghost rv-skip" type="button" data-rv-skip>Skip for now</button>
+            <button class="btn rv-next" type="button" data-rv-next hidden><span>Next question</span><kbd aria-hidden="true">↵</kbd></button>
+          </div>
+        </div>
+      </article>
+
+      <p class="rv-keys">Keys: <kbd>A</kbd>–<kbd>D</kbd> to answer, <kbd>↵</kbd> for the next question, <kbd>Esc</kbd> to stop. Stopping keeps what you answered.
+        <button class="rv-stop" type="button" data-rv-stop>Stop the round</button></p>
+    </section>
+
+    <!-- between rounds: a finished round, nothing due, or an empty deck -->
+    <section class="rv-state" data-rv-state tabindex="-1" hidden></section>
+
+    <section class="rv-practice" data-rv-practice-box>
+      <h2>Practise a lesson</h2>
+      <p>Pick a lesson and answer ten of its checkpoint and quiz questions in a random order. Each answer joins your review deck.</p>
+      <div class="rv-practice-row">
+        <label class="sr-only" for="rv-lesson">Lesson</label>
+        <select id="rv-lesson" data-rv-lesson>
+          {% for m in nav if m.available %}<optgroup label="Module {{ m.number }} · {{ m.title }}">{% for le in m.lessons %}<option value="{{ le.id }}">{{ le.id }} · {{ le.title }}</option>{% endfor %}</optgroup>{% endfor %}
+        </select>
+        <button class="btn btn-ghost" type="button" data-rv-practice><svg class="ic"><use href="#i-play"/></svg> Practise 10 questions</button>
+      </div>
+    </section>
+  </div>
+
+  <aside class="rv-side" aria-label="Your review queue">
+    <div class="rv-count">
+      <span class="mono-label">Daily review</span>
+      <div class="rv-big"><strong data-rv-due>–</strong><span data-rv-due-note>due today</span></div>
     </div>
-    <div class="rv-bar" aria-hidden="true"><span data-rv-bar></span></div>
-    <div class="rv-q prose" data-rv-q></div>
-    <div class="quiz-options" data-rv-options role="group" aria-label="Answer options"></div>
-    <div class="rv-why prose" data-rv-why hidden></div>
-    <div class="rv-actions" data-rv-actions hidden>
-      <a class="chip-btn" data-rv-link href="#"><svg class="ic"><use href="#i-book"/></svg> Revisit in the lesson</a>
-      <button class="btn" data-rv-next><span>Next question</span> <svg class="ic"><use href="#i-arrow-right"/></svg></button>
+    <div class="rv-list" data-rv-list hidden>
+      <span class="mono-label" data-rv-list-k>Due by lesson</span>
+      <ol data-rv-rows></ol>
     </div>
-  </section>
-
-  <section class="rv-done" data-rv-done hidden aria-live="polite"></section>
-
-  <section class="rv-practice">
-    <h2>Practise a lesson</h2>
-    <p class="muted">Not waiting for anything to come due? Pick a lesson and answer its checkpoint and quiz questions in a random order.</p>
-    <div class="rv-practice-row">
-      <label class="sr-only" for="rv-lesson">Lesson</label>
-      <select id="rv-lesson" data-rv-lesson>
-        {% for m in nav if m.available %}<optgroup label="Module {{ m.number }} · {{ m.title }}">{% for le in m.lessons %}<option value="{{ le.id }}">{{ le.id }} · {{ le.title }}</option>{% endfor %}</optgroup>{% endfor %}
-      </select>
-      <button class="btn btn-ghost" data-rv-practice><svg class="ic"><use href="#i-play"/></svg> Practise 10 questions</button>
+    <div class="mnote rv-how">
+      <span class="mono-label mnote-lbl">How spacing works</span>
+      A missed question comes back tomorrow. Each right answer sends it further out: a few days, a week, two weeks, a month, then three months.
     </div>
-  </section>
+  </aside>
 </div>
 {% endblock %}
