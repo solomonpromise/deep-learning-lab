@@ -74,6 +74,7 @@ author:
     review so it stays learned. This site is that, built from the course notebooks, with an AI tutor beside every
     lesson.
   links:
+    - { label: LinkedIn, url: "https://www.linkedin.com/in/solomon-promise-etiyeme/" }
     - { label: GitHub, url: "https://github.com/solomonpromise" }
   # email: you@example.com      # optional; a public address tends to attract spam
 
