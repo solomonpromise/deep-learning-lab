@@ -51,7 +51,7 @@
   // list of lessons, takes its place).
   var wideNav = window.matchMedia('(width > 980px)');
   var lessonPage = /\bpage-(lesson|module)\b/.test(document.body.className);
-  function inPlace() { return wideNav.matches && !lessonPage; }
+  function inPlace() { return false; } // The main navigation replaces the permanent course sidebar.
   function navShown() {
     return inPlace() ? !document.documentElement.classList.contains('nav-collapsed') : document.body.classList.contains('nav-open');
   }
@@ -131,7 +131,7 @@
   function confetti(anchor) {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var r = anchor.getBoundingClientRect();
-    var colors = ['#3b528b', '#21918c', '#5ec962', '#fde725'];   // the activation scale
+    var colors = ['#356784', '#638f72', '#426b50', '#ddeaab'];   // the activation scale
     for (var i = 0; i < 26; i++) {
       var s = document.createElement('span');
       s.style.cssText = 'position:fixed;z-index:99;width:8px;height:8px;border-radius:2px;pointer-events:none;left:' +
@@ -202,6 +202,7 @@
     // phone lesson bar: step to the previous or next section
     $$('[data-sec-step]').forEach(function (b) {
       b.addEventListener('click', function () {
+        if (window.DLP.lessonNavigation) { window.DLP.lessonNavigation.step(+b.getAttribute('data-sec-step')); return; }
         var step = +b.getAttribute('data-sec-step'), line = window.innerHeight * 0.35, cur = -1;
         sections.forEach(function (s, i) { if (s.getBoundingClientRect().top < line) cur = i; });
         var to = sections[Math.max(0, Math.min(sections.length - 1, cur + step))];
@@ -218,8 +219,9 @@
       // active section = last one whose top is above 35% of the viewport
       var active = null, line = window.innerHeight * 0.35;
       var start = $('#start');
-      if (start && start.getBoundingClientRect().top < line) active = 'start';
+      if (start && start.getClientRects().length && start.getBoundingClientRect().top < line) active = 'start';
       for (var i = 0; i < sections.length; i++) {
+        if (!sections[i].getClientRects().length) continue;
         var r = sections[i].getBoundingClientRect();
         if (r.top < line) active = sections[i].id;
         if (r.bottom < window.innerHeight * 0.6 && !readSet.has(sections[i].id)) {
@@ -230,6 +232,7 @@
           if (window.DLP.record) window.DLP.record.activity();
         }
       }
+      if (document.body.classList.contains('rd-section-view')) { var selected = sections.find(function (s) { return s.getClientRects().length; }); active = selected ? selected.id : 'start'; }
       Object.keys(tocLinks).forEach(function (k) { tocLinks[k].classList.toggle('is-active', k === active); });
       if (where && active !== whereFor) {
         whereFor = active;
@@ -258,6 +261,13 @@
       $('.bar span', lp).style.width = Math.round(pct * 100) + '%';
       $('.label', lp).textContent = Math.round(pct * 100) + '% read · ' + readSet.size + ' of ' + sections.length + ' sections';
     }
+    document.addEventListener('dlp:section-read', function (e) {
+      var section = sections.find(function (s) { return s.id === e.detail.id; });
+      if (!section || readSet.has(section.id)) return;
+      readSet.add(section.id); section.classList.add('is-read');
+      if (tocLinks[section.id]) tocLinks[section.id].classList.add('is-read');
+      saveRead(); if (window.DLP.record) window.DLP.record.activity();
+    });
     paintLessonProgress();
     window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
     onScroll();
@@ -790,6 +800,6 @@
     }, { rootMargin: '400px 0px' });
     widgets.forEach(function (w) { wo.observe(w); });
   } else widgets.forEach(mountWidget);
-  window.DLP.mountAll = function () { widgets.forEach(mountWidget); };   // e.g. before printing
+  window.DLP.mountAll = function (scope) { widgets.filter(function (w) { return !scope || scope.contains(w); }).forEach(mountWidget); };   // e.g. before printing
 
 })();

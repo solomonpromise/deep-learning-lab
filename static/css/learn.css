@@ -186,8 +186,8 @@ body.focus-mode .tutor-fab { bottom: 96px; }
 .mp-status .ic { width: 14px; height: 14px; }
 /* the activation scale: started, practised, mastered */
 .mp-status.s-started { background: var(--a1); color: #fff; }
-.mp-status.s-practised { background: var(--a2); color: #15131c; }
-.mp-status.s-mastered { background: var(--a4); color: #15131c; box-shadow: inset 0 0 0 1px rgba(21, 19, 28, .35); }
+.mp-status.s-practised { background: var(--a2); color: #202d28; }
+.mp-status.s-mastered { background: var(--a4); color: #202d28; box-shadow: inset 0 0 0 1px rgba(21, 19, 28, .35); }
 .mp-row { display: grid; grid-template-columns: 140px minmax(0, 1fr) 120px; align-items: center; gap: 10px; margin: 6px 0; font-size: .88rem; }
 .mp-label { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
 .mp-label .ic { width: 15px; height: 15px; }

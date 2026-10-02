@@ -20,7 +20,7 @@ fs.mkdirSync(OUT, { recursive: true });
 
 // ---------------------------------------------------------------- what to capture
 const pages = process.argv.slice(2);
-const standard = ['index.html', 'module-3/index.html', 'module-1/lesson-1-1.html', 'review.html', 'progress.html', 'concepts.html', 'glossary.html', 'guide.html', 'about.html', '404.html'];
+const standard = ['index.html', 'dashboard.html', 'curriculum.html', 'reference.html', 'module-3/index.html', 'module-1/lesson-1-1.html', 'review.html', 'progress.html', 'concepts.html', 'glossary.html', 'guide.html', 'about.html', '404.html'];
 const views = [
   { tag: 'desktop', w: 1440, h: 900 },
   { tag: 'laptop', w: 1280, h: 800 },

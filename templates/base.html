@@ -18,8 +18,8 @@
   <meta name="twitter:title" content="{{ self.title() }}">
   <meta name="twitter:description" content="{{ self.description() }}">
   <meta name="twitter:image" content="{{ site_url if site_url != '/' else root }}{{ og_image }}">
-  <meta name="theme-color" content="#0f0d15" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f4f3f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#14221c" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f7f7f2" media="(prefers-color-scheme: light)">
   <link rel="icon" href="{{ root }}static/img/favicon.svg" type="image/svg+xml">
   {% block head %}{% endblock %}
   <script>
@@ -29,10 +29,8 @@
       document.documentElement.classList.add('js');
     })();
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=JetBrains+Mono:wght@400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ root }}static/vendor/type.css">
+  <link rel="stylesheet" href="{{ root }}static/vendor/katex.min.css">
   <link rel="stylesheet" href="{{ root }}static/css/site.css?v={{ v }}">
   <link rel="stylesheet" href="{{ root }}static/css/widgets.css?v={{ v }}">
   <link rel="stylesheet" href="{{ root }}static/css/learn.css?v={{ v }}">
@@ -42,41 +40,31 @@
 {% include "_icons.html" %}
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="topbar">
-  <button class="icon-btn nav-toggle" aria-label="Show course navigation" title="Show course navigation" aria-controls="sidebar" aria-expanded="false" data-nav-toggle><svg class="ic"><use href="#i-menu"/></svg></button>
+<header class="topbar rd-topbar">
   <a class="brand" href="{{ root }}index.html">
-    <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" aria-hidden="true"><g class="bm-edges"><path d="M6 10 16 6M6 10 16 16M6 10 16 26M6 22 16 6M6 22 16 16M6 22 16 26M16 6 26 16M16 16 26 16M16 26 26 16"/></g><circle cx="6" cy="10" r="3.2" fill="#3b528b"/><circle cx="6" cy="22" r="3.2" fill="#3b528b"/><circle cx="16" cy="6" r="3.2" fill="#21918c"/><circle cx="16" cy="16" r="3.2" fill="#5ec962"/><circle cx="16" cy="26" r="3.2" fill="#21918c"/><circle class="bm-out" cx="26" cy="16" r="4" fill="#fde725"/></svg></span>
+    <svg class="rd-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 25 15 6 26 25Z" fill="none" stroke="currentColor"/><circle cx="6" cy="25" r="3" fill="var(--a1)"/><circle cx="15" cy="6" r="3" fill="var(--a2)"/><circle cx="26" cy="25" r="3" fill="var(--a4)" stroke="currentColor"/></svg>
     <span class="brand-text"><strong>{{ course.short_title }}</strong></span>
   </a>
-  <div class="topbar-spacer"></div>
-  <button class="search-btn" data-search-open aria-label="Search the course">
-    <svg class="ic"><use href="#i-search"/></svg><span>Search lessons, terms, code…</span><kbd>⌘K</kbd>
-  </button>
-  <a class="tb-link review-link{% if page == 'review' %} is-active{% endif %}" href="{{ root }}review.html" title="Daily review" data-review-link><svg class="ic"><use href="#i-cards"/></svg><span class="tb-label">Review</span><span class="due-badge" data-due-badge hidden></span></a>
-  <a class="tb-link hide-sm{% if page == 'progress' %} is-active{% endif %}" href="{{ root }}progress.html"><svg class="ic"><use href="#i-chart"/></svg><span class="tb-label">Progress</span></a>
-  {% if tutor_on %}<button class="tutor-launch" type="button" data-tutor-open aria-label="Ask the AI tutor" title="Ask the AI tutor"><svg class="ic"><use href="#i-sparkles"/></svg><span>Ask the tutor</span></button>{% endif %}
-  <details class="tb-menu" data-tb-menu>
-    <summary class="icon-btn" aria-label="Glossary, concept map and guide" title="More"><svg class="ic"><use href="#i-more"/></svg></summary>
-    <div class="tb-menu-list">
-      <a href="{{ root }}progress.html" class="show-sm"><svg class="ic"><use href="#i-chart"/></svg> My progress</a>
-      <a href="{{ root }}glossary.html"><svg class="ic"><use href="#i-book"/></svg> Glossary</a>
-      <a href="{{ root }}concepts.html"><svg class="ic"><use href="#i-map"/></svg> Concept map</a>
-      <a href="{{ root }}guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
-      {% if author %}<a href="{{ root }}about.html"><svg class="ic"><use href="#i-user"/></svg> About the author</a>{% endif %}
-      <button type="button" class="show-sm" data-theme-toggle><svg class="ic show-light"><use href="#i-moon"/></svg><svg class="ic show-dark"><use href="#i-sun"/></svg> Switch light or dark</button>
-    </div>
-  </details>
-  <button class="icon-btn tb-theme" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
-    <svg class="ic show-light"><use href="#i-moon"/></svg><svg class="ic show-dark"><use href="#i-sun"/></svg>
-  </button>
+  <nav class="rd-nav" aria-label="Main navigation">
+    <a href="{{ root }}dashboard.html"{% if page in ['home','dashboard','curriculum','module','lesson'] %} aria-current="page"{% endif %}>Learn</a>
+    <a href="{{ root }}review.html"{% if page == 'review' %} aria-current="page"{% endif %} data-review-link>Review <span class="due-badge" data-due-badge hidden></span></a>
+    <a href="{{ root }}progress.html"{% if page == 'progress' %} aria-current="page"{% endif %}>Progress</a>
+    <a href="{{ root }}reference.html"{% if page in ['reference','glossary','concepts'] %} aria-current="page"{% endif %}>Reference</a>
+  </nav>
+  <div class="rd-tools">
+    <button class="search-btn" data-search-open aria-label="Search the course"><svg class="ic"><use href="#i-search"/></svg><span>Search</span><kbd>⌘ K</kbd></button>
+    <a class="rd-guide" href="{{ root }}guide.html">Guide</a>
+    {% if tutor_on %}<button class="icon-btn rd-tutor" type="button" data-tutor-open aria-label="Ask the AI tutor" title="Ask tutor"><svg class="ic"><use href="#i-sparkles"/></svg></button>{% endif %}
+    <button class="icon-btn tb-theme" data-theme-toggle aria-label="Toggle dark mode"><svg class="ic show-light"><use href="#i-moon"/></svg><svg class="ic show-dark"><use href="#i-sun"/></svg></button>
+    <button class="icon-btn rd-mobile-menu" data-nav-toggle aria-label="Show course navigation" aria-controls="sidebar" aria-expanded="false"><svg class="ic"><use href="#i-menu"/></svg></button>
+  </div>
   <div class="read-progress" aria-hidden="true"><span></span></div>
 </header>
 
 <div class="shell">
-  {% block sidebar %}
   <nav class="sidebar" id="sidebar" aria-label="Course navigation" data-sidebar>
     <div class="sidebar-inner">
-      <a class="side-home{% if page == 'home' %} is-active{% endif %}" href="{{ root }}index.html"><svg class="ic"><use href="#i-home"/></svg> Course home</a>
+      <a class="side-home{% if page == 'home' %} is-active{% endif %}" href="{{ root }}curriculum.html"><svg class="ic"><use href="#i-layers"/></svg> Full curriculum</a>
       {% for m in nav %}
       <div class="side-module{% if not m.available %} is-locked{% endif %}{% if module is defined and module.number == m.number %} is-open{% endif %}">
         {% if m.available %}
@@ -111,13 +99,13 @@
     </div>
   </nav>
   <div class="scrim" data-nav-close></div>
-  {% endblock %}
+  {% block sidebar %}{% endblock %}
 
   <main id="main" class="main">
     {% block main %}{% endblock %}
-    <footer class="site-foot">
-      <p><strong>{{ course.short_title }}</strong> <span class="muted">{{ course.hours }} hours · {{ course.hands_on }} hands-on · built from the course notebooks on {{ now }}</span></p>
-      <p class="muted">{% if author %}Made by <a href="{{ root }}about.html">{{ author.name }}</a> · {% endif %}Your progress stays in this browser. <a href="{{ root }}progress.html#sync">Sync and privacy</a></p>
+    <footer class="site-foot rd-footer">
+      <div><strong>{{ course.short_title }}</strong><p>Built to be understood. Designed to be tried.</p></div>
+      <nav aria-label="Footer"><a href="{{ root }}index.html">Course introduction</a><a href="{{ root }}guide.html">How to use the lab</a>{% if author %}<a href="{{ root }}about.html">{{ author.name }}</a>{% endif %}<a href="{{ root }}instructor.html">Instructor view</a>{% if course.github_repo %}<a href="https://github.com/{{ course.github_repo }}" target="_blank" rel="noopener">Source course</a>{% endif %}</nav>
     </footer>
   </main>
 </div>
@@ -125,7 +113,7 @@
 {% if page != 'lesson' %}
 <!-- phones: bottom tab bar -->
 <nav class="tabbar" aria-label="Main">
-  <a href="{{ root }}index.html"{% if page in ['home', 'module'] %} aria-current="page"{% endif %}><svg class="ic"><use href="#i-layers"/></svg><span>Learn</span></a>
+  <a href="{{ root }}dashboard.html"{% if page in ['home', 'dashboard', 'curriculum', 'module'] %} aria-current="page"{% endif %}><svg class="ic"><use href="#i-layers"/></svg><span>Learn</span></a>
   <a href="{{ root }}review.html"{% if page == 'review' %} aria-current="page"{% endif %}><span class="tab-ic"><svg class="ic"><use href="#i-cards"/></svg><span class="due-badge" data-due-badge hidden></span></span><span>Review</span></a>
   <a href="{{ root }}progress.html"{% if page == 'progress' %} aria-current="page"{% endif %}><svg class="ic"><use href="#i-chart"/></svg><span>Progress</span></a>
   {% if tutor_on %}<button type="button" data-tutor-open aria-label="Ask the AI tutor"><svg class="ic"><use href="#i-sparkles"/></svg><span>Tutor</span></button>{% endif %}
@@ -154,11 +142,12 @@
 <script type="application/json" id="dlp-tutor-config">{{ tutor_js | safe }}</script>
 <script type="application/json" id="dlp-services">{{ services_js | safe }}</script>
 {% if lesson_ctx is defined %}<script type="application/json" id="dlp-lesson-ctx">{{ lesson_ctx | safe }}</script>{% elif module is defined %}<script type="application/json" id="dlp-module-ctx">{"module": {{ module.number }}}</script>{% endif %}
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer src="{{ root }}static/vendor/katex.min.js"></script>
 {% block scripts %}{% endblock %}
 <script defer src="{{ root }}static/js/record.js?v={{ v }}"></script>
 <script defer src="{{ root }}static/js/app.js?v={{ v }}"></script>
 <script defer src="{{ root }}static/js/progress.js?v={{ v }}"></script>
+<script defer src="{{ root }}static/js/design.js?v={{ v }}"></script>
 {% if services.api %}<script defer src="{{ root }}static/js/sync.js?v={{ v }}"></script>{% endif %}
 <script defer src="{{ root }}static/js/tutor.js?v={{ v }}"></script>
 {% block late_scripts %}{% endblock %}

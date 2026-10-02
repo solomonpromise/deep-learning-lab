@@ -394,13 +394,16 @@ record (`static/js/record.js`). No account is needed. The pages built on it:
 
 | Page | What it shows |
 |---|---|
-| `index.html` | First visit: the landing page (who it is for, what you will be able to do, inside every lesson, the modules, the author, questions). Returning learners: today, the network and the modules; `index.html#about-course` shows the landing page again |
+| `index.html` | Course introduction, interactive representation-learning network, learning loop, curriculum overview, author and FAQ |
+| `dashboard.html` | Returning learner workspace: resume a section, review due questions, weekly study activity and the learning network |
+| `curriculum.html` | All ten modules and all published lessons; future modules link to their roadmap |
+| `reference.html` | Glossary, concept map, guide and course search |
 | `about.html` | About the author, from `author:` in `course.yaml` (only built when that block exists) |
 | `review.html` | The daily review: opens on the first question due (rounds of 15, keys A–D, Enter, Esc), and practice for any lesson |
 | `progress.html` | The training log: lessons mastered, this week and the weekly goal, what to do next, 26 weeks of study days, the skills map, badges, lab challenge results, and sync and privacy |
 | `certificate.html` | The certificate, listing the modules passed; printable, downloadable as PNG. Only built when `features.certificate` is `true` |
 | `concepts.html` | The concept map: each glossary term in the module that teaches it, its links, and how far you are with its lesson |
-| `instructor.html` | Answer counts per question, for the course author (not linked, not indexed; needs the stats token) |
+| `instructor.html` | Answer counts per question, for the course author (linked in the footer, not indexed; needs the stats token) |
 
 With `services.api` set in `course.yaml`, the same Worker as the tutor adds a small API (`tutor-proxy/api.js`, storage in
 the D1 database from `tutor-proxy/schema.sql`):
@@ -443,20 +446,14 @@ Open Graph tags, so a link shared in a chat or on social media shows the lesson'
 
 ## The interface
 
-The design ("Activation") has a few rules, which `docs/redesign/HANDOFF.md` sets out with the mockups in
-`docs/redesign/mockups/`:
+The approved interactive design uses cream backgrounds, forest-green type and controls, soft green surfaces and pale lime progress accents. See the current specification in `docs/redesign/HANDOFF.md`.
 
-- **Colour means progress, and only progress.** Matplotlib's viridis in four steps: started (blue), practised (teal),
-  strong (green), mastered (yellow); not started is a hollow node. Data classes in labs are blue and orange; green and
-  rust mean right and wrong, always with a tick or cross. Modules are told apart by their number, not a colour.
-- **Three typefaces.** Archivo for the interface, Source Serif 4 for the lesson text, JetBrains Mono for code, labels and
-  numbers you can measure.
-- **Four materials.** Paper for prose; a white card with a "?" for every question; a dotted bench, wider than the text,
-  for every lab; a dark terminal for every code cell (Run in the header, the rest in its ⋯ menu).
-- **One navigation per page.** Lessons have a spine (their outline) with the course tree as a drawer; other pages have the
-  top bar, and phones a tab bar. Short notes sit in the margin beside the text they explain. Read mode (`F`) leaves
-  only the text.
-
+- **Three typefaces.** Archivo for the interface, Source Serif 4 for the lesson text, JetBrains Mono for code and measured labels. Fonts and KaTeX are bundled locally with licences in `static/vendor/`.
+- **Four materials.** Paper for prose, white checkpoint/reflection cards, graph-paper benches for labs, and dark green terminals for code. Data classes stay blue/orange; answer feedback includes a tick or cross.
+- **Separate learning destinations.** Course introduction, learner workspace, full curriculum and reference desk each have a dedicated page. The top bar connects them; the full course tree is a drawer.
+- **One section at a time.** A persistent lesson title and outline frame the current section. Existing deep links open the section that contains their target. Mark a section complete or finish reading it to record progress. `F` toggles read mode; “Show whole lesson” restores continuous reading.
+- **Representation learning on the homepage.** Choose an object image and inspect how edge features combine into parts and a representation before the final label. The diagram illustrates a forward pass; it does not run a trained image classifier.
+- **Real course behaviour.** All published lessons, labs, checkpoints, notebooks, progress, spaced review, tutor, optional sync and discussions remain connected to their original implementations.
 New styles go in `static/css/activation.css`; the colour tokens (light and dark) are at the top of `static/css/site.css`.
 Before committing a change to the interface, build, run `make serve`, and check it:
 
@@ -464,6 +461,7 @@ Before committing a change to the interface, build, run `make serve`, and check 
 npm install --no-save playwright axe-core           # once (Node.js is only needed for these checks)
 CHANNEL=chrome node scripts/dev/screenshots.mjs      # every page at 1440, 1280 and 390 px and in dark, into .shots/;
                                                      # reports sideways scroll and JavaScript errors
+CHANNEL=chrome node scripts/dev/redesign.mjs         # section navigation, persistence and interaction regressions
 CHANNEL=chrome node scripts/dev/a11y.mjs             # WCAG 2.1 AA (contrast, names, keyboard), light and dark
 python3 scripts/dev/css_audit.py                     # selectors nothing uses, and classes that clash with the code
                                                      # highlighter (.nf, .sa …); --fix removes the dead ones

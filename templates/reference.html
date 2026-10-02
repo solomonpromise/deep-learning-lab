@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Reference desk — {{ course.short_title }}{% endblock %}
+{% block main %}<div class="rd-reference">
+<header class="rd-page-head"><span class="mono-label">Your reference desk</span><h1>Connect the terminology<br>to the idea.</h1><p class="lead">A definition when you need precision. A map when you need the bigger picture.</p></header>
+<div class="rd-reference-grid"><a href="glossary.html"><span class="mono-label">01 / Dictionary</span><h2>Glossary</h2><p class="lead">{{ terms_count }} terms in plain English, connected to where they are taught and used.</p><span>Look up a term <svg class="ic"><use href="#i-arrow-right"/></svg></span></a><a href="concepts.html"><span class="mono-label">02 / Relationships</span><h2>Concept map</h2><p class="lead">Follow the prerequisites. See which ideas build on the one you are studying.</p><span>Follow a connection <svg class="ic"><use href="#i-arrow-right"/></svg></span></a></div>
+<section class="rd-reference-tools"><h2>Keep the work close.</h2><a href="guide.html">How to use the lab</a><a href="curriculum.html">Full course syllabus</a><button class="btn btn-ghost" data-search-open>Search lessons and code</button>{% if tutor_on %}<button class="btn btn-ghost" data-tutor-open>Ask the tutor</button>{% endif %}</section>
+</div>{% endblock %}

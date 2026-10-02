@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Curriculum — {{ course.short_title }}{% endblock %}
+{% block main %}
+<div class="rd-curriculum">
+  <header class="rd-page-head"><span class="mono-label">{{ course.hours }} hours / {{ nav|length }} modules / {{ stats.lessons }} published lessons</span><h1>A path from intuition<br>to engineering.</h1><p class="lead">Each module gives you a new way to explain, build or diagnose a learning system.</p><a href="dashboard.html">Return to your workspace</a></header>
+  <ol class="rd-curriculum-list">{% for m in nav %}<li class="rd-curriculum-row{% if not m.available %} rd-roadmap-row{% endif %}"><span class="rd-number">{{ '%02d' % m.number }}</span><div><span class="mono-label">{% if m.available %}{{ m.lessons|length }} lessons · {{ m.labs }} labs{% else %}Coming next{% endif %}</span><h2><a href="{{ m.url }}">{{ m.title }}</a></h2><p class="lead">{{ m.question }}</p><div class="rd-tags">{% for t in m.topics %}<span>{{ t }}</span>{% endfor %}</div>{% if m.available %}<ul class="rd-curriculum-lessons">{% for le in m.lessons %}<li><i class="cn-dot st-none" data-st-lesson="{{ le.id }}"></i><a href="{{ le.url }}"><span class="mono-label">{{ le.id }}</span> {{ le.title }}</a><span class="rd-time">{{ le.minutes }} min</span></li>{% endfor %}</ul>{% endif %}</div><a class="btn btn-ghost" href="{{ m.url }}">{% if m.available %}Open module{% else %}View roadmap{% endif %}</a></li>{% endfor %}</ol>
+</div>
+{% endblock %}

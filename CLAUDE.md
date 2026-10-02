@@ -11,7 +11,7 @@ A static site generated from course notebooks: `notes/` + `enrichments/` + `cour
   use the installed Google Chrome instead of downloading Playwright's browser)
 
 ## UI redesign in progress
-A full redesign ("Activation") was approved and is being built phase by phase.
+The forest-and-cream interactive redesign was approved on 2 October 2026 and applied to the production templates.
 **Read `docs/redesign/HANDOFF.md` before any UI work**: it has the status, the design rules, the mockups
 (`docs/redesign/mockups/`), and a spec for each remaining phase.
 

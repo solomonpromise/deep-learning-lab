@@ -11,7 +11,7 @@
   var ROOT = document.body.getAttribute('data-root') || '';
   var R = window.DLP.record, store = window.DLP.store, M = window.DLP.mastery;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var FILL = { started: '#3b528b', practised: '#21918c', mastered: '#fde725' };
+  var FILL = { started: '#356784', practised: '#638f72', mastered: '#ddeaab' };
   var DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -82,13 +82,15 @@
   // a first visit sees the landing page; a returning learner sees today, unless they asked for the introduction
   function introAsked() { return location.hash === '#about-course'; }
   function paintToday(s) {
-    var today = $('[data-today]'), intro = s.returning && introAsked();
+    var workspace = !!home.hasAttribute('data-workspace');
+    var title = $('[data-workspace-title]'); if (title) title.textContent = s.returning ? 'Welcome back.' : 'Make your next connection.';
+    var today = $('[data-today]'), intro = !workspace && s.returning && introAsked();
     $$('[data-welcome]').forEach(function (el) { el.hidden = s.returning && !intro; });
     $$('[data-returning]').forEach(function (el) { el.hidden = !s.returning || intro; });
     var bar = $('[data-intro-bar]'); if (bar) bar.hidden = !intro;
     if (!today) return;
-    today.hidden = !s.returning || intro;
-    if (!s.returning || intro) return;
+    today.hidden = (!workspace && !s.returning) || intro;
+    if (today.hidden) return;
     $('[data-resume]', today).innerHTML = resumeCard(s);
     $('[data-review]', today).innerHTML = reviewCard();
     $('[data-week]', today).innerHTML = weekCard();
