@@ -167,6 +167,7 @@ class Builder:
                 "lessons": [{"id": l.id, "title": l.title, "url": f"module-{n}/{l.slug}.html",
                              "minutes": extras[l.id]["minutes"], "sections": len(l.sections)} for l in mls],
                 "minutes": sum(extras[l.id]["minutes"] for l in mls),
+                "labs": sum(len(extras[l.id]["widgets"]) for l in mls),
                 "challenge": challenges.get(n) if mls else None,
             })
         flat = [le for m in nav for le in m["lessons"]]
@@ -202,6 +203,9 @@ class Builder:
             return re.sub(r"([(\[]) ", r"\1", re.sub(r" ([,.;:!?)\]])", r"\1", text))
 
         self._page("home.html", "index.html", root="", page="home", **common)
+        self._page("dashboard.html", "dashboard.html", root="", page="dashboard", **common)
+        self._page("curriculum.html", "curriculum.html", root="", page="curriculum", **common)
+        self._page("reference.html", "reference.html", root="", page="reference", terms_count=len(self.glossary.entries), **common)
         self._page("glossary.html", "glossary.html", root="", page="glossary",
                    entries=sorted(self.glossary.entries, key=lambda e: e["term"].lower()), **common)
         self._page("guide.html", "guide.html", root="", page="guide", **common)
@@ -215,6 +219,8 @@ class Builder:
         search_docs = []
         for m in nav:
             if not m["available"]:
+                self._page("roadmap.html", m["url"], root="../", page="module", module=m,
+                           og_image="assets/og/home.png", **common)
                 continue
             mls = [l for l in lessons if l.module == m["number"]]
             self._page("module.html", f"module-{m['number']}/index.html", root="../", page="module",

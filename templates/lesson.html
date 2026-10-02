@@ -12,7 +12,7 @@
 {% if ex.challenges %}<script defer src="{{ root }}static/js/challenges.js?v={{ v }}"></script>{% endif %}
 {% if discussions %}<script defer src="{{ root }}static/js/discussion.js?v={{ v }}"></script>{% endif %}{% endblock %}
 
-{% block sidebar %}{{ super() }}
+{% block sidebar %}
   <aside class="spine" id="spine" aria-label="This lesson" data-spine>
     <div class="spine-inner">
       <div class="spine-top">
@@ -22,12 +22,12 @@
       </div>
       <div class="spine-head">
         <div class="spine-label">Lesson {{ lesson.id }}</div>
-        <div class="spine-title">{{ lesson.title }}</div>
+        <div class="spine-title">{% if lesson.id == '1.1' %}Why Deep Learning?{% else %}{{ lesson.title }}{% endif %}</div>
         <div class="lesson-progress" data-lesson-progress><span class="bar"><span></span></span><span class="label">0% read</span></div>
       </div>
       <div class="spine-actions">
         <span data-focus-slot="spine"></span>
-        <button type="button" class="spa" data-nav-toggle aria-controls="sidebar"><svg class="ic"><use href="#i-menu"/></svg> All lessons</button>
+        <a class="spa" href="{{ root }}curriculum.html"><svg class="ic"><use href="#i-layers"/></svg> All lessons</a>
         <a class="spa" href="{{ notebook_url }}" download><svg class="ic"><use href="#i-download"/></svg> Notebook</a>
         {% if colab_url %}<a class="spa" href="{{ colab_url }}" target="_blank" rel="noopener"><svg class="ic"><use href="#i-rocket"/></svg> Colab</a>{% endif %}
       </div>
@@ -51,7 +51,9 @@
   <!-- ======================= hero -->
   <header class="lesson-hero">
     <a class="mono-label hero-mod" href="{{ root }}{{ module.url }}">Module {{ module.number }} · {{ module.title }}</a>
-    <h1 class="lesson-title">{{ lesson.title_html | safe }}</h1>
+    <span class="mono-label rd-lesson-label">Lesson {{ lesson.id }}</span>
+    <h1 class="lesson-title">{% if lesson.id == '1.1' %}Why Deep Learning?{% else %}{{ lesson.title_html | safe }}{% endif %}</h1>
+    <p class="rd-lesson-meta">{% if lesson.id == '1.1' %}{{ lesson.title }} · {% endif %}{{ minutes }} min · {{ lesson.code_cells }} code cells · {{ widgets|length }} labs</p>
     <div class="hero-facts mnote">
       <div class="mnote-lbl mono-label" id="hero-facts-k">In this lesson</div>
       <dl class="hf-list" aria-labelledby="hero-facts-k">
@@ -62,10 +64,10 @@
       <div><dt>Figures</dt><dd>{{ lesson.figures }}</dd></div>
       </dl>
     </div>
-    {% if ex.summary_html %}<div class="lesson-summary prose">{{ ex.summary_html | safe }}</div>{% endif %}
+
     <div class="hero-actions">
       <a class="btn" href="#start"><svg class="ic"><use href="#i-play"/></svg> Start the lesson</a>
-      <span data-focus-slot="hero"></span>
+      <span data-focus-slot="hero"></span>{% if tutor_on %}<button class="btn btn-ghost" data-tutor-open>Ask tutor</button>{% endif %}
     </div>
   </header>
 
@@ -75,6 +77,7 @@
   <section class="lesson-start" id="start">
     {% set pre = lesson.preamble %}
     <h2 class="start-h mono-label">Before you start</h2>
+    {% if ex.summary_html %}<div class="lesson-summary prose">{{ ex.summary_html | safe }}</div>{% endif %}
     <dl class="defs">
       {% if pre.goal_html %}<div class="def"><dt><svg class="ic"><use href="#i-target"/></svg> Goal</dt><dd class="prose">{{ pre.goal_html | safe }}</dd></div>{% endif %}
       {% if pre.outcome_html %}<div class="def"><dt><svg class="ic"><use href="#i-flag"/></svg> Outcome</dt><dd class="prose">{{ pre.outcome_html | safe }}</dd></div>{% endif %}

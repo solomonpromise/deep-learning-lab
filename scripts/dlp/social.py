@@ -14,11 +14,11 @@ from PIL.PngImagePlugin import PngInfo
 
 FONTS = Path(__file__).resolve().parent.parent / "assets" / "fonts"
 W, H = 1200, 630
-# the site's dark panel, its text greys, and the activation scale (viridis: started, practised, strong, mastered)
-BG_TOP, BG_BOTTOM = (15, 13, 21), (23, 20, 31)
-INK, INK_2, INK_3 = (241, 239, 247), (191, 186, 205), (142, 137, 160)
-A1, A2, A3, A4 = (59, 82, 139), (33, 145, 140), (94, 201, 98), (253, 231, 37)
-VERSION = 3                                                    # bump when the card design changes
+# the site's dark panel, its text greys, and the activation scale (forest palette: started, practised, strong, mastered)
+BG_TOP, BG_BOTTOM = (20, 34, 28), (27, 44, 35)
+INK, INK_2, INK_3 = (237, 242, 229), (190, 205, 192), (161, 181, 164)
+A1, A2, A3, A4 = (53, 103, 132), (99, 143, 114), (66, 107, 80), (221, 234, 171)
+VERSION = 4                                                    # bump when the card design changes
 
 
 def _font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:

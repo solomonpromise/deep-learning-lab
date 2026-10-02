@@ -3,31 +3,30 @@
    Tokens first, then layout, then components. Light + dark themes.
    ========================================================================== */
 
-/* "Activation" design language. Colour means one thing: how much you have learned. The activation
-   scale (--a1 to --a4) is matplotlib's viridis, from started to mastered. Neutrals lean toward
-   viridis's deep violet. Data classes in labs are blue and orange; green and rust mean right and wrong. */
+/* Forest-and-cream design. Activation nodes show progress from started to mastered.
+   Data classes in labs are blue and orange; green and rust mean right and wrong. */
 :root {
   color-scheme: light;
-  --bg: #f4f3f7;
+  --bg: #f7f7f2;
   --surface: #ffffff;
-  --surface-2: #efedf4;
-  --surface-3: #e3e0ea;
-  --ink: #15131c;
-  --ink-2: #4a4657;
-  --ink-3: #666274;           /* 4.5:1 on every light surface, the darkest grey fill included */
-  --line: #e0dde7;
-  --line-2: #c9c5d4;
-  --accent: #33508f;
-  --accent-ink: #2c4680;
-  --accent-soft: #e8ebf5;
-  --accent-soft-2: #d6dcef;
-  --mod: #33508f;              /* the one module accent, replacing per-module colours */
+  --surface-2: #eef1e8;
+  --surface-3: #e1e6dc;
+  --ink: #202d28;
+  --ink-2: #47584c;
+  --ink-3: #536257;           /* 4.5:1 on every light surface, the darkest grey fill included */
+  --line: #dce1d8;
+  --line-2: #bac7b8;
+  --accent: #234c3c;
+  --accent-ink: #234c3c;
+  --accent-soft: #eef1e8;
+  --accent-soft-2: #e1e6dc;
+  --mod: #234c3c;              /* the one module accent, replacing per-module colours */
   --on-mod: #ffffff;           /* text on a --mod fill */
-  --a1: #3b528b;               /* started */
-  --a2: #21918c;               /* practised */
-  --a2-text: #17746f;          /* --a2 as text: deep enough for 4.5:1 on every light surface */
-  --a3: #5ec962;               /* strong */
-  --a4: #fde725;               /* mastered */
+  --a1: #356784;               /* started */
+  --a2: #638f72;               /* practised */
+  --a2-text: #426b50;          /* --a2 as text: deep enough for 4.5:1 on every light surface */
+  --a3: #426b50;               /* strong */
+  --a4: #ddeaab;               /* mastered */
   --orange: #c95c22;
   --orange-soft: #fbece3;
   --aqua: #1c7f7a;
@@ -42,12 +41,12 @@
   --green-soft: #e1f1ea;
   --c0: #3566c8;           /* class 0 / series 1 */
   --c1: #e0702f;           /* class 1 / series 2 */
-  --c2: #21918c;
+  --c2: #638f72;
   --c3: #5d4a9e;
-  --code-bg: #13111a;
-  --code-bg-2: #1b1824;
-  --code-ink: #e8e6ef;
-  --code-line: #2a2636;
+  --code-bg: #1f2e29;
+  --code-bg-2: #263a31;
+  --code-ink: #edf2e5;
+  --code-line: #34493a;
   --shadow-sm: 0 1px 2px rgba(21, 19, 28, .05);
   --shadow: 0 1px 2px rgba(21, 19, 28, .05), 0 8px 24px rgba(21, 19, 28, .06);
   --shadow-lg: 0 16px 48px rgba(21, 19, 28, .16);
@@ -67,22 +66,22 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0f0d15;
-    --surface: #18151f;
-    --surface-2: #211d2b;
-    --surface-3: #2a2636;
-    --ink: #f1eff7;
-    --ink-2: #bfbacd;
-    --ink-3: #8e89a0;
-    --line: #2a2636;
-    --line-2: #3b3549;
-    --accent: #8aa4e6;
-    --accent-ink: #a9c1ff;
-    --accent-soft: #1c2236;
-    --accent-soft-2: #26304c;
-    --mod: #8aa4e6;
-    --on-mod: #0f0d15;
-    --a2-text: #21918c;
+    --bg: #14221c;
+    --surface: #1b2c23;
+    --surface-2: #25372c;
+    --surface-3: #34493a;
+    --ink: #edf2e5;
+    --ink-2: #becdc0;
+    --ink-3: #a1b5a4;
+    --line: #34493a;
+    --line-2: #4a6350;
+    --accent: #ddeaab;
+    --accent-ink: #ddeaab;
+    --accent-soft: #25372c;
+    --accent-soft-2: #34493a;
+    --mod: #ddeaab;
+    --on-mod: #14221c;
+    --a2-text: #a4c5ac;
     --orange: #f08a4b;
     --orange-soft: #2e1a10;
     --aqua: #35b7a9;
@@ -99,31 +98,31 @@
     --c1: #f28a4b;
     --c2: #35b7a9;
     --c3: #a597e6;
-    --code-bg: #0b0a10;
-    --code-bg-2: #121019;
-    --code-line: #25212f;
+    --code-bg: #0e1913;
+    --code-bg-2: #16281d;
+    --code-line: #34493a;
     --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
     --shadow-lg: 0 16px 48px rgba(0, 0, 0, .55);
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0f0d15;
-  --surface: #18151f;
-  --surface-2: #211d2b;
-  --surface-3: #2a2636;
-  --ink: #f1eff7;
-  --ink-2: #bfbacd;
-  --ink-3: #8e89a0;
-  --line: #2a2636;
-  --line-2: #3b3549;
-  --accent: #8aa4e6;
-  --accent-ink: #a9c1ff;
-  --accent-soft: #1c2236;
-  --accent-soft-2: #26304c;
-  --mod: #8aa4e6;
-  --on-mod: #0f0d15;
-  --a2-text: #21918c;
+  --bg: #14221c;
+  --surface: #1b2c23;
+  --surface-2: #25372c;
+  --surface-3: #34493a;
+  --ink: #edf2e5;
+  --ink-2: #becdc0;
+  --ink-3: #a1b5a4;
+  --line: #34493a;
+  --line-2: #4a6350;
+  --accent: #ddeaab;
+  --accent-ink: #ddeaab;
+  --accent-soft: #25372c;
+  --accent-soft-2: #34493a;
+  --mod: #ddeaab;
+  --on-mod: #14221c;
+  --a2-text: #a4c5ac;
   --orange: #f08a4b;
   --orange-soft: #2e1a10;
   --aqua: #35b7a9;
@@ -140,9 +139,9 @@
   --c1: #f28a4b;
   --c2: #35b7a9;
   --c3: #a597e6;
-  --code-bg: #0b0a10;
-  --code-bg-2: #121019;
-  --code-line: #25212f;
+  --code-bg: #0e1913;
+  --code-bg-2: #16281d;
+  --code-line: #34493a;
   --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, .55);
 }
@@ -428,7 +427,7 @@ pre.code .ln.is-hl { background: rgba(75, 147, 234, .22); }
 .code-explain-head { display: flex; align-items: center; gap: 8px; font-size: .74rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #a9c8f5; margin-bottom: 4px; }
 .code-explain .prose { color: #d7dbe8; font-size: .92rem; max-width: none; }
 .code-explain .prose strong { color: #fff; }
-.code-explain .prose code { background: #232838; border-color: #333a4e; color: #e8ebf5; }
+.code-explain .prose code { background: #232838; border-color: #333a4e; color: #eef1e8; }
 .line-notes { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
 .line-notes li { display: flex; gap: 10px; padding: 6px 8px; border-radius: 8px; cursor: default; transition: background .15s; }
 .line-notes li:hover, .line-notes li.is-hl { background: rgba(75, 147, 234, .14); }

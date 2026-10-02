@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% set live = nav | selectattr('available') | list %}
+{% set soon = nav | rejectattr('available') | list %}
+{% block title %}Your workspace — {{ course.short_title }}{% endblock %}
+{% block late_scripts %}<script defer src="{{ root }}static/js/home.js?v={{ v }}"></script>{% endblock %}
+{% block main %}
+<div class="home2 rd-dashboard" data-home data-workspace>
+  <header class="rd-page-head"><span class="mono-label">Your workspace</span><h1 data-workspace-title>Make your next connection.</h1><p class="lead">Pick up the thread. One section at a time.</p></header>
+  <section class="today" data-today aria-label="Your study today">
+    <article class="t-card t-resume" data-resume><p>Loading your lesson…</p></article>
+    <article class="t-card t-review" data-review></article>
+    <article class="t-card t-week" data-week></article>
+  </section>
+  <section class="net" data-net aria-labelledby="net-title">
+    <div class="net-head">
+      <div>
+        <span class="mono-label net-k" data-net-k>The whole course, untrained</span>
+        <h2 id="net-title" data-net-title>{{ stats.lessons }} lessons, one node each</h2>
+        <p data-net-lead>Each node is a lesson. Master one and it lights up; as you learn, signals travel through what you know.</p>
+      </div>
+      <ul class="net-legend" aria-hidden="true">
+        <li><i class="st-none"></i> Not started</li><li><i class="st-started"></i> Started</li><li><i class="st-practised"></i> Practised</li>
+        <li><i class="st-mastered"></i> Mastered</li>{% if soon %}<li><i class="st-soon"></i> Coming soon</li>{% endif %}
+      </ul>
+    </div>
+    <div class="net-stage" data-net-stage></div>
+    <p class="sr-only" data-net-summary></p>
+  </section>
+
+  <div class="home-cols">
+    <section class="mods" aria-labelledby="mods-title">
+      <div class="h-head"><h2 id="mods-title">Modules</h2><span class="mono-label">{{ live|length }} of {{ nav|length }} published</span></div>
+      <ol class="mrows">
+        {% for m in live %}
+        <li class="mrow" data-mrow="{{ m.number }}">
+          <span class="mrow-num" aria-hidden="true">{{ '%02d' % m.number }}</span>
+          <div class="mrow-body">
+            <h3><a href="{{ m.url }}">{{ m.title }}</a></h3>
+            <p class="mrow-q">{{ m.question }}</p>
+            <span class="mrow-meta">{{ m.lessons|length }} lessons · ~{{ (m.minutes / 60)|round(1) }} h</span>
+          </div>
+          <div class="mrow-side">
+            <span class="segs">{% for le in m.lessons %}<a href="{{ le.url }}" data-seg="{{ le.id }}" title="{{ le.id }} · {{ le.title }}"><span class="sr-only">Lesson {{ le.id }}</span></a>{% endfor %}</span>
+            <span class="mrow-count" data-mrow-count>0 of {{ m.lessons|length }} mastered</span>
+            <a class="btn btn-ghost btn-sm mrow-go" href="{{ m.url }}" data-mrow-go>Open <svg class="ic"><use href="#i-arrow-right"/></svg></a>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+    {% if soon %}
+    <aside class="coming" aria-labelledby="coming-title">
+      <div class="h-head"><h2 id="coming-title">Coming next</h2><span class="mono-label">{{ soon|length }} modules</span></div>
+      <ol class="crows">
+        {% for m in soon %}<li><span class="crow-n">{{ '%02d' % m.number }}</span><div><strong>{{ m.title }}</strong><em>{{ m.question }}</em></div></li>{% endfor %}
+      </ol>
+    </aside>
+    {% endif %}
+  </div>
+
+  <div class="rd-workspace-foot"><a href="index.html">See the course introduction</a><a href="curriculum.html">Explore the full curriculum</a></div>
+</div>
+{% endblock %}

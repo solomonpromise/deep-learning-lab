@@ -1,149 +1,37 @@
 {% extends "base.html" %}
 {% set live = nav | selectattr('available') | list %}
 {% set soon = nav | rejectattr('available') | list %}
-{% block sidebar %}{% endblock %}
-{% block late_scripts %}<script defer src="{{ root }}static/js/home.js?v={{ v }}"></script>{% endblock %}
+{% block title %}{{ course.short_title }} — Understand the model. Build the evidence.{% endblock %}
 {% block main %}
-<div class="home2" data-home>
-  <!-- ======================= returning learner: today (filled by home.js once there is a study day on record) -->
-  <section class="today" data-today aria-label="Your study today" hidden>
-    <article class="t-card t-resume" data-resume></article>
-    <article class="t-card t-review" data-review></article>
-    <article class="t-card t-week" data-week></article>
-  </section>
-
-  <!-- ======================= a returning learner looking at the introduction (home.js: index.html#about-course) -->
-  <p class="lp-bar" data-intro-bar hidden><span>You are looking at the course introduction.</span> <a href="index.html" data-intro-back>Back to your progress <svg class="ic"><use href="#i-arrow-right"/></svg></a></p>
-
-  <!-- ======================= first visit: the landing page (every [data-welcome] part) -->
-  <section class="welcome" data-welcome>
-    <div class="welcome-copy">
-      <span class="mono-label welcome-k">{{ course.hours }}-hour engineering course · {{ course.hands_on }} hands-on</span>
-      <h1>{{ course.title }}</h1>
-      <p class="lead">{{ course.tagline }}</p>
-      <div class="hero-actions">
-        <a class="btn btn-lg btn-bright" href="{{ live[0].lessons[0].url }}"><svg class="ic"><use href="#i-play"/></svg> Start Lesson {{ live[0].lessons[0].id }}</a>
-        <a class="btn btn-lg btn-ghost" href="guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
-      </div>
+<div class="rd-home">
+  <section class="rd-hero">
+    <div class="rd-hero-copy"><span class="mono-label">{{ course.title }}</span><h1>Understand<br>the model.<br><em>Build the evidence.</em></h1>
+      <p class="lead">Learn neural networks by building, breaking and diagnosing them.</p>
+      <div class="rd-actions"><a class="btn btn-lg" href="{{ live[0].lessons[0].url }}">Start Lesson {{ live[0].lessons[0].id }}</a><a class="btn btn-lg btn-ghost" href="curriculum.html">Explore curriculum</a></div>
+      <p class="rd-return" data-home-return hidden><a href="dashboard.html">Return to your workspace <svg class="ic"><use href="#i-arrow-right"/></svg></a></p>
+      <div class="rd-hero-meta"><div><b>{{ course.hours }}</b><span>course hours</span></div><div><b>{{ stats.lessons }}</b><span>published lessons</span></div><div><b>{{ stats.labs }}</b><span>interactive labs</span></div></div>
     </div>
-    <dl class="welcome-facts">
-      <div><dt class="mono-label">You need</dt><dd>{{ course.prerequisites | join(', ') }}</dd></div>
-      <div><dt class="mono-label">Published</dt><dd>{{ stats.modules }} modules · {{ stats.lessons }} lessons · {{ stats.labs }} interactive labs</dd></div>
-      <div><dt class="mono-label">Account</dt><dd>None. Progress stays in your browser.</dd></div>
-      <div><dt class="mono-label">Followed by</dt><dd>{{ course.followed_by }}</dd></div>
-    </dl>
+    <figure class="rd-representation" data-representation>
+      <div class="rd-rep-head"><span class="mono-label">Inside a deep network</span><span class="mono-label">Representation learning</span></div>
+      <div class="rd-object-controls" role="group" aria-label="Choose an input image"><button type="button" data-object="mug" aria-pressed="true">Mug</button><button type="button" data-object="shoe" aria-pressed="false">Shoe</button><button type="button" data-object="leaf" aria-pressed="false">Leaf</button></div>
+      <div class="rd-network-image" data-network-image></div>
+      <div class="rd-layer-controls" role="group" aria-label="Inspect a network layer"><button type="button" data-layer="0" aria-pressed="true">Input</button><button type="button" data-layer="1" aria-pressed="false">Edges</button><button type="button" data-layer="2" aria-pressed="false">Parts</button><button type="button" data-layer="3" aria-pressed="false">Object</button></div>
+      <figcaption><strong data-rep-title>Start with the pixels.</strong><p data-rep-caption>The network receives numbers describing an image. No one gives it a rule for recognising a mug.</p></figcaption>
+      <div class="rd-prediction" aria-live="polite"><span class="mono-label">Illustrative prediction</span><strong data-prediction>Mug</strong><button class="rd-forward" type="button" data-forward>Follow the signal <svg class="ic"><use href="#i-arrow-right"/></svg></button></div>
+      <p class="rd-rep-note">A simplified view of a trained network. Features are learned during training; this diagram illustrates the forward pass.</p>
+    </figure>
   </section>
-
-  {% if landing.for_whom or landing.outcomes %}
-  <section class="lp-fit" data-welcome aria-label="Who this course is for, and what you will be able to do">
-    {% if landing.for_whom %}<div>
-      <span class="mono-label lp-k">Who it is for</span>
-      <h2>Made for you if</h2>
-      <ul class="lp-for">{% for x in landing.for_whom %}<li>{{ x }}</li>{% endfor %}</ul>
-    </div>{% endif %}
-    {% if landing.outcomes %}<div>
-      <span class="mono-label lp-k">By the end</span>
-      <h2>You will be able to</h2>
-      <ol class="lp-out">{% for x in landing.outcomes %}<li>{{ x }}</li>{% endfor %}</ol>
-    </div>{% endif %}
+  <section class="rd-section rd-rule"><div class="rd-section-head"><div><span class="mono-label">The learning loop</span><h2>Six ways to make it stick.</h2></div><p>Predict what will happen. Run the experiment. Explain what changed.</p></div>
+    <div class="rd-six">{% for name, detail in [('Read','Build the mental model.'),('Experiment','Change a variable. Watch the effect.'),('Run','Use real code and inspect the output.'),('Answer','Commit to a prediction or explanation.'),('Review','Retrieve it again before you forget.'),('Ask','Work through the part that did not click.')] %}<div><span class="mono-label">{{ '%02d' % loop.index }}</span><h3>{{ name }}</h3><p>{{ detail }}</p></div>{% endfor %}</div>
   </section>
-  {% endif %}
-
-  <section class="lp-inside" data-welcome aria-labelledby="lp-inside-h">
-    <div class="h-head"><h2 id="lp-inside-h">Inside every lesson</h2><span class="mono-label">{{ stats.lessons }} lessons so far</span></div>
-    <div class="how">
-      <div><span class="mono-label"><svg class="ic"><use href="#i-book"/></svg> Read</span><p>The complete teaching notes, set like a good textbook, with plain-English notes in the margin.</p></div>
-      <div><span class="mono-label"><svg class="ic"><use href="#i-flask"/></svg> Experiment</span><p>{{ stats.labs }} live labs: train tiny networks, drag the learning rate, watch a gradient vanish.</p></div>
-      <div><span class="mono-label"><svg class="ic"><use href="#i-code"/></svg> Run</span><p>Every notebook cell with its real output; early lessons run Python right in the page.</p></div>
-      <div><span class="mono-label"><svg class="ic"><use href="#i-help"/></svg> Answer</span><p>A checkpoint closes every section, with an explanation for every answer, right or wrong.</p></div>
-      <div><span class="mono-label"><svg class="ic"><use href="#i-cards"/></svg> Review</span><p>What you answer comes back just before you would forget it: a few minutes a day.</p></div>
-      {% if tutor_on %}<div><span class="mono-label"><svg class="ic"><use href="#i-sparkles"/></svg> Ask</span><p>An AI tutor beside every lesson explains code, checks your answers and gives hints, not spoilers.</p></div>{% endif %}
-    </div>
+  <section class="rd-section"><div class="rd-section-head"><div><span class="mono-label">Your learning path</span><h2>From intuition to engineering.</h2></div><a href="curriculum.html">See the full syllabus</a></div>
+    <div class="rd-path">{% for m in live %}<a class="rd-path-card" href="{{ m.url }}"><span class="rd-number">{{ '%02d' % m.number }}</span><h3>{{ m.short or m.title }}</h3><p>{{ m.question }}</p><span class="mono-label">{{ m.lessons|length }} lessons / {{ m.labs }} labs</span></a>{% endfor %}</div>
+    <div class="rd-coming"><span class="mono-label">Coming next</span>{% for m in soon %}<a href="{{ m.url }}">{{ m.short or m.title }}</a>{% endfor %}</div>
   </section>
-
-  <!-- ======================= your network: the course drawn as a network, lit by what you have mastered -->
-  <section class="net" data-net aria-labelledby="net-title">
-    <div class="net-head">
-      <div>
-        <span class="mono-label net-k" data-net-k>The whole course, untrained</span>
-        <h2 id="net-title" data-net-title>{{ stats.lessons }} lessons, one node each</h2>
-        <p data-net-lead>Each node is a lesson. Master one and it lights up; as you learn, signals travel through what you know.</p>
-      </div>
-      <ul class="net-legend" aria-hidden="true">
-        <li><i class="st-none"></i> Not started</li><li><i class="st-started"></i> Started</li><li><i class="st-practised"></i> Practised</li>
-        <li><i class="st-mastered"></i> Mastered</li>{% if soon %}<li><i class="st-soon"></i> Coming soon</li>{% endif %}
-      </ul>
-    </div>
-    <div class="net-stage" data-net-stage></div>
-    <p class="sr-only" data-net-summary></p>
-  </section>
-
-  <!-- ======================= modules and what is coming -->
-  <div class="home-cols">
-    <section class="mods" aria-labelledby="mods-title">
-      <div class="h-head"><h2 id="mods-title">Modules</h2><span class="mono-label">{{ live|length }} of {{ nav|length }} published</span></div>
-      <ol class="mrows">
-        {% for m in live %}
-        <li class="mrow" data-mrow="{{ m.number }}">
-          <span class="mrow-num" aria-hidden="true">{{ '%02d' % m.number }}</span>
-          <div class="mrow-body">
-            <h3><a href="{{ m.url }}">{{ m.title }}</a></h3>
-            <p class="mrow-q">{{ m.question }}</p>
-            <span class="mrow-meta">{{ m.lessons|length }} lessons · ~{{ (m.minutes / 60)|round(1) }} h</span>
-          </div>
-          <div class="mrow-side">
-            <span class="segs">{% for le in m.lessons %}<a href="{{ le.url }}" data-seg="{{ le.id }}" title="{{ le.id }} · {{ le.title }}"><span class="sr-only">Lesson {{ le.id }}</span></a>{% endfor %}</span>
-            <span class="mrow-count" data-mrow-count>0 of {{ m.lessons|length }} mastered</span>
-            <a class="btn btn-ghost btn-sm mrow-go" href="{{ m.url }}" data-mrow-go>Open <svg class="ic"><use href="#i-arrow-right"/></svg></a>
-          </div>
-        </li>
-        {% endfor %}
-      </ol>
-    </section>
-    {% if soon %}
-    <aside class="coming" aria-labelledby="coming-title">
-      <div class="h-head"><h2 id="coming-title">Coming next</h2><span class="mono-label">{{ soon|length }} modules</span></div>
-      <ol class="crows">
-        {% for m in soon %}<li><span class="crow-n">{{ '%02d' % m.number }}</span><div><strong>{{ m.title }}</strong><em>{{ m.question }}</em></div></li>{% endfor %}
-      </ol>
-    </aside>
-    {% endif %}
-  </div>
-
-  {% if author %}
-  <!-- ======================= first visit: who made it -->
-  {% set initials = author.name.split() | map('first') | join | upper %}
-  <section class="lp-author" data-welcome aria-labelledby="lp-author-h">
-    <span class="lp-avatar" aria-hidden="true">{% if author.photo %}<img src="{{ author.photo }}" alt="">{% else %}{{ initials[:2] }}{% endif %}</span>
-    <div>
-      <span class="mono-label lp-k">The author</span>
-      <h2 id="lp-author-h">{{ author.name }}</h2>
-      {% if author.role %}<p class="lp-role">{{ author.role }}</p>{% endif %}
-      {% if author.short %}<p class="lp-short">{{ author.short }}</p>{% endif %}
-      <a class="t-link" href="about.html">More about me <svg class="ic"><use href="#i-arrow-right"/></svg></a>
-    </div>
-  </section>
-  {% endif %}
-
-  {% if landing.faq %}
-  <section class="lp-faq" data-welcome aria-labelledby="lp-faq-h">
-    <div class="h-head"><h2 id="lp-faq-h">Questions</h2></div>
-    {% for f in landing.faq %}<details><summary>{{ f.q }}</summary><p>{{ f.a }}</p></details>{% endfor %}
-  </section>
-  {% endif %}
-
-  <!-- ======================= first visit: the way in -->
-  <section class="lp-go" data-welcome aria-labelledby="lp-go-h">
-    <span class="mono-label lp-k">Start here</span>
-    <h2 id="lp-go-h">Lesson {{ live[0].lessons[0].id }}: {{ live[0].lessons[0].title }}</h2>
-    <p>No account and nothing to install. Your progress stays in this browser.</p>
-    <div class="hero-actions">
-      <a class="btn btn-lg btn-bright" href="{{ live[0].lessons[0].url }}"><svg class="ic"><use href="#i-play"/></svg> Start Lesson {{ live[0].lessons[0].id }}</a>
-      <a class="btn btn-lg btn-ghost" href="guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
-    </div>
-  </section>
-
-  <!-- ======================= a returning learner: the way back to the introduction -->
-  <p class="lp-again" data-returning hidden>Sharing the course, or want the overview again? <a href="#about-course">See the course introduction</a>{% if author %} · <a href="about.html">About the author</a>{% endif %}</p>
+  <section class="rd-section rd-rule rd-author"><div><span class="mono-label">For the curious engineer</span><h2>You know Python.<br>Now understand learning.</h2></div><div class="prose"><p>You have trained classical models. You want to know what a neural network is actually doing, and learn to defend the choices you make.</p><p>This course puts the full explanation beside the experiment. Half or more of your time is hands-on.</p></div></section>
+  {% if landing.outcomes %}<section class="rd-section rd-outcomes"><span class="mono-label">By the end</span><h2>Build models you can explain.</h2><ol>{% for x in landing.outcomes %}<li>{{ x }}</li>{% endfor %}</ol></section>{% endif %}
+  {% if author %}<section class="rd-section rd-author"><div><span class="rd-initials">{{ author.name.split() | map('first') | join | upper }}</span><h3>{{ author.name }}</h3><p>{{ author.role }}</p><a href="about.html">Meet the author</a></div><div class="prose"><span class="mono-label">Why this lab exists</span><p>{{ author.why or author.short }}</p></div></section>{% endif %}
+  {% if landing.faq %}<section class="rd-section rd-rule rd-faq"><div><span class="mono-label">Before you begin</span><h2>A few practical things.</h2></div><div>{% for f in landing.faq %}<details><summary>{{ f.q }}</summary><p>{{ f.a }}</p></details>{% endfor %}</div></section>{% endif %}
+  <section class="rd-final"><div><span class="mono-label">Start with one question</span><h2>Why deep learning?</h2></div><a class="btn btn-lg" href="{{ live[0].lessons[0].url }}">Find out in Lesson {{ live[0].lessons[0].id }}</a></section>
 </div>
 {% endblock %}
