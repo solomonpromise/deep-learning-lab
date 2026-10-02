@@ -192,6 +192,8 @@ class Builder:
                   "features": self.features(),
                   "tutor_on": bool(tutor.get("enabled")),
                   "discussions": self.cfg.get("discussions") or None,
+                  "author": self.cfg.get("author") or None,
+                  "landing": self.cfg.get("landing") or {},
                   "services_js": json.dumps(self.cfg.get("services") or {}).replace("</", "<\\/")}
 
         # ---- pages
@@ -208,6 +210,8 @@ class Builder:
         if common["features"]["certificate"]:
             self._page("certificate.html", "certificate.html", root="", page="certificate", **common)
         self._page("instructor.html", "instructor.html", root="", page="instructor", **common)
+        if common["author"]:
+            self._page("about.html", "about.html", root="", page="about", **common)
         search_docs = []
         for m in nav:
             if not m["available"]:
@@ -257,6 +261,11 @@ class Builder:
         for e in self.glossary.entries:
             search_docs.append({"l": "Glossary", "lt": "Glossary", "s": e["term"], "u": f"glossary.html#{e['key']}",
                                 "x": e["def_text"]})
+        if common["author"]:
+            a = common["author"]
+            bio = a.get("bio") or []
+            search_docs.append({"l": "About", "lt": "About the author", "s": a.get("name", ""), "u": "about.html",
+                                "x": " ".join([a.get("role", ""), a.get("short", "")] + (bio if isinstance(bio, list) else [bio]))[:1200]})
         (self.dist / "static" / "search-index.js").write_text(
             "window.DLP_SEARCH=" + json.dumps(search_docs, ensure_ascii=False, separators=(",", ":")) + ";",
             encoding="utf-8")

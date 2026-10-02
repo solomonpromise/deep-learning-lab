@@ -15,7 +15,7 @@ import { sampleLearner } from './sample-learner.mjs';
 
 const BASE = process.env.BASE || 'http://localhost:8000/';
 const AXE = fs.readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
-const standard = ['index.html', 'module-3/index.html', 'module-1/lesson-1-1.html', 'review.html', 'progress.html', 'concepts.html', 'glossary.html', 'guide.html', '404.html'];
+const standard = ['index.html', 'module-3/index.html', 'module-1/lesson-1-1.html', 'review.html', 'progress.html', 'concepts.html', 'glossary.html', 'guide.html', 'about.html', '404.html'];
 const pages = process.argv.slice(2).length ? process.argv.slice(2) : standard;
 const learner = process.env.FRESH ? null : sampleLearner();
 const browser = await chromium.launch(process.env.CHANNEL ? { channel: process.env.CHANNEL } : {});

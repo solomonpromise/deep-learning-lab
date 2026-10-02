@@ -27,6 +27,56 @@ course:
   # when a lesson link is shared) and for absolute links in them.
   site_url: "https://solomonpromise.github.io/deep-learning-lab/"
 
+# The landing page: what a first-time visitor sees on the home page (returning learners see their progress,
+# with a link back to this). Every list can be edited freely; leave one empty to drop its section.
+landing:
+  for_whom:
+    - You write Python and have trained classical models, from linear regression to gradient boosting.
+    - You want to know what a neural network is actually doing, not just call fit() and hope.
+    - You learn best by running, breaking and fixing things rather than watching.
+  outcomes:
+    - Trace a forward pass, a loss and backpropagation by hand, then build the same network in PyTorch.
+    - Diagnose training that stalls, overfits or explodes, and fix it with the right optimiser, schedule or regulariser.
+    - Run experiments you can trust and reproduce, with honest splits, seeds, checkpoints and tracking.
+    - Explain how embeddings and Transformers work, and adapt pretrained models with LoRA and QLoRA.
+    - Decide when a model is good enough to ship, and what it will cost to serve.
+  faq:
+    - q: Do I need an account?
+      a: No. Your progress, answers and notes stay in this browser. Turn on sync later if you want them on another device.
+    - q: What do I need to install?
+      a: Nothing to start. Early lessons run Python in the page; every lesson also downloads as a notebook for Jupyter, VS Code or Google Colab.
+    - q: How long does it take?
+      a: About 35 hours across ten modules, half or more of it hands-on. Lessons are written to be done one section at a time.
+    - q: What if I get stuck?
+      a: Every answer is explained, the glossary defines every term, and an AI tutor beside each lesson can explain code or check your thinking.
+
+# About the author: the about page (about.html) and the "Your instructor" card on the landing page.
+# DRAFT, written from your work history: check every line, and add a photo and links.
+author:
+  name: Solomon Promise
+  role: Data and AI engineer
+  photo: ""                     # e.g. static/img/author.jpg; leave empty to show your initials
+  short: >-
+    I build data products for public health and tools that make technical learning stick. I made Deep Learning
+    Lab so these course notes become something you can run, test and remember.
+  bio:
+    - >-
+      Most of my work turns messy programme data into dashboards people can act on: readiness for electronic
+      medical records across states and facilities, primary health care indicators, and maps that show where
+      support is needed most.
+    - >-
+      Alongside that I build learning products, including Ulowe, a platform for hands-on, project-based learning.
+      Deep Learning Lab grew out of the same question: what would a course look like if nothing were left for
+      the learner to figure out alone?
+  why: >-
+    Course notebooks hold everything you need, but they ask a lot of the reader. I wanted every idea explained in
+    plain English, drawn, animated and tried in a live lab; a question at the end of every section; and a daily
+    review so it stays learned. This site is that, built from the course notebooks, with an AI tutor beside every
+    lesson.
+  links:
+    - { label: GitHub, url: "https://github.com/solomonpromise" }
+  # email: you@example.com      # optional; a public address tends to attract spam
+
 # AI tutor (Qwen on Groq). Never put an API key in this file — the site is public.
 #  - endpoint: URL of the tutor proxy (tutor-proxy/, e.g. a Cloudflare Worker) that holds the key.
 #              Leave empty and learners can still use the tutor with their own Groq key.
