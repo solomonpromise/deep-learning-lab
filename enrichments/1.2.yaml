@@ -18,7 +18,7 @@ inserts:
       The weighted sum $z$ is the tally. The **activation** decides what to announce: ReLU says *"if the tally is negative, say nothing (0); otherwise report it"*.
 
   - section: 1
-    after: "44fdcb32"
+    after: "attachment:figure-1.2.2.png"
     type: widget
     name: neuron-playground
     title: "One neuron, every knob"

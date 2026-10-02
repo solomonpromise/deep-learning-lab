@@ -1,0 +1,258 @@
+[
+  {
+    "lesson": "1.1",
+    "cell": 9,
+    "number": "1.1.1",
+    "caption": "The ten Deep Learning Lab modules, followed by Generative AI and the capstone. Read each row left to right.",
+    "alt": "Ten module cards follow the learning path from machine learning to PyTorch, training, engineering, embeddings, Transformers, pretrained models, efficient fine-tuning, evaluation and model engineering.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.1",
+    "cell": 12,
+    "number": "1.1.2",
+    "caption": "Both pipelines learn to make predictions. Representation learning also learns the feature transformation; people still choose data, architecture and objective.",
+    "alt": "Two pipelines compare raw data to hand-engineered features to a learning algorithm and prediction, versus raw data to a learned encoder to a task head and prediction.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.1",
+    "cell": 22,
+    "number": "1.1.3",
+    "caption": "Schematic data geometry: a linear separator suits separated groups but not interleaved spirals. These points illustrate the concept, not a measured experiment.",
+    "alt": "Two panels show blue and rust classes. A straight line separates two clusters in the first panel but crosses both interleaved spiral classes in the second.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.1",
+    "cell": 53,
+    "number": "1.1.4",
+    "caption": "The lesson compares hand-designed polar features with a learned hidden representation. The encoder and head are trained together in the neural network.",
+    "alt": "A top pipeline transforms coordinates by hand into radius and angular features before a linear classifier. A bottom pipeline learns sixty-four hidden features before the output head.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.1",
+    "cell": 84,
+    "number": "1.1.5",
+    "caption": "A task’s useful information can live in relationships between values. The panels are examples, not a universal dimensionality threshold for deep learning.",
+    "alt": "Four panels contrast a geometric rule on two coordinates, human-designed tabular columns, the spatial arrangement of digit pixels, and textures and context in a photograph.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.2",
+    "cell": 11,
+    "number": "1.2.1",
+    "caption": "Each input is multiplied by its weight, a bias is added, and an activation acts on the result. ReLU is the example shown.",
+    "alt": "Inputs x1, x2 and x3 are weighted and summed with a bias to form z. A ReLU box computes a=max(0,z), producing the neuron activation a.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.2",
+    "cell": 12,
+    "number": "1.2.2",
+    "caption": "The same neuron computation viewed through its ReLU response. Negative z gives zero; positive z gives a=z.",
+    "alt": "A weighted-sum equation feeds a ReLU graph. The graph is flat at zero for negative inputs and rises with slope one for positive inputs. Examples show z=-2 giving a=0 and z=2 giving a=2.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.2",
+    "cell": 16,
+    "number": "1.2.3",
+    "caption": "The lesson’s two-hidden-unit network. Weight and bias indexing matches the NumPy arrays used by its forward pass.",
+    "alt": "Two input nodes connect fully to two ReLU hidden nodes, which connect to one sigmoid output. W1 has four weights, b1 two biases, W2 two weights and b2 one bias: nine parameters.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.2",
+    "cell": 42,
+    "number": "1.2.4",
+    "caption": "A four-row batch keeps its first dimension at each stage: input, hidden pre-activation, ReLU activation, output logit and probability.",
+    "alt": "The forward sequence is X shape (4,2), Z1 (4,2), A1 (4,2), Z2 (4,1), A2 (4,1). Weighted sums and activations change features, while four batch rows remain four.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.2",
+    "cell": 67,
+    "number": "1.2.5",
+    "caption": "The same graph supports both directions. Forward computes predictions and loss; backward follows dependencies to compute gradients.",
+    "alt": "Inputs pass through two linear transformations separated by ReLU, then sigmoid, binary cross-entropy and scalar loss. Weights and biases enter the linear operations, targets enter the loss. A forward arrow shows computation from input to loss.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.2",
+    "cell": 70,
+    "number": "1.2.6",
+    "caption": "The same graph supports both directions. Forward computes predictions and loss; backward follows dependencies to compute gradients.",
+    "alt": "Inputs pass through two linear transformations separated by ReLU, then sigmoid, binary cross-entropy and scalar loss. Weights and biases enter the linear operations, targets enter the loss. A reverse arrow shows the chain rule walking from loss back toward inputs.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.2",
+    "cell": 104,
+    "number": "1.2.7",
+    "caption": "Calculated descent paths on a simple quadratic: η=0.04, 0.3 and 1.1. This is a learning-rate illustration, not the network’s measured training run.",
+    "alt": "Three quadratic loss panels show tiny steps toward zero, effective steps converging to zero, and overshooting steps whose loss increases on alternating sides.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.3",
+    "cell": 11,
+    "number": "1.3.1",
+    "caption": "Scalar, vector, matrix, token-embedding batch and image batch. Axis conventions depend on the operation; these are the layouts used in this course.",
+    "alt": "Ranks zero through four are drawn as a scalar, row, matrix, stacked matrices and image batches. Shapes are (), (E,), (N,F), (N,L,E), and (N,C,H,W), with each symbol defined.",
+    "prompt": false
+  },
+  {
+    "lesson": "1.3",
+    "cell": 80,
+    "number": "1.3.2",
+    "caption": "The canonical training loop links mode, gradient reset, forward pass, loss, backward pass and parameter update.",
+    "alt": "Six numbered rows pair PyTorch training calls with their purpose: train mode, zero gradients, forward logits, loss, backward gradients and optimizer update.",
+    "prompt": false
+  },
+  {
+    "lesson": "2.1",
+    "cell": 52,
+    "number": "2.1.1",
+    "caption": "Examples of the four tensor layouts used in this lesson. Drawn grids illustrate axes; token numbers are examples rather than a real vocabulary encoding.",
+    "alt": "Four panels label tabular (N,F), images (N,C,H,W), token IDs (N,L), and token embeddings (N,L,E), explaining what each axis holds.",
+    "prompt": false
+  },
+  {
+    "lesson": "2.1",
+    "cell": 117,
+    "number": "2.1.2",
+    "caption": "Three dimension checks and a silent broadcasting trap. A (6,) vector and a (6,1) column produce a (6,6) grid.",
+    "alt": "Four shape examples show (8,5)+(5,) yields (8,5); (8,5)+(8,1) yields (8,5); (8,5)+(8,) is incompatible; and (6,)+(6,1) yields an unintended (6,6) grid.",
+    "prompt": false
+  },
+  {
+    "lesson": "2.2",
+    "cell": 36,
+    "number": "2.2.1",
+    "caption": "The update counts in the lesson’s example: 20 full-batch updates versus 2,840 mini-batch updates for 20 passes through the training data.",
+    "alt": "Two cards compare twenty epochs with one batch per epoch, giving twenty updates, against one hundred forty-two batches per epoch, giving two thousand eight hundred forty updates.",
+    "prompt": false
+  },
+  {
+    "lesson": "2.3",
+    "cell": 44,
+    "number": "2.3.1",
+    "caption": "The lesson’s BankMLP stores two DenseBlocks and a head. The forward method applies them in order, carrying shapes (N,50) → (N,64) → (N,32) → (N,1).",
+    "alt": "Left, BankMLP has a ModuleList of two DenseBlocks and a linear head. Right, a batch of fifty features passes through widths sixty-four and thirty-two, then one output logit per example.",
+    "prompt": false
+  },
+  {
+    "lesson": "2.4",
+    "cell": 27,
+    "number": "2.4.1",
+    "caption": "Move reusable responsibilities into modules and leave exploration in notebooks. Configuration, tests and documentation complete the project.",
+    "alt": "Six notebook responsibilities map to dataset, model, training, evaluation and inference Python modules, plus a notebooks directory for exploration and plots.",
+    "prompt": false
+  },
+  {
+    "lesson": "3.2",
+    "cell": 56,
+    "number": "3.2.1",
+    "caption": "A schematic noise floor: close configuration scores can be small relative to split-to-split variation. No measured scores are substituted by these example points.",
+    "alt": "Ten illustrative split scores lie along a validation-AUC number line inside a shaded plus-or-minus two-standard-deviation band. Configuration A and B differ by a small amount within that variation.",
+    "prompt": true
+  },
+  {
+    "lesson": "3.3",
+    "cell": 13,
+    "number": "3.3.1",
+    "caption": "Schematic backward signal through twelve layers. Sigmoid can strongly attenuate gradients; active ReLU avoids attenuation by the activation itself but does not guarantee healthy flow.",
+    "alt": "Two stacks of twelve layers run from output at the top to input at the bottom. Descending gradient arrows thin sharply for sigmoid and more gently for ReLU. The drawing is conceptual, not a quantitative gradient scale.",
+    "prompt": true
+  },
+  {
+    "lesson": "3.4",
+    "cell": 4,
+    "number": "3.4.1",
+    "caption": "Six illustrative signatures support the diagnosis gallery. Training is solid green; validation is dashed rust. Shapes suggest questions, not a definitive cause.",
+    "alt": "A six-panel reference card shows healthy convergence, overfitting, slow undertraining, flat collapse, instability and suspiciously perfect results. Each uses solid training and dashed validation curves.",
+    "prompt": true
+  },
+  {
+    "lesson": "3.4",
+    "cell": 41,
+    "number": "3.4.2",
+    "caption": "Call duration is predictive in a historical table but unavailable when deciding who to call. The violation is about feature availability at prediction time.",
+    "alt": "A timeline places age, job, balance and housing before the prediction boundary. Call duration appears after the call, yet a rust arrow carries it backward across the boundary as an invalid input.",
+    "prompt": true
+  },
+  {
+    "lesson": "4.1",
+    "cell": 10,
+    "number": "4.1.1",
+    "caption": "A 60/20/20 split is an introductory example. The crucial question is whether the held-out rows realistically represent deployment conditions.",
+    "alt": "A sixty-percent train, twenty-percent validation and twenty-percent test strip is compared with a timeline of past training data, a deployment boundary and future examples.",
+    "prompt": true
+  },
+  {
+    "lesson": "4.1",
+    "cell": 69,
+    "number": "4.1.2",
+    "caption": "Year-sized segments are proportional to the row counts reported in the lesson. The percentages are its rounded rates, not predictions.",
+    "alt": "A proportional ribbon shows 27,729 rows for 2008, 14,862 for 2009 and 2,620 for 2010. Cards report approximately five, seventeen and fifty-two percent positive outcomes.",
+    "prompt": true
+  },
+  {
+    "lesson": "4.1",
+    "cell": 74,
+    "number": "4.1.3",
+    "caption": "Stratification mixes time periods; a chronological split preserves them. Both can be valid, but they answer different deployment questions.",
+    "alt": "Two panels contrast a random mixture of historical rows across train, validation and test with earlier training rows followed by later validation and test rows.",
+    "prompt": true
+  },
+  {
+    "lesson": "4.2",
+    "cell": 4,
+    "number": "4.2.1",
+    "caption": "Repeatability, portability and robustness ask different questions. The numeric pairs illustrate definitions; actual noise estimates appear in the lesson’s experiments.",
+    "alt": "Three panels distinguish same-environment identical results, close and explainable results across environments, and conclusions that survive changes to seeds or splits.",
+    "prompt": true
+  },
+  {
+    "lesson": "4.2",
+    "cell": 51,
+    "number": "4.2.2",
+    "caption": "The state categories used by the lesson’s checkpoint. Matching software, hardware and deterministic operations also matter for repeatable continuation.",
+    "alt": "A full checkpoint contains model parameters, optimizer state, row-order and global random generators, and epoch/history/best state. A weights-only file holds only model parameters.",
+    "prompt": true
+  },
+  {
+    "lesson": "4.3",
+    "cell": 14,
+    "number": "4.3.1",
+    "caption": "Memory is computed using 2³⁰ bytes per GiB, as in the notebook. Counts omit activations and other overhead; the four-times comparison uses the same fp32 weight precision.",
+    "alt": "A calculated stacked bar chart compares 7B-parameter static memory: fp16 inference 13.0 GiB, fp32 inference 26.1, fp32 SGD training 52.2, and fp32 AdamW training 104.3. Components are weights, gradients and two optimizer moments.",
+    "prompt": true
+  },
+  {
+    "lesson": "4.3",
+    "cell": 45,
+    "number": "4.3.2",
+    "caption": "The lesson’s troubleshooting order: eliminate needless retained state, change the run, then change computation or capacity. Savings are workload-dependent.",
+    "alt": "Three descending tiers list free cleanup and no-grad checks; smaller batches, accumulation, mixed precision and sequence length; then activation checkpointing, freezing and quantisation. Model size and hardware come last.",
+    "prompt": true
+  },
+  {
+    "lesson": "4.4",
+    "cell": 23,
+    "number": "4.4.1",
+    "caption": "Recorded split results show common movement and a consistently positive paired difference. The points use the table’s four-decimal values.",
+    "alt": "Two measured-data panels show network and boosting AUC moving together over ten shared splits, then boosting-minus-network differences. Every difference is positive, with reported mean 0.0078 and standard deviation 0.0047.",
+    "prompt": true
+  },
+  {
+    "lesson": "4.4",
+    "cell": 34,
+    "number": "4.4.2",
+    "caption": "The reported AUC ranking reverses between random and chronological splits: boosting 0.8034 vs network 0.7956, then boosting 0.5841 vs network 0.6141.",
+    "alt": "A two-model slope chart shows both AUCs falling from historical random splits to later chronological rows. Boosting starts above the network at 0.8034 versus 0.7956 but ends below at 0.5841 versus 0.6141.",
+    "prompt": true
+  }
+]

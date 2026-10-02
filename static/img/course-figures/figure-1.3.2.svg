@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="579.6pt" viewBox="0 0 864 579.6" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>Six numbered rows pair PyTorch training calls with their purpose: train mode, zero gradients, forward logits, loss, backward gradients and optimizer update.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 579.6
+L 864 579.6
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 136.08
+L 833.76 136.08
+L 833.76 183.6
+L 30.24 183.6
+z
+" clip-path="url(#paa00a69947)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 30.24 194.4
+L 833.76 194.4
+L 833.76 241.92
+L 30.24 241.92
+z
+" clip-path="url(#paa00a69947)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 30.24 252.72
+L 833.76 252.72
+L 833.76 300.24
+L 30.24 300.24
+z
+" clip-path="url(#paa00a69947)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 30.24 311.04
+L 833.76 311.04
+L 833.76 358.56
+L 30.24 358.56
+z
+" clip-path="url(#paa00a69947)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 30.24 369.36
+L 833.76 369.36
+L 833.76 416.88
+L 30.24 416.88
+z
+" clip-path="url(#paa00a69947)" style="fill: #ddeaab; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 30.24 427.68
+L 833.76 427.68
+L 833.76 475.2
+L 30.24 475.2
+z
+" clip-path="url(#paa00a69947)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#paa00a69947)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 1.3.2</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.40875" transform="rotate(-0 30.24 63.40875)">Six lines connect the whole training mechanism.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">PyTorch carries out the same operations you traced in NumPy.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="47.52" y="163.979063" transform="rotate(-0 47.52 163.979063)">01</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="96.48" y="163.979063" transform="rotate(-0 96.48 163.979063)">model.train()</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="426.96" y="163.15125" transform="rotate(-0 426.96 163.15125)">Use training behaviour for mode-sensitive layers</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="47.52" y="222.299063" transform="rotate(-0 47.52 222.299063)">02</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="96.48" y="222.090469" transform="rotate(-0 96.48 222.090469)">optimizer.zero_grad()</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="426.96" y="221.47125" transform="rotate(-0 426.96 221.47125)">Clear accumulated parameter gradients</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="47.52" y="280.619063" transform="rotate(-0 47.52 280.619063)">03</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="96.48" y="280.560469" transform="rotate(-0 96.48 280.560469)">logits = model(X)</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="426.96" y="279.79125" transform="rotate(-0 426.96 279.79125)">Compute the forward pass</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="47.52" y="338.939062" transform="rotate(-0 47.52 338.939062)">04</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="96.48" y="338.730469" transform="rotate(-0 96.48 338.730469)">loss = loss_fn(logits, y)</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="426.96" y="338.11125" transform="rotate(-0 426.96 338.11125)">Measure the prediction error</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="47.52" y="397.259063" transform="rotate(-0 47.52 397.259063)">05</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="96.48" y="397.259063" transform="rotate(-0 96.48 397.259063)">loss.backward()</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="426.96" y="396.43125" transform="rotate(-0 426.96 396.43125)">Compute gradients by the chain rule</text>
+   </g>
+   <g id="text_19">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="47.52" y="455.579063" transform="rotate(-0 47.52 455.579063)">06</text>
+   </g>
+   <g id="text_20">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="96.48" y="455.579063" transform="rotate(-0 96.48 455.579063)">optimizer.step()</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="426.96" y="454.75125" transform="rotate(-0 426.96 454.75125)">Update weights using those gradients</text>
+   </g>
+   <g id="text_22">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="525.536406" transform="rotate(-0 30.24 525.536406)">Repeat over batches and epochs. Evaluation changes mode and disables gradient recording.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="paa00a69947">
+   <rect x="0" y="0" width="864" height="579.6"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -30,7 +30,7 @@
   window.DLP.widgets['pipeline-flow'] = function (root) {
     var P = L.palette(), showWork = false, sel = null;
     var svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('viewBox', '0 0 720 340'); svg.setAttribute('class', 'pf-svg'); svg.setAttribute('role', 'img');
+    svg.setAttribute('viewBox', '0 0 720 340'); svg.setAttribute('class', 'pf-svg'); svg.setAttribute('role', 'group');
     svg.setAttribute('aria-label', 'Classical machine learning pipeline next to the deep learning pipeline');
     var toggle = L.segmented({ options: [{ value: 'flow', label: 'Watch the data flow' }, { value: 'work', label: 'Where does the human work go?' }], value: 'flow', onChange: function (v) { showWork = v === 'work'; render(); } });
     var detail = L.el('div', { class: 'w-panel pf-detail', html: '<p class="w-note">Click any box to see what happens at that stage.</p>' });

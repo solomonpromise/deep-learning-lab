@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="475.2pt" viewBox="0 0 864 475.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>A weighted-sum equation feeds a ReLU graph. The graph is flat at zero for negative inputs and rises with slope one for positive inputs. Examples show z=-2 giving a=0 and z=2 giving a=2.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 475.2
+L 864 475.2
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 149.76
+L 351.36 149.76
+L 351.36 347.04
+L 30.24 347.04
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 357.676919 249.12
+Q 384.839811 249.12 409.766635 249.12
+" clip-path="url(#pb7fd346a7b)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 403.366635 245.92
+L 409.766635 249.12
+L 403.366635 252.32
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#pb7fd346a7b)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 1.2.2</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.40875" transform="rotate(-0 30.24 63.40875)">ReLU turns a weighted sum into an activation.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">A negative pre-activation is clipped to zero. A positive one passes through.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="190.8" y="187.9525" transform="rotate(-0 190.8 187.9525)">First: compute the weighted sum</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 25px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="190.8" y="248.098437" transform="rotate(-0 190.8 248.098437)">z = Σ wᵢxᵢ + b</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="190.8" y="309.526875" transform="rotate(-0 190.8 309.526875)">Then: a = max(0, z)</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="409.168437" transform="rotate(-0 30.24 409.168437)">The activation supplies the nonlinearity; the weights and bias remain learnable.</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_4">
+    <path d="M 475.2 327.888
+L 794.88 327.888
+L 794.88 156.816
+L 475.2 156.816
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_2">
+      <defs>
+       <path id="m11d14b6949" d="M 0 0
+L 0 3.5
+" style="stroke: #52645a; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m11d14b6949" x="489.730909" y="327.888" style="fill: #52645a; stroke: #52645a; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="489.730909" y="342.486437" transform="rotate(-0 489.730909 342.486437)">−3</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <g>
+       <use xlink:href="#m11d14b6949" x="635.04" y="327.888" style="fill: #52645a; stroke: #52645a; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="635.04" y="342.486437" transform="rotate(-0 635.04 342.486437)">0</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#m11d14b6949" x="780.349091" y="327.888" style="fill: #52645a; stroke: #52645a; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="780.349091" y="342.486437" transform="rotate(-0 780.349091 342.486437)">3</text>
+     </g>
+    </g>
+    <g id="text_11">
+     <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="635.04" y="356.164562" transform="rotate(-0 635.04 356.164562)">pre-activation z</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_5">
+      <path d="M 475.2 313.632
+L 794.88 313.632
+" clip-path="url(#p4e879537a3)" style="fill: none; stroke: #eef1e8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6">
+      <defs>
+       <path id="me41d3ab336" d="M 0 0
+L -3.5 0
+" style="stroke: #52645a; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#me41d3ab336" x="475.2" y="313.632" style="fill: #52645a; stroke: #52645a; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_12">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52645a" x="468.2" y="317.431219" transform="rotate(-0 468.2 317.431219)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_7">
+      <path d="M 475.2 266.112
+L 794.88 266.112
+" clip-path="url(#p4e879537a3)" style="fill: none; stroke: #eef1e8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#me41d3ab336" x="475.2" y="266.112" style="fill: #52645a; stroke: #52645a; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_13">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52645a" x="468.2" y="269.911219" transform="rotate(-0 468.2 269.911219)">1</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_9">
+      <path d="M 475.2 218.592
+L 794.88 218.592
+" clip-path="url(#p4e879537a3)" style="fill: none; stroke: #eef1e8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#me41d3ab336" x="475.2" y="218.592" style="fill: #52645a; stroke: #52645a; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_14">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52645a" x="468.2" y="222.391219" transform="rotate(-0 468.2 222.391219)">2</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_11">
+      <path d="M 475.2 171.072
+L 794.88 171.072
+" clip-path="url(#p4e879537a3)" style="fill: none; stroke: #eef1e8; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#me41d3ab336" x="475.2" y="171.072" style="fill: #52645a; stroke: #52645a; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_15">
+      <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: end; fill: #52645a" x="468.2" y="174.871219" transform="rotate(-0 468.2 174.871219)">3</text>
+     </g>
+    </g>
+    <g id="text_16">
+     <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: middle" x="455.757813" y="242.352" transform="rotate(-90 455.757813 242.352)">activation a</text>
+    </g>
+   </g>
+   <g id="line2d_13">
+    <path d="M 489.730909 313.632
+L 635.04 313.632
+L 780.349091 171.072
+" clip-path="url(#p4e879537a3)" style="fill: none; stroke: #234c3c; stroke-width: 3; stroke-linecap: square"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 475.2 327.888
+L 475.2 156.816
+" style="fill: none; stroke: #bfcac0; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 475.2 327.888
+L 794.88 327.888
+" style="fill: none; stroke: #bfcac0; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="PathCollection_1">
+    <defs>
+     <path id="m015454ccc0" d="M 0 3.872983
+C 1.027127 3.872983 2.012324 3.464901 2.738613 2.738613
+C 3.464901 2.012324 3.872983 1.027127 3.872983 0
+C 3.872983 -1.027127 3.464901 -2.012324 2.738613 -2.738613
+C 2.012324 -3.464901 1.027127 -3.872983 0 -3.872983
+C -1.027127 -3.872983 -2.012324 -3.464901 -2.738613 -2.738613
+C -3.464901 -2.012324 -3.872983 -1.027127 -3.872983 0
+C -3.872983 1.027127 -3.464901 2.012324 -2.738613 2.738613
+C -2.012324 3.464901 -1.027127 3.872983 0 3.872983
+z
+" style="stroke: #a04e32"/>
+    </defs>
+    <g clip-path="url(#p4e879537a3)">
+     <use xlink:href="#m015454ccc0" x="538.167273" y="313.632" style="fill: #a04e32; stroke: #a04e32"/>
+     <use xlink:href="#m015454ccc0" x="731.912727" y="218.592" style="fill: #a04e32; stroke: #a04e32"/>
+    </g>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #a04e32" x="506.167273" y="296.632" transform="rotate(-0 506.167273 296.632)">z = −2 → a = 0</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #a04e32" x="637.912727" y="208.592" transform="rotate(-0 637.912727 208.592)">z = 2 → a = 2</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pb7fd346a7b">
+   <rect x="0" y="0" width="864" height="475.2"/>
+  </clipPath>
+  <clipPath id="p4e879537a3">
+   <rect x="475.2" y="156.816" width="319.68" height="171.072"/>
+  </clipPath>
+ </defs>
+</svg>

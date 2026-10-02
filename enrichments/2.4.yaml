@@ -83,7 +83,7 @@ inserts:
       process (`python -m pytest`, `python -m src.training.train`), so nothing in the kernel can leak into the result.
 
   - section: 3
-    after: "attachment:40d0a0ee"
+    after: "attachment:figure-2.4.1.png"
     type: widget
     name: project-map
     title: "The repository, file by file"

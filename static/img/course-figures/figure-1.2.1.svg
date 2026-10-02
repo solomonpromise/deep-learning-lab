@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="475.2pt" viewBox="0 0 864 475.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>Inputs x1, x2 and x3 are weighted and summed with a bias to form z. A ReLU box computes a=max(0,z), producing the neuron activation a.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 475.2
+L 864 475.2
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 82.8 149.76
+C 89.292172 149.76 95.519315 152.339367 100.109974 156.930026
+C 104.700633 161.520685 107.28 167.747828 107.28 174.24
+C 107.28 180.732172 104.700633 186.959315 100.109974 191.549974
+C 95.519315 196.140633 89.292172 198.72 82.8 198.72
+C 76.307828 198.72 70.080685 196.140633 65.490026 191.549974
+C 60.899367 186.959315 58.32 180.732172 58.32 174.24
+C 58.32 167.747828 60.899367 161.520685 65.490026 156.930026
+C 70.080685 152.339367 76.307828 149.76 82.8 149.76
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 111.230914 175.131442
+Q 189.720298 214.200148 266.207889 252.272447
+" clip-path="url(#pb7fd346a7b)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 261.904368 246.55583
+L 266.207889 252.272447
+L 259.052483 252.285293
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 82.8 229.68
+C 89.292172 229.68 95.519315 232.259367 100.109974 236.850026
+C 104.700633 241.440685 107.28 247.667828 107.28 254.16
+C 107.28 260.652172 104.700633 266.879315 100.109974 271.469974
+C 95.519315 276.060633 89.292172 278.64 82.8 278.64
+C 76.307828 278.64 70.080685 276.060633 65.490026 271.469974
+C 60.899367 266.879315 58.32 260.652172 58.32 254.16
+C 58.32 247.667828 60.899367 241.440685 65.490026 236.850026
+C 70.080685 232.259367 76.307828 229.68 82.8 229.68
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 111.44406 254.16
+Q 189.72283 254.16 265.765531 254.16
+" clip-path="url(#pb7fd346a7b)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 259.365531 250.96
+L 265.765531 254.16
+L 259.365531 257.36
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 82.8 309.6
+C 89.292172 309.6 95.519315 312.179367 100.109974 316.770026
+C 104.700633 321.360685 107.28 327.587828 107.28 334.08
+C 107.28 340.572172 104.700633 346.799315 100.109974 351.389974
+C 95.519315 355.980633 89.292172 358.56 82.8 358.56
+C 76.307828 358.56 70.080685 355.980633 65.490026 351.389974
+C 60.899367 346.799315 58.32 340.572172 58.32 334.08
+C 58.32 327.587828 60.899367 321.360685 65.490026 316.770026
+C 70.080685 312.179367 76.307828 309.6 82.8 309.6
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 111.230914 333.188558
+Q 189.720298 294.119852 266.207889 256.047553
+" clip-path="url(#pb7fd346a7b)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 259.052483 256.034707
+L 266.207889 256.047553
+L 261.904368 261.76417
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 275.76 192.24
+L 487.44 192.24
+L 487.44 321.12
+L 275.76 321.12
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 493.039688 254.88
+Q 514.080342 254.88 532.884929 254.88
+" clip-path="url(#pb7fd346a7b)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 526.484929 251.68
+L 532.884929 254.88
+L 526.484929 258.08
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 543.6 192.24
+L 711.36 192.24
+L 711.36 321.12
+L 543.6 321.12
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 716.960369 254.88
+Q 768.599372 254.88 818.002308 254.88
+" clip-path="url(#pb7fd346a7b)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 811.602308 251.68
+L 818.002308 254.88
+L 811.602308 258.08
+z
+" clip-path="url(#pb7fd346a7b)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#pb7fd346a7b)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 1.2.1</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.40875" transform="rotate(-0 30.24 63.40875)">A neuron: weighted sum, then activation.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">The nonlinearity changes what layers can represent.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="82.8" y="178.930937" transform="rotate(-0 82.8 178.930937)">x1</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="174.24" y="167.303125" transform="rotate(-0 174.24 167.303125)">w1</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="82.8" y="258.850937" transform="rotate(-0 82.8 258.850937)">x2</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="174.24" y="247.223125" transform="rotate(-0 174.24 247.223125)">w2</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="82.8" y="338.770937" transform="rotate(-0 82.8 338.770937)">x3</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="174.24" y="346.583125" transform="rotate(-0 174.24 346.583125)">w3</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="381.6" y="230.704531" transform="rotate(-0 381.6 230.704531)">Weighted sum + bias</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="381.6" y="280.55875" transform="rotate(-0 381.6 280.55875)">z = Σ wᵢxᵢ + b</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="627.12" y="230.770937" transform="rotate(-0 627.12 230.770937)">Activation</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="627.12" y="279.730937" transform="rotate(-0 627.12 279.730937)">a = max(0, z)</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="771.12" y="241.67875" transform="rotate(-0 771.12 241.67875)">a</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="381.6" y="355.667187" transform="rotate(-0 381.6 355.667187)">Linear transformation</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="627.12" y="355.667187" transform="rotate(-0 627.12 355.667187)">ReLU in this example</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="409.440469" transform="rotate(-0 30.24 409.440469)">Remove the activation and a stack of linear layers is still a linear transformation.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pb7fd346a7b">
+   <rect x="0" y="0" width="864" height="475.2"/>
+  </clipPath>
+ </defs>
+</svg>

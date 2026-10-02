@@ -186,7 +186,7 @@ def postprocess_html(fragment: str) -> str:
             cap_text = div.get_text(" ", strip=True)
             if cap_text:
                 cap = soup.new_tag("figcaption")
-                p = div.find("p")
+                p = next((p for p in div.find_all("p") if p.get_text(strip=True)), None)
                 if p is not None and p.get_text(strip=True):
                     for child in list(p.children):
                         cap.append(child.extract())

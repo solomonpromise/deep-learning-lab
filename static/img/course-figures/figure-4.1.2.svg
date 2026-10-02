@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="486pt" viewBox="0 0 864 486" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>A proportional ribbon shows 27,729 rows for 2008, 14,862 for 2009 and 2,620 for 2010. Cards report approximately five, seventeen and fifty-two percent positive outcomes.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 486
+L 864 486
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 193.68
+L 523.058254 193.68
+L 523.058254 261.36
+L 30.24 261.36
+z
+" clip-path="url(#p8b92f94af0)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 523.058254 193.68
+L 787.195615 193.68
+L 787.195615 261.36
+L 523.058254 261.36
+z
+" clip-path="url(#p8b92f94af0)" style="fill: #c9dbbc; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 787.195615 193.68
+L 833.76 193.68
+L 833.76 261.36
+L 787.195615 261.36
+z
+" clip-path="url(#p8b92f94af0)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 30.24 298.8
+L 290.88 298.8
+L 290.88 404.64
+L 30.24 404.64
+z
+" clip-path="url(#p8b92f94af0)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 301.68 298.8
+L 562.32 298.8
+L 562.32 404.64
+L 301.68 404.64
+z
+" clip-path="url(#p8b92f94af0)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 573.12 298.8
+L 833.76 298.8
+L 833.76 404.64
+L 573.12 404.64
+z
+" clip-path="url(#p8b92f94af0)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#p8b92f94af0)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 4.1.2</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.5025" transform="rotate(-0 30.24 63.5025)">The row order carries a clock.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">The file has no year column; the lesson infers three periods from month resets.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="276.649127" y="231.659062" transform="rotate(-0 276.649127 231.659062)">2008</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="655.126935" y="231.659062" transform="rotate(-0 655.126935 231.659062)">2009</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="810.477808" y="231.659062" transform="rotate(-0 810.477808 231.659062)">2010</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="43.2" y="325.642812" transform="rotate(-0 43.2 325.642812)">2008</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="43.2" y="355.055" transform="rotate(-0 43.2 355.055)">27,729 rows</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="43.2" y="386.735" transform="rotate(-0 43.2 386.735)">≈ 5% yes</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="314.64" y="325.642812" transform="rotate(-0 314.64 325.642812)">2009</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="314.64" y="355.055" transform="rotate(-0 314.64 355.055)">14,862 rows</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="314.64" y="386.735" transform="rotate(-0 314.64 386.735)">≈ 17% yes</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 19px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="586.08" y="325.642812" transform="rotate(-0 586.08 325.642812)">2010</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="586.08" y="355.055" transform="rotate(-0 586.08 355.055)">2,620 rows</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="586.08" y="386.735" transform="rotate(-0 586.08 386.735)">≈ 52% yes</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="442.736406" transform="rotate(-0 30.24 442.736406)">Two December → January transitions. A short later period has a much higher positive rate.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p8b92f94af0">
+   <rect x="0" y="0" width="864" height="486"/>
+  </clipPath>
+ </defs>
+</svg>

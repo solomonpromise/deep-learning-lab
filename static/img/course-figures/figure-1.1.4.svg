@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="468pt" viewBox="0 0 864 468" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>A top pipeline transforms coordinates by hand into radius and angular features before a linear classifier. A bottom pipeline learns sixty-four hidden features before the output head.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 468
+L 864 468
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 161.28
+L 212.22 161.28
+L 212.22 220.32
+L 30.24 220.32
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 216.38083 190.8
+Q 224.822529 190.8 231.02816 190.8
+" clip-path="url(#pbb4cfeb755)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 224.62816 187.6
+L 231.02816 190.8
+L 224.62816 194
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 237.42 161.28
+L 419.4 161.28
+L 419.4 220.32
+L 237.42 220.32
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 423.56083 190.8
+Q 432.002529 190.8 438.20816 190.8
+" clip-path="url(#pbb4cfeb755)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 431.80816 187.6
+L 438.20816 190.8
+L 431.80816 194
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 444.6 161.28
+L 626.58 161.28
+L 626.58 220.32
+L 444.6 220.32
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 630.74083 190.8
+Q 639.182529 190.8 645.38816 190.8
+" clip-path="url(#pbb4cfeb755)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 638.98816 187.6
+L 645.38816 190.8
+L 638.98816 194
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 651.78 161.28
+L 833.76 161.28
+L 833.76 220.32
+L 651.78 220.32
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 30.24 330.48
+L 212.22 330.48
+L 212.22 389.52
+L 30.24 389.52
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 216.38083 360
+Q 224.822529 360 231.02816 360
+" clip-path="url(#pbb4cfeb755)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 224.62816 356.8
+L 231.02816 360
+L 224.62816 363.2
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 237.42 330.48
+L 419.4 330.48
+L 419.4 389.52
+L 237.42 389.52
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 423.56083 360
+Q 432.002529 360 438.20816 360
+" clip-path="url(#pbb4cfeb755)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 431.80816 356.8
+L 438.20816 360
+L 431.80816 363.2
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 444.6 330.48
+L 626.58 330.48
+L 626.58 389.52
+L 444.6 389.52
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 630.74083 360
+Q 639.182529 360 645.38816 360
+" clip-path="url(#pbb4cfeb755)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 638.98816 356.8
+L 645.38816 360
+L 638.98816 363.2
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 651.78 330.48
+L 833.76 330.48
+L 833.76 389.52
+L 651.78 389.52
+z
+" clip-path="url(#pbb4cfeb755)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#pbb4cfeb755)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 1.1.4</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.5025" transform="rotate(-0 30.24 63.5025)">Write a transformation or learn one.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">Both approaches change the representation before the final decision.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="30.24" y="140.256563" transform="rotate(-0 30.24 140.256563)">Hand-engineered representation</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="121.23" y="194.329297" transform="rotate(-0 121.23 194.329297)">Raw (x, y)</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="121.23" y="246.395312" transform="rotate(-0 121.23 246.395312)">2 input values</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="328.41" y="194.387187" transform="rotate(-0 328.41 194.387187)">r, sin(α), cos(α)</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="328.41" y="246.395312" transform="rotate(-0 328.41 246.395312)">Rules chosen by a person</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="535.59" y="194.387187" transform="rotate(-0 535.59 194.387187)">Linear classifier</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="535.59" y="246.395312" transform="rotate(-0 535.59 246.395312)">Fit the final coefficients</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="742.77" y="194.387187" transform="rotate(-0 742.77 194.387187)">Prediction</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="742.77" y="246.395312" transform="rotate(-0 742.77 246.395312)">A class label</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="30.24" y="309.526875" transform="rotate(-0 30.24 309.526875)">Learned representation</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="121.23" y="363.529297" transform="rotate(-0 121.23 363.529297)">Raw (x, y)</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="121.23" y="415.595312" transform="rotate(-0 121.23 415.595312)">2 input values</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="328.41" y="363.587188" transform="rotate(-0 328.41 363.587188)">64 learned features</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="328.41" y="415.595312" transform="rotate(-0 328.41 415.595312)">Fit by gradient descent</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="535.59" y="363.587188" transform="rotate(-0 535.59 363.587188)">Task head</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="535.59" y="415.595312" transform="rotate(-0 535.59 415.595312)">Learned output weights</text>
+   </g>
+   <g id="text_20">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="742.77" y="363.587188" transform="rotate(-0 742.77 363.587188)">Prediction</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="742.77" y="415.595312" transform="rotate(-0 742.77 415.595312)">A class label</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pbb4cfeb755">
+   <rect x="0" y="0" width="864" height="468"/>
+  </clipPath>
+ </defs>
+</svg>

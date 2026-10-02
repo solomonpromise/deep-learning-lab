@@ -9,7 +9,7 @@ summary: |
 inserts:
   # ------------------------------------------------------------------ §1
   - section: 1
-    after: "6ef75600"
+    after: "attachment:figure-1.3.1.png"
     type: widget
     name: tensor-shapes
     title: "Tensor ranks, reshapes and broadcasting: see them"
@@ -114,7 +114,7 @@ inserts:
 
   # ------------------------------------------------------------------ §8
   - section: 8
-    after: "8668abc4"
+    after: "attachment:figure-1.3.2.png"
     type: widget
     name: training-loop
     title: "Run the six lines one at a time"

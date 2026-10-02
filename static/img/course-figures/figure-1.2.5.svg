@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="496.8pt" viewBox="0 0 864 496.8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>Inputs pass through two linear transformations separated by ReLU, then sigmoid, binary cross-entropy and scalar loss. Weights and biases enter the linear operations, targets enter the loss. A forward arrow shows computation from input to loss.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 496.8
+L 864 496.8
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 210.24
+L 123.428571 210.24
+L 123.428571 275.76
+L 30.24 275.76
+z
+" clip-path="url(#pda6c973565)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 127.589402 243
+Q 136.031101 243 142.236732 243
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 135.836732 239.8
+L 142.236732 243
+L 135.836732 246.2
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 148.628571 210.24
+L 241.817143 210.24
+L 241.817143 275.76
+L 148.628571 275.76
+z
+" clip-path="url(#pda6c973565)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 245.977973 243
+Q 254.419672 243 260.625303 243
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 254.225303 239.8
+L 260.625303 243
+L 254.225303 246.2
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 267.017143 210.24
+L 360.205714 210.24
+L 360.205714 275.76
+L 267.017143 275.76
+z
+" clip-path="url(#pda6c973565)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 364.366544 243
+Q 372.808244 243 379.013875 243
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 372.613875 239.8
+L 379.013875 243
+L 372.613875 246.2
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 385.405714 210.24
+L 478.594286 210.24
+L 478.594286 275.76
+L 385.405714 275.76
+z
+" clip-path="url(#pda6c973565)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 482.755116 243
+Q 491.196815 243 497.402446 243
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 491.002446 239.8
+L 497.402446 243
+L 491.002446 246.2
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 503.794286 210.24
+L 596.982857 210.24
+L 596.982857 275.76
+L 503.794286 275.76
+z
+" clip-path="url(#pda6c973565)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 601.143687 243
+Q 609.585386 243 615.791018 243
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 609.391018 239.8
+L 615.791018 243
+L 609.391018 246.2
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 622.182857 210.24
+L 715.371429 210.24
+L 715.371429 275.76
+L 622.182857 275.76
+z
+" clip-path="url(#pda6c973565)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 719.532259 243
+Q 727.973958 243 734.179589 243
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 727.779589 239.8
+L 734.179589 243
+L 727.779589 246.2
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 740.571429 210.24
+L 833.76 210.24
+L 833.76 275.76
+L 740.571429 275.76
+z
+" clip-path="url(#pda6c973565)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 198.72 188.477227
+Q 198.72 195.840391 198.72 200.967488
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 201.92 194.567488
+L 198.72 200.967488
+L 195.52 194.567488
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 435.6 188.477227
+Q 435.6 195.840391 435.6 200.967488
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 438.8 194.567488
+L 435.6 200.967488
+L 432.4 194.567488
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 673.2 188.477227
+Q 673.2 195.840391 673.2 200.967488
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 676.4 194.567488
+L 673.2 200.967488
+L 670 194.567488
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 53.838476 341.28
+Q 430.919749 341.28 805.764955 341.28
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 799.364955 338.08
+L 805.764955 341.28
+L 799.364955 344.48
+z
+" clip-path="url(#pda6c973565)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#pda6c973565)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 1.2.5</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.40875" transform="rotate(-0 30.24 63.40875)">The forward pass is a computation graph.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">Keep track of both the computed values and the operation that produced each one.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="76.834286" y="246.863125" transform="rotate(-0 76.834286 246.863125)">X</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="195.222857" y="246.863125" transform="rotate(-0 195.222857 246.863125)">Linear 1</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="313.611429" y="246.863125" transform="rotate(-0 313.611429 246.863125)">ReLU</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="432" y="246.863125" transform="rotate(-0 432 246.863125)">Linear 2</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="550.388571" y="246.808437" transform="rotate(-0 550.388571 246.808437)">sigmoid</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="668.777143" y="246.863125" transform="rotate(-0 668.777143 246.863125)">BCE</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="787.165714" y="246.863125" transform="rotate(-0 787.165714 246.863125)">Loss</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="198.72" y="179.267188" transform="rotate(-0 198.72 179.267188)">W₁, b₁</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="435.6" y="179.267188" transform="rotate(-0 435.6 179.267188)">W₂, b₂</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="673.2" y="179.267188" transform="rotate(-0 673.2 179.267188)">Targets y</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="429.84" y="373.499063" transform="rotate(-0 429.84 373.499063)">Forward: compute values; remember the operations and their inputs</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="438.19125" transform="rotate(-0 30.24 438.19125)">The loss is one scalar. Each learned weight and bias receives its own derivative of that scalar.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pda6c973565">
+   <rect x="0" y="0" width="864" height="496.8"/>
+  </clipPath>
+ </defs>
+</svg>
