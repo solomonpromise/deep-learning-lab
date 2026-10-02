@@ -30,7 +30,10 @@
 
 {% elif b.kind == 'questions' %}
 {% set qm = QMETA[b.qtype] %}
-<div class="qcard q-{{ b.qtype }} reveal" id="q-{{ b.id }}" data-qblock="{{ b.id }}">
+{# a single short reflective question sits in the margin as a note, with "Write my answer" as a link #}
+{% set q0 = b['items'][0].html if b['items'] else '' %}
+{% set margin = b.qtype == 'think' and b['items']|length == 1 and not b.intro_html and (q0 | striptags | length) < 320 and '<pre' not in q0 and '<img' not in q0 and '$$' not in q0 %}
+<div class="qcard q-{{ b.qtype }}{% if margin %} mnote q-note{% endif %} reveal" id="q-{{ b.id }}" data-qblock="{{ b.id }}">
   <div class="qcard-head">
     <span class="qcard-icon"><svg class="ic"><use href="#{{ qm.icon }}"/></svg></span>
     <div><span class="qcard-tag">{{ qm.tag }}</span><span class="qcard-label">{{ b.label }}</span></div>
@@ -186,10 +189,14 @@
     <span class="code-lang">{% if b.file %}<svg class="ic"><use href="#i-pencil"/></svg> Writes {{ b.file }}{% elif b.lang == 'bash' %}<svg class="ic"><use href="#i-terminal"/></svg> Terminal{% elif b.role == 'inspect' %}<svg class="ic"><use href="#i-eye"/></svg> Inspect a value{% elif b.role == 'setup' %}<svg class="ic"><use href="#i-gear"/></svg> Setup{% else %}<svg class="ic"><use href="#i-code"/></svg> Python{% endif %}</span>
     <span class="code-meta">{{ b.n_lines }} line{{ 's' if b.n_lines != 1 }}</span>
     <span class="code-actions">
-      {% if b.runnable %}<button class="chip-btn py-run" data-py-run title="Run this cell in your browser (earlier cells run first)"><svg class="ic"><use href="#i-play"/></svg> Run</button>
-      <button class="chip-btn" data-py-edit title="Edit the code, then run your version"><svg class="ic"><use href="#i-pencil"/></svg> <span>Edit</span></button>{% endif %}
-      {% if b.explain %}<button class="chip-btn accent" data-explain-toggle aria-expanded="true"><svg class="ic"><use href="#i-bulb"/></svg> <span>Hide explanation</span></button>{% endif %}
-      <button class="icon-btn sm" data-copy aria-label="Copy code" title="Copy code"><svg class="ic"><use href="#i-copy"/></svg></button>
+      {% if b.runnable %}<button class="chip-btn py-run" data-py-run title="Run this cell in your browser (earlier cells run first)"><svg class="ic"><use href="#i-play"/></svg> Run</button>{% endif %}
+      {# the rest in a ⋯ menu (a popover, so the cell's rounded corners do not clip it); app.js wires it up #}
+      <button class="icon-btn sm code-more" type="button" data-code-more aria-label="More actions for this code" title="More"><svg class="ic"><use href="#i-more"/></svg></button>
+      <span class="code-menu" data-code-menu role="menu" popover>
+        {% if b.runnable %}<button class="code-mi" role="menuitem" data-py-edit><svg class="ic"><use href="#i-pencil"/></svg> <span>Edit</span></button>{% endif %}
+        {% if b.explain %}<button class="code-mi" role="menuitem" data-explain-toggle aria-expanded="true"><svg class="ic"><use href="#i-bulb"/></svg> <span>Hide explanation</span></button>{% endif %}
+        <button class="code-mi" role="menuitem" data-copy><svg class="ic"><use href="#i-copy"/></svg> <span>Copy code</span></button>
+      </span>
     </span>
   </div>
   <pre class="code"><code>{% for line in b.lines %}<span class="ln"{% if b.note_map and loop.index0 in b.note_map %} data-note="{{ b.note_map[loop.index0] }}"{% endif %}>{{ line | safe }}</span>{% endfor %}</code></pre>

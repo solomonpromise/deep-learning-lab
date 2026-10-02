@@ -191,7 +191,7 @@
       intro.hidden = true; foot.hidden = true; run.hidden = false; box.classList.add('is-running');
       var first = 0; while (!fromStart && first < qs.length - 1 && picks[qid(first)] && tally().n < qs.length) first++;
       show(fromStart ? 0 : first);
-      box.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      box.scrollIntoView({ block: 'start', behavior: window.DLP.scrollBehavior() });
       var o = $('.opt:not(:disabled)', qs[cur]) || next; try { o.focus({ preventScroll: true }); } catch (e) {}
     }
     function close() { run.hidden = true; intro.hidden = false; box.classList.remove('is-running'); paintIntro(); }

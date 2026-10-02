@@ -77,7 +77,7 @@
     <div class="sidebar-inner">
       <a class="side-home{% if page == 'home' %} is-active{% endif %}" href="{{ root }}index.html"><svg class="ic"><use href="#i-home"/></svg> Course home</a>
       {% for m in nav %}
-      <div class="side-module{% if not m.available %} is-locked{% endif %}{% if module is defined and module.number == m.number %} is-open{% endif %}" style="--mc: {{ m.color }}">
+      <div class="side-module{% if not m.available %} is-locked{% endif %}{% if module is defined and module.number == m.number %} is-open{% endif %}">
         {% if m.available %}
         <button class="side-module-head" data-side-toggle aria-expanded="{{ 'true' if module is defined and module.number == m.number else 'false' }}">
           <span class="side-num">{{ m.number }}</span>
