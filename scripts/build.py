@@ -422,7 +422,7 @@ class Builder:
             if not m["available"]:
                 continue
             render_card(og / f"module-{m['number']}.png", kicker=f"Module {m['number']}", title=m["title"],
-                        subtitle=f"“{m['question']}”" if m.get("question") else "", accent=m["color"],
+                        subtitle=f"“{m['question']}”" if m.get("question") else "",
                         chips=[f"{len(m['lessons'])} lessons", f"~{m['minutes'] / 60:.1f} hours"], **common)
             for le in m["lessons"]:
                 ex = extras[le["id"]]
@@ -432,7 +432,7 @@ class Builder:
                 if ex["checkpoints"]:
                     chips.append(f"{len(ex['checkpoints'])} checkpoints")
                 render_card(og / f"lesson-{le['id']}.png", kicker=f"Module {m['number']} · Lesson {le['id']}",
-                            title=by_id[le["id"]].title, accent=m["color"], chips=chips, **common)
+                            title=by_id[le["id"]].title, chips=chips, **common)
 
     # ------------------------------------------------------------------ authoring helper
     def list_defs(self, lid: str) -> None:
