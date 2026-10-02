@@ -14,6 +14,8 @@
   };
   window.DLP = window.DLP || {};
   window.DLP.store = store;
+  // 'smooth', or 'auto' for anyone who asked their system for less motion (a script's 'smooth' overrides the CSS)
+  window.DLP.scrollBehavior = function () { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'; };
 
   /* ------------------------------------------------------------ theme */
   function currentTheme() {
@@ -62,8 +64,8 @@
       if (inPlace()) {
         var collapsed = document.documentElement.classList.toggle('nav-collapsed');
         store.set('nav-collapsed', collapsed);
-        if (!collapsed && activeSide) { try { activeSide.scrollIntoView({ block: 'center' }); } catch (e) {} }
-      } else { document.body.classList.remove('spine-open'); document.body.classList.toggle('nav-open'); }
+        if (!collapsed) centreActiveSide();
+      } else { document.body.classList.remove('spine-open'); document.body.classList.toggle('nav-open'); centreActiveSide(); }
       syncNavToggle();
     });
   });
@@ -78,8 +80,16 @@
       b.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   });
+  // the course tree starts scrolled to this lesson. Scroll its own box: scrollIntoView would also move where the
+  // keyboard's Tab starts, past the skip link and the top bar
   var activeSide = $('.side-lessons a.is-active');
-  if (activeSide) { try { activeSide.scrollIntoView({ block: 'center' }); } catch (e) {} }
+  function centreActiveSide() {
+    var box = activeSide && activeSide.closest('.sidebar-inner');
+    if (!box) return;
+    var r = activeSide.getBoundingClientRect(), b = box.getBoundingClientRect();
+    box.scrollTop += r.top - b.top - (box.clientHeight - r.height) / 2;
+  }
+  centreActiveSide();
 
   /* ------------------------------------------------------------ progress model */
   function progress() { return store.get('progress', {}); }
@@ -104,7 +114,7 @@
     $$('[data-complete]').forEach(function (btn) {
       var s = p[btn.getAttribute('data-complete')] || {};
       btn.classList.toggle('is-done', !!s.done);
-      $('span', btn).textContent = s.done ? 'Completed — click to undo' : 'Mark lesson as complete';
+      $('span', btn).textContent = s.done ? 'Completed. Click to undo' : 'Mark lesson as complete';
     });
   }
   $$('[data-complete]').forEach(function (btn) {
@@ -119,8 +129,9 @@
 
   window.DLP.confetti = function (anchor) { confetti(anchor); };
   function confetti(anchor) {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var r = anchor.getBoundingClientRect();
-    var colors = ['#2a78d6', '#eb6834', '#1baf7a', '#6a55e0', '#d99400'];
+    var colors = ['#3b528b', '#21918c', '#5ec962', '#fde725'];   // the activation scale
     for (var i = 0; i < 26; i++) {
       var s = document.createElement('span');
       s.style.cssText = 'position:fixed;z-index:99;width:8px;height:8px;border-radius:2px;pointer-events:none;left:' +
@@ -313,14 +324,62 @@
   }
 
   /* ------------------------------------------------------------ code cells */
+  // the ⋯ menu on each code cell (Edit, Hide explanation, Ask the tutor, Copy) is a popover, positioned under its button
+  var POPOVER = typeof HTMLElement !== 'undefined' && Object.prototype.hasOwnProperty.call(HTMLElement.prototype, 'popover');
+  $$('[data-code]').forEach(function (cell) {
+    var more = $('[data-code-more]', cell), menu = $('[data-code-menu]', cell);
+    if (!more || !menu) return;
+    if (!POPOVER) { menu.removeAttribute('popover'); menu.classList.add('is-inline'); more.hidden = true; return; }   // older browsers: the actions sit in the header
+    more.popoverTargetElement = menu;
+    more.setAttribute('aria-haspopup', 'menu'); more.setAttribute('aria-expanded', 'false');
+    // under the button, or above it when there is no room below; it follows the button as the page scrolls
+    menu.place = function () {
+      var r = more.getBoundingClientRect(), h = menu.offsetHeight;
+      if (r.bottom < 0 || r.top > window.innerHeight) { menu.hidePopover(); return; }
+      menu.style.top = (h && r.bottom + 6 + h > window.innerHeight && r.top - 6 - h > 0 ? r.top - 6 - h : r.bottom + 6) + 'px';
+      menu.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
+    };
+    menu.addEventListener('beforetoggle', function (e) { if (e.newState === 'open') menu.place(); });
+    menu.addEventListener('toggle', function (e) {
+      var open = e.newState === 'open';
+      more.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (!open) return;
+      menu.place();
+      var first = $('button', menu); if (first) first.focus({ preventScroll: true });
+    });
+    menu.addEventListener('click', function (e) { if (e.target.closest('button')) menu.hidePopover(); });
+    menu.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      var items = $$('button', menu), i = items.indexOf(document.activeElement);
+      e.preventDefault();
+      items[(i + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus();
+    });
+  });
+  if (POPOVER) window.addEventListener('scroll', function () { $$('[data-code-menu]').forEach(function (m) { if (m.matches(':popover-open')) m.place(); }); }, { passive: true });
   $$('[data-copy]').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var src = $('.code-src', btn.closest('[data-code]')).value;
-      var done = function () { btn.innerHTML = '<svg class="ic"><use href="#i-check"/></svg>'; setTimeout(function () { btn.innerHTML = '<svg class="ic"><use href="#i-copy"/></svg>'; }, 1400); };
+      var cell = btn.closest('[data-code]'), src = $('.code-src', cell).value;
+      // feedback where you can see it: on the ⋯ button when the copy came from its menu
+      var shown = btn.closest('[data-code-menu]') && $('[data-code-more]', cell) && !$('[data-code-more]', cell).hidden ? $('[data-code-more]', cell) : btn, was = shown.innerHTML;
+      var done = function () {
+        shown.innerHTML = '<svg class="ic"><use href="#i-check"/></svg>' + (shown === btn ? ' <span>Copied</span>' : '');
+        shown.setAttribute('aria-label', 'Code copied');
+        setTimeout(function () { shown.innerHTML = was; shown.setAttribute('aria-label', shown === btn ? 'Copy code' : 'More actions for this code'); }, 1400);
+      };
       if (navigator.clipboard) navigator.clipboard.writeText(src).then(done, done);
       else { var ta = document.createElement('textarea'); ta.value = src; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} ta.remove(); done(); }
     });
   });
+  // code and tables wider than the column scroll sideways: make those (and only those) reachable with the keyboard
+  function keyScroll() {
+    $$('pre.code, .table-wrap, .out-text, .math-display, .custom-figure, .prose pre.hl, .py-out pre').forEach(function (el) {
+      if (el.scrollWidth > el.clientWidth + 1) el.tabIndex = 0;
+      else if (el.tabIndex === 0) el.removeAttribute('tabindex');
+    });
+  }
+  keyScroll();
+  window.addEventListener('load', keyScroll);   // again once maths, fonts and images have settled the widths
+  var keyScrollTimer; window.addEventListener('resize', function () { clearTimeout(keyScrollTimer); keyScrollTimer = setTimeout(keyScroll, 200); });
   $$('[data-code-expand]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var cell = btn.closest('[data-code]');
@@ -470,7 +529,7 @@
     });
     if (foot) $('[data-quiz-retry]', foot).addEventListener('click', function () {
       state = {}; qs.forEach(function (q) { resetChoice(q, '.quiz-why'); }); paint();
-      qs[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+      qs[0].scrollIntoView({ block: 'center', behavior: window.DLP.scrollBehavior() });
     });
     paint();
   });

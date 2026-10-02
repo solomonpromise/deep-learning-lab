@@ -54,7 +54,8 @@ templates/ + static/  (design, behaviour, widgets)               ─┘
 | `glossary.yaml` | Terms shown with a dotted underline; hover or tap for a definition |
 | `concepts.yaml` | For the concept map: the lesson that teaches each glossary term and the terms it builds on |
 | `templates/` | Jinja2 page templates |
-| `static/css`, `static/js` | Styles, page behaviour (`app.js`), the widget toolkit (`js/lib/core.js`) and widgets (`js/widgets/*.js`) |
+| `static/css`, `static/js` | Styles (colour tokens at the top of `site.css`, the design system in `activation.css`), page behaviour (`app.js`), the widget toolkit (`js/lib/core.js`) and widgets (`js/widgets/*.js`) |
+| `scripts/dev/` | Checks for the built site: screenshots, an accessibility audit and a CSS audit (see *The interface* below) |
 | `scripts/build.py` | The generator. `scripts/dlp/` contains the notebook parser, renderers, enrichment and glossary logic |
 | `tutor-proxy/` | Cloudflare Worker: relays AI-tutor requests to Groq while keeping the API key secret, and serves the course API (sync, answer counts, certificates, challenge results) from a D1 database |
 | `dist/` | Build output. Don't edit; it's regenerated every build (and ignored by git) |
@@ -65,7 +66,7 @@ templates/ + static/  (design, behaviour, widgets)               ─┘
 |---|---|
 | `# Day N — Title` | Module title |
 | `## Note N.M — Title` | Lesson number and title |
-| Headings before section 1 (*Goal/Outcome*, *Objectives*, *Dataset*, *Runtime*, *Setup*, *Table of contents*) | The lesson's "Before you start" cards; setup cells fold into a Setup panel; the table of contents is replaced by the live sidebar |
+| Headings before section 1 (*Goal/Outcome*, *Objectives*, *Dataset*, *Runtime*, *Setup*, *Table of contents*) | The lesson's "Before you start" rows; setup cells fold into a Setup panel; the table of contents is replaced by the lesson's spine (its outline on the left) |
 | `## 3. Section title` | A numbered section (with progress tracking and a TOC entry) |
 | `### Sub-heading` | A sub-section (listed in the TOC) |
 | `## Conclusion`, `## Transition to …` | Styled summary and an "Up next" card linking the next lesson |
@@ -393,10 +394,10 @@ record (`static/js/record.js`). No account is needed. The pages built on it:
 
 | Page | What it shows |
 |---|---|
-| `review.html` | Today's daily review, and practice for any lesson |
-| `progress.html` | Streak and weekly goal, a 16-week calendar, the skills map, badges, lab challenge results, and sync |
+| `review.html` | The daily review: opens on the first question due (rounds of 15, keys A–D, Enter, Esc), and practice for any lesson |
+| `progress.html` | The training log: lessons mastered, this week and the weekly goal, what to do next, 26 weeks of study days, the skills map, badges, lab challenge results, and sync and privacy |
 | `certificate.html` | The certificate, listing the modules passed; printable, downloadable as PNG. Only built when `features.certificate` is `true` |
-| `concepts.html` | The concept map |
+| `concepts.html` | The concept map: each glossary term in the module that teaches it, its links, and how far you are with its lesson |
 | `instructor.html` | Answer counts per question, for the course author (not linked, not indexed; needs the stats token) |
 
 With `services.api` set in `course.yaml`, the same Worker as the tutor adds a small API (`tutor-proxy/api.js`, storage in
@@ -407,11 +408,11 @@ the D1 database from `tutor-proxy/schema.sql`):
 - **Anonymous answer counts**: a question id and right or wrong, nothing else. Learners can switch it off, and it is
   off for browsers that send Do Not Track and on local previews (`make serve`), so testing doesn't skew the counts. The instructor page reads them with a token.
 - **Certificates** get an id and a public verification link (when `features.certificate` is on).
+- **Lab challenges** report the share of earlier results a new one beats.
 
 `features.certificate` in `course.yaml` switches the certificate on or off. It is off for now: `certificate.html` is not
 built, and the progress page, the module challenges and the guide stop mentioning it. Module badges keep working. The
 Worker's certificate endpoints and records are untouched, so setting it back to `true` restores everything.
-- **Lab challenges** report the share of earlier results a new one beats.
 
 One-time setup, after the tutor proxy (below) is deployed:
 
@@ -438,6 +439,37 @@ Each lesson, module and the home page gets a 1200×630 preview image (drawn at b
 Open Graph tags, so a link shared in a chat or on social media shows the lesson's title and module. Set `site_url` in
 `course.yaml` to the live address so the tags carry absolute URLs.
 
+## The interface
+
+The design ("Activation") has a few rules, which `docs/redesign/HANDOFF.md` sets out with the mockups in
+`docs/redesign/mockups/`:
+
+- **Colour means progress, and only progress.** Matplotlib's viridis in four steps: started (blue), practised (teal),
+  strong (green), mastered (yellow); not started is a hollow node. Data classes in labs are blue and orange; green and
+  rust mean right and wrong, always with a tick or cross. Modules are told apart by their number, not a colour.
+- **Three typefaces.** Archivo for the interface, Source Serif 4 for the lesson text, JetBrains Mono for code, labels and
+  numbers you can measure.
+- **Four materials.** Paper for prose; a white card with a "?" for every question; a dotted bench, wider than the text,
+  for every lab; a dark terminal for every code cell (Run in the header, the rest in its ⋯ menu).
+- **One navigation per page.** Lessons have a spine (their outline) with the course tree as a drawer; other pages have the
+  top bar, and phones a tab bar. Short notes sit in the margin beside the text they explain. Read mode (`F`) leaves
+  only the text.
+
+New styles go in `static/css/activation.css`; the colour tokens (light and dark) are at the top of `static/css/site.css`.
+Before committing a change to the interface, build, run `make serve`, and check it:
+
+```bash
+npm install --no-save playwright axe-core           # once (Node.js is only needed for these checks)
+CHANNEL=chrome node scripts/dev/screenshots.mjs      # every page at 1440, 1280 and 390 px and in dark, into .shots/;
+                                                     # reports sideways scroll and JavaScript errors
+CHANNEL=chrome node scripts/dev/a11y.mjs             # WCAG 2.1 AA (contrast, names, keyboard), light and dark
+python3 scripts/dev/css_audit.py                     # selectors nothing uses, and classes that clash with the code
+                                                     # highlighter (.nf, .sa …); --fix removes the dead ones
+```
+
+`CHANNEL=chrome` uses the installed Google Chrome; leave it out after `npx playwright install chromium`. Both browser
+scripts load a sample learner partway through Module 3, so the pages show real progress.
+
 ## Hosting on GitHub Pages
 
 1. Create a repository (for example `deep-learning-lab`) and push this folder to its `main` branch.
@@ -450,4 +482,5 @@ The site uses relative links, so it works under any sub-path and on a custom dom
 
 ## Requirements
 
-Python 3.10+ with the packages in `requirements.txt` (`pip install -r requirements.txt`). No Node.js needed.
+Python 3.10+ with the packages in `requirements.txt` (`pip install -r requirements.txt`). Building and serving need no
+Node.js; only the checks in `scripts/dev/` do.

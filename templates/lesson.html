@@ -27,9 +27,9 @@
       </div>
       <div class="spine-actions">
         <span data-focus-slot="spine"></span>
-        <button type="button" class="sa" data-nav-toggle aria-controls="sidebar"><svg class="ic"><use href="#i-menu"/></svg> All lessons</button>
-        <a class="sa" href="{{ notebook_url }}" download><svg class="ic"><use href="#i-download"/></svg> Notebook</a>
-        {% if colab_url %}<a class="sa" href="{{ colab_url }}" target="_blank" rel="noopener"><svg class="ic"><use href="#i-rocket"/></svg> Colab</a>{% endif %}
+        <button type="button" class="spa" data-nav-toggle aria-controls="sidebar"><svg class="ic"><use href="#i-menu"/></svg> All lessons</button>
+        <a class="spa" href="{{ notebook_url }}" download><svg class="ic"><use href="#i-download"/></svg> Notebook</a>
+        {% if colab_url %}<a class="spa" href="{{ colab_url }}" target="_blank" rel="noopener"><svg class="ic"><use href="#i-rocket"/></svg> Colab</a>{% endif %}
       </div>
       <ol class="sp-list" data-toc>
         <li><a class="sp" href="#start" data-toc-link="start" title="Before you start"><span class="node" aria-hidden="true"></span><small>·</small><span class="sp-t">Before you start</span></a></li>
@@ -46,20 +46,22 @@
 {% endblock %}
 
 {% block main %}
-<div class="lesson-layout" style="--mc: {{ module.color }}" data-lesson="{{ lesson.id }}">
+<div class="lesson-layout" data-lesson="{{ lesson.id }}">
 <article class="lesson" data-gloss-root>
   <!-- ======================= hero -->
   <header class="lesson-hero">
     <a class="mono-label hero-mod" href="{{ root }}{{ module.url }}">Module {{ module.number }} · {{ module.title }}</a>
     <h1 class="lesson-title">{{ lesson.title_html | safe }}</h1>
-    <dl class="hero-facts mnote">
-      <div class="mnote-lbl mono-label">In this lesson</div>
+    <div class="hero-facts mnote">
+      <div class="mnote-lbl mono-label" id="hero-facts-k">In this lesson</div>
+      <dl class="hf-list" aria-labelledby="hero-facts-k">
       <div><dt>Time</dt><dd>~{{ minutes }} min</dd></div>
       <div><dt>Sections</dt><dd>{{ lesson.sections|length }}</dd></div>
       <div><dt>Code cells</dt><dd>{{ lesson.code_cells }}</dd></div>
       {% if widgets %}<div><dt>Labs</dt><dd>{{ widgets|length }}</dd></div>{% endif %}
       <div><dt>Figures</dt><dd>{{ lesson.figures }}</dd></div>
-    </dl>
+      </dl>
+    </div>
     {% if ex.summary_html %}<div class="lesson-summary prose">{{ ex.summary_html | safe }}</div>{% endif %}
     <div class="hero-actions">
       <a class="btn" href="#start"><svg class="ic"><use href="#i-play"/></svg> Start the lesson</a>
@@ -133,13 +135,16 @@
   </section>
   {% endif %}
 
-  <div class="lesson-end">
+  <!-- the end: mark it complete, then the next lesson as one wide row (pager-link classes: Alt+arrows and read mode use them) -->
+  <nav class="lesson-end" aria-label="End of lesson">
     <button class="btn btn-complete" data-complete="{{ lesson.id }}"><svg class="ic"><use href="#i-check"/></svg> <span>Mark lesson as complete</span></button>
-    <nav class="pager">
-      {% if prev_l %}<a class="pager-link prev" href="{{ root }}{{ prev_l.url }}"><span class="pager-k"><svg class="ic"><use href="#i-arrow-left"/></svg> Previous</span><span class="pager-t">{{ prev_l.id }} · {{ prev_l.title }}</span></a>{% else %}<span></span>{% endif %}
-      {% if next_l %}<a class="pager-link next" href="{{ root }}{{ next_l.url }}"><span class="pager-k">Next <svg class="ic"><use href="#i-arrow-right"/></svg></span><span class="pager-t">{{ next_l.id }} · {{ next_l.title }}</span></a>{% endif %}
-    </nav>
-  </div>
+    {% if next_l %}<a class="pager-link next end-next" href="{{ root }}{{ next_l.url }}">
+      <span class="end-node" aria-hidden="true"></span>
+      <span class="end-t"><span class="mono-label">Up next · Lesson {{ next_l.id }}</span><strong>{{ next_l.title }}</strong></span>
+      <svg class="ic"><use href="#i-arrow-right"/></svg>
+    </a>{% endif %}
+    {% if prev_l %}<a class="pager-link prev end-prev" href="{{ root }}{{ prev_l.url }}"><svg class="ic"><use href="#i-arrow-left"/></svg> Back to {{ prev_l.id }} · {{ prev_l.title }}</a>{% endif %}
+  </nav>
 
   {% if discussions %}
   <section class="discussion" id="discussion" data-discussion data-term="Lesson {{ lesson.id }}: {{ lesson.title }}"

@@ -14,9 +14,11 @@ from PIL.PngImagePlugin import PngInfo
 
 FONTS = Path(__file__).resolve().parent.parent / "assets" / "fonts"
 W, H = 1200, 630
-BG_TOP, BG_BOTTOM = (14, 15, 18), (24, 27, 34)
-INK, INK_2, INK_3 = (243, 243, 240), (193, 192, 184), (141, 139, 132)
-VERSION = 2                                                    # bump when the card design changes
+# the site's dark panel, its text greys, and the activation scale (viridis: started, practised, strong, mastered)
+BG_TOP, BG_BOTTOM = (15, 13, 21), (23, 20, 31)
+INK, INK_2, INK_3 = (241, 239, 247), (191, 186, 205), (142, 137, 160)
+A1, A2, A3, A4 = (59, 82, 139), (33, 145, 140), (94, 201, 98), (253, 231, 37)
+VERSION = 3                                                    # bump when the card design changes
 
 
 def _font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
@@ -48,23 +50,28 @@ def _wrap(draw: ImageDraw.ImageDraw, text: str, font, width: int, max_lines: int
     return lines
 
 
-def _logo(draw: ImageDraw.ImageDraw, x: int, y: int, size: int, accent) -> None:
-    """The site's mark: a tiny network, drawn in the accent colour on a rounded tile."""
-    draw.rounded_rectangle((x, y, x + size, y + size), radius=size // 4, fill=(42, 120, 214))
+def _logo(img: Image.Image, x: int, y: int, size: int) -> None:
+    """The site's mark, as in the top bar: a small network whose nodes climb the activation scale."""
     s = size / 32
-    nodes = [(7, 9), (7, 23), (16, 16), (25, 9), (25, 23)]
-    for a, b in [(0, 2), (1, 2), (2, 3), (2, 4)]:
-        draw.line([(x + nodes[a][0] * s, y + nodes[a][1] * s), (x + nodes[b][0] * s, y + nodes[b][1] * s)],
-                  fill=(255, 255, 255), width=max(2, int(1.6 * s)))
-    for i, (nx, ny) in enumerate(nodes):
-        r = (3.4 if i == 2 else 3) * s
-        draw.ellipse((x + nx * s - r, y + ny * s - r, x + nx * s + r, y + ny * s + r), fill=(255, 255, 255))
+    layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    ins, mid, out = [(6, 10), (6, 22)], [(16, 6), (16, 16), (16, 26)], (26, 16)
+    p = lambda q: (x + q[0] * s, y + q[1] * s)
+    for a in ins:
+        for b in mid:
+            d.line([p(a), p(b)], fill=(*INK, 90), width=max(1, int(1.2 * s)))
+    for b in mid:
+        d.line([p(b), p(out)], fill=(*INK, 90), width=max(1, int(1.2 * s)))
+    for q, col, r in [(ins[0], A1, 3.2), (ins[1], A1, 3.2), (mid[0], A2, 3.2), (mid[1], A3, 3.2), (mid[2], A2, 3.2), (out, A4, 4)]:
+        cx, cy = p(q)
+        d.ellipse((cx - r * s, cy - r * s, cx + r * s, cy + r * s), fill=col)
+    img.paste(layer, (0, 0), layer)
 
 
 def render_card(path: Path, *, kicker: str, title: str, subtitle: str = "", chips: list[str] | None = None,
-                accent: str = "#2a78d6", brand: str = "Deep Learning Lab", course: str = "", site: str = "") -> None:
+                brand: str = "Deep Learning Lab", course: str = "", site: str = "") -> None:
     # skip the drawing when an identical card is already on disk (the key is stored inside the PNG)
-    key = hashlib.sha1(repr((VERSION, kicker, title, subtitle, chips, accent, brand, course, site)).encode()).hexdigest()
+    key = hashlib.sha1(repr((VERSION, kicker, title, subtitle, chips, brand, course, site)).encode()).hexdigest()
     if path.exists():
         try:
             if Image.open(path).text.get("dlp-key") == key:
@@ -76,22 +83,23 @@ def render_card(path: Path, *, kicker: str, title: str, subtitle: str = "", chip
     for yy in range(H):                                        # soft vertical gradient
         t = yy / H
         d.line([(0, yy), (W, yy)], fill=tuple(int(BG_TOP[i] + (BG_BOTTOM[i] - BG_TOP[i]) * t) for i in range(3)))
-    acc = _hex(accent)
-    # accent glow in the top-right corner and a bar on the left
+    # a faint teal glow in the top-right corner, and the activation scale as a stripe down the left edge
     glow = Image.new("L", (W, H), 0)
-    ImageDraw.Draw(glow).ellipse((W - 360, -260, W + 260, 300), fill=90)
+    ImageDraw.Draw(glow).ellipse((W - 360, -260, W + 260, 300), fill=70)
     glow = glow.filter(ImageFilter.GaussianBlur(110))
-    img.paste(Image.new("RGB", (W, H), acc), (0, 0), glow)
+    img.paste(Image.new("RGB", (W, H), A2), (0, 0), glow)
     d = ImageDraw.Draw(img)
-    d.rectangle((0, 0, 12, H), fill=acc)
+    for i, col in enumerate((A1, A2, A3, A4)):
+        d.rectangle((0, i * H // 4, 12, (i + 1) * H // 4), fill=col)
 
     x = 80
-    _logo(d, x, 64, 56, acc)
+    _logo(img, x, 64, 56)
+    d = ImageDraw.Draw(img)
     d.text((x + 76, 66), brand, font=_font(30, True), fill=INK)
     if course:
         d.text((x + 76, 104), course, font=_font(20), fill=INK_3)
 
-    d.text((x, 196), kicker.upper(), font=_font(26, True), fill=acc)
+    d.text((x, 196), kicker.upper(), font=_font(26, True), fill=A4)
     title_font = _font(66, True)
     lines = _wrap(d, title, title_font, W - 2 * x, 3)
     if len(lines) == 3:
@@ -110,7 +118,7 @@ def render_card(path: Path, *, kicker: str, title: str, subtitle: str = "", chip
     chip_font = _font(22, True)
     for c in chips or []:
         tw = d.textlength(c, font=chip_font)
-        d.rounded_rectangle((cx, cy, cx + tw + 36, cy + 46), radius=23, outline=(60, 66, 80), width=2, fill=(30, 33, 41))
+        d.rounded_rectangle((cx, cy, cx + tw + 36, cy + 46), radius=10, outline=(59, 53, 73), width=2, fill=(33, 29, 43))
         d.text((cx + 18, cy + 10), c, font=chip_font, fill=INK)
         cx += tw + 52
     if site:

@@ -407,10 +407,10 @@
   });
   // 2. "Explain" on code cells
   $$('[data-code]').forEach(function (cell) {
-    var acts = $('.code-actions', cell);
+    var acts = $('[data-code-menu]', cell) || $('.code-actions', cell);
     if (!acts) return;
     var b = document.createElement('button');
-    b.type = 'button'; b.className = 'chip-btn accent tutor-chip'; b.innerHTML = icon('sparkles') + ' <span>Tutor</span>';
+    b.type = 'button'; b.className = 'code-mi tutor-chip'; b.setAttribute('role', 'menuitem'); b.innerHTML = icon('sparkles') + ' <span>Ask the tutor</span>';
     b.title = 'Ask the tutor to explain this code';
     b.addEventListener('click', function () {
       var src = ($('.code-src', cell) || {}).value || '';

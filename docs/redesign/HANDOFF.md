@@ -14,7 +14,7 @@ This is everything needed to continue the redesign in a local Claude Code sessio
 | 5 | Module page and one-question-at-a-time module challenge | Done (see notes under Phase 5) |
 | 6 | Daily review opens on the first question | Done (see notes under Phase 6) |
 | 7 | Training log (progress), concept map, glossary, guide, 404 | Done (see notes under Phase 7) |
-| 8 | Final QA and CSS clean-up | **Next** |
+| 8 | Final QA and CSS clean-up | Done (see notes under Phase 8) |
 
 Approved by the owner on 30 September 2026. Decisions already made (don't reopen them):
 - Colour means progress only. Per-module colours are retired; modules are identified by their number.
@@ -279,7 +279,25 @@ Boards: `Progress`, `Concepts`, `Glossary`. Files: the matching templates, `prog
   map link) and a sticky A–Z rail. Guide: update for the spine, read mode and top bar, and show small real
   component examples. 404 in the new type.
 
-## Phase 8: QA and clean-up
+## Phase 8: QA and clean-up (done)
+
+Done: the phase 3 leftovers (code cell ⋯ menu as a popover wired in `app.js`; a single short "Pause & think" question
+is a margin note, `.q-note`; the end of a lesson is "Mark complete" plus the next lesson as one wide row, keeping the
+`pager-link prev/next` classes). `--mc` is gone (inline styles and the bridge rule); everything uses `--mod`.
+Dead selectors removed with `scripts/dev/css_audit.py --fix --all` (it also flags classes that clash with the code
+highlighter: `.nf`, `.sa`, `.nn` … broke code display once; the spine buttons are now `.spa`, the 404 uses `.e404`).
+`scripts/dev/a11y.mjs` (axe-core, WCAG 2.1 AA) is clean on every page, light and dark, at 1440 and 390: `--ink-3`
+and `--red` darkened, `--a2-text` for teal text, Run button and note numbers `#1b7f7a`, the old gold replaced by the
+activation scale, keyboard access for sideways-scrolling code, tables and maths, focus rings on terms and the editor,
+Tab now starts at the skip link on lessons, scripted smooth scrolling respects reduced motion.
+The README has a new "The interface" section (the rules and the three checks) and updated page descriptions. The
+share images (`scripts/dlp/social.py`) use the dark panel, the site's mark and the activation scale; module colours
+are no longer passed to them. They still use the bundled DejaVu fonts (Archivo is not bundled). Fonts: Google Fonts
+already serves per-script subsets and browsers fetch only the faces a page uses, so no subsetting was done.
+
+The redesign is complete. For future interface work, run the three checks in the README's "The interface" section
+before committing.
+
 
 Run the screenshot harness on every page; fix sideways scroll, clipped text, contrast (4.5:1 for text), focus
 states, keyboard use, reduced motion. Delete dead CSS from `site.css` and `learn.css`, remove the `--mc` bridge rule

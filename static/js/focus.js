@@ -22,7 +22,7 @@
   var toggles = slots.map(function (slot) {
     var b = document.createElement('button');
     b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-keyshortcuts', 'F');
-    b.className = slot.getAttribute('data-focus-slot') === 'spine' ? 'sa focus-toggle' : 'btn btn-ghost focus-toggle';
+    b.className = slot.getAttribute('data-focus-slot') === 'spine' ? 'spa focus-toggle' : 'btn btn-ghost focus-toggle';
     b.setAttribute('data-where', slot.getAttribute('data-focus-slot') || 'hero');
     slot.replaceWith ? slot.replaceWith(b) : slot.appendChild(b);
     return b;
@@ -92,7 +92,7 @@
     if (page === pages.length - 1) { var n = $('.pager-link.next'); if (n) location.href = n.href; return; }
     if (pending(page)) {                                                       // take the learner to the first unanswered question
       var cp = $('.checkpoint', pages[page][pages[page].length - 1]) || $('.checkpoint', pages[page][0]);
-      if (cp) { cp.classList.add('is-in', 'focus-nudge'); cp.scrollIntoView({ block: 'center', behavior: 'smooth' }); setTimeout(function () { cp.classList.remove('focus-nudge'); }, 900); }
+      if (cp) { cp.classList.add('is-in', 'focus-nudge'); cp.scrollIntoView({ block: 'center', behavior: window.DLP.scrollBehavior ? window.DLP.scrollBehavior() : 'smooth' }); setTimeout(function () { cp.classList.remove('focus-nudge'); }, 900); }
       return;
     }
     show(page + 1);

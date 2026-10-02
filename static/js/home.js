@@ -180,7 +180,7 @@
         var text = s.returning ? 'You are here' : 'Start here: ' + here.id + ' ' + here.title, w = Math.round(text.length * 6.9 + 40);
         var px = s.returning ? here.x + 40 : Math.max(8, here.x - 14), py = s.returning ? here.y - 14 : L[0].nodes[L[0].nodes.length - 1].y + 40;
         px = Math.min(px, W - w - 8);
-        g.push('<a class="net-pill" href="' + ROOT + here.url + '"><rect x="' + px + '" y="' + py + '" width="' + w + '" height="28" rx="14"/>' +
+        g.push('<a class="net-pill" href="' + ROOT + here.url + '" tabindex="-1"><rect x="' + px + '" y="' + py + '" width="' + w + '" height="28" rx="14"/>' +
           '<path d="M' + (px + 15) + ' ' + (py + 9) + 'l8 5-8 5z"/><text x="' + (px + 30) + '" y="' + (py + 18.5) + '">' + esc(text) + '</text></a>');
       }
     }
