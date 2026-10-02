@@ -171,7 +171,8 @@ sources:
   #   3.2: the Sep 26 evening version (cells split, transition to 3.3 added) with run() back to the
   #        60 epochs and (256,128) → (8,) capacity sweep the text describes; the classroom
   #        run had mixed 60- and 100-epoch outputs. Re-executed so every output matches.
-  locked: ["2.3", "2.4", "3.1", "3.2"]
+  #   5.1–5.4: teaching diagrams embedded in the Module 5 notebooks; preserve during sync.
+  locked: ["2.3", "2.4", "3.1", "3.2", "5.1", "5.2", "5.3", "5.4"]
 
 modules:
   - number: 1

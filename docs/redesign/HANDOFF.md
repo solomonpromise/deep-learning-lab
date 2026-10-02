@@ -8,7 +8,7 @@ The owner approved the standalone interactive prototype, then authorised applyin
 - Lessons default to one section at a time with a persistent title and outline. Existing section/question hashes open the right section. `F` enters read mode; the whole lesson remains available for continuous reading and printing.
 - The homepage uses a native SVG representation-learning illustration: image input → edge features → parts → learned feature vector → predicted object. Buttons choose a mug, shoe or leaf and inspect each stage. It is explicitly illustrative, with no claimed live image classifier.
 - The production learner record, mastery rules, spaced review, lab toolkit, Python worker, tutor service, sync, badges and discussions remain in use. Never copy prototype sample data, simplified review scheduling or its local tutor demonstration into production.
-- Notebooks and teaching enrichments remain the content source for all 15 published lessons. The certificate stays disabled.
+- Notebooks and teaching enrichments remain the content source for all 19 published lessons. Module 5 adds Lessons 5.1–5.4, with ten teaching diagrams embedded in their notebooks. The certificate stays disabled.
 
 Run the build, `scripts/dev/redesign.mjs`, responsive screenshots and WCAG checks before merging. The existing browser scripts now include the new pages. New CSS belongs in `static/css/activation.css`; palette tokens remain in `site.css`.
 

@@ -33,6 +33,7 @@
     var where=$('[data-lb-where]'); if (where && !whole) where.textContent=page===0?'Before you start':page+' of '+(pages.length-1)+' · '+($('h2',section)||{}).textContent;
     if (window.DLP.revealAround) window.DLP.revealAround();
     if (window.DLP.mountAll) window.DLP.mountAll(whole ? lesson : currentSection());
+    document.dispatchEvent(new Event('dlp:section-shown'));
     window.dispatchEvent(new Event('resize')); window.dispatchEvent(new Event('scroll'));
   }
   function show(i,scroll,target,updateHash) {

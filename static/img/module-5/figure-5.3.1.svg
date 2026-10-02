@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="522pt" viewBox="0 0 864 522" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>Two views of the same digit three form a positive pair with an inward arrow. Other source images, a five, zero and another three, are negative pairs with outward arrows. The second three remains a negative because labels are unavailable.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 522
+L 864 522
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 429.84 141.48
+C 523.690073 141.48 613.708925 157.980364 680.070948 187.347078
+C 746.432971 216.713792 783.72 256.549195 783.72 298.08
+C 783.72 339.610805 746.432971 379.446208 680.070948 408.812922
+C 613.708925 438.179636 523.690073 454.68 429.84 454.68
+C 335.989927 454.68 245.971075 438.179636 179.609052 408.812922
+C 113.247029 379.446208 75.96 339.610805 75.96 298.08
+C 75.96 256.549195 113.247029 216.713792 179.609052 187.347078
+C 245.971075 157.980364 335.989927 141.48 429.84 141.48
+z
+" clip-path="url(#p702cd394a5)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 422.871053 294.661956
+Q 303.479679 261.35991 186.242153 228.658642
+" clip-path="url(#p702cd394a5)" style="fill: none; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 191.547067 233.460504
+L 186.242153 228.658642
+L 193.266592 227.295828
+z
+" clip-path="url(#p702cd394a5)" style="fill: #a04e32; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 426.627224 294.393087
+Q 523.439515 251.640214 618.206312 209.790643
+" clip-path="url(#p702cd394a5)" style="fill: none; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 611.059066 209.448772
+L 618.206312 209.790643
+L 613.644467 215.303317
+z
+" clip-path="url(#p702cd394a5)" style="fill: #a04e32; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 426.630509 296.01356
+Q 531.721365 342.720607 634.768876 388.5195
+" clip-path="url(#p702cd394a5)" style="fill: none; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 630.220125 382.996017
+L 634.768876 388.5195
+L 627.620839 388.844411
+z
+" clip-path="url(#p702cd394a5)" style="fill: #a04e32; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 354.952087 292.32
+Q 407.519224 292.32 460.086362 292.32
+" clip-path="url(#p702cd394a5)" style="fill: none; stroke: #234c3c; stroke-width: 4; stroke-linecap: round"/>
+    <path d="M 361.352087 295.52
+L 354.952087 292.32
+L 361.352087 289.12
+" clip-path="url(#p702cd394a5)" style="fill: none; stroke: #234c3c; stroke-width: 4; stroke-linecap: round"/>
+    <path d="M 453.686362 289.12
+L 460.086362 292.32
+L 453.686362 295.52
+" clip-path="url(#p702cd394a5)" style="fill: none; stroke: #234c3c; stroke-width: 4; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 310.32 252.72
+L 372.24 252.72
+L 372.24 321.84
+L 310.32 321.84
+z
+" clip-path="url(#p702cd394a5)" style="fill: #ffffff; stroke: #234c3c; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 450 255.6
+L 511.92 255.6
+L 511.92 324.72
+L 450 324.72
+z
+" clip-path="url(#p702cd394a5)" style="fill: #ffffff; stroke: #234c3c; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 151.2 190.8
+L 213.12 190.8
+L 213.12 259.92
+L 151.2 259.92
+z
+" clip-path="url(#p702cd394a5)" style="fill: #ffffff; stroke: #a04e32; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 591.12 171.36
+L 653.04 171.36
+L 653.04 240.48
+L 591.12 240.48
+z
+" clip-path="url(#p702cd394a5)" style="fill: #ffffff; stroke: #a04e32; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 607.68 353.52
+L 669.6 353.52
+L 669.6 422.64
+L 607.68 422.64
+z
+" clip-path="url(#p702cd394a5)" style="fill: #ffffff; stroke: #a04e32; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#p702cd394a5)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 5.3.1</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.40875" transform="rotate(-0 30.24 63.40875)">Same source image. Two different views.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">Instance contrastive learning constructs pairs without digit labels.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 37px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="341.28" y="296.049688" transform="rotate(-0 341.28 296.049688)">3</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="341.28" y="344.147188" transform="rotate(-0 341.28 344.147188)">A1</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 37px; font-family: 'DejaVu Sans'; fill: #234c3c" transform="translate(466.792402 297.038898) rotate(-352)">3</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="480.96" y="347.027188" transform="rotate(-0 480.96 347.027188)">A2</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 37px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="182.16" y="234.129688" transform="rotate(-0 182.16 234.129688)">5</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="182.16" y="282.227188" transform="rotate(-0 182.16 282.227188)">B</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 37px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="622.08" y="214.689688" transform="rotate(-0 622.08 214.689688)">0</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="622.08" y="262.787188" transform="rotate(-0 622.08 262.787188)">C</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 37px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="638.64" y="396.849688" transform="rotate(-0 638.64 396.849688)">3</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="638.64" y="444.947188" transform="rotate(-0 638.64 444.947188)">D</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="414" y="236.699063" transform="rotate(-0 414 236.699063)">Positive pair</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="413.28" y="252.43125" transform="rotate(-0 413.28 252.43125)">Increase similarity</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="424.8" y="393.328438" transform="rotate(-0 424.8 393.328438)">Other source images are negatives.</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="424.8" y="415.87125" transform="rotate(-0 424.8 415.87125)">Decrease their similarity in the batch.</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="495.07125" transform="rotate(-0 30.24 495.07125)">D is also a “3”, but is a negative because it comes from a different image. Labels are not used.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p702cd394a5">
+   <rect x="0" y="0" width="864" height="522"/>
+  </clipPath>
+ </defs>
+</svg>
