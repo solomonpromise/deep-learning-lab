@@ -12,7 +12,10 @@
     <article class="t-card t-week" data-week></article>
   </section>
 
-  <!-- ======================= first visit: what this is -->
+  <!-- ======================= a returning learner looking at the introduction (home.js: index.html#about-course) -->
+  <p class="lp-bar" data-intro-bar hidden><span>You are looking at the course introduction.</span> <a href="index.html" data-intro-back>Back to your progress <svg class="ic"><use href="#i-arrow-right"/></svg></a></p>
+
+  <!-- ======================= first visit: the landing page (every [data-welcome] part) -->
   <section class="welcome" data-welcome>
     <div class="welcome-copy">
       <span class="mono-label welcome-k">{{ course.hours }}-hour engineering course · {{ course.hands_on }} hands-on</span>
@@ -29,6 +32,33 @@
       <div><dt class="mono-label">Account</dt><dd>None. Progress stays in your browser.</dd></div>
       <div><dt class="mono-label">Followed by</dt><dd>{{ course.followed_by }}</dd></div>
     </dl>
+  </section>
+
+  {% if landing.for_whom or landing.outcomes %}
+  <section class="lp-fit" data-welcome aria-label="Who this course is for, and what you will be able to do">
+    {% if landing.for_whom %}<div>
+      <span class="mono-label lp-k">Who it is for</span>
+      <h2>Made for you if</h2>
+      <ul class="lp-for">{% for x in landing.for_whom %}<li>{{ x }}</li>{% endfor %}</ul>
+    </div>{% endif %}
+    {% if landing.outcomes %}<div>
+      <span class="mono-label lp-k">By the end</span>
+      <h2>You will be able to</h2>
+      <ol class="lp-out">{% for x in landing.outcomes %}<li>{{ x }}</li>{% endfor %}</ol>
+    </div>{% endif %}
+  </section>
+  {% endif %}
+
+  <section class="lp-inside" data-welcome aria-labelledby="lp-inside-h">
+    <div class="h-head"><h2 id="lp-inside-h">Inside every lesson</h2><span class="mono-label">{{ stats.lessons }} lessons so far</span></div>
+    <div class="how">
+      <div><span class="mono-label"><svg class="ic"><use href="#i-book"/></svg> Read</span><p>The complete teaching notes, set like a good textbook, with plain-English notes in the margin.</p></div>
+      <div><span class="mono-label"><svg class="ic"><use href="#i-flask"/></svg> Experiment</span><p>{{ stats.labs }} live labs: train tiny networks, drag the learning rate, watch a gradient vanish.</p></div>
+      <div><span class="mono-label"><svg class="ic"><use href="#i-code"/></svg> Run</span><p>Every notebook cell with its real output; early lessons run Python right in the page.</p></div>
+      <div><span class="mono-label"><svg class="ic"><use href="#i-help"/></svg> Answer</span><p>A checkpoint closes every section, with an explanation for every answer, right or wrong.</p></div>
+      <div><span class="mono-label"><svg class="ic"><use href="#i-cards"/></svg> Review</span><p>What you answer comes back just before you would forget it: a few minutes a day.</p></div>
+      {% if tutor_on %}<div><span class="mono-label"><svg class="ic"><use href="#i-sparkles"/></svg> Ask</span><p>An AI tutor beside every lesson explains code, checks your answers and gives hints, not spoilers.</p></div>{% endif %}
+    </div>
   </section>
 
   <!-- ======================= your network: the course drawn as a network, lit by what you have mastered -->
@@ -80,12 +110,40 @@
     {% endif %}
   </div>
 
-  <!-- ======================= first visit: how a lesson works -->
-  <section class="how" data-welcome aria-label="How a lesson works">
-    <div><span class="mono-label"><svg class="ic"><use href="#i-book"/></svg> Read</span><p>The complete teaching notes, set like a good textbook, with plain-English notes in the margin.</p></div>
-    <div><span class="mono-label"><svg class="ic"><use href="#i-help"/></svg> Answer</span><p>A checkpoint closes every section, and what you answer comes back in your daily review.</p></div>
-    <div><span class="mono-label"><svg class="ic"><use href="#i-flask"/></svg> Experiment</span><p>{{ stats.labs }} live labs: train tiny networks, drag the learning rate, watch a gradient vanish.</p></div>
-    <div><span class="mono-label"><svg class="ic"><use href="#i-code"/></svg> Run</span><p>Every notebook cell with its real output; early lessons run Python right in the page.</p></div>
+  {% if author %}
+  <!-- ======================= first visit: who made it -->
+  {% set initials = author.name.split() | map('first') | join | upper %}
+  <section class="lp-author" data-welcome aria-labelledby="lp-author-h">
+    <span class="lp-avatar" aria-hidden="true">{% if author.photo %}<img src="{{ author.photo }}" alt="">{% else %}{{ initials[:2] }}{% endif %}</span>
+    <div>
+      <span class="mono-label lp-k">The author</span>
+      <h2 id="lp-author-h">{{ author.name }}</h2>
+      {% if author.role %}<p class="lp-role">{{ author.role }}</p>{% endif %}
+      {% if author.short %}<p class="lp-short">{{ author.short }}</p>{% endif %}
+      <a class="t-link" href="about.html">More about me <svg class="ic"><use href="#i-arrow-right"/></svg></a>
+    </div>
   </section>
+  {% endif %}
+
+  {% if landing.faq %}
+  <section class="lp-faq" data-welcome aria-labelledby="lp-faq-h">
+    <div class="h-head"><h2 id="lp-faq-h">Questions</h2></div>
+    {% for f in landing.faq %}<details><summary>{{ f.q }}</summary><p>{{ f.a }}</p></details>{% endfor %}
+  </section>
+  {% endif %}
+
+  <!-- ======================= first visit: the way in -->
+  <section class="lp-go" data-welcome aria-labelledby="lp-go-h">
+    <span class="mono-label lp-k">Start here</span>
+    <h2 id="lp-go-h">Lesson {{ live[0].lessons[0].id }}: {{ live[0].lessons[0].title }}</h2>
+    <p>No account and nothing to install. Your progress stays in this browser.</p>
+    <div class="hero-actions">
+      <a class="btn btn-lg btn-bright" href="{{ live[0].lessons[0].url }}"><svg class="ic"><use href="#i-play"/></svg> Start Lesson {{ live[0].lessons[0].id }}</a>
+      <a class="btn btn-lg btn-ghost" href="guide.html"><svg class="ic"><use href="#i-help"/></svg> How this platform works</a>
+    </div>
+  </section>
+
+  <!-- ======================= a returning learner: the way back to the introduction -->
+  <p class="lp-again" data-returning hidden>Sharing the course, or want the overview again? <a href="#about-course">See the course introduction</a>{% if author %} · <a href="about.html">About the author</a>{% endif %}</p>
 </div>
 {% endblock %}

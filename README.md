@@ -48,7 +48,7 @@ templates/ + static/  (design, behaviour, widgets)               ─┘
 
 | Path | What it is |
 |---|---|
-| `course.yaml` | Course title, the 10 modules (question, topics, hands-on), terminology rules ("Day" → "Module", "Note" → "Lesson"), and where notebooks come from |
+| `course.yaml` | Course title, the 10 modules (question, topics, hands-on), terminology rules ("Day" → "Module", "Note" → "Lesson"), where notebooks come from, the landing page's lists (`landing:`) and the author's details (`author:`, shown on `about.html`) |
 | `notes/` | The lesson notebooks the site is built from (one per lesson). `notes/sources.json` records which original file each came from |
 | `enrichments/` | The hand-written teaching layer, one YAML file per lesson (plus its checkpoints, and one challenge per module). Never modifies the notebook |
 | `glossary.yaml` | Terms shown with a dotted underline; hover or tap for a definition |
@@ -394,6 +394,8 @@ record (`static/js/record.js`). No account is needed. The pages built on it:
 
 | Page | What it shows |
 |---|---|
+| `index.html` | First visit: the landing page (who it is for, what you will be able to do, inside every lesson, the modules, the author, questions). Returning learners: today, the network and the modules; `index.html#about-course` shows the landing page again |
+| `about.html` | About the author, from `author:` in `course.yaml` (only built when that block exists) |
 | `review.html` | The daily review: opens on the first question due (rounds of 15, keys A–D, Enter, Esc), and practice for any lesson |
 | `progress.html` | The training log: lessons mastered, this week and the weekly goal, what to do next, 26 weeks of study days, the skills map, badges, lab challenge results, and sync and privacy |
 | `certificate.html` | The certificate, listing the modules passed; printable, downloadable as PNG. Only built when `features.certificate` is `true` |

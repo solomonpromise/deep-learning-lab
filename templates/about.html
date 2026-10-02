@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% set live = nav | selectattr('available') | list %}
+{% set initials = author.name.split() | map('first') | join | upper %}
+{% block title %}About the author — {{ course.short_title }}{% endblock %}
+{% block description %}{{ author.name }}{% if author.role %}, {{ author.role }}{% endif %}: who made {{ course.short_title }}, and why.{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block main %}
+<div class="about">
+  <header class="ab-head">
+    <span class="lp-avatar ab-avatar" aria-hidden="true">{% if author.photo %}<img src="{{ author.photo }}" alt="">{% else %}{{ initials[:2] }}{% endif %}</span>
+    <div>
+      <span class="mono-label ab-k">About the author</span>
+      <h1>{{ author.name }}</h1>
+      {% if author.role %}<p class="ab-role">{{ author.role }}</p>{% endif %}
+      {% if author.short %}<p class="lead">{{ author.short }}</p>{% endif %}
+      {% if author.links or author.email %}
+      <ul class="ab-links" aria-label="Elsewhere">
+        {% for l in author.links or [] %}<li><a href="{{ l.url }}" rel="me noopener" target="_blank">{{ l.label }} <svg class="ic"><use href="#i-arrow-right"/></svg></a></li>{% endfor %}
+        {% if author.email %}<li><a href="mailto:{{ author.email }}">Email <svg class="ic"><use href="#i-arrow-right"/></svg></a></li>{% endif %}
+      </ul>
+      {% endif %}
+    </div>
+  </header>
+
+  <dl class="defs ab-defs">
+    {% if author.bio %}
+    <div class="def"><dt>Background</dt>
+      <dd class="prose">{% for p in (author.bio if author.bio is not string else [author.bio]) %}<p>{{ p }}</p>{% endfor %}</dd></div>
+    {% endif %}
+    {% if author.why %}
+    <div class="def"><dt>Why I built this</dt><dd class="prose"><p>{{ author.why }}</p></dd></div>
+    {% endif %}
+    <div class="def"><dt>This site</dt>
+      <dd class="prose"><p>{{ course.short_title }} is generated from the course notebooks: {{ stats.modules }} modules and {{ stats.lessons }} lessons so far,
+        {{ stats.labs }} interactive labs, a checkpoint after every section and a daily review.{% if tutor_on %} An AI tutor sits beside every lesson.{% endif %}
+        It is a plain static site, so it needs no account and keeps your progress in your browser.{% if course.github_repo %} The source is
+        <a href="https://github.com/{{ course.github_repo }}" rel="noopener" target="_blank">on GitHub</a>.{% endif %}</p></dd></div>
+  </dl>
+
+  <div class="ab-go">
+    <a class="btn btn-lg" href="{{ live[0].lessons[0].url }}"><svg class="ic"><use href="#i-play"/></svg> Start Lesson {{ live[0].lessons[0].id }}</a>
+    <a class="btn btn-lg btn-ghost" href="index.html#about-course">About the course</a>
+  </div>
+</div>
+{% endblock %}

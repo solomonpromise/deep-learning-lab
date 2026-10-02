@@ -79,12 +79,16 @@
       (togo <= 0 ? 'Weekly goal met. Anything more is a bonus.' : togo === 1 ? 'One more day this week meets your goal.' : togo + ' more days this week meet your goal.') + '</p>' +
       '<a class="t-link" href="' + ROOT + 'progress.html">Open your training log ' + icon('arrow-right') + '</a>';
   }
+  // a first visit sees the landing page; a returning learner sees today, unless they asked for the introduction
+  function introAsked() { return location.hash === '#about-course'; }
   function paintToday(s) {
-    var today = $('[data-today]');
-    $$('[data-welcome]').forEach(function (el) { el.hidden = s.returning; });
+    var today = $('[data-today]'), intro = s.returning && introAsked();
+    $$('[data-welcome]').forEach(function (el) { el.hidden = s.returning && !intro; });
+    $$('[data-returning]').forEach(function (el) { el.hidden = !s.returning || intro; });
+    var bar = $('[data-intro-bar]'); if (bar) bar.hidden = !intro;
     if (!today) return;
-    today.hidden = !s.returning;
-    if (!s.returning) return;
+    today.hidden = !s.returning || intro;
+    if (!s.returning || intro) return;
     $('[data-resume]', today).innerHTML = resumeCard(s);
     $('[data-review]', today).innerHTML = reviewCard();
     $('[data-week]', today).innerHTML = weekCard();
@@ -214,6 +218,11 @@
 
   function paint() { load(function (s) { paintToday(s); paintRows(s); paintNetHead(s); drawNet(s); }); }
   paint();
+  window.addEventListener('hashchange', function () {
+    if (!state) return;
+    paintToday(state);
+    if (introAsked()) window.scrollTo(0, 0);
+  });
   var t;
   document.addEventListener('dlp:record', function () { clearTimeout(t); t = setTimeout(paint, 200); });
   window.addEventListener('resize', function () {
