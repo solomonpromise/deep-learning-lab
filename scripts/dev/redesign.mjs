@@ -64,7 +64,7 @@ try {
   await p.goto(BASE+'dashboard.html');await p.locator('[data-resume] .btn').waitFor();
   assert.match(await p.locator('[data-workspace-title]').innerText(),/Welcome back/);
   assert.match(await p.locator('[data-resume] .btn').getAttribute('href'),/lesson-1-1/);
-  await p.goto(BASE+'curriculum.html');assert.equal(await p.locator('.rd-curriculum-row').count(),10);assert.equal(await p.locator('.rd-curriculum-lessons li').count(),15);
+  await p.goto(BASE+'curriculum.html');assert.equal(await p.locator('.rd-curriculum-row').count(),10);assert.equal(await p.locator('.rd-curriculum-lessons li').count(),19);
   await p.goto(BASE+'reference.html');assert.equal(await p.locator('.rd-reference-grid a').count(),2);
   await p.goto(BASE+'module-10/index.html');assert.match(await p.locator('main').innerText(),/not published yet/);
   console.log('Workspace, full curriculum, reference and roadmap passed.');
@@ -84,7 +84,7 @@ try {
       sections++;labs+=await p.locator('[data-section]:visible [data-mounted]').count();
     }
   }
-  console.log('All 15 lessons: '+sections+' section destinations, '+labs+' labs mounted without errors.');
+  console.log('All published lessons: '+sections+' section destinations, '+labs+' labs mounted without errors.');
   for(const view of [{width:1280,height:800},{width:390,height:844}])for(const theme of ['light','dark']) {
     await p.setViewportSize(view);await p.emulateMedia({colorScheme:theme});
     for(const sec of C.modules[0].lessons[0].secs) {

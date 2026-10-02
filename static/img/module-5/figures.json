@@ -1,0 +1,42 @@
+{
+  "5.1.1": {
+    "caption": "Raw input → encoder → representation → task. A real Beans photo illustrates the input; the vector and prediction are schematic.",
+    "alt": "A bean-rust field photo passes through an encoder to a numerical vector, then a disease classifier. The example output selects bean rust."
+  },
+  "5.1.2": {
+    "caption": "A 7 × 7 input and a 3 × 3 Sobel kernel produce a 5 × 5 feature map. The outlined output is exactly 4.",
+    "alt": "A seven by seven binary image changes from zero to one at a vertical edge. The Sobel kernel [-1,0,1; -2,0,2; -1,0,1] yields repeated output rows [0,4,4,0,0]. The highlighted patch and output correspond."
+  },
+  "5.1.3": {
+    "caption": "Early layers detect local patterns; deeper layers combine evidence over wider receptive fields. These are illustrative motifs, not literal feature maps.",
+    "alt": "Four panels progress from edges and colour, to stripes and dots, to leaf veins and spots, to combined healthy and rusty leaf patterns. Real learned features need not align with a single named concept."
+  },
+  "5.1.4": {
+    "caption": "From hand-written measurements to learned and shared representations. The sequence is a learning roadmap, not a claim that newer models replace every older one.",
+    "alt": "Five connected milestones show hand-made feature rules, learned CNN filters, pretrained features reused across tasks, image patches with attention, and images plus text embedded into a shared space."
+  },
+  "5.2.1": {
+    "caption": "RNN states pass a running summary along a sequence. Unmasked self-attention gives tokens direct access to each other; learned weights need not be equal.",
+    "alt": "For “my card was stolen”, an RNN updates h0 through h4 sequentially. A second panel connects every pair of words directly for bidirectional self-attention. The links represent access, not equal attention weights."
+  },
+  "5.2.2": {
+    "caption": "The lesson’s three-dimensional vectors drawn in the plane they span. Doubling a vector changes dot product and distance but preserves cosine similarity.",
+    "alt": "Vectors a=[1,2,0] and b=[2,4,0] share a direction; c=[0,1,2] differs. Dot products are 10 and 2. The distance between a and b is square root of 5. Cosine scores are 1 and 0.4. Geometry is preserved in a two-dimensional drawing."
+  },
+  "5.3.1": {
+    "caption": "A1 and A2 are augmentations of one source image. B, C and D come from other images; D shows why false negatives can occur.",
+    "alt": "Two views of the same digit three form a positive pair with an inward arrow. Other source images, a five, zero and another three, are negative pairs with outward arrows. The second three remains a negative because labels are unavailable."
+  },
+  "5.3.2": {
+    "caption": "Pair assignments for the lesson’s eight-view batch. The diagonal is masked; offset diagonals are positives, and six remaining entries per row are negatives.",
+    "alt": "An eight by eight matrix ordered A1 B1 C1 D1 A2 B2 C2 D2 uses crosses on the self diagonal, plus signs at A1/A2, B1/B2, C1/C2, D1/D2 and their mirrors, and minus signs elsewhere. Each row has one positive and six negatives."
+  },
+  "5.4.1": {
+    "caption": "CLIP uses paired images and captions as contrastive targets in both directions. The icons represent example images; the matrix shows pair roles, not measured scores.",
+    "alt": "Dog, bus, soup and church images align with their matching captions on the diagonal of a four by four matrix. Off-diagonal pairs compete. An image encoder and text encoder map into the shared 512-dimensional embedding space used by CLIP ViT-B/32."
+  },
+  "5.4.2": {
+    "caption": "The lesson’s church photo is split into 49 patches. A class token makes 50 input tokens; the final class-token output is projected from 768 to 512 numbers.",
+    "alt": "A church photo is divided into a seven by seven grid. Forty-nine patch embeddings plus a class token enter a Vision Transformer with position information. Each token has 768 values. The final class token is projected into a 512-dimensional image embedding."
+  }
+}

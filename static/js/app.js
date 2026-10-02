@@ -388,6 +388,7 @@
     });
   }
   keyScroll();
+  document.addEventListener('dlp:section-shown', keyScroll); // Recheck newly visible code before keyboard navigation.
   window.addEventListener('load', keyScroll);   // again once maths, fonts and images have settled the widths
   var keyScrollTimer; window.addEventListener('resize', function () { clearTimeout(keyScrollTimer); keyScrollTimer = setTimeout(keyScroll, 200); });
   $$('[data-code-expand]').forEach(function (btn) {
