@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="511.2pt" viewBox="0 0 864 511.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>A timeline places age, job, balance and housing before the prediction boundary. Call duration appears after the call, yet a rust arrow carries it backward across the boundary as an invalid input.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 511.2
+L 864 511.2
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 53.122154 290.88
+Q 431.999733 290.88 808.641244 290.88
+" clip-path="url(#pee930bef2b)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 802.241244 287.68
+L 808.641244 290.88
+L 802.241244 294.08
+z
+" clip-path="url(#pee930bef2b)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 53.28 192.24
+L 136.8 192.24
+L 136.8 236.16
+L 53.28 236.16
+z
+" clip-path="url(#pee930bef2b)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 145.44 192.24
+L 228.96 192.24
+L 228.96 236.16
+L 145.44 236.16
+z
+" clip-path="url(#pee930bef2b)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 237.6 192.24
+L 321.12 192.24
+L 321.12 236.16
+L 237.6 236.16
+z
+" clip-path="url(#pee930bef2b)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 329.76 192.24
+L 413.28 192.24
+L 413.28 236.16
+L 329.76 236.16
+z
+" clip-path="url(#pee930bef2b)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 627.84 192.24
+L 781.2 192.24
+L 781.2 236.16
+L 627.84 236.16
+z
+" clip-path="url(#pee930bef2b)" style="fill: #f4e5de; stroke: #a04e32; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 701.693575 181.906113
+Q 495.719485 67.530401 291.700288 180.821144
+" clip-path="url(#pee930bef2b)" style="fill: none; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 298.849014 180.511759
+L 291.700288 180.821144
+L 295.742015 174.916532
+z
+" clip-path="url(#pee930bef2b)" style="fill: #a04e32; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#pee930bef2b)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 466.56 142.56
+L 466.56 434.88
+" clip-path="url(#pee930bef2b)" style="fill: none; stroke-dasharray: 7.4,3.2; stroke-dashoffset: 0; stroke: #a04e32; stroke-width: 2"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 3.4.2</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.5025" transform="rotate(-0 30.24 63.5025)">When does this value exist?</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">Prediction time is a boundary for every input feature.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="466.56" y="466.930938" transform="rotate(-0 466.56 466.930938)">Prediction made</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="131.76" y="331.019063" transform="rotate(-0 131.76 331.019063)">Before the call</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #52645a" x="724.32" y="331.019063" transform="rotate(-0 724.32 331.019063)">After the call</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="95.04" y="217.427188" transform="rotate(-0 95.04 217.427188)">age</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="187.2" y="217.427188" transform="rotate(-0 187.2 217.427188)">job</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="279.36" y="217.427188" transform="rotate(-0 279.36 217.427188)">balance</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="371.52" y="217.427188" transform="rotate(-0 371.52 217.427188)">housing</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="704.16" y="218.530937" transform="rotate(-0 704.16 218.530937)">duration</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; fill: #a04e32" transform="translate(699.012188 381.673031)">Unavailable when</text>
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; fill: #a04e32" transform="translate(691.1175 399.669469)">choosing who to call</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="491.027187" transform="rotate(-0 30.24 491.027187)">Cross-validation cannot make a feature available earlier than the event that creates it.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pee930bef2b">
+   <rect x="0" y="0" width="864" height="511.2"/>
+  </clipPath>
+ </defs>
+</svg>

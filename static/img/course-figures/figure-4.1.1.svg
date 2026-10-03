@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="493.2pt" viewBox="0 0 864 493.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>A sixty-percent train, twenty-percent validation and twenty-percent test strip is compared with a timeline of past training data, a deployment boundary and future examples.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 493.2
+L 864 493.2
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 135.36
+L 423.36 135.36
+L 423.36 398.16
+L 30.24 398.16
+z
+" clip-path="url(#p1c411d7c09)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 440.64 135.36
+L 833.76 135.36
+L 833.76 398.16
+L 440.64 398.16
+z
+" clip-path="url(#p1c411d7c09)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 48.24 218.16
+L 248.4 218.16
+L 248.4 282.24
+L 48.24 282.24
+z
+" clip-path="url(#p1c411d7c09)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 248.4 218.16
+L 315.36 218.16
+L 315.36 282.24
+L 248.4 282.24
+z
+" clip-path="url(#p1c411d7c09)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 315.36 218.16
+L 381.6 218.16
+L 381.6 282.24
+L 315.36 282.24
+z
+" clip-path="url(#p1c411d7c09)" style="fill: #dbe5ed; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 475.760116 250.56
+Q 638.641065 250.56 799.285945 250.56
+" clip-path="url(#p1c411d7c09)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 792.885945 247.36
+L 799.285945 250.56
+L 792.885945 253.76
+z
+" clip-path="url(#p1c411d7c09)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#p1c411d7c09)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 623.52 191.52
+L 623.52 325.44
+" clip-path="url(#p1c411d7c09)" style="fill: none; stroke-dasharray: 5.55,2.4; stroke-dashoffset: 0; stroke: #a04e32; stroke-width: 1.5"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 4.1.1</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.5025" transform="rotate(-0 30.24 63.5025)">A split is a simulation of future use.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">Choose evaluation rows that stand in for the examples you will actually predict.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="43.2" y="163.024531" transform="rotate(-0 43.2 163.024531)">What you split</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="453.6" y="163.090938" transform="rotate(-0 453.6 163.090938)">What the test set stands in for</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="148.32" y="254.147188" transform="rotate(-0 148.32 254.147188)">Train 60%</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="281.88" y="254.147188" transform="rotate(-0 281.88 254.147188)">Val</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="348.48" y="254.147188" transform="rotate(-0 348.48 254.147188)">Test</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="47.52" y="319.39125" transform="rotate(-0 47.52 319.39125)">This lesson’s introductory split.</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="551.52" y="221.47125" transform="rotate(-0 551.52 221.47125)">Past training rows</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #356784" x="719.28" y="285.55125" transform="rotate(-0 719.28 285.55125)">Future examples</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #a04e32" x="623.52" y="346.75125" transform="rotate(-0 623.52 346.75125)">Deployment</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="438.416406" transform="rotate(-0 30.24 438.416406)">Random and chronological splits can estimate different things. The question determines the split.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p1c411d7c09">
+   <rect x="0" y="0" width="864" height="493.2"/>
+  </clipPath>
+ </defs>
+</svg>

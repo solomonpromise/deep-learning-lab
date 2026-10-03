@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="612pt" viewBox="0 0 864 612" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>Left, BankMLP has a ModuleList of two DenseBlocks and a linear head. Right, a batch of fifty features passes through widths sixty-four and thirty-two, then one output logit per example.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 612
+L 864 612
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 135.36
+L 423.36 135.36
+L 423.36 529.92
+L 30.24 529.92
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 440.64 135.36
+L 833.76 135.36
+L 833.76 529.92
+L 440.64 529.92
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 462.96 182.88
+L 797.04 182.88
+L 797.04 217.44
+L 462.96 217.44
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 630 220.159688
+Q 630 223.918073 630 225.44039
+" clip-path="url(#p6b37ca20f2)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 633.2 219.04039
+L 630 225.44039
+L 626.8 219.04039
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 462.96 231.84
+L 797.04 231.84
+L 797.04 266.4
+L 462.96 266.4
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 630 269.119688
+Q 630 272.878073 630 274.40039
+" clip-path="url(#p6b37ca20f2)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 633.2 268.00039
+L 630 274.40039
+L 626.8 268.00039
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 462.96 280.8
+L 797.04 280.8
+L 797.04 315.36
+L 462.96 315.36
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 630 318.079688
+Q 630 321.838073 630 323.36039
+" clip-path="url(#p6b37ca20f2)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 633.2 316.96039
+L 630 323.36039
+L 626.8 316.96039
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 462.96 329.76
+L 797.04 329.76
+L 797.04 364.32
+L 462.96 364.32
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 630 367.039688
+Q 630 370.798073 630 372.32039
+" clip-path="url(#p6b37ca20f2)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 633.2 365.92039
+L 630 372.32039
+L 626.8 365.92039
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 462.96 378.72
+L 797.04 378.72
+L 797.04 413.28
+L 462.96 413.28
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 630 415.999688
+Q 630 419.758073 630 421.28039
+" clip-path="url(#p6b37ca20f2)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 633.2 414.88039
+L 630 421.28039
+L 626.8 414.88039
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 462.96 427.68
+L 797.04 427.68
+L 797.04 462.24
+L 462.96 462.24
+z
+" clip-path="url(#p6b37ca20f2)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#p6b37ca20f2)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 2.3.1</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.40875" transform="rotate(-0 30.24 63.40875)">One model. A storage tree and a tensor flow.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.504375" transform="rotate(-0 30.24 84.504375)">state_dict names the modules; forward determines how tensors move.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="43.2" y="163.090938" transform="rotate(-0 43.2 163.090938)">The module tree</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 17px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="453.6" y="163.090938" transform="rotate(-0 453.6 163.090938)">The tensor flow</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="47.52" y="189.07125" transform="rotate(-0 47.52 189.07125)">BankMLP</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="64.08" y="222.083438" transform="rotate(-0 64.08 222.083438)">└ blocks (ModuleList)</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="80.64" y="253.87125" transform="rotate(-0 80.64 253.87125)">└ 0: DenseBlock</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="97.2" y="286.883438" transform="rotate(-0 97.2 286.883438)">└ linear: Linear(50, 64)</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="97.2" y="318.67125" transform="rotate(-0 97.2 318.67125)">└ act: ReLU</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="80.64" y="351.07125" transform="rotate(-0 80.64 351.07125)">└ 1: DenseBlock</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="97.2" y="384.083438" transform="rotate(-0 97.2 384.083438)">└ linear: Linear(64, 32)</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="97.2" y="415.87125" transform="rotate(-0 97.2 415.87125)">└ act: ReLU</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="64.08" y="448.944375" transform="rotate(-0 64.08 448.944375)">└ head: Linear(32, 1)</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="630" y="204.023125" transform="rotate(-0 630 204.023125)">X (N, 50)</text>
+   </g>
+   <g id="text_16">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="630" y="252.983125" transform="rotate(-0 630 252.983125)">Linear → ReLU</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="630" y="301.943125" transform="rotate(-0 630 301.943125)">Hidden (N, 64)</text>
+   </g>
+   <g id="text_18">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="630" y="350.903125" transform="rotate(-0 630 350.903125)">Linear → ReLU</text>
+   </g>
+   <g id="text_19">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="630" y="399.863125" transform="rotate(-0 630 399.863125)">Hidden (N, 32)</text>
+   </g>
+   <g id="text_20">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="630" y="448.768438" transform="rotate(-0 630 448.768438)">Head → logits (N, 1)</text>
+   </g>
+   <g id="text_21">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="573.776406" transform="rotate(-0 30.24 573.776406)">The tree describes how parameters are registered. The forward method describes what actually runs.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p6b37ca20f2">
+   <rect x="0" y="0" width="864" height="612"/>
+  </clipPath>
+ </defs>
+</svg>

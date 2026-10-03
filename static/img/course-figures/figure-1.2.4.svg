@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="446.4pt" viewBox="0 0 864 446.4" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>The forward sequence is X shape (4,2), Z1 (4,2), A1 (4,2), Z2 (4,1), A2 (4,1). Weighted sums and activations change features, while four batch rows remain four.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 446.4
+L 864 446.4
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 185.04
+L 170.784 185.04
+L 170.784 275.76
+L 30.24 275.76
+z
+" clip-path="url(#p30d5fe9635)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 174.94483 230.4
+Q 183.386529 230.4 189.59216 230.4
+" clip-path="url(#p30d5fe9635)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 183.19216 227.2
+L 189.59216 230.4
+L 183.19216 233.6
+z
+" clip-path="url(#p30d5fe9635)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 195.984 185.04
+L 336.528 185.04
+L 336.528 275.76
+L 195.984 275.76
+z
+" clip-path="url(#p30d5fe9635)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 340.68883 230.4
+Q 349.130529 230.4 355.33616 230.4
+" clip-path="url(#p30d5fe9635)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 348.93616 227.2
+L 355.33616 230.4
+L 348.93616 233.6
+z
+" clip-path="url(#p30d5fe9635)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 361.728 185.04
+L 502.272 185.04
+L 502.272 275.76
+L 361.728 275.76
+z
+" clip-path="url(#p30d5fe9635)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 506.43283 230.4
+Q 514.874529 230.4 521.08016 230.4
+" clip-path="url(#p30d5fe9635)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 514.68016 227.2
+L 521.08016 230.4
+L 514.68016 233.6
+z
+" clip-path="url(#p30d5fe9635)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 527.472 185.04
+L 668.016 185.04
+L 668.016 275.76
+L 527.472 275.76
+z
+" clip-path="url(#p30d5fe9635)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 672.17683 230.4
+Q 680.618529 230.4 686.82416 230.4
+" clip-path="url(#p30d5fe9635)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 680.42416 227.2
+L 686.82416 230.4
+L 680.42416 233.6
+z
+" clip-path="url(#p30d5fe9635)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 693.216 185.04
+L 833.76 185.04
+L 833.76 275.76
+L 693.216 275.76
+z
+" clip-path="url(#p30d5fe9635)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#p30d5fe9635)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 1.2.4</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.40875" transform="rotate(-0 30.24 63.40875)">The batch dimension travels through the network.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">Four examples are transformed together; each receives one predicted probability.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(93.573563 225.288844)">X</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(73.209656 245.444906)">(4, 2)</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(255.787875 225.288844)">Z₁</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(238.953656 245.444906)">(4, 2)</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(421.093125 225.288844)">A₁</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(404.697656 245.444906)">(4, 2)</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(587.275875 225.288844)">Z₂</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(570.441656 245.444906)">(4, 1)</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(752.581125 225.288844)">A₂</text>
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(736.185656 245.444906)">(4, 1)</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="169.2" y="163.595312" transform="rotate(-0 169.2 163.595312)">@ W₁ + b₁</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="343.44" y="163.595312" transform="rotate(-0 343.44 163.595312)">ReLU</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="515.52" y="163.595312" transform="rotate(-0 515.52 163.595312)">@ W₂ + b₂</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="688.32" y="163.595312" transform="rotate(-0 688.32 163.595312)">sigmoid</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 18px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="343.366875" transform="rotate(-0 30.24 343.366875)">First axis = examples. Second axis = features or output units.</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="387.79125" transform="rotate(-0 30.24 387.79125)">Hidden width: 2. Output width: 1. Neither matrix multiplication mixes different examples.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p30d5fe9635">
+   <rect x="0" y="0" width="864" height="446.4"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -22,7 +22,7 @@
     /* ------------ pane A: pixels */
     var left = L.el('div', { class: 'w-col' }), right = L.el('div', { class: 'w-col' });
     paneA.appendChild(L.el('div', { class: 'w-grid2 even' }, [left, right]));
-    var thumbs = L.el('div', { class: 'px-thumbs', role: 'listbox', 'aria-label': 'Example digits' });
+    var thumbs = L.el('div', { class: 'px-thumbs', role: 'group', 'aria-label': 'Example digits' });
     var gridEl = L.el('div', { class: 'px-grid', title: 'Draw on me' });
     var cells = [];
     for (var i = 0; i < 64; i++) { var c = L.el('div'); cells.push(c); gridEl.appendChild(c); }
@@ -52,11 +52,12 @@
       var ctx = cv.getContext('2d'), img = ctx.createImageData(8, 8);
       g.px.forEach(function (v, j) { var t = 255 - Math.round(v / 16 * 255); img.data[j * 4] = img.data[j * 4 + 1] = img.data[j * 4 + 2] = t; img.data[j * 4 + 3] = 255; });
       ctx.putImageData(img, 0, 0); cv.style.imageRendering = 'pixelated';
-      var b = L.el('button', { type: 'button', 'aria-label': 'Digit ' + g.label }, [cv]);
+      var b = L.el('button', { type: 'button', 'aria-label': 'Digit ' + g.label, 'aria-pressed': 'false' }, [cv]);
       b.addEventListener('click', function () { cur = g.px.slice(); orig = cur.slice(); label = g.label; $$thumb(b); paint(); });
       thumbs.appendChild(b);
+      if (gi === 9) $$thumb(b);
     });
-    function $$thumb(b) { Array.prototype.forEach.call(thumbs.children, function (x) { x.classList.toggle('is-on', x === b); }); }
+    function $$thumb(b) { Array.prototype.forEach.call(thumbs.children, function (x) { x.classList.toggle('is-on', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }
 
     function shift(dx, dy) {
       var n = new Array(64).fill(0);

@@ -42,7 +42,7 @@ inserts:
 
   # ------------------------------------------------------------------ §2
   - section: 2
-    after: "ca5da93d"
+    after: "attachment:figure-2.1.1.png"
     type: widget
     name: tensor-shapes
     title: "What each rank means"
@@ -86,7 +86,7 @@ inserts:
 
   # ------------------------------------------------------------------ §4
   - section: 4
-    after: "bd83e46a"
+    after: "attachment:figure-2.1.2.png"
     type: widget
     name: tensor-shapes
     title: "Broadcasting rules, visualised"

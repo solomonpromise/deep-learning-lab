@@ -11,7 +11,7 @@ summary: |
 inserts:
   # ------------------------------------------------------------------ §1
   - section: 1
-    after: "d6b7551a"
+    after: "attachment:figure-1.1.2.png"
     type: widget
     name: pipeline-flow
     title: "The two pipelines, animated"
@@ -24,7 +24,7 @@ inserts:
       In deep learning it is transformed **gradually, by layers whose weights are learned** (the smooth colour shift).
 
   - section: 1
-    after: "d6b7551a"
+    after: "attachment:figure-1.1.2.png"
     type: explainer
     style: plain
     title: "Two words this whole course depends on"

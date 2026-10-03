@@ -470,6 +470,30 @@ python3 scripts/dev/css_audit.py                     # selectors nothing uses, a
 `CHANNEL=chrome` uses the installed Google Chrome; leave it out after `npx playwright install chromium`. Both browser
 scripts load a sample learner partway through Module 3, so the pages show real progress.
 
+## Teaching figures and notebook downloads
+
+Modules 1–4 contain 32 diagrams in Module 5's cream-and-forest style: 19 replacements and 13 previously missing illustrations.
+They use the actual lesson's shapes, model architecture, checkpoint state and evaluation results. The 45 saved experiment
+plots in these modules retain their original results. Module 5's ten approved teaching diagrams use the same attachment format.
+
+PNG figures are embedded in the notebook's Markdown attachments, so the **Notebook** download includes the images and works
+without an external image folder. Standard Markdown image links also make them visible in `nbconvert` HTML exports.
+Editable SVG originals, captions and descriptive alt text live in `static/img/course-figures/` and `static/img/module-5/`.
+The curated notebooks are protected from `make sync` by `sources.locked` in `course.yaml`.
+
+```bash
+MPLCONFIGDIR=/tmp/dlp-matplotlib python3 scripts/figures/course.py   # regenerate Modules 1–4 diagrams and attachments
+python3 scripts/build.py
+# With dist/ served on port 8000:
+python3 scripts/dev/notebook_images.py --base http://localhost:8000/
+CHANNEL=chrome BASE=http://localhost:8000/ node scripts/dev/course-figures.mjs
+```
+
+The download check also needs `nbformat` and `nbconvert`. It validates all published notebooks, renders their attachments
+offline, and checks their actual download links. Add `--compare-ref <revision>` to verify that calculation code and saved
+outputs are unchanged from a Git revision. The browser check covers all 32 figures at 1440, 1280 and 390 px, in both themes,
+including zoom, captions, alt text, horizontal overflow and WCAG 2.1 AA checks in their lesson sections.
+
 ## Hosting on GitHub Pages
 
 1. Create a repository (for example `deep-learning-lab`) and push this folder to its `main` branch.

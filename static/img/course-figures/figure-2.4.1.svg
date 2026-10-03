@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="558pt" viewBox="0 0 864 558" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>Six notebook responsibilities map to dataset, model, training, evaluation and inference Python modules, plus a notebooks directory for exploration and plots.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 558
+L 864 558
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 137.52
+L 295.92 137.52
+L 295.92 176.4
+L 30.24 176.4
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 304.400281 156.96
+Q 345.240366 156.96 383.844383 156.96
+" clip-path="url(#pe9e1f20417)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 377.444383 153.76
+L 383.844383 156.96
+L 377.444383 160.16
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 396 137.52
+L 833.76 137.52
+L 833.76 176.4
+L 396 176.4
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 30.24 190.08
+L 295.92 190.08
+L 295.92 228.96
+L 30.24 228.96
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 304.400281 209.52
+Q 345.240366 209.52 383.844383 209.52
+" clip-path="url(#pe9e1f20417)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 377.444383 206.32
+L 383.844383 209.52
+L 377.444383 212.72
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 396 190.08
+L 833.76 190.08
+L 833.76 228.96
+L 396 228.96
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 30.24 242.64
+L 295.92 242.64
+L 295.92 281.52
+L 30.24 281.52
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 304.400281 262.08
+Q 345.240366 262.08 383.844383 262.08
+" clip-path="url(#pe9e1f20417)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 377.444383 258.88
+L 383.844383 262.08
+L 377.444383 265.28
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 396 242.64
+L 833.76 242.64
+L 833.76 281.52
+L 396 281.52
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 30.24 295.2
+L 295.92 295.2
+L 295.92 334.08
+L 30.24 334.08
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 304.400281 314.64
+Q 345.240366 314.64 383.844383 314.64
+" clip-path="url(#pe9e1f20417)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 377.444383 311.44
+L 383.844383 314.64
+L 377.444383 317.84
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 396 295.2
+L 833.76 295.2
+L 833.76 334.08
+L 396 334.08
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 30.24 347.76
+L 295.92 347.76
+L 295.92 386.64
+L 30.24 386.64
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 304.400281 367.2
+Q 345.240366 367.2 383.844383 367.2
+" clip-path="url(#pe9e1f20417)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 377.444383 364
+L 383.844383 367.2
+L 377.444383 370.4
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 396 347.76
+L 833.76 347.76
+L 833.76 386.64
+L 396 386.64
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 30.24 400.32
+L 295.92 400.32
+L 295.92 439.2
+L 30.24 439.2
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #eef1e8; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 304.400281 419.76
+Q 345.240366 419.76 383.844383 419.76
+" clip-path="url(#pe9e1f20417)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 377.444383 416.56
+L 383.844383 419.76
+L 377.444383 422.96
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 396 400.32
+L 833.76 400.32
+L 833.76 439.2
+L 396 439.2
+z
+" clip-path="url(#pe9e1f20417)" style="fill: #ddeaab; stroke: #bfcac0; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#pe9e1f20417)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 2.4.1</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.40875" transform="rotate(-0 30.24 63.40875)">Extract responsibilities, not just notebook cells.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">The same model becomes importable, testable and runnable from a terminal.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="45.36" y="160.823125" transform="rotate(-0 45.36 160.823125)">Load &amp; encode data</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="411.84" y="160.823125" transform="rotate(-0 411.84 160.823125)">src/data/dataset.py</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="45.36" y="213.383125" transform="rotate(-0 45.36 213.383125)">Define the model</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="411.84" y="213.383125" transform="rotate(-0 411.84 213.383125)">src/models/mlp.py</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="45.36" y="265.943125" transform="rotate(-0 45.36 265.943125)">Train &amp; checkpoint</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="411.84" y="265.943125" transform="rotate(-0 411.84 265.943125)">src/training/train.py</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="45.36" y="318.503125" transform="rotate(-0 45.36 318.503125)">Evaluate predictions</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="411.84" y="318.503125" transform="rotate(-0 411.84 318.503125)">src/evaluation/metrics.py</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="45.36" y="371.063125" transform="rotate(-0 45.36 371.063125)">Load &amp; predict</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="411.84" y="371.063125" transform="rotate(-0 411.84 371.063125)">src/inference/predict.py</text>
+   </g>
+   <g id="text_14">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="45.36" y="423.623125" transform="rotate(-0 45.36 423.623125)">Explore &amp; plot</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="411.84" y="423.623125" transform="rotate(-0 411.84 423.623125)">notebooks/</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="497.95125" transform="rotate(-0 30.24 497.95125)">Also record configuration, dependencies and a README; test shapes and the full training path.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pe9e1f20417">
+   <rect x="0" y="0" width="864" height="558"/>
+  </clipPath>
+ </defs>
+</svg>

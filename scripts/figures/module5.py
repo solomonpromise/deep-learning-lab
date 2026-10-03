@@ -86,6 +86,18 @@ def save(fig, number, caption, alt):
     FIGURES[number] = {'caption': caption, 'alt': alt, 'png': base64.b64encode(buf.getvalue()).decode()}
 
 
+def attachment_block(number, caption, alt):
+    """Use Markdown attachment syntax so Jupyter and nbconvert resolve images.
+
+    The HTML wrapper lets the site extract the caption; the image itself must be
+    Markdown because nbconvert does not resolve attachment URLs in raw HTML img tags.
+    """
+    # Entities protect literal vector brackets from the site's LaTeX \[...\] pass.
+    alt = html.escape(alt, quote=True).replace('[', '&#91;').replace(']', '&#93;').replace('\\', '&#92;')
+    return (f'<div align="center">\n\n![{alt}](attachment:figure-{number}.png)\n\n'
+            f'<p><b>Figure {number}.</b> {html.escape(caption)}</p>\n\n</div>')
+
+
 def pipeline():
     number='5.1.1'; fig,ax=canvas(number,'One image. Many possible representations.', 'An encoder decides which information the downstream task can use.', 610)
     for i,(label,sub) in enumerate([('Raw input','Pixels from a field photo'),('Encoder','Rules or learned weights'),('Representation','One vector per image'),('Task','Predict a disease label')]):
@@ -336,8 +348,7 @@ def embed():
                     pat=re.compile(r'^>.*🖼.*\bIMAGE '+re.escape(number)+r'\b.*$',re.M)
                 if not pat.search(src):continue
                 name='figure-'+number+'.png'
-                replacement=(f'<div align="center">\n\n<img src="attachment:{name}" width="1100" alt="{html.escape(data["alt"],quote=True)}">\n\n'
-                             f'<p><b>Figure {number}.</b> {html.escape(data["caption"])}</p>\n\n</div>')
+                replacement=attachment_block(number,data['caption'],data['alt'])
                 src=pat.sub(lambda _:replacement,src,count=1)
                 cell.setdefault('attachments',{})[name]={'image/png':data['png']}
                 cell.setdefault('metadata',{})['dlp_figure']=number
