@@ -718,6 +718,17 @@ body.tutor-resizing, body.tutor-resizing * { cursor: col-resize !important; user
 .tmsg-assistant .prose pre { background: var(--code-bg); color: var(--code-ink); padding: 10px 12px; border-radius: 10px; overflow-x: auto; font-size: .78rem; }
 .tmsg-assistant .prose pre code { background: none; border: 0; padding: 0; color: inherit; }
 .tmsg-assistant .prose ul, .tmsg-assistant .prose ol { padding-left: 1.2em; }
+.tutor-panel .tutor-table-wrap { width: 100%; max-width: 100%; overflow-x: auto; margin: 12px 0; border: 1px solid var(--line-2); border-radius: 8px; background: var(--surface); scrollbar-width: thin; }
+.tutor-panel .tutor-table-wrap:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tutor-panel .tutor-table-wrap table { width: 100%; border-collapse: collapse; margin: 0; font: .83rem/1.5 var(--font); font-variant-numeric: tabular-nums; }
+.tutor-panel .tutor-table-wrap th, .tutor-panel .tutor-table-wrap td { min-width: 8rem; padding: 10px 12px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; white-space: normal; overflow-wrap: anywhere; }
+.tutor-panel .tutor-table-wrap th { background: var(--surface-2); color: var(--ink); font-weight: 700; border-bottom: 2px solid var(--line-2); }
+.tutor-panel .tutor-table-wrap tbody tr:nth-child(even) { background: color-mix(in srgb, var(--surface-2) 55%, var(--surface)); }
+.tutor-panel .tutor-table-wrap tr > :last-child { border-right: 0; }
+.tutor-panel .tutor-table-wrap tbody tr:last-child td { border-bottom: 0; }
+.tutor-panel .tutor-table-wrap [align="center"] { text-align: center; }
+.tutor-panel .tutor-table-wrap [align="right"] { text-align: right; }
+.tutor-panel .tutor-table-wrap code { white-space: normal; overflow-wrap: anywhere; }
 .tutor-typing { display: inline-flex; gap: 4px; padding: 4px 0; }
 .tutor-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); animation: blink 1.2s infinite; }
 .tutor-typing i:nth-child(2) { animation-delay: .2s; } .tutor-typing i:nth-child(3) { animation-delay: .4s; }
