@@ -1,0 +1,48 @@
+skill: Preparing Inputs for a Transformer
+sections:
+  1:
+    questions:
+    - q: Why split continuous text before sampling training windows?
+      options:
+      - It prevents overlapping windows from crossing the train-validation boundary.
+      - It guarantees validation loss will equal training loss.
+      - It removes the need for a causal mask.
+      answer: 0
+      why: It prevents overlapping windows from crossing the train-validation boundary.
+  2:
+    questions:
+    - q: Can this character-based BPE encode an unseen character automatically?
+      options:
+      - No; fallback is limited to known characters unless another policy is provided.
+      - Yes; every character vocabulary contains all Unicode characters.
+      - Yes; merging creates any missing character at inference.
+      answer: 0
+      why: No; fallback is limited to known characters unless another policy is provided.
+  3:
+    questions:
+    - q: Which model components grow with vocabulary size?
+      options:
+      - The token embedding table and vocabulary output head.
+      - Only the number of Transformer blocks.
+      - Only the context window.
+      answer: 0
+      why: The token embedding table and vocabulary output head.
+  4:
+    questions:
+    - q: What does a 64-token context limit?
+      options:
+      - How many recent input tokens this model receives for a prediction.
+      - The total length of every text it can ever generate.
+      - The number of model parameters.
+      answer: 0
+      why: How many recent input tokens this model receives for a prediction.
+  5:
+    questions:
+    - q: How should next-token targets align with inputs?
+      options:
+      - Target at position t is the token following input at t.
+      - Targets should equal inputs at the same positions.
+      - Targets should be the preceding tokens.
+      answer: 0
+      why: Target at position t is the token following input at t.
+assessment_revision: day56-v3

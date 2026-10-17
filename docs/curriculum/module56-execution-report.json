@@ -1,0 +1,110 @@
+{
+  "5.1": {
+    "status": "passed",
+    "code_cells": 14,
+    "plot_outputs": 3,
+    "seconds": 88.32,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "5.2": {
+    "status": "passed",
+    "code_cells": 26,
+    "plot_outputs": 5,
+    "seconds": 59.8,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "5.3": {
+    "status": "passed",
+    "code_cells": 23,
+    "plot_outputs": 2,
+    "seconds": 159.53,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "5.4": {
+    "status": "passed",
+    "code_cells": 19,
+    "plot_outputs": 3,
+    "seconds": 55.13,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "5.5": {
+    "status": "passed",
+    "code_cells": 15,
+    "plot_outputs": 4,
+    "seconds": 28.79,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "5.6": {
+    "status": "passed",
+    "code_cells": 16,
+    "plot_outputs": 4,
+    "seconds": 48.08,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "6.1": {
+    "status": "passed",
+    "code_cells": 13,
+    "plot_outputs": 2,
+    "seconds": 1.89,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "6.2": {
+    "status": "passed",
+    "code_cells": 14,
+    "plot_outputs": 1,
+    "seconds": 4.78,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "6.3": {
+    "status": "passed",
+    "code_cells": 18,
+    "plot_outputs": 4,
+    "seconds": 1.81,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "6.4": {
+    "status": "passed",
+    "code_cells": 13,
+    "plot_outputs": 2,
+    "seconds": 32.25,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "6.5": {
+    "status": "passed",
+    "code_cells": 11,
+    "plot_outputs": 2,
+    "seconds": 3.81,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  },
+  "6.6": {
+    "status": "passed",
+    "code_cells": 19,
+    "plot_outputs": 5,
+    "seconds": 41.24,
+    "python": "3.13.9",
+    "interpreter": "/tmp/dlp-module56-env/bin/python",
+    "threads": 1
+  }
+}

@@ -1693,3 +1693,41 @@ body.nav-open .sidebar { visibility:visible; }
 .m-hero .m-num { color:var(--ink-3); }
 .code-cell .code-meta,.code-cell .code-lang { color:#b8c9bb; }
 @media (max-width:720px) { .rd-tools .rd-tutor { display:none; } }
+/* Worked visual sequences for Modules 5–6. Discrete frames, paused on arrival. */
+.concept-motion { color: var(--ink); width: 100%; min-width: 0; }
+.cm-controls { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .65rem; }
+.cm-controls button { font: inherit; font-size: .85rem; padding: .6rem .8rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); cursor: pointer; min-height: 44px; }
+.cm-controls button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.cm-controls button:disabled { opacity: .45; cursor: default; }
+.cm-controls button:focus-visible { outline: 3px solid var(--c0); outline-offset: 3px; }
+.cm-count { font: .8rem 'JetBrains Mono', monospace; margin: .5rem 0; }
+.cm-scene, .cm-path { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem; width: 100%; }
+.cm-panel { flex: 1 1 170px; min-width: 0; padding: .8rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.cm-panel h4, .cm-stage h4 { font: 600 .85rem/1.4 Archivo, sans-serif; margin: 0 0 .7rem; }
+.cm-grid { display: grid; grid-template-columns: repeat(var(--cm-cols), minmax(0,1fr)); gap: 3px; max-width: 280px; margin: auto; }
+.cm-vector { display: flex; flex-wrap: wrap; gap: 4px; }
+.cm-tile { display: flex; align-items: center; justify-content: center; min-height: 32px; padding: .25rem; background: var(--surface-2); border: 1px solid var(--line); border-radius: 3px; font: .85rem 'JetBrains Mono', monospace; }
+.cm-vector .cm-tile { min-width: 38px; }
+.cm-tile.is-current { color: var(--c0); border: 2px solid var(--c0); font-weight: 700; }
+.cm-arrow { color: var(--ink-2); font-size: 1.5rem; }
+.cm-stage { flex: 1 1 130px; min-width: 0; padding: .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); overflow-wrap: anywhere; }
+.cm-stage.is-current { border: 2px solid var(--c0); box-shadow: inset 0 3px var(--c0); }
+.cm-stage p { font: .85rem/1.7 'JetBrains Mono', monospace; margin: 0; }
+.cm-narration { font: 1rem/1.65 'Source Serif 4', serif; min-height: 5em; margin: 1rem 0 0; }
+.cm-table { width: 100%; font: .8rem/1.5 'JetBrains Mono', monospace; border-collapse: collapse; }
+.cm-table th, .cm-table td { padding: .4rem .2rem; text-align: left; border-bottom: 1px solid var(--line); white-space: normal; }
+.cm-table .is-current { color: var(--c0); font-weight: bold; }
+.cm-result { font: 1.25rem/1.5 'JetBrains Mono', monospace; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .cm-scene, .cm-path { flex-direction: column; align-items: stretch; } .cm-panel,.cm-stage { flex-basis: auto; } .cm-arrow { align-self: center; transform: rotate(90deg); line-height: 1; } .cm-controls button { flex: 1 1 40%; } }
+/* Read dense teaching figures at their full detail, including on phones. */
+.lightbox { grid-template-rows: auto auto minmax(0,1fr); place-items: stretch; gap: 8px; padding: 16px; cursor: default; }
+.lb-toolbar { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+.lb-toolbar button { min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid #89978f; border-radius: 6px; background: #23382d; color: #fff; font: 600 1rem Archivo,sans-serif; cursor: pointer; }
+.lb-toolbar button:disabled { opacity: .45; cursor: default; }
+.lb-toolbar button:focus-visible, .lb-viewport:focus-visible, img.zoomable:focus-visible { outline: 3px solid #91bcff; outline-offset: 3px; }
+.lightbox .lb-toolbar .icon-btn { position: static; background: #23382d; }
+.lb-toolbar output { color: #fff; font: .8rem 'JetBrains Mono',monospace; min-width: 105px; }
+.lb-hint { color: #e7efe8; text-align: center; font: .8rem/1.5 Archivo,sans-serif; margin: 0; }
+.lb-viewport { overflow: auto; overscroll-behavior: contain; min-height: 0; width: 100%; padding: 12px; border-radius: 8px; }
+.lightbox .lb-viewport img { display: block; max-width: none; max-height: none; height: auto; margin: 0 auto; border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) { .lightbox { animation: none; } }

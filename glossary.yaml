@@ -178,3 +178,136 @@
 - term: Weights
   aliases: [weight matrix]
   def: The learned multipliers on a layer's inputs. Together with biases they are the model's parameters.
+
+# Modules 5–6: reviewed standalone notes.
+- term: Encoder
+  def: A model component that transforms an input into a representation used by another
+    component or task.
+- term: Task head
+  def: A model component that maps a representation to task outputs, such as class
+    logits. A new head may need training even when the encoder is pretrained.
+  aliases:
+  - classification head
+- term: Convolutional neural network
+  def: A network that applies learned local filters with shared weights across spatial
+    locations. It provides a useful inductive bias for many image tasks.
+  aliases:
+  - CNN
+  - CNNs
+- term: Feature map
+  def: A spatial grid of responses produced by a filter or layer. It records where
+    particular learned computations respond, without automatically explaining a prediction.
+  aliases:
+  - feature maps
+- term: Stride
+  def: The step between successive filter starting positions. A larger stride usually
+    produces fewer output positions and lower spatial resolution.
+- term: Pooling
+  def: An operation that summarises a set or neighbourhood, for example by taking
+    its maximum or mean. The rule determines which information is preserved or discarded.
+- term: Cosine similarity
+  def: The dot product of two nonzero vectors divided by their lengths. It compares
+    direction, lies between −1 and 1, and is not a calibrated probability of semantic
+    equivalence.
+- term: Recurrent neural network
+  def: A sequence model that repeatedly updates a hidden state using the current input
+    and previous state. The update weights are shared across positions.
+  aliases:
+  - RNN
+  - RNNs
+- term: Hidden state
+  def: A vector carrying a learned summary inside a sequence model. It can change
+    at every position and need not preserve all past input information.
+  aliases:
+  - hidden states
+- term: LSTM
+  def: 'Long short-term memory: a recurrent architecture with a cell-state pathway
+    and learned gates controlling retention, input updates and visible output. It
+    helps with long dependencies without guaranteeing unlimited memory.'
+- term: GRU
+  def: 'Gated recurrent unit: a recurrent architecture using reset and update gates
+    to control a changing state and candidate information.'
+- term: Contrastive learning
+  def: Learning representations by favouring matched pairs relative to selected alternatives.
+    What counts as a positive or negative pair depends on the training objective and
+    data.
+- term: CLIP
+  def: 'Contrastive Language–Image Pretraining: paired image and text encoders trained
+    to produce comparable projected representations. Similarity supports retrieval
+    and candidate-based classification rather than directly generating an image.'
+- term: Transformer
+  def: An architecture that combines attention-based contextual mixing with positionwise
+    transformations, residual routes and normalisation. Its input interface, masks,
+    training objective and output head determine its task behaviour.
+  aliases:
+  - Transformers
+- term: Context window
+  def: The configured amount of sequence context a model can use under its architecture
+    and implementation. A permitted length does not guarantee equal prediction quality
+    at every position.
+  aliases:
+  - context windows
+- term: Self-attention
+  def: An operation in which positions form learned weighted mixtures of value vectors
+    from the same sequence, subject to information-access masks. Queries and keys
+    determine the mixing weights.
+- term: Causal mask
+  def: A restriction blocking future keys for a query position, so next-token prediction
+    cannot read its answer. Padding restrictions are a separate mask concern.
+  aliases:
+  - causal masks
+- term: Multi-head attention
+  def: Several attention computations in learned projected subspaces, whose outputs
+    are joined and projected. Heads divide feature coordinates, not disjoint sentence
+    segments.
+- term: Residual connection
+  def: An addition of the form input plus learned update. Compatible shapes preserve
+    an identity route through a block and can help gradient flow.
+  aliases:
+  - residual connections
+  - residual paths
+- term: Layer normalisation
+  def: Normalisation over configured feature dimensions within each example or token,
+    using its own mean and variance plus optional learned scale and offset. It does
+    not use a training-dataset mean.
+  aliases:
+  - LayerNorm
+  - layer normalization
+- term: Cross-attention
+  def: Attention with queries from one sequence and keys and values from another,
+    such as decoder target vectors reading encoded source memory.
+- term: Autoregressive
+  def: Predicting each next item conditional on earlier items. Known training positions
+    can be scored in parallel with a causal mask, while ordinary generation selects
+    new tokens sequentially.
+- term: Inference
+  def: Using a model’s current parameters to calculate outputs without the task-training
+    update loop. Evaluation mode and gradient-recording controls have distinct roles.
+- term: Linear probe
+  def: A simple linear classifier fitted on fixed representations to test how accessible
+    task information is for a declared task and evaluation protocol.
+- term: Receptive field
+  def: The region of the original input that can influence an output location, given
+    the layer kernels, strides and connectivity.
+- term: Skip-gram
+  def: A word-embedding objective predicting nearby context words from a centre word.
+    Training pairs should respect document boundaries.
+- term: Byte-pair encoding
+  def: Tokenisation by repeatedly merging frequent adjacent pairs. Character-based
+    versions require known characters; byte-level coverage can provide a fallback
+    for arbitrary text.
+- term: Feed-forward network
+  def: In a standard Transformer block, a shared nonlinear network applied separately
+    to each token vector. Attention supplies cross-token information.
+- term: Teacher forcing
+  def: Training with the true preceding tokens as history. A causal Transformer can
+    compute predictions at all known input positions in parallel.
+- term: Permutation equivariance
+  def: Permuting inputs permutes outputs correspondingly. Unmasked self-attention
+    without positional information has this property.
+- term: Top-p sampling
+  def: Sampling after retaining a highest-probability set whose cumulative probability
+    reaches a threshold, then renormalising.
+- term: Exposure bias
+  def: The mismatch between training on reference histories and generating from model-produced
+    histories, where errors can affect subsequent inputs.

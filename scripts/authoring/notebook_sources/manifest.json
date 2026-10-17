@@ -1,0 +1,62 @@
+{
+  "5.1": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 5/5.1 Understanding Representation Learning.ipynb",
+    "sha256": "e4c9ee3fe17dd5e1b33e0dc4914298e0698c0b83b019bf09dacb1ba12a42811b",
+    "snapshot": "scripts/authoring/notebook_sources/5.1.ipynb"
+  },
+  "5.2": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 5/5.2 How Neural Networks Learn from Images.ipynb",
+    "sha256": "74e7f63f7314afc492352fad21d570d2e39bcc1ba831e6dd48ee18dd1cbaa435",
+    "snapshot": "scripts/authoring/notebook_sources/5.2.ipynb"
+  },
+  "5.3": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 5/5.3 How Neural Networks Learn from Text.ipynb",
+    "sha256": "37b8e14fbe96795d4681c436e488b4aec14cc502ddf03c55d94e0c27cdc27708",
+    "snapshot": "scripts/authoring/notebook_sources/5.3.ipynb"
+  },
+  "5.4": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 5/5.4 From Sequences to Attention.ipynb",
+    "sha256": "342b3b6845470d84276eb5a979309a944cdf2ecabdd005c2b083dcdc9cc70f96",
+    "snapshot": "scripts/authoring/notebook_sources/5.4.ipynb"
+  },
+  "5.5": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 5/5.5 Connecting Image and Text Representations.ipynb",
+    "sha256": "5da132f44267b7b13edddb581af0cbee5d7d2f275a321f289a39ed8030b3ab91",
+    "snapshot": "scripts/authoring/notebook_sources/5.5.ipynb"
+  },
+  "5.6": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 5/5.6 Synthesis.ipynb",
+    "sha256": "3fe75c838f017d241982db0ff86a955fac9fa7cc265304521a5763df540a7c1c",
+    "snapshot": "scripts/authoring/notebook_sources/5.6.ipynb"
+  },
+  "6.1": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 6/6.1 Understanding the Transformer Architecture.ipynb",
+    "sha256": "dfbfe0f2bfafb3164d458119216aade458642f11c2b1b4dfc751d4b746c03a26",
+    "snapshot": "scripts/authoring/notebook_sources/6.1.ipynb"
+  },
+  "6.2": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 6/6.2 Preparing Inputs for a Transformer.ipynb",
+    "sha256": "99244d4818d20af7edc4e3bb76a6b5cf9951408f204b812338e93bd54be216d1",
+    "snapshot": "scripts/authoring/notebook_sources/6.2.ipynb"
+  },
+  "6.3": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 6/6.3 Understanding Attention.ipynb",
+    "sha256": "f7dd051e1f441aaddee31735458164f9d4cd3e689b71578de67b3d39f8cd01a0",
+    "snapshot": "scripts/authoring/notebook_sources/6.3.ipynb"
+  },
+  "6.4": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 6/6.4 The Transformer Block.ipynb",
+    "sha256": "4c299e4f130856cf9ae3a30a36c55b7a84289a3ff75a5241ef590cb09e00c72d",
+    "snapshot": "scripts/authoring/notebook_sources/6.4.ipynb"
+  },
+  "6.5": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 6/6.5 Building a Decoder-Only Transformer.ipynb",
+    "sha256": "7dcc4cd4dbc97365eb15b0c95f7c5b38d334abb568e771dbdaf7a9ed563de608",
+    "snapshot": "scripts/authoring/notebook_sources/6.5.ipynb"
+  },
+  "6.6": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 6/6.6 How Transformers Learn and Generate Text.ipynb",
+    "sha256": "06d3ae27f218f6b7f4ce2a3299da0e38ac46f7982b2806f6357773f5775f9801",
+    "snapshot": "scripts/authoring/notebook_sources/6.6.ipynb"
+  }
+}

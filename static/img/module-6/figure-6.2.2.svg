@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="460.8pt" viewBox="0 0 864 460.8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>The input vector for card branches into three linear projections, including biases as in MiniLM. Query and key vectors are compared to obtain attention weights. The value vector is the content passed into the weighted sum.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 460.8
+L 864 460.8
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 30.24 213.12
+L 206.64 213.12
+L 206.64 292.32
+L 30.24 292.32
+z
+" clip-path="url(#pf2073859d1)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 211.627046 251.277913
+Q 255.599699 205.560313 298.022267 161.454309
+" clip-path="url(#pf2073859d1)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 291.27934 163.848665
+L 298.022267 161.454309
+L 295.891995 168.285264
+z
+" clip-path="url(#pf2073859d1)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 306.72 136.8
+L 493.92 136.8
+L 493.92 181.44
+L 306.72 181.44
+z
+" clip-path="url(#pf2073859d1)" style="fill: #ffffff; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 499.518369 158.4
+Q 525.599191 158.4 549.443945 158.4
+" clip-path="url(#pf2073859d1)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 543.043945 155.2
+L 549.443945 158.4
+L 543.043945 161.6
+z
+" clip-path="url(#pf2073859d1)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 212.213979 253.03333
+Q 255.599809 259.91997 296.777219 266.456067
+" clip-path="url(#pf2073859d1)" style="fill: none; stroke: #356784; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 290.958008 262.292321
+L 296.777219 266.456067
+L 289.954696 268.613188
+z
+" clip-path="url(#pf2073859d1)" style="fill: #356784; stroke: #356784; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 306.72 245.52
+L 493.92 245.52
+L 493.92 290.16
+L 306.72 290.16
+z
+" clip-path="url(#pf2073859d1)" style="fill: #ffffff; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 499.518369 267.12
+Q 525.599191 267.12 549.443945 267.12
+" clip-path="url(#pf2073859d1)" style="fill: none; stroke: #356784; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 543.043945 263.92
+L 549.443945 267.12
+L 543.043945 270.32
+z
+" clip-path="url(#pf2073859d1)" style="fill: #356784; stroke: #356784; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 211.42771 254.331892
+Q 255.599578 314.279427 298.445012 372.426802
+" clip-path="url(#pf2073859d1)" style="fill: none; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 297.224717 365.376208
+L 298.445012 372.426802
+L 292.07236 369.172682
+z
+" clip-path="url(#pf2073859d1)" style="fill: #a04e32; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 306.72 354.24
+L 493.92 354.24
+L 493.92 398.88
+L 306.72 398.88
+z
+" clip-path="url(#pf2073859d1)" style="fill: #ffffff; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 499.518369 375.84
+Q 525.599191 375.84 549.443945 375.84
+" clip-path="url(#pf2073859d1)" style="fill: none; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 543.043945 372.64
+L 549.443945 375.84
+L 543.043945 379.04
+z
+" clip-path="url(#pf2073859d1)" style="fill: #a04e32; stroke: #a04e32; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#pf2073859d1)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 6.2.2</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.40875" transform="rotate(-0 30.24 63.40875)">One token, three learned projections.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">Queries and keys determine the weights. Values supply the information being mixed.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 19px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(87.780234 247.324891)">“card”</text>
+    <text style="font-size: 19px; font-family: 'DejaVu Sans'; fill: #202d28" transform="translate(52.208672 268.600734)">input vector x</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="400.32" y="163.535" transform="rotate(-0 400.32 163.535)">q = xWq + bq</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="573.12" y="151.5225" transform="rotate(-0 573.12 151.5225)">Query</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="573.12" y="175.39125" transform="rotate(-0 573.12 175.39125)">What am I looking for?</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="400.32" y="272.255" transform="rotate(-0 400.32 272.255)">k = xWk + bk</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #356784" x="573.12" y="260.2425" transform="rotate(-0 573.12 260.2425)">Key</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="573.12" y="284.11125" transform="rotate(-0 573.12 284.11125)">What can match me?</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="400.32" y="380.975" transform="rotate(-0 400.32 380.975)">v = xWv + bv</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 20px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #a04e32" x="573.12" y="369.11875" transform="rotate(-0 573.12 369.11875)">Value</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="573.12" y="392.83125" transform="rotate(-0 573.12 392.83125)">What information do I pass on?</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="437.47125" transform="rotate(-0 30.24 437.47125)">The same three projections are applied at every token position. Their weights are learned during training.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pf2073859d1">
+   <rect x="0" y="0" width="864" height="460.8"/>
+  </clipPath>
+ </defs>
+</svg>

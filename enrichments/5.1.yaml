@@ -1,0 +1,76 @@
+summary: What changes when a network learns its own features instead of being given
+  them?
+answers:
+  1-1:
+  - 1,000 × 1,000 × 3 = 3 million numbers. Each number on its own says almost nothing
+    about what is in the photo, and a simple model would have to work out from scratch
+    how millions of numbers relate to one another. It would need enormous amounts
+    of data and would be easily confused by changes such as lighting or position.
+    A representation compresses this into a much smaller set of meaningful features.
+  2-1:
+  - Because the encoder has already done the hard work. If the representation separates
+    the classes well, a straight-line decision boundary (a linear layer) is enough
+    to read off the answer. If the head needs to be large and complicated, that is
+    often a sign the representation is not good enough.
+  3-1:
+  - 'The validation images are supposed to be unseen, so that the accuracy we measure
+    on them tells us how the method performs on new data. If the encoder had trained
+    on them, it could have learned features tuned to those specific images, and the
+    validation accuracy would be optimistic. This is data leakage: information from
+    the evaluation set leaking into training.'
+  4-1:
+  - The template lines up with particular pixel positions. If the bag is smaller or
+    shifted, its outline falls on different pixels, so the weighted sum changes and
+    the unit may not switch on. A hierarchical network that detects edges and parts
+    wherever they appear is much less sensitive to this.
+  5-1:
+  - The errors are no longer caused by a lack of labelled examples; they are caused
+    by the representation itself. Seven numbers cannot capture the differences between
+    some classes (for example, shirt vs. pullover), so no amount of extra labels lets
+    the classifier separate them. The representation has become the bottleneck.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts: []
+docstrings:
+  read_idx: "Read a cached gzip-compressed IDX array, skipping its binary header.\n\
+    \nArguments:\n    path: Path of the cached gzip file.\n    offset: Bytes to skip\
+    \ before reading array values."
+  handcrafted_features: "Compute the seven explicitly designed image measurements\
+    \ described above.\n\nArguments:\n    X: Image/input tensor for the experiment."
+  linear_probe: "Fit a standardised logistic regression on fixed features and evaluate\
+    \ held-out examples.\n\nArguments:\n    F_train: Fixed representation rows used\
+    \ to fit the probe.\n    y_train: Training class labels.\n    F_val: Held-out\
+    \ representation rows.\n    y_val: Held-out class labels."
+  MLP: Flattened-image MLP with a learned hidden representation and a classification
+    head.
+  MLP.__init__: Create the components of this model; the forward computation is traced
+    in the lesson.
+  MLP.forward: "Flattened-image MLP with a learned hidden representation and a classification\
+    \ head.\n\nArguments:\n    x: Floating-point tensor; image models use (B, C, H,\
+    \ W), token-vector models use (B, T, D)."
+  unit_summary: "Find the most activating validation images and summarise their class\
+    \ concentration.\n\nArguments:\n    k: Number of neighbours, or unit index in\
+    \ unit_summary.\n    top: Number of highest-activation images used in the unit\
+    \ summary."
+quiz:
+- q: What does a representation describe?
+  options:
+  - An example in features useful for a task.
+  - Only the example's class name.
+  - The optimizer's learning rate.
+  answer: 0
+  why: An example in features useful for a task.
+- q: Why keep representation-learning images separate from validation images?
+  options:
+  - Validation must measure performance on examples unseen during fitting.
+  - The image dimensions differ between the sets.
+  - Only the classifier can leak validation information.
+  answer: 0
+  why: Validation must measure performance on examples unseen during fitting.
+- q: An encoder helps a probe with only 100 labels. What must we still report?
+  options:
+  - The data and labels used earlier to train the encoder.
+  - Only the 100 probe labels, since earlier training is free.
+  - Only the feature-vector length.
+  answer: 0
+  why: The data and labels used earlier to train the encoder.

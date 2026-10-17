@@ -1,0 +1,79 @@
+skill: Understanding the Transformer Architecture
+sections:
+  1:
+    questions:
+    - q: What does a Transformer block return for each input token?
+      options:
+      - A vector enriched by permitted context, with the same model width.
+      - A new vocabulary containing every sentence.
+      - Only one vector for the entire training dataset.
+      answer: 0
+      why: A vector enriched by permitted context, with the same model width.
+  2:
+    questions:
+    - q: Which computation can causal Transformer training parallelise?
+      options:
+      - Predictions at known input positions in a training window.
+      - Every future generated token before any is chosen.
+      - All training updates without waiting for earlier updates.
+      answer: 0
+      why: Predictions at known input positions in a training window.
+  3:
+    questions:
+    - q: What is the final axis of language-model logits?
+      options:
+      - One score per vocabulary entry.
+      - One score per training epoch.
+      - One score per attention head only.
+      answer: 0
+      why: One score per vocabulary entry.
+  4:
+    questions:
+    - q: Which component exchanges information between token positions?
+      options:
+      - Attention; the feed-forward network processes each resulting token vector
+        separately.
+      - The per-token feed-forward network alone.
+      - The vocabulary's numerical IDs.
+      answer: 0
+      why: Attention; the feed-forward network processes each resulting token vector
+        separately.
+  5:
+    questions:
+    - q: What distinguishes ordinary encoder and decoder self-attention?
+      options:
+      - Bidirectional versus causally restricted access to input positions.
+      - Encoders have no embeddings.
+      - Decoders cannot represent input context.
+      answer: 0
+      why: Bidirectional versus causally restricted access to input positions.
+  6:
+    questions:
+    - q: What does each residual sub-layer add?
+      options:
+      - A computed update to the existing token-vector stream.
+      - A new token ID to the vocabulary.
+      - An extra sequence position at every layer.
+      answer: 0
+      why: A computed update to the existing token-vector stream.
+  7:
+    questions:
+    - q: What is pre-norm?
+      options:
+      - Normalising the input of a sub-layer before adding its output to the residual
+        stream.
+      - Normalising the labels before tokenisation.
+      - Removing every residual connection.
+      answer: 0
+      why: Normalising the input of a sub-layer before adding its output to the residual
+        stream.
+  8:
+    questions:
+    - q: How does a Vision Transformer obtain patch tokens?
+      options:
+      - Flatten each patch and project it into the model's vector width.
+      - Treat the full image label as every patch embedding.
+      - Apply text token IDs directly to pixel values.
+      answer: 0
+      why: Flatten each patch and project it into the model's vector width.
+assessment_revision: day56-v3

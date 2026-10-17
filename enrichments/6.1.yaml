@@ -1,0 +1,61 @@
+summary: What is a Transformer, as a whole, and how does information flow through
+  it?
+answers:
+  3-1:
+  - '`(8, 50, 65)`: 8 sequences, 50 positions each, and 65 scores (one per character)
+    at every position.'
+  4-1:
+  - Attention moves information *between* tokens, letting each token gather what is
+    relevant from the others. The feed-forward network processes the information *within*
+    each token's vector, separately for every token.
+  5-1:
+  - '(a) Encoder-only: you need to understand a complete email, not generate text.
+    (b) Decoder-only: a chatbot generates its reply one token at a time. (c) Encoder–decoder:
+    an encoder reads the whole German sentence and a decoder generates the English
+    one, using cross-attention to consult the German. (Large decoder-only models can
+    also translate, by treating the German text and its translation as one long sequence.)'
+  6-1:
+  - Before the first block, a token's vector is just its token embedding plus its
+    position embedding. Both `d` tokens have the same ID and the same position (8),
+    so they get exactly the same two vectors and the same sum. No information from
+    other tokens has been mixed in yet.
+  8-1:
+  - 224 / 16 = 14 patches along each side, so 14 × 14 = 196 patch tokens.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts: []
+docstrings:
+  TinyTransformer: Ready-made PyTorch attention blocks assembled into the introductory
+    character model.
+  TinyTransformer.__init__: Create the components of this model; the forward computation
+    is traced in the lesson.
+  TinyTransformer.forward: "Ready-made PyTorch attention blocks assembled into the\
+    \ introductory character model.\n\nArguments:\n    ids: Integer token IDs, usually\
+    \ shaped (batch, tokens).\n    causal: Whether to prevent attending to future\
+    \ positions."
+  mask_grid: "Construct an illustrative allowed-attention grid for the selected Transformer\
+    \ family.\n\nArguments:\n    kind: The model or mask family selected in the surrounding\
+    \ example.\n    T: Sequence length, or text-vector batch in contrastive_loss.\n\
+    \    S: Source-sequence length for the cross-attention grid."
+quiz:
+- q: What does a Transformer block return for each input token?
+  options:
+  - A vector enriched by permitted context, with the same model width.
+  - A new vocabulary containing every sentence.
+  - Only one vector for the entire training dataset.
+  answer: 0
+  why: A vector enriched by permitted context, with the same model width.
+- q: What distinguishes ordinary encoder and decoder self-attention?
+  options:
+  - Bidirectional versus causally restricted access to input positions.
+  - Encoders have no embeddings.
+  - Decoders cannot represent input context.
+  answer: 0
+  why: Bidirectional versus causally restricted access to input positions.
+- q: How does a Vision Transformer obtain patch tokens?
+  options:
+  - Flatten each patch and project it into the model's vector width.
+  - Treat the full image label as every patch embedding.
+  - Apply text token IDs directly to pixel values.
+  answer: 0
+  why: Flatten each patch and project it into the model's vector width.

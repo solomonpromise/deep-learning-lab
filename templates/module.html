@@ -9,7 +9,7 @@
     <div class="m-num" aria-hidden="true">{{ '%02d' % module.number }}</div>
     <div class="m-title">
       <nav class="mono-label m-crumbs" aria-label="Breadcrumb"><a href="{{ root }}index.html">Course</a> <span aria-hidden="true">/</span> Module {{ module.number }}</nav>
-      <span class="mono-label m-k">Module {{ module.number }} · {{ module.lessons|length }} lessons · ~{{ (module.minutes / 60)|round(1) }} hours</span>
+      <span class="mono-label m-k">Module {{ module.number }} · {{ module.lessons|length }} lessons · {% if module.class_hours %}{{ module.class_hours }} hours in class{% else %}~{{ (module.minutes / 60)|round(1) }} hours{% endif %}</span>
       <h1>{{ module.title }}</h1>
       <p class="m-q">{{ module.question }}</p>
     </div>
@@ -27,6 +27,7 @@
     <div class="m-main">
       <ul class="tags">{% for t in module.topics %}<li>{{ t }}</li>{% endfor %}</ul>
       <p class="m-note"><strong>Hands-on:</strong> {{ module.hands_on }}</p>
+      {% if module.teaching_note %}<p class="m-note"><strong>Learning route:</strong> {{ module.teaching_note }}</p>{% endif %}
       {% if module.engineering %}<p class="m-note"><strong>Engineering:</strong> {{ module.engineering }}</p>{% endif %}
     </div>
   </section>
@@ -44,7 +45,7 @@
           <h3><a href="{{ l.slug }}.html"><span class="sr-only">Lesson {{ l.id }}: </span>{{ l.title_html | safe }}</a></h3>
           {% if e.summary_html %}<p class="ml-sum">{{ e.summary_html | striptags | truncate(260) }}</p>
           {% elif l.preamble.goal_html %}<p class="ml-sum">{{ l.preamble.goal_html | striptags | truncate(260) }}</p>{% endif %}
-          <span class="ml-meta">~{{ reading(l) }} min · {{ l.sections|length }} sections · {{ l.code_cells }} code cells{% if e.widgets %} · {{ e.widgets|length }} lab{{ 's' if e.widgets|length != 1 }}{% endif %}</span>
+          <span class="ml-meta">{% if l.id in (module.further_learning_lessons or []) %}Further learning · {% elif module.classroom_lessons %}Classroom · {% endif %}~{{ reading(l) }} min self-study · {{ l.sections|length }} sections · {{ l.code_cells }} code cells{% if e.widgets %} · {{ e.widgets|length }} lab{{ 's' if e.widgets|length != 1 }}{% endif %}</span>
         </div>
         <div class="ml-side">
           <span class="ml-state" data-ml-state>Not started</span>

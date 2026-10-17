@@ -1,0 +1,32 @@
+skill: 'Synthesis: Putting Representation Learning into Practice'
+sections:
+  1:
+    questions:
+    - q: Why use the same downstream probe family across representations?
+      options:
+      - It helps compare how accessible task information is in each representation.
+      - It guarantees every encoder has equal training cost.
+      - It proves one representation is best for all tasks.
+      answer: 0
+      why: It helps compare how accessible task information is in each representation.
+  2:
+    questions:
+    - q: What does similar k-NN accuracy before and after t-SNE establish?
+      options:
+      - Some class information remains useful; individual neighbour preservation needs
+        a separate metric.
+      - Every pairwise distance is preserved.
+      - The t-SNE model can place unseen points without fitting again.
+      answer: 0
+      why: Some class information remains useful; individual neighbour preservation
+        needs a separate metric.
+  3:
+    questions:
+    - q: What determines whether a representation is useful?
+      options:
+      - The task, data, training objective, architecture and evaluation evidence.
+      - Its vector length alone.
+      - How neatly its 2D clusters are separated.
+      answer: 0
+      why: The task, data, training objective, architecture and evaluation evidence.
+assessment_revision: day56-v3

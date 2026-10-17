@@ -1,0 +1,124 @@
+{
+  "5.3": {
+    "44": [
+      [
+        "13,075,100",
+        "12,625,140"
+      ]
+    ],
+    "46": [
+      [
+        "3.420",
+        "3.407"
+      ],
+      [
+        "2.599",
+        "2.598"
+      ]
+    ],
+    "50": [
+      [
+        "0.815",
+        "0.830"
+      ],
+      [
+        "0.513",
+        "0.495"
+      ],
+      [
+        "0.400",
+        "0.408"
+      ],
+      [
+        "58% and 66%",
+        "58% and 67%"
+      ],
+      [
+        "and 0.88 under skip-gram",
+        "and 0.87 under skip-gram"
+      ],
+      [
+        "(0.77 and 0.81)",
+        "(0.77 and 0.83)"
+      ]
+    ],
+    "55": [
+      [
+        "0.815",
+        "0.830"
+      ],
+      [
+        "0.513",
+        "0.495"
+      ],
+      [
+        "0.400",
+        "0.408"
+      ]
+    ],
+    "56": [
+      [
+        "0.815",
+        "0.830"
+      ],
+      [
+        "0.400",
+        "0.408"
+      ]
+    ],
+    "58": [
+      [
+        "0.513",
+        "0.495"
+      ],
+      [
+        "0.400",
+        "0.408"
+      ]
+    ],
+    "48": [
+      [
+        "The neutral words now have meaningful neighbours. \"Husband\" sits next to *wife*, *sister* and *mother*; \"music\" next to *soundtrack*, *jazz*, *score* and *songs*; \"actor\" next to *role* and *comedian* (and the surnames of a few actors). The sentiment words still have sensible neighbours too: \"excellent\" next to *superb* and *outstanding*, \"awful\" next to *terrible* and *atrocious*.",
+        "The neutral words now have more clearly related neighbours. \"Husband\" sits next to *wife*, *mother* and *daughter*; \"music\" next to *soundtrack*, *sound*, *songs* and *score*; \"actor\" next to *comedian* and *talented*, as well as actors' names. The sentiment words also have plausible neighbours: \"excellent\" next to *superb*, *flawless* and *exceptional*, and \"awful\" next to *terrible*, *bad* and *horrendous*. These are observations from this run, rather than guaranteed semantic groupings."
+      ]
+    ],
+    "answers": [
+      [
+        "13,075,100",
+        "12,625,140"
+      ],
+      [
+        "3.420",
+        "3.407"
+      ],
+      [
+        "2.599",
+        "2.598"
+      ],
+      [
+        "0.815",
+        "0.830"
+      ],
+      [
+        "0.513",
+        "0.495"
+      ],
+      [
+        "0.400",
+        "0.408"
+      ],
+      [
+        "58% and 66%",
+        "58% and 67%"
+      ],
+      [
+        "and 0.88 under skip-gram",
+        "and 0.87 under skip-gram"
+      ],
+      [
+        "(0.77 and 0.81)",
+        "(0.77 and 0.83)"
+      ]
+    ]
+  }
+}

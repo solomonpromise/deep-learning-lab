@@ -472,27 +472,54 @@ scripts load a sample learner partway through Module 3, so the pages show real p
 
 ## Teaching figures and notebook downloads
 
-Modules 1–4 contain 32 diagrams in Module 5's cream-and-forest style: 19 replacements and 13 previously missing illustrations.
-They use the actual lesson's shapes, model architecture, checkpoint state and evaluation results. The 45 saved experiment
-plots in these modules retain their original results. Module 5's ten approved teaching diagrams use the same attachment format.
+Modules 1–4 retain their existing portable diagrams and saved experiment plots.
+Modules 5–6 use the author's replacement Day 5/6 notebooks, snapshotted in
+`scripts/authoring/notebook_sources/`. The twelve self-study notebooks include
+84 numbered sections, worked answers, section checkpoints and saved reference outputs.
+Modules 7–8 remain unpublished while their notes are reworked.
 
-PNG figures are embedded in the notebook's Markdown attachments, so the **Notebook** download includes the images and works
-without an external image folder. Standard Markdown image links also make them visible in `nbconvert` HTML exports.
-Editable SVG originals, captions and descriptive alt text live in `static/img/course-figures/` and `static/img/module-5/`.
-The curated notebooks are protected from `make sync` by `sources.locked` in `course.yaml`.
+- Module 5: six notes on representations, CNNs, text, sequences, shared spaces and the practical comparison.
+- Module 6: six notes; every lesson and section receives classroom coverage. Architecture history and vision/multimodal applications are in 6.1; weight tying is in 6.5.
+
+Dataset photographs, feature maps, attention matrices, embedding similarities,
+learning curves and evaluation plots come from actual notebook computations.
+Modules 5–6 include all 37 requested generated conceptual illustrations and
+six exact numerical worked figures, embedded as PNG attachments. The app adds
+six paused, accessible step-by-step walkthroughs. Prompts, reviewed selections,
+captions and hashes are documented in `static/img/module56-visuals/`; three earlier
+illustrations remain in `static/img/curriculum-v2/`. Attachments and saved plots
+travel with notebook downloads and render offline. All twelve notebooks are locked
+against sync. The original author folders remain untouched.
+
+The previous Module 5/6 notes and teaching layers are archived in
+`docs/curriculum/archive/pre-day56-update.zip`. Visual requests are tracked in
+`docs/curriculum/module56-visual-requests.json`. Regenerate numerical figures with
+`scripts/figures/module56_worked.py`; generated illustrations are reviewed assets.
+`build_notes.py` imports the reviewed snapshots through `import_module56.py`.
+Each learner notebook runs independently. Rebuilding prose preserves saved outputs
+only when the sequential executable sources are unchanged; changed code must run
+again from a fresh kernel.
 
 ```bash
-MPLCONFIGDIR=/tmp/dlp-matplotlib python3 scripts/figures/course.py   # regenerate Modules 1–4 diagrams and attachments
-python3 scripts/build.py
-# With dist/ served on port 8000:
-python3 scripts/dev/notebook_images.py --base http://localhost:8000/
-CHANNEL=chrome BASE=http://localhost:8000/ node scripts/dev/course-figures.mjs
+python -m pip install -r scripts/authoring/requirements.txt
+python scripts/authoring/build_notes.py 5 6
+# Run changed notebook code in a separate environment with its pinned dependencies:
+python -m pip install -r scripts/authoring/notebook_sources/requirements.txt
+python scripts/authoring/execute_module56.py 5.1 5.2 5.3 5.4 5.5 5.6 6.1 6.2 6.3 6.4 6.5 6.6
+python scripts/build.py
+python scripts/authoring/verify_module56.py
+python scripts/authoring/verify_notes.py
+python scripts/authoring/package_notes.py
 ```
 
-The download check also needs `nbformat` and `nbconvert`. It validates all published notebooks, renders their attachments
-offline, and checks their actual download links. Add `--compare-ref <revision>` to verify that calculation code and saved
-outputs are unchanged from a Git revision. The browser check covers all 32 figures at 1440, 1280 and 390 px, in both themes,
-including zoom, captions, alt text, horizontal overflow and WCAG 2.1 AA checks in their lesson sections.
+Verification checks the twelve lessons against reviewed source snapshots, validates
+notebooks and embedded images, renders offline HTML, and checks executable code,
+saved outputs and actual built downloads. Reports are in `docs/curriculum/`.
+The generated delivery bundle is `docs/curriculum/modules-5-6-notebooks.zip`.
+
+Earlier Module 5/6 figure scripts are historical references. The existing Module 1–4
+figure/download check remains `scripts/dev/notebook_images.py`; Modules 5–6 use
+`verify_notes.py`.
 
 ## Hosting on GitHub Pages
 

@@ -1,0 +1,100 @@
+[
+  {
+    "lid": "5.1",
+    "label": "Same Thing, Two Descriptions. The boot is described first by pixel intensities, then by task-useful features.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.1",
+    "label": "Encoder and Head. The encoder builds a representation and the head uses it.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.1",
+    "label": "A Hierarchy of Features. A conceptual hierarchy from local edges to larger combinations.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.1",
+    "label": "Three Routes to a Representation. The reference run compares representations with the same kind of linear probe and 10,000 probe labels.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.2",
+    "label": "A CNN at a Glance. The exact lesson architecture: 1×28×28 → 16×28×28 → 16×14×14 → 32×14×14 → 32×7×7 → 1,568 features → a classifier.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.2",
+    "label": "Follow a grid into a vector: a numerical worked example.",
+    "naturalWidth": 2100,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.2",
+    "label": "Slide one shared filter: a numerical worked example.",
+    "naturalWidth": 2100,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.2",
+    "label": "Growing Receptive Fields. For this model, receptive-field widths grow from 3 after conv1 to 4 after pool1, 8 after conv2, and 10 after pool2.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.2",
+    "label": "What Each Part of a CNN Contributes. Convolution applies local shared weights; feature maps retain spatial organisation, pooling reduces resolution, and the head combines features into class scores.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.3",
+    "label": "From Text to Embeddings. Token IDs are arbitrary vocabulary indices.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.3",
+    "label": "An Embedding Is a Lookup Table. Selecting row 49 is equivalent to multiplying a one-hot vector by the table, without materialising that dense one-hot vector.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.3",
+    "label": "Cosine Similarity Is About Angle. Cosine similarity compares directions rather than lengths: 1 for the same direction, 0 for perpendicular vectors, and −1 for opposite directions.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.3",
+    "label": "Static vs. Contextual. A static table returns the same vector for a token type in every sentence.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  },
+  {
+    "lid": "5.3",
+    "label": "One Table, Two Objectives. Illustrative geometry, not the experiment’s measured projection.",
+    "naturalWidth": 1536,
+    "open": true,
+    "scale": "150% of fit"
+  }
+]

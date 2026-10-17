@@ -1,0 +1,74 @@
+{
+  "5.1": {
+    "id": "5.1",
+    "title": "Understanding Representation Learning",
+    "source": "scripts/authoring/notebook_sources/5.1.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "5.2": {
+    "id": "5.2",
+    "title": "How Neural Networks Learn from Images",
+    "source": "scripts/authoring/notebook_sources/5.2.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "5.3": {
+    "id": "5.3",
+    "title": "How Neural Networks Learn from Text",
+    "source": "scripts/authoring/notebook_sources/5.3.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "5.4": {
+    "id": "5.4",
+    "title": "From Sequences to Attention",
+    "source": "scripts/authoring/notebook_sources/5.4.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "5.5": {
+    "id": "5.5",
+    "title": "Connecting Image and Text Representations",
+    "source": "scripts/authoring/notebook_sources/5.5.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "5.6": {
+    "id": "5.6",
+    "title": "Synthesis: Putting Representation Learning into Practice",
+    "source": "scripts/authoring/notebook_sources/5.6.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "6.1": {
+    "id": "6.1",
+    "title": "Understanding the Transformer Architecture",
+    "source": "scripts/authoring/notebook_sources/6.1.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "6.2": {
+    "id": "6.2",
+    "title": "Preparing Inputs for a Transformer",
+    "source": "scripts/authoring/notebook_sources/6.2.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "6.3": {
+    "id": "6.3",
+    "title": "Understanding Attention",
+    "source": "scripts/authoring/notebook_sources/6.3.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "6.4": {
+    "id": "6.4",
+    "title": "The Transformer Block",
+    "source": "scripts/authoring/notebook_sources/6.4.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "6.5": {
+    "id": "6.5",
+    "title": "Building a Decoder-Only Transformer",
+    "source": "scripts/authoring/notebook_sources/6.5.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  },
+  "6.6": {
+    "id": "6.6",
+    "title": "How Transformers Learn and Generate Text",
+    "source": "scripts/authoring/notebook_sources/6.6.ipynb",
+    "visual_requests": "docs/curriculum/module56-visual-requests.json"
+  }
+}

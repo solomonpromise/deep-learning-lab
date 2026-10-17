@@ -1,0 +1,65 @@
+summary: How does raw text become the input tensors a Transformer learns from?
+answers:
+  2-1:
+  - A BPE tokeniser starts every word from single characters and only then applies
+    merges, so any word made of known characters can be encoded, at worst one character
+    at a time. A word-level tokeniser only knows whole words it saw in training, so
+    a new word has no entry at all.
+  3-1:
+  - The token embedding table and the output head. Both have one row (or one output)
+    per vocabulary entry, so going from 65 to 12,571 entries would multiply their
+    size by almost 200. With `d_model = 64`, the embedding table alone would grow
+    from 4,160 to 804,544 parameters.
+  4-1:
+  - It is invisible. The model only receives the 64 most recent characters, so anything
+    earlier cannot influence the prediction at all, however important it was.
+  5-1:
+  - 32 × 64 = 2,048. Every position in every window is a separate next-token prediction.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts: []
+docstrings:
+  encode_chars: "Map known characters to integer IDs using the fitted character vocabulary.\n\
+    \nArguments:\n    s: Text string to encode or split."
+  decode_chars: "Reconstruct text from character-vocabulary IDs.\n\nArguments:\n \
+    \   ids: Integer token IDs, usually shaped (batch, tokens)."
+  split_words: "Split into words, individual punctuation marks and whitespace, preserving\
+    \ reconstructable text.\n\nArguments:\n    s: Text string to encode or split."
+  count_pairs: "Count adjacent token pairs, weighting each word by its corpus frequency.\n\
+    \nArguments:\n    vocab: Word-piece tuples mapped to corpus frequencies."
+  apply_merge: "Merge non-overlapping occurrences of one adjacent pair in a token\
+    \ sequence.\n\nArguments:\n    word: Vocabulary word, or tuple of BPE pieces in\
+    \ the merge helpers.\n    pair: The adjacent token pair to merge."
+  encode_bpe_word: "Apply the learned BPE merges in order to a word and cache its\
+    \ pieces.\n\nArguments:\n    word: Vocabulary word, or tuple of BPE pieces in\
+    \ the merge helpers.\n    cache: Dictionary memoising a word's pieces for the\
+    \ current learned merges."
+  encode_bpe: "Split text and concatenate each piece's BPE encoding.\n\nArguments:\n\
+    \    s: Text string to encode or split."
+  get_batch: "Sample input windows and their one-position-shifted targets; return\
+    \ two integer tensors.\n\nArguments:\n    data: One-dimensional integer corpus\
+    \ tensor.\n    batch_size: Number of windows sampled per batch.\n    context:\
+    \ Maximum input-window length in tokens.\n    generator: Seeded generator for\
+    \ sampling."
+quiz:
+- q: Why split continuous text before sampling training windows?
+  options:
+  - It prevents overlapping windows from crossing the train-validation boundary.
+  - It guarantees validation loss will equal training loss.
+  - It removes the need for a causal mask.
+  answer: 0
+  why: It prevents overlapping windows from crossing the train-validation boundary.
+- q: Which model components grow with vocabulary size?
+  options:
+  - The token embedding table and vocabulary output head.
+  - Only the number of Transformer blocks.
+  - Only the context window.
+  answer: 0
+  why: The token embedding table and vocabulary output head.
+- q: How should next-token targets align with inputs?
+  options:
+  - Target at position t is the token following input at t.
+  - Targets should equal inputs at the same positions.
+  - Targets should be the preceding tokens.
+  answer: 0
+  why: Target at position t is the token following input at t.

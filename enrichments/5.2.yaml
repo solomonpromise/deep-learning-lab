@@ -1,0 +1,135 @@
+summary: How can a network take advantage of the fact that, in an image, position
+  and neighbourhood matter?
+answers:
+  2-1:
+  - '`(16, 3, 224, 224)`: 16 images, 3 colour channels, 224 rows, 224 columns.'
+  3-1:
+  - 'Using the same permutation keeps the task learnable and fair: a given pixel position
+    still means the same thing in every image, just at a different place in the list.
+    If each image were shuffled differently, the pixel values would carry no consistent
+    positional meaning, and *no* model could learn much. That would not test whether
+    the model uses spatial structure; it would just destroy the information.'
+  4-1:
+  - The maps would stay at 32 channels × 14 × 14, so `Flatten` would produce 32 ×
+    14 × 14 = 6,272 numbers per image. The first `nn.Linear` would then need `in_features=6272`,
+    otherwise PyTorch raises a shape error.
+  5-1:
+  - 'All the weights are positive and equal, so it adds up the brightness in each
+    3×3 patch. Its feature map is a slightly blurred copy of the image. It is not
+    a good edge detector: its weights do not cancel out (its balance is 1), so it
+    responds to brightness, not to change.'
+  6-1:
+  - ⌊(224 + 2 × 3 − 7) / 2⌋ + 1 = ⌊223 / 2⌋ + 1 = 111 + 1 = 112. The output is 112×112.
+  7-1:
+  - 'The head is fully connected: after flattening, every one of the 1,568 values
+    (covering all 7×7 positions of all 32 maps) feeds into the head. Each value describes
+    a different 10×10 region, and together those regions cover the whole image, so
+    the head can combine evidence from every part of the garment.'
+  8-1:
+  - Choosing the epoch is a decision based on data. If we made that decision using
+    the test set, the test score would no longer be an honest estimate of performance
+    on new data, because we would have picked the epoch that happened to suit those
+    particular test images. The validation set exists to absorb those decisions; the
+    test set is kept for one final, unbiased measurement.
+  9-1:
+  - Something else. With a balance of 1.00, its weights all share one sign, so on
+    a uniform patch they do not cancel. It responds to overall brightness (if the
+    weights are positive) or darkness (if they are negative) across each patch, so
+    its map looks like a filled-in silhouette or its inverse, rather than a set of
+    outlines.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts:
+- type: widget
+  name: concept-motion
+  section: 3
+  at: end
+  title: Follow a grid into a vector
+  intro: Watch the same values move in row order. Reshaping with the original dimensions
+    recovers the image grid.
+  props:
+    scene: flatten
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. This
+    is a fixed worked example, not a live trained model.
+- type: widget
+  name: concept-motion
+  section: 5
+  at: end
+  title: Slide one shared filter
+  intro: Step through nine exact dot products. Notice which values change and which
+    filter weights stay fixed.
+  props:
+    scene: convolution
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. This
+    is a fixed worked example, not a live trained model.
+docstrings:
+  read_idx: "Read a cached gzip-compressed IDX array, skipping its binary header.\n\
+    \nArguments:\n    name: Key selecting the cached IDX file.\n    offset: Bytes\
+    \ to skip before reading array values."
+  flat_index: "Convert a grid coordinate into its row-major flattened index.\n\nArguments:\n\
+    \    row: Zero-based pixel row.\n    col: Zero-based pixel column.\n    width:\
+    \ Grid width in pixels."
+  shuffle_pixels: "Apply the same fixed pixel permutation to every image; no pixel\
+    \ values are discarded.\n\nArguments:\n    X: Image/input tensor for the experiment."
+  MLP: Flattened-image MLP with a learned hidden representation and a classification
+    head.
+  MLP.__init__: Create the components of this model; the forward computation is traced
+    in the lesson.
+  MLP.forward: "Flattened-image MLP with a learned hidden representation and a classification\
+    \ head.\n\nArguments:\n    x: Floating-point tensor; image models use (B, C, H,\
+    \ W), token-vector models use (B, T, D)."
+  evaluate: "Predict in batches without gradients; return accuracy and predicted class\
+    \ indices.\n\nArguments:\n    model: Model being trained, evaluated or inspected.\n\
+    \    X: Image/input tensor for the experiment.\n    y: Class labels aligned with\
+    \ the input examples.\n    bs: Number of examples per processing batch."
+  train: "Train with the declared split, optimiser and budget; return the measurements\
+    \ described at the call site.\n\nArguments:\n    model: Model being trained, evaluated\
+    \ or inspected.\n    X: Image/input tensor for the experiment.\n    y: Class labels\
+    \ aligned with the input examples.\n    Xv: Validation input tensor.\n    yv:\
+    \ Validation class labels.\n    epochs: Number of complete training passes.\n\
+    \    lr: Learning rate.\n    bs: Number of examples per processing batch.\n  \
+    \  seed: Random seed for this experiment.\n    verbose: Whether to print progress.\n\
+    \    snapshots: Optional list receiving copied epoch weight dictionaries."
+  sign_test: "Compare paired correctness disagreements with a two-sided binomial test\
+    \ under equal accuracy.\n\nArguments:\n    pred_a: First classifier's predicted\
+    \ class indices.\n    pred_b: Second classifier's predicted class indices.\n \
+    \   y: Class labels aligned with the input examples."
+  SmallCNN: Two convolution/pooling stages followed by the dense head traced in the
+    lesson.
+  SmallCNN.__init__: Create the components of this model; the forward computation
+    is traced in the lesson.
+  SmallCNN.forward: "Two convolution/pooling stages followed by the dense head traced\
+    \ in the lesson.\n\nArguments:\n    x: Floating-point tensor; image models use\
+    \ (B, C, H, W), token-vector models use (B, T, D)."
+  conv_out: "Calculate convolution output size along one axis, for unit dilation.\n\
+    \nArguments:\n    size: Input length along one spatial axis.\n    kernel: Filter\
+    \ width along this axis.\n    stride: Distance between filter starting positions.\n\
+    \    padding: Padding added on each side."
+  receptive_field: "Backpropagate from a central output to measure the active input\
+    \ support in this controlled probe.\n\nArguments:\n    layers: Controlled sequence\
+    \ of spatial layers."
+  balance: "Measure absolute weight sum divided by absolute-weight total for each\
+    \ filter; low values indicate cancellation.\n\nArguments:\n    w: Weight tensor\
+    \ or selected vocabulary word, as defined in this helper."
+quiz:
+- q: What is shared when a convolution filter moves?
+  options:
+  - Its weights are reused at different spatial positions.
+  - All feature-map values become identical.
+  - Each position receives an unrelated filter.
+  answer: 0
+  why: Its weights are reused at different spatial positions.
+- q: Why can an edge-like filter respond weakly to a uniform patch?
+  options:
+  - Its positive and negative weights can cancel on uniform brightness.
+  - It has no parameters.
+  - Every convolution automatically subtracts the image label.
+  answer: 0
+  why: Its positive and negative weights can cancel on uniform brightness.
+- q: Does a balanced filter prove that it detects a specific object part?
+  options:
+  - No; inspect responses across inputs before assigning it a meaning.
+  - Yes; a near-zero weight sum proves it detects heels.
+  - Yes; all learned filters represent one class each.
+  answer: 0
+  why: No; inspect responses across inputs before assigning it a meaning.

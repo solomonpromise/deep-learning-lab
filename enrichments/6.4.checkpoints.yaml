@@ -1,0 +1,69 @@
+skill: The Transformer Block
+sections:
+  1:
+    questions:
+    - q: Why keep a block's input and output shapes equal?
+      options:
+      - The residual additions and stacking need compatible vector shapes.
+      - It forces every token vector to remain unchanged.
+      - It makes attention weights independent of the input.
+      answer: 0
+      why: The residual additions and stacking need compatible vector shapes.
+  2:
+    questions:
+    - q: What is attention's role within the block?
+      options:
+      - Gather information from permitted token positions.
+      - Change token IDs into class names.
+      - Apply a distinct optimizer to every word.
+      answer: 0
+      why: Gather information from permitted token positions.
+  3:
+    questions:
+    - q: How are feed-forward weights used across positions?
+      options:
+      - The same small network processes each token vector separately.
+      - Every position receives unrelated feed-forward weights.
+      - The FFN directly mixes all token positions.
+      answer: 0
+      why: The same small network processes each token vector separately.
+  4:
+    questions:
+    - q: Why do residual additions help optimisation?
+      options:
+      - They provide a direct identity path in addition to the transformed branch.
+      - They force gradients to equal one everywhere.
+      - They eliminate every possible training instability.
+      answer: 0
+      why: They provide a direct identity path in addition to the transformed branch.
+  5:
+    questions:
+    - q: What does LayerNorm normalise in this model?
+      options:
+      - Coordinates within each token vector, before learned scale and shift.
+      - All tokens and examples together as one vector.
+      - Only the class labels.
+      answer: 0
+      why: Coordinates within each token vector, before learned scale and shift.
+  6:
+    questions:
+    - q: What does the pre-norm versus post-norm experiment support?
+      options:
+      - Stability depends on norm placement together with the specified learning rate
+        and warmup.
+      - Post-norm models can never train.
+      - Pre-norm removes the need to choose a learning rate.
+      answer: 0
+      why: Stability depends on norm placement together with the specified learning
+        rate and warmup.
+  7:
+    questions:
+    - q: Why can depth add useful computation?
+      options:
+      - Later blocks process representations already contextualised by earlier blocks.
+      - Each layer simply repeats the exact same token vector.
+      - Every extra block guarantees better validation loss.
+      answer: 0
+      why: Later blocks process representations already contextualised by earlier
+        blocks.
+assessment_revision: day56-v3

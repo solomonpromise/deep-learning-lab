@@ -1,0 +1,71 @@
+summary: How does attention let each token gather information from the others?
+answers:
+  5-1:
+  - 1 × 3 + 2 × (−1) = 3 − 2 = 1.
+  7-1:
+  - 'The plain average of all four value vectors: each contributes exactly a quarter.'
+  8-1:
+  - 'One: itself. With only one allowed position, softmax gives it a weight of 1.'
+  9-1:
+  - 512 / 8 = 64.
+  10-1:
+  - 'The causal mask itself carries some order information: position 0 can attend
+    only to one token, position 1 to two tokens, and so on. A token can partly infer
+    where it is from how many tokens it can see. This is weak and indirect, so models
+    still add explicit positional information.'
+  11-1:
+  - 16,384 / 4,096 = 4 times as many tokens, so 4² = 16 times as many entries in each
+    score grid.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts:
+- type: widget
+  name: concept-motion
+  section: 7
+  at: end
+  title: Mix values with causal attention
+  intro: Choose each query position in turn. Masked future tokens receive zero weight;
+    allowed weights sum to one.
+  props:
+    scene: attention
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. This
+    is a fixed worked example, not a live trained model.
+docstrings:
+  head_weights: "Compute a hand-designed causal attention pattern from the specified\
+    \ query/key projections.\n\nArguments:\n    Wq: Hand-designed query-projection\
+    \ matrix.\n    Wk: Hand-designed key-projection matrix."
+  sinusoidal: "Build fixed sinusoidal position encodings with alternating sine and\
+    \ cosine dimensions.\n\nArguments:\n    n_pos: Number of position vectors to construct.\n\
+    \    d: Input vector width (or sinusoidal feature width in sinusoidal)."
+  CausalSelfAttention: Projected multi-head self-attention with a causal mask and
+    output projection.
+  CausalSelfAttention.__init__: "Create the components of this model; the forward\
+    \ computation is traced in the lesson.\n\nArguments:\n    d_model: Feature width\
+    \ of each token vector.\n    n_heads: Number of attention heads; divides model\
+    \ width."
+  CausalSelfAttention.forward: "Projected multi-head self-attention with a causal\
+    \ mask and output projection.\n\nArguments:\n    x: Floating-point tensor; image\
+    \ models use (B, C, H, W), token-vector models use (B, T, D).\n    return_weights:\
+    \ Whether to return attention weights alongside the output vectors."
+quiz:
+- q: What does an attention weight express in this layer?
+  options:
+  - How much of a value vector is mixed into a query's output.
+  - Proof of a human-readable causal explanation.
+  - The probability that the whole sentence is factually true.
+  answer: 0
+  why: How much of a value vector is mixed into a query's output.
+- q: What does a row of attention weights do to the values?
+  options:
+  - It forms a weighted sum of value vectors.
+  - It selects the class labels from the dataset.
+  - It replaces all values with token IDs.
+  answer: 0
+  why: It forms a weighted sum of value vectors.
+- q: Why compare the hand-written attention with PyTorch's implementation?
+  options:
+  - Agreement on the same Q/K/V and mask is a useful implementation check.
+  - It proves that an untrained model understands language.
+  - It makes evaluation data unnecessary.
+  answer: 0
+  why: Agreement on the same Q/K/V and mask is a useful implementation check.

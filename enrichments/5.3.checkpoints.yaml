@@ -1,0 +1,84 @@
+skill: How Neural Networks Learn from Text
+sections:
+  1:
+    questions:
+    - q: Which step makes token vectors learn useful task information?
+      options:
+      - Training the embedding parameters through an objective.
+      - Assigning larger IDs to important words.
+      - Alphabetically sorting the reviews.
+      answer: 0
+      why: Training the embedding parameters through an objective.
+  2:
+    questions:
+    - q: Why are character codes poor semantic measurements?
+      options:
+      - Their numerical relationships encode symbols, not semantic similarity.
+      - Characters have no numerical encoding.
+      - All words have the same spelling.
+      answer: 0
+      why: Their numerical relationships encode symbols, not semantic similarity.
+  3:
+    questions:
+    - q: Which reviews should define the vocabulary?
+      options:
+      - Training reviews, with an explicit policy for unseen validation tokens.
+      - All reviews, including the final test set.
+      - Only the reviews the model predicts correctly.
+      answer: 0
+      why: Training reviews, with an explicit policy for unseen validation tokens.
+  4:
+    questions:
+    - q: What is the dot product of two distinct one-hot vectors?
+      options:
+      - Zero; their nonzero entries occupy different coordinates.
+      - One, because both represent words.
+      - Their token IDs multiplied together.
+      answer: 0
+      why: Zero; their nonzero entries occupy different coordinates.
+  5:
+    questions:
+    - q: Why does embedding lookup equal one-hot times a table?
+      options:
+      - The one nonzero entry selects the corresponding table row.
+      - Both operations average every vocabulary row.
+      - The table is fixed and cannot learn.
+      answer: 0
+      why: The one nonzero entry selects the corresponding table row.
+  6:
+    questions:
+    - q: Does an individual embedding coordinate have to mean one named concept?
+      options:
+      - No; useful distinctions can be distributed across coordinates.
+      - Yes; coordinate zero always means sentiment.
+      - Yes; every coordinate is a dictionary definition.
+      answer: 0
+      why: No; useful distinctions can be distributed across coordinates.
+  7:
+    questions:
+    - q: What does cosine similarity ignore?
+      options:
+      - Vector length; it compares directions.
+      - The angle between the vectors.
+      - Every negative coordinate.
+      answer: 0
+      why: Vector length; it compares directions.
+  8:
+    questions:
+    - q: What distinguishes a contextual representation?
+      options:
+      - Its vector depends on surrounding tokens.
+      - Its token ID changes every time the model runs.
+      - Its vocabulary must contain whole sentences.
+      answer: 0
+      why: Its vector depends on surrounding tokens.
+  9:
+    questions:
+    - q: What does the sentiment versus skip-gram comparison demonstrate?
+      options:
+      - Different training objectives and setups can produce different useful geometries.
+      - The objective is the only differing factor in these experiments.
+      - Context-trained vectors must separate positive and negative words.
+      answer: 0
+      why: Different training objectives and setups can produce different useful geometries.
+assessment_revision: day56-v3

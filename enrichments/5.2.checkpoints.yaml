@@ -1,0 +1,84 @@
+skill: How Neural Networks Learn from Images
+sections:
+  1:
+    questions:
+    - q: What is shared when a convolution filter moves?
+      options:
+      - Its weights are reused at different spatial positions.
+      - All feature-map values become identical.
+      - Each position receives an unrelated filter.
+      answer: 0
+      why: Its weights are reused at different spatial positions.
+  2:
+    questions:
+    - q: What is the PyTorch shape for 16 RGB images of size 224 by 224?
+      options:
+      - (16, 3, 224, 224).
+      - (16, 224, 224, 3).
+      - (3, 224, 224, 16).
+      answer: 0
+      why: (16, 3, 224, 224).
+  3:
+    questions:
+    - q: What is the disadvantage of a flattened input to a dense layer?
+      options:
+      - The layer lacks built-in spatial locality and weight sharing.
+      - Flattening deletes pixel values.
+      - The vector cannot be reshaped back to an image.
+      answer: 0
+      why: The layer lacks built-in spatial locality and weight sharing.
+  4:
+    questions:
+    - q: What must remain consistent between the encoder and classifier?
+      options:
+      - The flattened feature width must match the head's input width.
+      - The class count must equal the number of convolution filters.
+      - The image height must equal the batch size.
+      answer: 0
+      why: The flattened feature width must match the head's input width.
+  5:
+    questions:
+    - q: Why can an edge-like filter respond weakly to a uniform patch?
+      options:
+      - Its positive and negative weights can cancel on uniform brightness.
+      - It has no parameters.
+      - Every convolution automatically subtracts the image label.
+      answer: 0
+      why: Its positive and negative weights can cancel on uniform brightness.
+  6:
+    questions:
+    - q: What does increasing stride usually do?
+      options:
+      - It evaluates the filter at fewer positions, reducing spatial resolution.
+      - It guarantees higher accuracy.
+      - It adds more input channels.
+      answer: 0
+      why: It evaluates the filter at fewer positions, reducing spatial resolution.
+  7:
+    questions:
+    - q: How can a small receptive field support whole-image classification?
+      options:
+      - The head combines outputs from locations across the final feature maps.
+      - Every first-layer unit sees the entire image.
+      - Pooling adds missing label information.
+      answer: 0
+      why: The head combines outputs from locations across the final feature maps.
+  8:
+    questions:
+    - q: Which set should choose the best training epoch?
+      options:
+      - Validation; the final test set remains reserved for evaluation.
+      - The final test set, because it is the largest available score.
+      - Whichever set gives the highest accuracy.
+      answer: 0
+      why: Validation; the final test set remains reserved for evaluation.
+  9:
+    questions:
+    - q: Does a balanced filter prove that it detects a specific object part?
+      options:
+      - No; inspect responses across inputs before assigning it a meaning.
+      - Yes; a near-zero weight sum proves it detects heels.
+      - Yes; all learned filters represent one class each.
+      answer: 0
+      why: No; inspect responses across inputs before assigning it a meaning.
+assessment_revision: day56-v3

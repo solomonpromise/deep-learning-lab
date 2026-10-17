@@ -1,3 +1,5 @@
+> Historical assets for the superseded notes. Current Modules 5–6 use `static/img/curriculum-v2/` and the authoring workflow in `scripts/authoring/`. The old generation commands below are retired.
+
 # Module 5 teaching figures
 
 Ten original diagrams replace the image prompts in Lessons 5.1–5.4. The SVG files here are editable originals. Each notebook embeds a high-resolution PNG attachment, so downloaded notebooks retain the figures without a separate asset folder. The site build extracts and compresses those attachments into responsive, zoomable images.

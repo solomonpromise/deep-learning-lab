@@ -1,0 +1,99 @@
+summary: How can a network use the order of a sequence, and why did that lead to attention?
+answers:
+  1-1:
+  - 'Many answers work. For example: the steps of a recipe (mix then bake is not the
+    same as bake then mix), a phone number or PIN, a sequence of moves in a game,
+    or a patient''s symptoms appearing in a particular order.'
+  2-1:
+  - 32 numbers in both cases. The hidden state has a fixed size, whatever the length
+    of the sequence. That is the information bottleneck of Section 5.
+  3-1:
+  - The rule is the same, but the distance the learning signal must travel is not.
+    At length 50, the gradient from the final output must pass back through 49 steps
+    before reaching the first token, and it shrinks at every step, so almost nothing
+    arrives to teach the network what it should have stored. At length 10, enough
+    of the gradient survives.
+  4-1:
+  - Its forget gate started at about 0.5, so it kept only half its memory per step,
+    and the memory (and gradient) vanished almost as fast as in a plain RNN, before
+    the gates could learn to stay open.
+  6-1:
+  - First, everything must be compressed into a fixed-size hidden state, so facts
+    from early in the document are overwritten by later ones (the information bottleneck).
+    Second, the 10,000 steps must be computed one after another, which makes training
+    slow and wastes the parallel power of modern hardware.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts:
+- type: widget
+  name: concept-motion
+  section: 4
+  at: end
+  title: Inspect one LSTM memory update
+  intro: Follow one scalar coordinate through the forget, input and output gates.
+    The values are a worked example.
+  props:
+    scene: memory
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. This
+    is a fixed worked example, not a live trained model.
+docstrings:
+  rnn_by_hand: "Apply the shared RNN update in temporal order and return every hidden\
+    \ state.\n\nArguments:\n    xs: Input-vector sequence in temporal order."
+  gradient_reach: "Average input-gradient norms across initialisation seeds, indexed\
+    \ by distance back from the last output.\n\nArguments:\n    make_model: Factory\
+    \ creating a fresh model for each probe seed.\n    T: Sequence length, or text-vector\
+    \ batch in contrastive_loss.\n    seeds: Initialisation seeds to average over."
+  RNNWrap: Expose a recurrent layer's sequence output through the shared probe interface.
+  RNNWrap.__init__: "Create the components of this model; the forward computation\
+    \ is traced in the lesson.\n\nArguments:\n    cell: The recurrent PyTorch layer\
+    \ whose sequence outputs are exposed."
+  RNNWrap.forward: "Expose a recurrent layer's sequence output through the shared\
+    \ probe interface.\n\nArguments:\n    x: Floating-point tensor; image models use\
+    \ (B, C, H, W), token-vector models use (B, T, D)."
+  make_task: "Generate random sequences whose binary label is encoded only in the\
+    \ first token.\n\nArguments:\n    n: Number of synthetic examples.\n    T: Sequence\
+    \ length, or text-vector batch in contrastive_loss.\n    seed: Random seed for\
+    \ this experiment."
+  SeqClassifier: Embed a sequence and classify from its final recurrent hidden state.
+  SeqClassifier.__init__: "Create the components of this model; the forward computation\
+    \ is traced in the lesson.\n\nArguments:\n    kind: The model or mask family selected\
+    \ in the surrounding example.\n    forget_bias: Optional value assigned to each\
+    \ of the two LSTM forget-gate bias slices."
+  SeqClassifier.forward: "Embed a sequence and classify from its final recurrent hidden\
+    \ state.\n\nArguments:\n    x: Integer token-ID batch shaped (B, T)."
+  run_task: "Train and validate a fresh recurrent classifier on the controlled first-token\
+    \ memory task.\n\nArguments:\n    T: Sequence length, or text-vector batch in\
+    \ contrastive_loss.\n    seed: Random seed for this experiment.\n    **kw: Recurrent-classifier\
+    \ options forwarded to SeqClassifier."
+  open_lstm: Create an LSTM with both forget-gate bias slices set to 1.5, then wrap
+    its sequence output.
+  TinyAttention: Let the last input position attend directly to all input positions
+    for the gradient probe.
+  TinyAttention.__init__: "Create the components of this model; the forward computation\
+    \ is traced in the lesson.\n\nArguments:\n    d: Input vector width (or sinusoidal\
+    \ feature width in sinusoidal).\n    h: Projected attention width."
+  TinyAttention.forward: "Let the last input position attend directly to all input\
+    \ positions for the gradient probe.\n\nArguments:\n    x: Floating-point tensor;\
+    \ image models use (B, C, H, W), token-vector models use (B, T, D)."
+quiz:
+- q: Why do averaged word embeddings fail on reversed word order?
+  options:
+  - Averaging the same vectors gives the same result regardless of order.
+  - The embedding vocabulary has no integers.
+  - Reversing tokens changes every vector's length.
+  answer: 0
+  why: Averaging the same vectors gives the same result regardless of order.
+- q: What makes an LSTM's memory path useful?
+  options:
+  - Learned gates can preserve cell-state information across steps.
+  - The cell state always retains everything perfectly.
+  - PyTorch fixes every forget gate at exactly one.
+  answer: 0
+  why: Learned gates can preserve cell-state information across steps.
+- q: What does attention provide to a distant token?
+  options:
+  - A direct weighted path to relevant values, subject to the mask.
+  - Guaranteed perfect memory for any sequence length.
+  - A free operation whose cost never grows with context.
+  answer: 0
+  why: A direct weighted path to relevant values, subject to the mask.

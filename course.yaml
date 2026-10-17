@@ -171,9 +171,14 @@ sources:
   #   3.2: the Sep 26 evening version (cells split, transition to 3.3 added) with run() back to the
   #        60 epochs and (256,128) → (8,) capacity sweep the text describes; the classroom
   #        run had mixed 60- and 100-epoch outputs. Re-executed so every output matches.
-  #   5.1–5.4: teaching diagrams embedded in the Module 5 notebooks; preserve during sync.
+  #   Modules 5–6: imported from the author's replacement Day 5/6 notebooks; see scripts/authoring/notebook_sources/.
   #   Modules 1–4: redesigned teaching diagrams embedded in the downloadable notebooks.
-  locked: ["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "2.4", "3.1", "3.2", "3.3", "3.4", "4.1", "4.2", "4.3", "4.4", "5.1", "5.2", "5.3", "5.4"]
+  #   Authoring sources and execution reports are under scripts/authoring/ and docs/curriculum/.
+  locked: ["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "2.4", "3.1", "3.2", "3.3", "3.4", "4.1", "4.2", "4.3", "4.4", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6"]
+
+# Preserve bookmarks to the former standalone vision/multimodal lesson.
+lesson_redirects:
+  "6.7": "module-6/lesson-6-1.html#s8"
 
 modules:
   - number: 1
@@ -206,18 +211,23 @@ modules:
     hands_on: A gradient-boosting vs neural-network bake-off — choose on constraints, not hype.
     icon: gear
   - number: 5
-    title: Representation Learning & Embeddings
+    title: Learning Representations from Images and Text
     short: "Representations"
-    question: How do networks learn useful representations?
-    topics: [Encoders, Embeddings, Cosine similarity, Self-supervised learning, Contrastive learning, CLIP]
-    hands_on: Create embeddings, run similarity search, inspect embedding neighbourhoods.
+    question: How do neural networks learn useful representations from different types of data?
+    topics: [Representation learning, CNNs, Image tensors, Text embeddings, Cosine similarity, RNNs, LSTM & GRU, Contrastive learning, CLIP]
+    hands_on: Train a Fashion-MNIST CNN, learn text embeddings, and compare raw inputs with learned features.
+    class_hours: 3.5
+    classroom_lessons: ["5.1", "5.2", "5.3", "5.4", "5.5", "5.6"]
     icon: layers
   - number: 6
-    title: Transformers
+    title: Transformers and Attention Mechanisms
     short: "Transformers"
-    question: How does a Transformer actually work?
-    topics: [Tokenization, Positional information, Q/K/V, Self-attention, Multi-head attention, Transformer block, Encoder vs decoder]
-    hands_on: Implement simplified self-attention by hand.
+    question: How does a Transformer process information and learn relationships between elements in a sequence?
+    topics: [Complete Transformer architecture, Tokenisation & positions, Q/K/V, Self-attention, Transformer blocks, Causal training, Text generation, Vision & multimodal Transformers]
+    hands_on: Build a small character-level Transformer in PyTorch, train it on Tiny Shakespeare, and inspect its attention and generated text.
+    class_hours: 3.5
+    classroom_lessons: ["6.1", "6.2", "6.3", "6.4", "6.5", "6.6"]
+    teaching_note: "Lessons 6.1–6.6, including architecture history, vision and multimodal applications, and weight tying, are covered in class."
     icon: attention
   - number: 7
     title: Pretrained Models & Hugging Face

@@ -1,0 +1,33 @@
+{
+  "lessons": 12,
+  "illustration_briefs_completed": 37,
+  "additional_worked_figures": 6,
+  "walkthroughs": 6,
+  "walkthrough_frames_checked": 38,
+  "lesson_layout_cases": 72,
+  "walkthrough_layout_cases": 36,
+  "widths": [
+    1440,
+    1280,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "horizontal_overflow_cases": 0,
+  "missing_content_images": 0,
+  "math_render_errors": 0,
+  "checks": [
+    "Every lesson shown in full at each width/theme",
+    "All six walkthroughs stepped to final frame and reset",
+    "Each walkthrough shown at all six width/theme combinations",
+    "Phone image viewer enlarged to 200% of fit and restored using Fit",
+    "Escape closes viewer, restores page scrolling and figure focus"
+  ],
+  "note": "Structured summary of the completed browser checks. Per-figure viewer checks are recorded separately in module56-zoom-report.json.",
+  "console_errors": 0,
+  "playback": "advanced to final frame and stopped automatically; reset passed",
+  "viewer_figures_checked": 14,
+  "reading_progress": "counts only current section IDs; retains previous history"
+}

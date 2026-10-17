@@ -1,0 +1,10 @@
+# Module 5 and 6 notebooks: tested with these versions (Python 3.12, CPU).
+# For a smaller CPU-only PyTorch install, first run:
+#   pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+torch==2.14.1
+numpy==2.5.4
+pandas==3.0.6
+matplotlib==3.11.2
+scikit-learn==1.9.1
+scipy==1.18.1
+ipykernel==7.4.0

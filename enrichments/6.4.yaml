@@ -1,0 +1,107 @@
+summary: What is inside a Transformer block, and why does each part matter?
+answers:
+  3-1:
+  - Because the attention sub-layer, which comes first in every block, has already
+    mixed information from other tokens into each token's vector. The FFN then processes
+    that context-rich vector. Attention gathers; the FFN processes what was gathered.
+  4-1:
+  - 'It passes the input through unchanged: `x + 0 = x`. This is one reason residual
+    blocks are easy to train: a block that has not learned anything useful yet does
+    no harm.'
+  5-1:
+  - All 64 numbers equal the mean, so the variance is 0, and dividing by √0 would
+    mean dividing by zero. Adding 1e-5 inside the square root keeps the division safe;
+    the result is simply a vector of zeros (before the learnable shift).
+  6-1:
+  - Either switch to pre-norm blocks, which trained well with the same learning rate,
+    or add a learning-rate warmup, which rescued post-norm on both seeds. Lowering
+    the learning rate is a third reasonable option.
+  7-1:
+  - With one block, the gradient has only one sub-layer pair to pass through, so enough
+    of it reaches the embeddings. With six blocks and no residual path, the gradient
+    must pass through twelve sub-layers in turn and arrives much weaker, so the early
+    layers barely learn, and the input information is replaced rather than refined
+    at every step.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts:
+- type: widget
+  name: concept-motion
+  section: 5
+  at: end
+  title: Normalise one token, coordinate by coordinate
+  intro: Follow centring, scaling and the learned affine transformation. The coordinates
+    remain different.
+  props:
+    scene: norm
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. This
+    is a fixed worked example, not a live trained model.
+docstrings:
+  CausalSelfAttention: Projected multi-head self-attention with a causal mask and
+    output projection.
+  CausalSelfAttention.__init__: "Create the components of this model; the forward\
+    \ computation is traced in the lesson.\n\nArguments:\n    d_model: Feature width\
+    \ of each token vector.\n    n_heads: Number of attention heads; divides model\
+    \ width."
+  CausalSelfAttention.forward: "Projected multi-head self-attention with a causal\
+    \ mask and output projection.\n\nArguments:\n    x: Floating-point tensor; image\
+    \ models use (B, C, H, W), token-vector models use (B, T, D)."
+  FeedForward: Shared per-token nonlinear network expanding model width by four and
+    projecting back.
+  FeedForward.__init__: "Create the components of this model; the forward computation\
+    \ is traced in the lesson.\n\nArguments:\n    d_model: Feature width of each token\
+    \ vector."
+  FeedForward.forward: "Shared per-token nonlinear network expanding model width by\
+    \ four and projecting back.\n\nArguments:\n    x: Floating-point tensor; image\
+    \ models use (B, C, H, W), token-vector models use (B, T, D)."
+  Block: Attention and feed-forward sub-layers with normalisation and residual additions.
+  Block.__init__: "Create the components of this model; the forward computation is\
+    \ traced in the lesson.\n\nArguments:\n    d_model: Feature width of each token\
+    \ vector.\n    n_heads: Number of attention heads; divides model width.\n    pre_norm:\
+    \ Whether to normalise sub-layer inputs before their residual additions.\n   \
+    \ residual: Whether to retain the residual additions in this controlled experiment."
+  Block.forward: "Attention and feed-forward sub-layers with normalisation and residual\
+    \ additions.\n\nArguments:\n    x: Floating-point tensor; image models use (B,\
+    \ C, H, W), token-vector models use (B, T, D)."
+  input_gradient: "Measure the input-gradient norm of a controlled block stack, with\
+    \ or without residual additions.\n\nArguments:\n    depth: Number of stacked blocks.\n\
+    \    residual: Whether to retain the residual additions in this controlled experiment.\n\
+    \    seed: Random seed for this experiment."
+  TinyLM: Small language model used in the norm-placement and residual-connection
+    experiments.
+  TinyLM.__init__: "Create the components of this model; the forward computation is\
+    \ traced in the lesson.\n\nArguments:\n    n_layers: Number of Transformer blocks.\n\
+    \    pre_norm: Whether to normalise sub-layer inputs before their residual additions.\n\
+    \    residual: Whether to retain the residual additions in this controlled experiment."
+  TinyLM.forward: "Small language model used in the norm-placement and residual-connection\
+    \ experiments.\n\nArguments:\n    ids: Integer token IDs, usually shaped (batch,\
+    \ tokens)."
+  train_run: "Run the specified block-stability experiment and return training losses\
+    \ and measured gradient norms.\n\nArguments:\n    pre_norm: Whether to normalise\
+    \ sub-layer inputs before their residual additions.\n    lr: Learning rate.\n\
+    \    warmup: Number of initial learning-rate warmup steps.\n    steps: Number\
+    \ of optimiser updates.\n    n_layers: Number of Transformer blocks.\n    seed:\
+    \ Random seed for this experiment.\n    residual: Whether to retain the residual\
+    \ additions in this controlled experiment."
+quiz:
+- q: Why keep a block's input and output shapes equal?
+  options:
+  - The residual additions and stacking need compatible vector shapes.
+  - It forces every token vector to remain unchanged.
+  - It makes attention weights independent of the input.
+  answer: 0
+  why: The residual additions and stacking need compatible vector shapes.
+- q: Why do residual additions help optimisation?
+  options:
+  - They provide a direct identity path in addition to the transformed branch.
+  - They force gradients to equal one everywhere.
+  - They eliminate every possible training instability.
+  answer: 0
+  why: They provide a direct identity path in addition to the transformed branch.
+- q: Why can depth add useful computation?
+  options:
+  - Later blocks process representations already contextualised by earlier blocks.
+  - Each layer simply repeats the exact same token vector.
+  - Every extra block guarantees better validation loss.
+  answer: 0
+  why: Later blocks process representations already contextualised by earlier blocks.

@@ -1,0 +1,85 @@
+summary: How do the components assemble into a complete language model, and how do
+  we know it is built correctly?
+answers:
+  3-1:
+  - Yes. A loss of 10.8 is almost exactly ln(50,000) ≈ 10.82, the loss of a uniform
+    guess, which is what an untrained model should produce. A value far higher, say
+    30, would suggest a problem.
+  4-1:
+  - 'Possible causes include: the targets are not aligned with the inputs (for example,
+    not shifted, or shifted the wrong way); gradients are not reaching the parameters
+    (for example, `optimizer.zero_grad()`, `loss.backward()` or `optimizer.step()`
+    is missing, or the optimizer was given the wrong parameters); the learning rate
+    is far too high or too low; or the model has collapsed to predicting character
+    frequencies, which is what a loss of about 3.3 suggests on this dataset.'
+  5-1:
+  - During translation, the entire source sentence is available from the start, so
+    letting every target token see all of it is legitimate. The decoder's self-attention
+    looks at the target sequence itself, which is being generated one token at a time;
+    during training, a target token must not see the target tokens after it, or it
+    could simply read the answer.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts: []
+docstrings:
+  get_batch: "Sample input windows and their one-position-shifted targets; return\
+    \ two integer tensors.\n\nArguments:\n    split: Training or validation corpus\
+    \ selector.\n    batch_size: Number of windows sampled per batch.\n    context:\
+    \ Maximum input-window length in tokens.\n    generator: Seeded generator for\
+    \ sampling."
+  CausalSelfAttention: Projected multi-head self-attention with a causal mask and
+    output projection.
+  CausalSelfAttention.__init__: "Create the components of this model; the forward\
+    \ computation is traced in the lesson.\n\nArguments:\n    d_model: Feature width\
+    \ of each token vector.\n    n_heads: Number of attention heads; divides model\
+    \ width."
+  CausalSelfAttention.forward: "Projected multi-head self-attention with a causal\
+    \ mask and output projection.\n\nArguments:\n    x: Floating-point tensor; image\
+    \ models use (B, C, H, W), token-vector models use (B, T, D)."
+  Block: Attention and feed-forward sub-layers with normalisation and residual additions.
+  Block.__init__: "Create the components of this model; the forward computation is\
+    \ traced in the lesson.\n\nArguments:\n    d_model: Feature width of each token\
+    \ vector.\n    n_heads: Number of attention heads; divides model width."
+  Block.forward: "Attention and feed-forward sub-layers with normalisation and residual\
+    \ additions.\n\nArguments:\n    x: Floating-point tensor; image models use (B,\
+    \ C, H, W), token-vector models use (B, T, D)."
+  GPT: Character-level decoder-only Transformer returning vocabulary logits and optional
+    next-token loss.
+  GPT.__init__: "Create the components of this model; the forward computation is traced\
+    \ in the lesson.\n\nArguments:\n    vocab_size: Number of token IDs represented\
+    \ by the embedding table.\n    d_model: Feature width of each token vector.\n\
+    \    n_heads: Number of attention heads; divides model width.\n    n_layers: Number\
+    \ of Transformer blocks.\n    context: Maximum input-window length in tokens."
+  GPT.forward: "Character-level decoder-only Transformer returning vocabulary logits\
+    \ and optional next-token loss.\n\nArguments:\n    ids: Integer token IDs, usually\
+    \ shaped (batch, tokens).\n    targets: Optional next-token integer targets aligned\
+    \ with the input positions."
+  generate: "Generate additional characters autoregressively from the prompt; return\
+    \ the prompt and continuation.\n\nArguments:\n    model: Model being trained,\
+    \ evaluated or inspected.\n    prompt: Nonempty known-character text prefix.\n\
+    \    n_new: Number of new characters to append.\n    generator: Seeded generator\
+    \ for sampling."
+quiz:
+- q: What completes the language model after the stack of pre-norm blocks?
+  options:
+  - A final norm and a projection to vocabulary logits.
+  - A label lookup that bypasses the blocks.
+  - A new tokenizer learned during each forward pass.
+  answer: 0
+  why: A final norm and a projection to vocabulary logits.
+- q: Why is log(vocabulary size) a useful initial-loss reference?
+  options:
+  - It is the cross-entropy of uniform predictions, a diagnostic rather than an exact
+    requirement.
+  - Every random initialisation must produce exactly that loss.
+  - It is the minimum possible training loss.
+  answer: 0
+  why: It is the cross-entropy of uniform predictions, a diagnostic rather than an
+    exact requirement.
+- q: Where do cross-attention keys and values come from in an encoder-decoder?
+  options:
+  - The encoded source sequence; queries come from the decoder.
+  - Only future target tokens.
+  - The optimizer's state dictionary.
+  answer: 0
+  why: The encoded source sequence; queries come from the decoder.

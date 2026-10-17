@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="864pt" height="547.2pt" viewBox="0 0 864 547.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:description>Three panels show adding a token vector to a position vector, adding a learned bias based on signed distance buckets to each attention score, and rotating a query or key dimension pair by position. For each RoPE frequency the angle difference is proportional to relative distance; different dimension pairs have different frequencies.</dc:description>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 547.2
+L 864 547.2
+L 864 0
+L 0 0
+z
+" style="fill: #f7f7f2"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 48.96 208.8
+L 243.36 208.8
+L 243.36 255.6
+L 48.96 255.6
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 48.96 300.96
+L 243.36 300.96
+L 243.36 347.76
+L 48.96 347.76
+z
+" clip-path="url(#paeb543b260)" style="fill: #ddeaab; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 146.16 353.362368
+Q 146.16 374.761823 146.16 393.92521
+" clip-path="url(#paeb543b260)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 149.36 387.52521
+L 146.16 393.92521
+L 142.96 387.52521
+z
+" clip-path="url(#paeb543b260)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 48.96 403.2
+L 243.36 403.2
+L 243.36 450
+L 48.96 450
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 329.76 208.8
+L 368.64 208.8
+L 368.64 247.68
+L 329.76 247.68
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 368.64 208.8
+L 407.52 208.8
+L 407.52 247.68
+L 368.64 247.68
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 407.52 208.8
+L 446.4 208.8
+L 446.4 247.68
+L 407.52 247.68
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 446.4 208.8
+L 485.28 208.8
+L 485.28 247.68
+L 446.4 247.68
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 329.76 247.68
+L 368.64 247.68
+L 368.64 286.56
+L 329.76 286.56
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 368.64 247.68
+L 407.52 247.68
+L 407.52 286.56
+L 368.64 286.56
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 407.52 247.68
+L 446.4 247.68
+L 446.4 286.56
+L 407.52 286.56
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 446.4 247.68
+L 485.28 247.68
+L 485.28 286.56
+L 446.4 286.56
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 329.76 286.56
+L 368.64 286.56
+L 368.64 325.44
+L 329.76 325.44
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 368.64 286.56
+L 407.52 286.56
+L 407.52 325.44
+L 368.64 325.44
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 407.52 286.56
+L 446.4 286.56
+L 446.4 325.44
+L 407.52 325.44
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 446.4 286.56
+L 485.28 286.56
+L 485.28 325.44
+L 446.4 325.44
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 329.76 325.44
+L 368.64 325.44
+L 368.64 364.32
+L 329.76 364.32
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 368.64 325.44
+L 407.52 325.44
+L 407.52 364.32
+L 368.64 364.32
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_20">
+    <path d="M 407.52 325.44
+L 446.4 325.44
+L 446.4 364.32
+L 407.52 364.32
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_21">
+    <path d="M 446.4 325.44
+L 485.28 325.44
+L 485.28 364.32
+L 446.4 364.32
+z
+" clip-path="url(#paeb543b260)" style="fill: #eef1e8; stroke: #234c3c; stroke-width: 1.2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_22">
+    <path d="M 620.64 209.52
+C 629.423527 209.52 637.848485 213.009732 644.059377 219.220623
+C 650.270268 225.431515 653.76 233.856473 653.76 242.64
+C 653.76 251.423527 650.270268 259.848485 644.059377 266.059377
+C 637.848485 272.270268 629.423527 275.76 620.64 275.76
+C 611.856473 275.76 603.431515 272.270268 597.220623 266.059377
+C 591.009732 259.848485 587.52 251.423527 587.52 242.64
+C 587.52 233.856473 591.009732 225.431515 597.220623 219.220623
+C 603.431515 213.009732 611.856473 209.52 620.64 209.52
+z
+" clip-path="url(#paeb543b260)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_23">
+    <path d="M 622.642852 242.64
+Q 633.601472 242.64 642.324024 242.64
+" clip-path="url(#paeb543b260)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 635.924024 239.44
+L 642.324024 242.64
+L 635.924024 245.84
+z
+" clip-path="url(#paeb543b260)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_24">
+    <path d="M 757.44 209.52
+C 766.223527 209.52 774.648485 213.009732 780.859377 219.220623
+C 787.070268 225.431515 790.56 233.856473 790.56 242.64
+C 790.56 251.423527 787.070268 259.848485 780.859377 266.059377
+C 774.648485 272.270268 766.223527 275.76 757.44 275.76
+C 748.656473 275.76 740.231515 272.270268 734.020623 266.059377
+C 727.809732 259.848485 724.32 251.423527 724.32 242.64
+C 724.32 233.856473 727.809732 225.431515 734.020623 219.220623
+C 740.231515 213.009732 748.656473 209.52 757.44 209.52
+z
+" clip-path="url(#paeb543b260)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_25">
+    <path d="M 759.14748 241.593135
+Q 768.489973 235.865204 775.926162 231.306038
+" clip-path="url(#paeb543b260)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 768.797406 231.923157
+L 775.926162 231.306038
+L 772.142604 237.379314
+z
+" clip-path="url(#paeb543b260)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_26">
+    <path d="M 620.64 343.44
+C 629.423527 343.44 637.848485 346.929732 644.059377 353.140623
+C 650.270268 359.351515 653.76 367.776473 653.76 376.56
+C 653.76 385.343527 650.270268 393.768485 644.059377 399.979377
+C 637.848485 406.190268 629.423527 409.68 620.64 409.68
+C 611.856473 409.68 603.431515 406.190268 597.220623 399.979377
+C 591.009732 393.768485 587.52 385.343527 587.52 376.56
+C 587.52 367.776473 591.009732 359.351515 597.220623 353.140623
+C 603.431515 346.929732 611.856473 343.44 620.64 343.44
+z
+" clip-path="url(#paeb543b260)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_27">
+    <path d="M 621.548486 374.775044
+Q 626.519273 365.008641 630.475789 357.235038
+" clip-path="url(#paeb543b260)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 624.72091 361.487258
+L 630.475789 357.235038
+L 630.424638 364.390273
+z
+" clip-path="url(#paeb543b260)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="patch_28">
+    <path d="M 757.44 343.44
+C 766.223527 343.44 774.648485 346.929732 780.859377 353.140623
+C 787.070268 359.351515 790.56 367.776473 790.56 376.56
+C 790.56 385.343527 787.070268 393.768485 780.859377 399.979377
+C 774.648485 406.190268 766.223527 409.68 757.44 409.68
+C 748.656473 409.68 740.231515 406.190268 734.020623 399.979377
+C 727.809732 393.768485 724.32 385.343527 724.32 376.56
+C 724.32 367.776473 727.809732 359.351515 734.020623 353.140623
+C 740.231515 346.929732 748.656473 343.44 757.44 343.44
+z
+" clip-path="url(#paeb543b260)" style="fill: #ffffff; stroke: #bfcac0; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_29">
+    <path d="M 757.281533 374.563427
+Q 756.414477 363.639162 755.724341 354.943955
+" clip-path="url(#paeb543b260)" style="fill: none; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+    <path d="M 753.040746 361.577078
+L 755.724341 354.943955
+L 759.420683 361.070704
+z
+" clip-path="url(#paeb543b260)" style="fill: #234c3c; stroke: #234c3c; stroke-width: 2; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 30.24 97.92
+L 833.76 97.92
+" clip-path="url(#paeb543b260)" style="fill: none; stroke: #bfcac0; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 10px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="29.399375" transform="rotate(-0 30.24 29.399375)">DEEP LEARNING LAB  /  FIGURE 6.6.1</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 24px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="63.5025" transform="rotate(-0 30.24 63.5025)">Position can enter at three different places.</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="84.67125" transform="rotate(-0 30.24 84.67125)">The common job: make token order available to attention.</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 21px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="138.994687" transform="rotate(-0 30.24 138.994687)">Learned table</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="30.24" y="167.47125" transform="rotate(-0 30.24 167.47125)">Add to the input vectors</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 21px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="306" y="138.994687" transform="rotate(-0 306 138.994687)">Relative bias</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="306" y="167.47125" transform="rotate(-0 306 167.47125)">Add to attention scores</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 21px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="581.76" y="138.830625" transform="rotate(-0 581.76 138.830625)">Rotary / RoPE</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="581.76" y="167.47125" transform="rotate(-0 581.76 167.47125)">Rotate queries and keys</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 16px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="146.16" y="236.615" transform="rotate(-0 146.16 236.615)">Token embedding</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 28px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #234c3c" x="146.16" y="284.92625" transform="rotate(-0 146.16 284.92625)">+</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="146.16" y="328.499062" transform="rotate(-0 146.16 328.499062)">Position 2 embedding</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 15px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="146.16" y="430.739062" transform="rotate(-0 146.16 430.739062)">Input to the blocks</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="349.2" y="232.103125" transform="rotate(-0 349.2 232.103125)">0</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="388.08" y="232.103125" transform="rotate(-0 388.08 232.103125)">1</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="426.96" y="232.103125" transform="rotate(-0 426.96 232.103125)">2</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="465.84" y="232.103125" transform="rotate(-0 465.84 232.103125)">3</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="349.2" y="270.983125" transform="rotate(-0 349.2 270.983125)">-1</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="388.08" y="270.983125" transform="rotate(-0 388.08 270.983125)">0</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="426.96" y="270.983125" transform="rotate(-0 426.96 270.983125)">1</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="465.84" y="270.983125" transform="rotate(-0 465.84 270.983125)">2</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="349.2" y="309.863125" transform="rotate(-0 349.2 309.863125)">-2</text>
+   </g>
+   <g id="text_23">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="388.08" y="309.863125" transform="rotate(-0 388.08 309.863125)">-1</text>
+   </g>
+   <g id="text_24">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="426.96" y="309.863125" transform="rotate(-0 426.96 309.863125)">0</text>
+   </g>
+   <g id="text_25">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="465.84" y="309.863125" transform="rotate(-0 465.84 309.863125)">1</text>
+   </g>
+   <g id="text_26">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="349.2" y="348.743125" transform="rotate(-0 349.2 348.743125)">-3</text>
+   </g>
+   <g id="text_27">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="388.08" y="348.743125" transform="rotate(-0 388.08 348.743125)">-2</text>
+   </g>
+   <g id="text_28">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="426.96" y="348.743125" transform="rotate(-0 426.96 348.743125)">-1</text>
+   </g>
+   <g id="text_29">
+    <text style="font-size: 14px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="465.84" y="348.743125" transform="rotate(-0 465.84 348.743125)">0</text>
+   </g>
+   <g id="text_30">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #202d28" x="306" y="398.59125" transform="rotate(-0 306 398.59125)">Signed distance = key − query</text>
+   </g>
+   <g id="text_31">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="306" y="428.387187" transform="rotate(-0 306 428.387187)">score + learned bucket bias</text>
+   </g>
+   <g id="text_32">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="306" y="455.47125" transform="rotate(-0 306 455.47125)">T5 groups distances into buckets.</text>
+   </g>
+   <g id="text_33">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="620.64" y="297.79125" transform="rotate(-0 620.64 297.79125)">position 0</text>
+   </g>
+   <g id="text_34">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="757.44" y="297.79125" transform="rotate(-0 757.44 297.79125)">position 1</text>
+   </g>
+   <g id="text_35">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="620.64" y="431.71125" transform="rotate(-0 620.64 431.71125)">position 2</text>
+   </g>
+   <g id="text_36">
+    <text style="font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: middle; fill: #202d28" x="757.44" y="431.71125" transform="rotate(-0 757.44 431.71125)">position 3</text>
+   </g>
+   <g id="text_37">
+    <text style="font-size: 11px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #52645a" x="581.76" y="479.675312" transform="rotate(-0 581.76 479.675312)">One dimension pair is shown.</text>
+   </g>
+   <g id="text_38">
+    <text style="font-weight: 700; font-size: 12px; font-family: 'DejaVu Sans'; text-anchor: start; fill: #234c3c" x="30.24" y="516.67125" transform="rotate(-0 30.24 516.67125)">Learned table: before attention. Relative bias: on scores. RoPE: on Q and K before their dot product.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="paeb543b260">
+   <rect x="0" y="0" width="864" height="547.2"/>
+  </clipPath>
+ </defs>
+</svg>
