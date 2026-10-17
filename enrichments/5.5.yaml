@@ -1,0 +1,95 @@
+summary: How can images and text be represented in a way that lets us compare them
+  directly?
+answers:
+  2-1:
+  - Comparing an image with a caption means computing a dot product (or cosine similarity)
+    between their vectors, which is only defined for vectors of the same length. The
+    projections are what translate both modalities into the same "coordinates".
+  3-1:
+  - It would go up. With 1,024 items and 10 classes, each batch would contain about
+    ten times as many same-class items, so each image would have more indistinguishable
+    "correct" captions to spread its probability over. The floor is roughly the logarithm
+    of that number, so a larger batch means a higher floor. (Real systems like CLIP
+    use very diverse captions, so true duplicates in a batch are rare, and large batches
+    mainly help by providing more, and harder, negatives.)
+  4-1:
+  - 'Its image encoder learned general visual features of footwear, such as a low,
+    wide outline with a sole, even without seeing sneakers. Sneaker images landed
+    near sandal and ankle-boot images in the shared space. What was missing was the
+    text side: the word "sneaker" had no learned meaning to match them to.'
+  5-1:
+  - Embedding an image requires running the image encoder, which is expensive. If
+    we re-embedded millions of images for every query, each search would take far
+    too long. By embedding the collection once and storing the vectors, each new query
+    costs only one text embedding plus fast dot products, which can be done for millions
+    of stored vectors very quickly.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts: []
+docstrings:
+  read_idx: "Read a cached gzip-compressed IDX array, skipping its binary header.\n\
+    \nArguments:\n    f: Cached gzip filename.\n    offset: Bytes to skip before reading\
+    \ array values."
+  ImageEncoder: Project CNN features into a unit-length image vector in the shared
+    space.
+  ImageEncoder.__init__: "Create the components of this model; the forward computation\
+    \ is traced in the lesson.\n\nArguments:\n    dim: Learned vector width."
+  ImageEncoder.forward: "Project CNN features into a unit-length image vector in the\
+    \ shared space.\n\nArguments:\n    x: Floating-point tensor; image models use\
+    \ (B, C, H, W), token-vector models use (B, T, D)."
+  TextEncoder: Average word embeddings and project into a unit-length text vector
+    in the shared space.
+  TextEncoder.__init__: "Create the components of this model; the forward computation\
+    \ is traced in the lesson.\n\nArguments:\n    vocab_size: Number of token IDs\
+    \ represented by the embedding table.\n    dim: Learned vector width."
+  TextEncoder.forward: "Average word embeddings and project into a unit-length text\
+    \ vector in the shared space.\n\nArguments:\n    texts: Caption strings, containing\
+    \ words from the teaching vocabulary."
+  class_prompts: "Create one caption per clothing class from a shared template.\n\n\
+    Arguments:\n    template: Caption template containing a class-name slot."
+  zero_shot_accuracy: "Classify images by their most similar text description; return\
+    \ accuracy and predictions. Known training classes are not an unseen-class benchmark.\n\
+    \nArguments:\n    img_enc: Image encoder producing shared-space unit vectors.\n\
+    \    txt_enc: Text encoder producing shared-space unit vectors.\n    X: Image/input\
+    \ tensor for the experiment.\n    y: Class labels aligned with the input examples.\n\
+    \    template: Caption template containing a class-name slot."
+  contrastive_loss: "Average image-to-text and text-to-image cross-entropy with diagonal\
+    \ matching targets.\n\nArguments:\n    I: Unit-length image-vector batch.\n  \
+    \  T: Sequence length, or text-vector batch in contrastive_loss.\n    scale: Similarity\
+    \ multiplier before the contrastive softmax."
+  sample_batch: "Sample training images and one class-derived caption per image using\
+    \ a seeded generator.\n\nArguments:\n    X: Image/input tensor for the experiment.\n\
+    \    y: Class labels aligned with the input examples.\n    B: Number of examples\
+    \ in a contrastive batch.\n    gen: Seeded generator for image/caption sampling."
+  train_clip: "Jointly train the toy image/text encoders and record loss plus the\
+    \ same-class collision diagnostic.\n\nArguments:\n    X: Image/input tensor for\
+    \ the experiment.\n    y: Class labels aligned with the input examples.\n    steps:\
+    \ Number of optimiser updates.\n    B: Number of examples in a contrastive batch.\n\
+    \    seed: Random seed for this experiment."
+  search: "Rank cached validation image vectors by cosine similarity to the encoded\
+    \ query; return indices and scores.\n\nArguments:\n    query: Text query to encode\
+    \ and compare with cached image vectors.\n    k: Number of neighbours, or unit\
+    \ index in unit_summary."
+quiz:
+- q: Do independently trained image and text vectors align merely because their widths
+    match?
+  options:
+  - No; equal width permits arithmetic but does not establish alignment.
+  - Yes; matching width guarantees shared semantics.
+  - Yes; normalising alone learns image-caption matches.
+  answer: 0
+  why: No; equal width permits arithmetic but does not establish alignment.
+- q: Why do same-class captions create false negatives in the toy loss?
+  options:
+  - The diagonal-only objective treats other valid same-class matches as negatives.
+  - The images have no training labels.
+  - The softmax omits its diagonal.
+  answer: 0
+  why: The diagonal-only objective treats other valid same-class matches as negatives.
+- q: Why cache the image vectors for retrieval?
+  options:
+  - Queries can rank stored vectors without re-encoding every image.
+  - Caching makes the text encoder unnecessary.
+  - Caching guarantees every result is correct.
+  answer: 0
+  why: Queries can rank stored vectors without re-encoding every image.

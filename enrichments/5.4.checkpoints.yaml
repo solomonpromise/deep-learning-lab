@@ -1,0 +1,57 @@
+skill: From Sequences to Attention
+sections:
+  1:
+    questions:
+    - q: Why do averaged word embeddings fail on reversed word order?
+      options:
+      - Averaging the same vectors gives the same result regardless of order.
+      - The embedding vocabulary has no integers.
+      - Reversing tokens changes every vector's length.
+      answer: 0
+      why: Averaging the same vectors gives the same result regardless of order.
+  2:
+    questions:
+    - q: What changes from one RNN step to the next?
+      options:
+      - The hidden state; the update weights are shared.
+      - Every step has entirely unrelated weights.
+      - The hidden-state width grows by one per token.
+      answer: 0
+      why: The hidden state; the update weights are shared.
+  3:
+    questions:
+    - q: Why is a long-range memory task harder for a basic RNN?
+      options:
+      - The learning signal passes through many recurrent transformations.
+      - The correct first-token label changes with length.
+      - The network is forbidden to process long tensors.
+      answer: 0
+      why: The learning signal passes through many recurrent transformations.
+  4:
+    questions:
+    - q: What makes an LSTM's memory path useful?
+      options:
+      - Learned gates can preserve cell-state information across steps.
+      - The cell state always retains everything perfectly.
+      - PyTorch fixes every forget gate at exactly one.
+      answer: 0
+      why: Learned gates can preserve cell-state information across steps.
+  5:
+    questions:
+    - q: Which limitation remains even with good recurrent memory?
+      options:
+      - Hidden states still depend on sequential computation.
+      - The model loses all ability to represent order.
+      - The optimizer cannot update recurrent weights.
+      answer: 0
+      why: Hidden states still depend on sequential computation.
+  6:
+    questions:
+    - q: What does attention provide to a distant token?
+      options:
+      - A direct weighted path to relevant values, subject to the mask.
+      - Guaranteed perfect memory for any sequence length.
+      - A free operation whose cost never grows with context.
+      answer: 0
+      why: A direct weighted path to relevant values, subject to the mask.
+assessment_revision: day56-v3

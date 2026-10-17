@@ -1,0 +1,113 @@
+skill: Understanding Attention
+sections:
+  1:
+    questions:
+    - q: What does an attention weight express in this layer?
+      options:
+      - How much of a value vector is mixed into a query's output.
+      - Proof of a human-readable causal explanation.
+      - The probability that the whole sentence is factually true.
+      answer: 0
+      why: How much of a value vector is mixed into a query's output.
+  2:
+    questions:
+    - q: Why cannot independent per-token layers alone build context?
+      options:
+      - No information travels between positions through those layers.
+      - Linear layers cannot take tensors.
+      - The vocabulary must contain all possible phrases.
+      answer: 0
+      why: No information travels between positions through those layers.
+  3:
+    questions:
+    - q: What is the attention pipeline?
+      options:
+      - Project Q/K/V, score, scale, mask if needed, softmax, mix values.
+      - Average token IDs and then add labels.
+      - Apply softmax only after choosing the final word.
+      answer: 0
+      why: Project Q/K/V, score, scale, mask if needed, softmax, mix values.
+  4:
+    questions:
+    - q: Which vectors are compared to form attention scores?
+      options:
+      - Queries against keys; values supply the mixed content.
+      - Values against labels; queries are never used.
+      - Token IDs against position indices.
+      answer: 0
+      why: Queries against keys; values supply the mixed content.
+  5:
+    questions:
+    - q: What is the shape of one head's score grid for T tokens?
+      options:
+      - T by T, one query-key score per pair.
+      - T by vocabulary size in every layer.
+      - Only one scalar for the whole input.
+      answer: 0
+      why: T by T, one query-key score per pair.
+  6:
+    questions:
+    - q: Why divide dot products by the square root of head width?
+      options:
+      - It controls score scale and reduces premature softmax saturation.
+      - It makes every attention weight identical.
+      - It guarantees that gradients can never vanish.
+      answer: 0
+      why: It controls score scale and reduces premature softmax saturation.
+  7:
+    questions:
+    - q: What does a row of attention weights do to the values?
+      options:
+      - It forms a weighted sum of value vectors.
+      - It selects the class labels from the dataset.
+      - It replaces all values with token IDs.
+      answer: 0
+      why: It forms a weighted sum of value vectors.
+  8:
+    questions:
+    - q: Where should a causal mask act?
+      options:
+      - Before softmax, excluding future key positions.
+      - After the optimizer has updated the weights.
+      - Only on the training labels.
+      answer: 0
+      why: Before softmax, excluding future key positions.
+  9:
+    questions:
+    - q: Where is the model width split into heads?
+      options:
+      - After learned Q/K/V projections, so each head receives its projected subspace.
+      - Before any projection, permanently hiding all other input coordinates from
+        a head.
+      - Only after the vocabulary output head.
+      answer: 0
+      why: After learned Q/K/V projections, so each head receives its projected subspace.
+  10:
+    questions:
+    - q: What does unmasked attention without positional information do under a token
+        permutation?
+      options:
+      - 'Its output vectors are permuted in the same way: equivariance.'
+      - Its output sequence is necessarily identical at every position.
+      - It recovers the original order automatically.
+      answer: 0
+      why: 'Its output vectors are permuted in the same way: equivariance.'
+  11:
+    questions:
+    - q: What happens to a dense attention score grid when sequence length quadruples?
+      options:
+      - It has sixteen times as many entries.
+      - It has four times as many entries.
+      - It keeps the same number of entries.
+      answer: 0
+      why: It has sixteen times as many entries.
+  12:
+    questions:
+    - q: Why compare the hand-written attention with PyTorch's implementation?
+      options:
+      - Agreement on the same Q/K/V and mask is a useful implementation check.
+      - It proves that an untrained model understands language.
+      - It makes evaluation data unnecessary.
+      answer: 0
+      why: Agreement on the same Q/K/V and mask is a useful implementation check.
+assessment_revision: day56-v3

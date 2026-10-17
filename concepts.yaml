@@ -80,3 +80,130 @@ Seed: { home: "4.2", later: { 10: "reproducible project structure" } }
 VRAM: { home: "4.3", builds_on: [Tensor, Batch], later: { 8: "QLoRA on one GPU", 9: "the KV cache at inference" } }
 Mixed precision: { home: "4.3", builds_on: [dtype, VRAM], later: { 8: "4-bit weights in QLoRA" } }
 Gradient boosting: { home: "4.4", builds_on: [Engineered feature, Baseline] }
+
+# Modules 5–6: explicit teaching homes for the revised curriculum.
+Encoder:
+  home: '5.1'
+  builds_on:
+  - Representation
+Task head:
+  home: '5.1'
+  builds_on:
+  - Encoder
+  - Logit
+Convolutional neural network:
+  home: '5.2'
+  builds_on:
+  - Encoder
+  - Inductive bias
+Feature map:
+  home: '5.2'
+  builds_on:
+  - Convolutional neural network
+Stride:
+  home: '5.2'
+  builds_on:
+  - Convolutional neural network
+Pooling:
+  home: '5.2'
+  builds_on:
+  - Representation
+Cosine similarity:
+  home: '5.3'
+  builds_on:
+  - Embedding
+Recurrent neural network:
+  home: '5.4'
+  builds_on:
+  - Embedding
+  - Representation
+Hidden state:
+  home: '5.4'
+  builds_on:
+  - Recurrent neural network
+LSTM:
+  home: '5.4'
+  builds_on:
+  - Recurrent neural network
+  - Vanishing gradients
+GRU:
+  home: '5.4'
+  builds_on:
+  - Recurrent neural network
+Contrastive learning:
+  home: '5.5'
+  builds_on:
+  - Embedding
+  - Loss function
+CLIP:
+  home: '5.5'
+  builds_on:
+  - Contrastive learning
+  - Encoder
+Transformer:
+  home: '6.1'
+  builds_on:
+  - Embedding
+  - Architecture
+Context window:
+  home: '6.2'
+  builds_on:
+  - Transformer
+Self-attention:
+  home: '6.3'
+  builds_on:
+  - Transformer
+  - Embedding
+Causal mask:
+  home: '6.3'
+  builds_on:
+  - Self-attention
+Multi-head attention:
+  home: '6.3'
+  builds_on:
+  - Self-attention
+Residual connection:
+  home: '6.4'
+  builds_on:
+  - Gradient
+  - Tensor
+Layer normalisation:
+  home: '6.4'
+  builds_on:
+  - Normalisation
+  - Tensor
+Cross-attention:
+  home: '6.5'
+  builds_on:
+  - Self-attention
+  - Encoder
+Autoregressive:
+  home: '6.6'
+  builds_on:
+  - Causal mask
+Linear probe:
+  home: '5.1'
+
+Receptive field:
+  home: '5.2'
+
+Skip-gram:
+  home: '5.3'
+
+Byte-pair encoding:
+  home: '6.2'
+
+Feed-forward network:
+  home: '6.4'
+
+Teacher forcing:
+  home: '6.6'
+
+Permutation equivariance:
+  home: '6.3'
+
+Top-p sampling:
+  home: '6.6'
+
+Exposure bias:
+  home: '6.6'

@@ -1,0 +1,52 @@
+[
+  {
+    "key": "6.2.2-revised",
+    "prompt": "Change ONLY the count badge in the first row from \"17 tokens\" to \"18 tokens\". The sentence \"Thou art a villain\" has 18 characters including its three spaces: 4 + 1 + 3 + 1 + 1 + 1 + 7 = 18. Keep all 18 existing character tiles exactly as drawn. The word row stays 7 and BPE row stays 10. Preserve everything else.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-3d976dda-30b6-4ec3-a47c-612be5cc4268.png"
+  },
+  {
+    "key": "6.3.2-revised",
+    "prompt": "Preserve all panels/style. In final panel remove all four one-to-one row arrows from v_i to o_i. Replace with one full-stack connection/bracket \"A × V\" between complete value stack and complete output stack, and clear label \"Each output mixes ALL allowed value rows\". Keep O=AV formula. Add label above the blue weights matrix \"Illustrative weights\". The diagram must not imply o_i is computed only from v_i.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-02fa6e87-4694-4b98-ba4e-6b0d73a9972e.png"
+  },
+  {
+    "key": "6.3.3-revised",
+    "prompt": "Rebuild this illustration with the same colours/type/style but a clear LEFT-TO-RIGHT data flow. Title \"Inside multi-head attention\". Left input (B,T,64) → \"learned Q,K,V projections from ALL 64 input coordinates\" → \"reshape: 4 heads × 16 coordinates\". Centre: FOUR parallel horizontal head rows; each row Q,K,V → causal attention softmax(QKᵀ/√16 + mask)V → head output (B,T,16). Right: all FOUR head OUTPUTS feed concatenate (B,T,64), then output projection, then FINAL output (B,T,64). Every connecting arrow points downstream. No backward arrows. Outputs, not QKV inputs, connect to concatenation. Include \"Masks applied before softmax\". Do not show individual token images or big tensor cubes; make a clean readable architecture diagram.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-483efcb9-728a-439e-a148-a132e69f8eba.png"
+  },
+  {
+    "key": "6.3.3-checked",
+    "prompt": "Keep all architecture arrows, dimensions, panels and style. Simplify the four repeated blue attention boxes: remove ALL repeated formula text from all FOUR boxes; each should read only \"Causal attention\" and \"mask before softmax\". Add ONE shared formula above the four head rows, exactly \"Each head: softmax(QKᵀ / √16 + mask) V\". Do not leave unscaled formula in any head. A shared formula applies to all four. Nothing else changes.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-d2e39da5-e636-4844-969f-bfb51e43d7cc.png"
+  },
+  {
+    "key": "6.4.1-revised",
+    "prompt": "Correct ONLY the branch origins on the left residual stream, keep art/style. The LOWER branch must leave the stream BELOW its + addition circle (near the input), go right through LayerNorm then attention, and return into the lower + circle from right. The UPPER branch must leave the stream BETWEEN the lower + and upper + circles, go right through LayerNorm then FFN, and return into the upper + from right. Neither branch may originate at the same + where it returns: that makes a false circular graph. Add small fork dots below each corresponding addition. Main stream flows bottom to top unchanged.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-7d11106e-a32b-46d2-892a-29875d460d7c.png"
+  },
+  {
+    "key": "6.5.1-final",
+    "prompt": "Correct this architecture, preserving style and readable layout. There are exactly THREE blocks total: relabel them from bottom to top \"Pre-norm block 1\", \"Pre-norm block 2\", \"Pre-norm block 3\"; REMOVE every ×3 inside individual blocks. In each block omit internal little LN/attention/+ chains and instead write \"causal attention + feed-forward; residual additions\" so no incorrect chain is implied. Bottom must show TWO separate index inputs: \"token IDs (B,64)\" feeds ONLY token embedding 65×64; \"position IDs 0…63\" feeds ONLY position embedding 64×64. The two embedding OUTPUTS feed a plus circle, then (B,64,64) into block1. NO direct token IDs arrow to the plus and NO raw token arrows into position embedding. Label the displayed six characters \"excerpt of 64 tokens\" instead of implying six equals64. Keep parameter count, finalnorm,head,logits and two top branches exactly.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-d3bf0b73-f84c-4cd9-af51-c376ab804e57.png"
+  },
+  {
+    "key": "6.5.1-checked",
+    "prompt": "Change ONLY one thing: DELETE the vertical arrow from the six character excerpt tiles at bottom centre directly up into the plus circle. Raw characters must NOT bypass embedding. The plus has exactly TWO inputs, left from token embedding and right from position embedding. Preserve the character excerpt tiles and their caption without any outgoing arrow. Preserve every other label, arrow, block and dimension exactly.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-961e343a-b0e9-4a45-98ad-34c0b07a51be.png"
+  },
+  {
+    "key": "6.6.2-final",
+    "prompt": "Correct this overview while preserving style/title. The model here is DECODER-ONLY: DELETE the Cross-attention subbox from Transformer station, leaving causal self-attention then feed-forward. Training arrows MUST be exactly: 1 Text/windows → 2 Transformer → 3 Loss → 4 Update → BACK TO 2 TRANSFORMER. Remove arrow 4→1 Text, replace with clearly routed arrow 4→2 labelled \"update model weights\". Text/data do not get updated. Generation branch still leaves trained Transformer to Generate, no arrow to optimizer. In Update station replace loss-vs-steps plot with a simple parameter-vector/update arrow so no empirical loss curve is invented. Label any remaining probability bars \"illustrative\".",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-150ecfb5-a962-4480-9ba8-bb93cc392033.png"
+  },
+  {
+    "key": "5.5.3-final",
+    "prompt": "Rebuild this educational image in the same ivory, forest, blue and purple style. Two panels: TRAINING and ZERO-SHOT USE. Training panel show exactly FOUR SMALL PHOTO-AND-CAPTION PAIRS arranged visibly: dog/beach with \"dog on the beach\"; ramen with \"homemade ramen\"; skyline with \"skyline at dusk\"; GUITAR with \"vintage guitar\". Photos→image encoder→4 image vectors, captions→text encoder→4 text vectors. Both feed one similarity matrix labelled exactly \"4 × 4 similarities\", with four green diagonal entries and pale offdiagonal entries; contrastive loss. No \"(4 × d)\" above matrix. Right panel as existing: new catphoto→image encoder; three labeltexts dog, cat, car→text encoder; illustrative similarities cat highest. Four photos MUST be visible, not just three. Keep clear large typography.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-201d2c29-1ee0-4170-8fa9-75db7342896c.png"
+  },
+  {
+    "key": "5.5.3-checked",
+    "prompt": "Keep all four photo-caption pairs, encoders, vectors, 4×4 matrix, inference panel and overall style. Correct ONLY the left training inputs routing: enclose all four photo-caption pairs in one thin grey container labelled \"Paired training batch\". REMOVE every individual blue/purple line from individual photos/captions to encoders. Draw just TWO clean labelled arrows leaving that whole container: one arrow labelled \"images\" entering IMAGE ENCODER; one arrow labelled \"captions\" entering TEXT ENCODER. No photo-specific arrow goes to text encoder. This is one batch supplying two modalities. Keep all other arrows as they are.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-4d76082a-2f15-428f-89fc-824dacb4ec03.png"
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "key": "5.1.1-revised",
+    "prompt": "Change ONLY the heel label from \"heel at bottom-left\" to \"heel at bottom-right\" because the boot heel is visibly on the right. Keep all layout, boot artwork, other wording, colours and style identical. Also replace the bottom takeaway \"with fewer task-useful features\" by \"with task-useful features\", to avoid implying compression is required.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-c28207d5-fb17-4e84-b16d-ba783a4df16f.png"
+  },
+  {
+    "key": "5.1.2-revised",
+    "prompt": "Keep the illustration/layout/style exactly. Correct the chart to \"class scores (illustrative)\" rather than class probabilities; remove numeric x-axis labels 0 to 9 so Sneaker is not wrongly mapped to Fashion-MNIST class 0. Label selected bar Sneaker as now. Replace bottom \"a compact description\" with \"a useful description\". Keep all other content.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-44e7f9bb-2023-4029-ad7c-902053ac47c2.png"
+  },
+  {
+    "key": "5.2.1-revised",
+    "prompt": "Keep all diagram labels, dimensions, layout, feature-map stacks and design. Change the raw input thumbnail on the far left from an ankle boot to a low-top greyscale SNEAKER. Change illustrative feature-map silhouettes consistently to low-top sneaker if they depict a boot. The highlighted predicted class remains Sneaker. Do not change any text.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-adc0f543-4cc2-4343-a5a6-f8a69de18514.png"
+  },
+  {
+    "key": "5.3.2-revised",
+    "prompt": "Change ONLY the large bottom boxed sentence to \"Same result as one-hot × table, without a dense one-hot multiplication.\" There is one 1 and 10,001 zeros, not 10,002 zeros. Do not include any zeros count. Keep all table entries, highlighted row, lookup arrows and style exactly.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-8ef2a047-0d18-4859-84cc-cab9873a21a2.png"
+  },
+  {
+    "key": "5.2.3-revised",
+    "prompt": "Change ONLY the small head box text \"Linear + Softmax\" to \"Classifier → logits\". The notebook uses raw logits with cross-entropy. Keep all other panels, diagram, numbers, output class bars and style unchanged.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-a37ec2aa-66b4-4b45-9b70-2088ae3db44e.png"
+  },
+  {
+    "key": "5.3.5-revised",
+    "prompt": "Keep visual composition and style. Replace subtitle under title with \"Training objectives can shape different representations.\" Replace both \"Resulting 2D embedding space\" labels with \"Possible geometry (illustrative)\". Add a small note near branching arrows \"separately trained copies\". Keep the footer that other factors also shape geometry. This is an analogy, not a measured plot.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-e745eabd-6e30-49c0-8543-7ae46b09bb3b.png"
+  },
+  {
+    "key": "5.4.2-revised",
+    "prompt": "Correct the data-flow arrows while preserving style/title/formulas. Input gate i and candidate g MUST first enter a multiplication circle ×, then ONE arrow from that product goes into the cell-state addition +. They must NOT separately enter the plus. The old hidden state h(t−1) must ONLY feed the gate/candidate inputs; REMOVE its direct orange bypass into h(t). h(t) must be produced ONLY by the multiplication of output gate o and tanh(c(t)). Replace unsolicited cat photograph with a simple input vector tile x(t). Replace top callout with \"f near 1 helps preserve the direct cell-state path\". Keep both exact equations on right.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-1b8f2b4f-30aa-4196-b259-11e3031ce8e1.png"
+  },
+  {
+    "key": "5.4.2-final",
+    "prompt": "Make ONE surgical correction: delete the orange horizontal wire segment running from under the output gate toward the BOTTOM of the rightmost multiplication circle. Delete that bottom arrow entering the circle. That rightmost × MUST have exactly TWO inputs only: green tanh(c_t) from above, and purple output gate o_t from the left. The old hidden state feeds the four gate/candidate input boxes only. Preserve every other wire, equation and label. Keep exact layout.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-f1edaa16-d561-4411-b2d4-75453358aa0a.png"
+  },
+  {
+    "key": "5.6.1-final",
+    "prompt": "Preserve art and layout. Correct ONLY these labels: left panel lower box \"the truth: measure here\" becomes \"validate in the full space\". Middle lower box becomes \"retains: largest variance directions\" then \"can distort: local neighbourhoods\". Right lower box becomes \"emphasises: local neighbourhoods\" then \"can distort: island distances and sizes\". Do not claim t-SNE perfectly preserves neighbours. Keep footer conceptual illustration and main takeaway.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-75b2dfa2-74bc-48b4-891c-3383e80a1c84.png"
+  },
+  {
+    "key": "5.6.2-final",
+    "prompt": "Preserve all summary artwork and layout, but correct evaluation card: remove numeric 0.0/0.5/1.0 y-axis labels and the word accuracy, replace chart title with \"Illustrative probes\"; change x label conv3 to conv2 (our model has two conv layers). Add a clear small badge above the poster footer \"Conceptual summary; plots are schematic\". This is a conceptual poster, not empirical plotted evidence.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-045ae4f2-f0c7-4116-bfb8-fb610492ef88.png"
+  },
+  {
+    "key": "5.5.3-revised",
+    "prompt": "Make ONLY these corrections: change label above contrastive similarity matrix from \"(4 × d)\" to \"(4 × 4)\". Add missing fourth photo thumbnail of a guitar below skyline in training input column, making four photo rows dog/noodles/skyline/guitar each aligned with four image embedding rows. Keep all four captions, encoder arrows, inference cat panel and style.",
+    "generated_path": "/Users/solomonpromise/.codex/generated_images/01a14421-4100-7543-a5a7-3eb7af55590c/exec-fe23d270-b193-46b1-81e0-4c200d73c7b8.png"
+  }
+]

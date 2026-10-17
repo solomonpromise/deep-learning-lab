@@ -1,0 +1,50 @@
+skill: Connecting Image and Text Representations
+sections:
+  1:
+    questions:
+    - q: Do independently trained image and text vectors align merely because their
+        widths match?
+      options:
+      - No; equal width permits arithmetic but does not establish alignment.
+      - Yes; matching width guarantees shared semantics.
+      - Yes; normalising alone learns image-caption matches.
+      answer: 0
+      why: No; equal width permits arithmetic but does not establish alignment.
+  2:
+    questions:
+    - q: What do the projection layers accomplish?
+      options:
+      - They map encoder outputs into a shared coordinate space learned jointly.
+      - They remove the need to train the encoders.
+      - They turn similarities into calibrated class probabilities.
+      answer: 0
+      why: They map encoder outputs into a shared coordinate space learned jointly.
+  3:
+    questions:
+    - q: Why do same-class captions create false negatives in the toy loss?
+      options:
+      - The diagonal-only objective treats other valid same-class matches as negatives.
+      - The images have no training labels.
+      - The softmax omits its diagonal.
+      answer: 0
+      why: The diagonal-only objective treats other valid same-class matches as negatives.
+  4:
+    questions:
+    - q: Why is the toy model's known-class classification not evidence of unseen-class
+        zero-shot transfer?
+      options:
+      - Its training captions explicitly supplied those class names.
+      - It has no conventional classifier head.
+      - Its vectors are normalised.
+      answer: 0
+      why: Its training captions explicitly supplied those class names.
+  5:
+    questions:
+    - q: Why cache the image vectors for retrieval?
+      options:
+      - Queries can rank stored vectors without re-encoding every image.
+      - Caching makes the text encoder unnecessary.
+      - Caching guarantees every result is correct.
+      answer: 0
+      why: Queries can rank stored vectors without re-encoding every image.
+assessment_revision: day56-v3

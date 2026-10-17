@@ -134,7 +134,17 @@
 </div>
 
 <!-- lightbox -->
-<div class="lightbox" data-lightbox hidden><button class="icon-btn" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button><img alt=""></div>
+<div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="Image viewer">
+  <div class="lb-toolbar" role="group" aria-label="Image controls">
+    <button type="button" data-lb-out aria-label="Zoom out">−</button>
+    <button type="button" data-lb-in aria-label="Zoom in">+</button>
+    <button type="button" data-lb-fit>Fit</button>
+    <output data-lb-scale aria-live="polite">100% of fit</output>
+    <button type="button" class="icon-btn" data-lb-close aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+  </div>
+  <p class="lb-hint">Use + to read details. Scroll to explore the enlarged image.</p>
+  <div class="lb-viewport" data-lb-view tabindex="0" aria-label="Scrollable enlarged image"><img alt=""></div>
+</div>
 <!-- glossary popover -->
 <div class="term-pop" role="tooltip" data-term-pop hidden></div>
 

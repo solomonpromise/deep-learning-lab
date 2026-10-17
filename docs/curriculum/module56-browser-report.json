@@ -1,0 +1,1262 @@
+[
+  {
+    "route": "module-5/lesson-5-1.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Representation Learning"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-2.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Images"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-3.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-4.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "From Sequences to Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 10
+  },
+  {
+    "route": "module-5/lesson-5-5.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Connecting Image and Text Representations"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-6.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Synthesis: Putting Representation Learning into Practice"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 5
+  },
+  {
+    "route": "module-6/lesson-6-1.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Understanding the Transformer Architecture"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 12
+  },
+  {
+    "route": "module-6/lesson-6-2.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Preparing Inputs for a Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-3.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 16
+  },
+  {
+    "route": "module-6/lesson-6-4.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "The Transformer Block"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 11
+  },
+  {
+    "route": "module-6/lesson-6-5.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Building a Decoder-Only Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-6.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "How Transformers Learn and Generate Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 14
+  },
+  {
+    "route": "module-5/index.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Learning Representations from Images and Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-6/index.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Transformers and Attention Mechanisms"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "curriculum.html",
+    "width": 1440,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "A path from intuitionto engineering."
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-5/lesson-5-1.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Representation Learning"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-2.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Images"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-3.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-4.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "From Sequences to Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 10
+  },
+  {
+    "route": "module-5/lesson-5-5.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Connecting Image and Text Representations"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-6.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Synthesis: Putting Representation Learning into Practice"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 5
+  },
+  {
+    "route": "module-6/lesson-6-1.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Understanding the Transformer Architecture"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 12
+  },
+  {
+    "route": "module-6/lesson-6-2.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Preparing Inputs for a Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-3.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 16
+  },
+  {
+    "route": "module-6/lesson-6-4.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "The Transformer Block"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 11
+  },
+  {
+    "route": "module-6/lesson-6-5.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Building a Decoder-Only Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-6.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "How Transformers Learn and Generate Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 14
+  },
+  {
+    "route": "module-5/index.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Learning Representations from Images and Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-6/index.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Transformers and Attention Mechanisms"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "curriculum.html",
+    "width": 1440,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "A path from intuitionto engineering."
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-5/lesson-5-1.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Representation Learning"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-2.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Images"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-3.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-4.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "From Sequences to Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 10
+  },
+  {
+    "route": "module-5/lesson-5-5.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Connecting Image and Text Representations"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-6.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Synthesis: Putting Representation Learning into Practice"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 5
+  },
+  {
+    "route": "module-6/lesson-6-1.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Understanding the Transformer Architecture"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 12
+  },
+  {
+    "route": "module-6/lesson-6-2.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Preparing Inputs for a Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-3.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 16
+  },
+  {
+    "route": "module-6/lesson-6-4.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "The Transformer Block"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 11
+  },
+  {
+    "route": "module-6/lesson-6-5.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Building a Decoder-Only Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-6.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "How Transformers Learn and Generate Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 14
+  },
+  {
+    "route": "module-5/index.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Learning Representations from Images and Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-6/index.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Transformers and Attention Mechanisms"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "curriculum.html",
+    "width": 1280,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "A path from intuitionto engineering."
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-5/lesson-5-1.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Representation Learning"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-2.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Images"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-3.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-4.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "From Sequences to Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 10
+  },
+  {
+    "route": "module-5/lesson-5-5.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Connecting Image and Text Representations"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-6.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Synthesis: Putting Representation Learning into Practice"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 5
+  },
+  {
+    "route": "module-6/lesson-6-1.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Understanding the Transformer Architecture"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 12
+  },
+  {
+    "route": "module-6/lesson-6-2.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Preparing Inputs for a Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-3.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 16
+  },
+  {
+    "route": "module-6/lesson-6-4.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "The Transformer Block"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 11
+  },
+  {
+    "route": "module-6/lesson-6-5.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Building a Decoder-Only Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-6.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "How Transformers Learn and Generate Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 14
+  },
+  {
+    "route": "module-5/index.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Learning Representations from Images and Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-6/index.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Transformers and Attention Mechanisms"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "curriculum.html",
+    "width": 1280,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "A path from intuitionto engineering."
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-5/lesson-5-1.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Representation Learning"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-2.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Images"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-3.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-4.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "From Sequences to Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 10
+  },
+  {
+    "route": "module-5/lesson-5-5.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Connecting Image and Text Representations"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-6.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Synthesis: Putting Representation Learning into Practice"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 5
+  },
+  {
+    "route": "module-6/lesson-6-1.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Understanding the Transformer Architecture"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 12
+  },
+  {
+    "route": "module-6/lesson-6-2.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Preparing Inputs for a Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-3.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 16
+  },
+  {
+    "route": "module-6/lesson-6-4.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "The Transformer Block"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 11
+  },
+  {
+    "route": "module-6/lesson-6-5.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Building a Decoder-Only Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-6.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "How Transformers Learn and Generate Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 14
+  },
+  {
+    "route": "module-5/index.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Learning Representations from Images and Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-6/index.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "Transformers and Attention Mechanisms"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "curriculum.html",
+    "width": 390,
+    "theme": "light",
+    "start": {
+      "overflow": false,
+      "title": "A path from intuitionto engineering."
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-5/lesson-5-1.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Representation Learning"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-2.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Images"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-3.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "How Neural Networks Learn from Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 13
+  },
+  {
+    "route": "module-5/lesson-5-4.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "From Sequences to Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 10
+  },
+  {
+    "route": "module-5/lesson-5-5.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Connecting Image and Text Representations"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-5/lesson-5-6.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Synthesis: Putting Representation Learning into Practice"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 5
+  },
+  {
+    "route": "module-6/lesson-6-1.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Understanding the Transformer Architecture"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 12
+  },
+  {
+    "route": "module-6/lesson-6-2.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Preparing Inputs for a Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-3.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Understanding Attention"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 16
+  },
+  {
+    "route": "module-6/lesson-6-4.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "The Transformer Block"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 11
+  },
+  {
+    "route": "module-6/lesson-6-5.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Building a Decoder-Only Transformer"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 9
+  },
+  {
+    "route": "module-6/lesson-6-6.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "How Transformers Learn and Generate Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 14
+  },
+  {
+    "route": "module-5/index.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Learning Representations from Images and Text"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "module-6/index.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "Transformers and Attention Mechanisms"
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  },
+  {
+    "route": "curriculum.html",
+    "width": 390,
+    "theme": "dark",
+    "start": {
+      "overflow": false,
+      "title": "A path from intuitionto engineering."
+    },
+    "briefs": false,
+    "mathErrors": 0,
+    "missingAlt": 0,
+    "overflow": false,
+    "sections": 0
+  }
+]

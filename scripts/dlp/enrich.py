@@ -26,6 +26,12 @@ class EnrichmentError(Exception):
     pass
 
 
+def assessment_id(base: str, data: dict) -> str:
+    """Keep prior answers separate when a lesson replaces its assessment content."""
+    revision = data.get("assessment_revision")
+    return f"{base}:{revision}" if revision else base
+
+
 def load(path: Path) -> dict:
     if not path.exists():
         return {}
@@ -70,6 +76,8 @@ class Enricher:
         for item in data.get("inserts", []) or []:
             self._insert(lesson, item, extras)
         self._answers(lesson, data.get("answers", {}) or {})
+        if data.get("portable_notebook_checks"):
+            self._compact_portable_answers(lesson, set(data.get("checkpoint_prompts") or []))
         self._explain(lesson, data.get("explain", []) or [])
         for s in lesson.sections:
             for b in s.blocks:
@@ -80,6 +88,7 @@ class Enricher:
         # stable ids for every quiz question, so answers can be remembered, reviewed and counted;
         # options are put in a fixed pseudo-random order so the right answer is not always "B"
         def settle(q, qid):
+            qid = assessment_id(qid, data)
             q["id"] = qid
             q["options"], q["answer"] = shuffled(q["options"], q["answer"], qid, q.get("keep_order"))
         if extras["quiz"]:
@@ -107,11 +116,11 @@ class Enricher:
             return None
         qs = []
         for n, q in enumerate(data["questions"], 1):
-            qid = f"m:{number}:{n}"
+            qid = assessment_id(f"m:{number}:{n}", data)
             options, answer = shuffled(q["options"], int(q["answer"]), qid, q.get("keep_order"))
             qs.append({"id": qid, "q_html": self.md(q["q"]), "options": [self.inline(o) for o in options],
                        "answer": answer, "why_html": self.md(q.get("why"))})
-        return {"kind": "mchallenge", "id": f"module-{number}", "title": data.get("title", f"Module {number} challenge"),
+        return {"kind": "mchallenge", "id": assessment_id(f"module-{number}", data), "title": data.get("title", f"Module {number} challenge"),
                 "pass_mark": float(data.get("pass_mark", 0.75)), "questions": qs}
 
     # ------------------------------------------------------------ checkpoints
@@ -132,7 +141,7 @@ class Enricher:
                 continue
             qs = []
             for i, q in enumerate(cp.get("questions") or [], 1):
-                qid = f"c:{lesson.id}:{num}:{i}"
+                qid = assessment_id(f"c:{lesson.id}:{num}:{i}", data)
                 if not 0 <= int(q["answer"]) < len(q["options"]):
                     self.warn(lesson, f"checkpoints: §{num} question {i} answer index out of range")
                 options, answer = shuffled(q["options"], int(q["answer"]), qid, q.get("keep_order"))
@@ -270,6 +279,33 @@ class Enricher:
         return {"kind": "quiz", "title": item.get("title", "Quick check"), "questions": qs, "src": ""}
 
     # ------------------------------------------------------------ answers
+    def _compact_portable_answers(self, lesson: Lesson, checkpoint_prompts: set[str]) -> None:
+        """Keep notebook answers portable without duplicating the app controls.
+
+        Only opt-in authored notes use this. A check already represented by a
+        section checkpoint is omitted from the prose. Other question cards keep
+        their attached answer controls. Their following notebook-only details
+        block is removed from web prose while the original notebook is untouched.
+        """
+        details = re.compile(r"<details>\s*<summary>.*?</summary>\s*.*?</details>", re.S)
+        for section in lesson.sections:
+            compacted = []
+            pending_answer = False
+            for block in section.blocks:
+                if block["kind"] == "questions":
+                    items = block.get("items", [])
+                    pending_answer = bool(items) and all(item.get("answer_html") for item in items)
+                    if items and all(item.get("text") in checkpoint_prompts for item in items):
+                        continue
+                elif pending_answer and block["kind"] == "md" and details.search(block.get("src", "")):
+                    block["src"] = details.sub("", block["src"], count=1).strip()
+                    block["html"] = details.sub("", block["html"], count=1).strip()
+                    pending_answer = False
+                    if not block["html"]:
+                        continue
+                compacted.append(block)
+            section.blocks = compacted
+
     def _answers(self, lesson: Lesson, answers: dict) -> None:
         blocks = {}
         for s in lesson.sections:

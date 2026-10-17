@@ -6,3 +6,10 @@ __pycache__/
 .wrangler/
 node_modules/
 .shots/
+# Rebuildable notebook delivery bundles; canonical notebooks and images are tracked.
+docs/curriculum/modules-5-6-notebooks.zip
+docs/curriculum/modules-5-8-notebooks.zip
+docs/curriculum/modules-5-8-notebooks/
+
+# Local curriculum drafts excluded from publication.
+.local-drafts/

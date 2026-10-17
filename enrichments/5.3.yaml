@@ -1,0 +1,87 @@
+summary: How can a network turn words, which are just symbols, into numbers that capture
+  meaning?
+answers:
+  2-1:
+  - 'The sum of code points depends only on spelling, and different words can share
+    the same sum: "dog" and "god" have identical letters, so identical sums, but very
+    different meanings. And words with similar meanings ("good", "great") would get
+    unrelated sums. The number would carry no information about meaning.'
+  3-1:
+  - The vocabulary was chosen using the *training* reviews. Words that are common
+    in training are, by construction, in the vocabulary; the validation reviews contain
+    some words that were rare or absent in training (new names, rare words, typos),
+    so slightly more of their tokens fall outside the vocabulary. This is a small,
+    honest example of the gap between training data and new data.
+  4-1:
+  - Each one-hot vector would grow to about 20,000 entries (plus the special tokens).
+    The similarity between "good" and "great" would still be exactly 0, as for any
+    two different words. More words make one-hot vectors more wasteful, not more meaningful.
+  6-1:
+  - 50,000 × 512 = 25,600,000 parameters.
+  7-1:
+  - Yes. Cosine similarity ignores length and looks only at direction. A cosine of
+    0.98 means the vectors point in almost the same direction, so they count as very
+    similar, regardless of one being longer.
+  8-1:
+  - 'The average of the static vectors for "not", "good", "at" and "all" contains
+    the strongly positive vector for "good". Averaging cannot express that "not" reverses
+    the meaning of "good", so the review may be scored as positive. We measured exactly
+    this: "the movie was not good" was still scored 0.569 positive.'
+  9-1:
+  - Skip-gram places "excellent" and "awful" relatively close together (average opposite-pair
+    cosine 0.495, above the random baseline of 0.408), because they appear in similar
+    contexts. A sentiment classifier built on these vectors would start from a representation
+    in which positive and negative words are hard to tell apart, so it would need
+    to learn that distinction from labelled data. Embeddings from one objective are
+    not automatically right for a different task.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts: []
+docstrings:
+  tokenize: "Lowercase, remove the stated HTML breaks and extract letter/apostrophe\
+    \ tokens.\n\nArguments:\n    text: Input text string."
+  encode: "Map tokens through the training vocabulary, using the unknown-token policy\
+    \ defined above.\n\nArguments:\n    tokens: Ordered token strings to encode."
+  one_hot: "Return the vocabulary-length indicator vector for a known word.\n\nArguments:\n\
+    \    word: Vocabulary word, or tuple of BPE pieces in the merge helpers."
+  cosine: "Return the cosine similarity of two nonzero vectors: their dot product\
+    \ divided by their norms.\n\nArguments:\n    a: First vector.\n    b: Second vector."
+  vec: "Select a known word's row from an embedding table.\n\nArguments:\n    table:\
+    \ Embedding weight matrix indexed by vocabulary ID.\n    w: Weight tensor or selected\
+    \ vocabulary word, as defined in this helper."
+  to_tensor: "Truncate to MAX_LEN and pad shorter token lists with PAD; return an\
+    \ integer batch.\n\nArguments:\n    token_lists: A list of variable-length token\
+    \ sequences."
+  BagOfEmbeddings: Masked-mean word embeddings followed by a binary sentiment-logit
+    head.
+  BagOfEmbeddings.__init__: "Create the components of this model; the forward computation\
+    \ is traced in the lesson.\n\nArguments:\n    vocab_size: Number of token IDs\
+    \ represented by the embedding table.\n    dim: Learned vector width."
+  BagOfEmbeddings.forward: "Masked-mean word embeddings followed by a binary sentiment-logit\
+    \ head.\n\nArguments:\n    x: Integer token-ID batch shaped (B, T)."
+  neighbours: "Rank other vocabulary entries by cosine similarity to a word's embedding.\n\
+    \nArguments:\n    table: Embedding weight matrix indexed by vocabulary ID.\n \
+    \   word: Vocabulary word, or tuple of BPE pieces in the merge helpers.\n    k:\
+    \ Number of neighbours, or unit index in unit_summary."
+quiz:
+- q: Which step makes token vectors learn useful task information?
+  options:
+  - Training the embedding parameters through an objective.
+  - Assigning larger IDs to important words.
+  - Alphabetically sorting the reviews.
+  answer: 0
+  why: Training the embedding parameters through an objective.
+- q: Why does embedding lookup equal one-hot times a table?
+  options:
+  - The one nonzero entry selects the corresponding table row.
+  - Both operations average every vocabulary row.
+  - The table is fixed and cannot learn.
+  answer: 0
+  why: The one nonzero entry selects the corresponding table row.
+- q: What does the sentiment versus skip-gram comparison demonstrate?
+  options:
+  - Different training objectives and setups can produce different useful geometries.
+  - The objective is the only differing factor in these experiments.
+  - Context-trained vectors must separate positive and negative words.
+  answer: 0
+  why: Different training objectives and setups can produce different useful geometries.

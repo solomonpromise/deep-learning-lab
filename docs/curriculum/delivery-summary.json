@@ -1,0 +1,27 @@
+{
+  "notebooks": 12,
+  "code_cells": 201,
+  "images_and_plots": 80,
+  "numbered_subsections": 84,
+  "module56": {
+    "source": "author replacement Day 5/6 notebooks",
+    "notebooks": 12,
+    "numbered_sections": 84,
+    "code_cells": 201,
+    "visual_requests": 37,
+    "browser_page_cases": 90,
+    "layout_states_checked": 162,
+    "browser_errors": 0,
+    "horizontal_overflow_cases": 0,
+    "generated_illustrations": 37,
+    "extra_worked_figures": 6,
+    "interactive_walkthroughs": 6,
+    "visual_requests_completed": 37,
+    "visual_browser_report": "docs/curriculum/module56-visual-browser-report.json",
+    "visual_layout_cases": 108
+  },
+  "archive": "docs/curriculum/modules-5-6-notebooks.zip",
+  "published": false,
+  "preview": "http://127.0.0.1:8815/",
+  "module56_archive": "docs/curriculum/modules-5-6-notebooks.zip"
+}

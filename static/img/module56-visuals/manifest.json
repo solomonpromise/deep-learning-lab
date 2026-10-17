@@ -1,0 +1,594 @@
+{
+  "5.1.1": {
+    "file": "static/img/module56-visuals/figure-5-1-1.png",
+    "title": "Same Thing, Two Descriptions",
+    "alt": "Same Thing, Two Descriptions. The boot is described first by pixel intensities, then by task-useful features.",
+    "caption": "The boot is described first by pixel intensities, then by task-useful features. The named properties are an intuition; learned coordinates need not have individual human-readable meanings or fewer dimensions.",
+    "lesson": "5.1",
+    "section": 1,
+    "source_cell": 11,
+    "sha256": "a54ffd3e544ca81b290965cf13c2beac8f3f5e8c1bf96998a3a128d89e5a2762",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.1.2": {
+    "file": "static/img/module56-visuals/figure-5-1-2.png",
+    "title": "Encoder and Head",
+    "alt": "Encoder and Head. The encoder builds a representation and the head uses it.",
+    "caption": "The encoder builds a representation and the head uses it. In joint supervised training, one loss sends gradients through both parts. The displayed class bars are illustrative; a linear head produces logits before softmax.",
+    "lesson": "5.1",
+    "section": 2,
+    "source_cell": 12,
+    "sha256": "72e3079f64701e2ede49273bea1e0a67d8a0b81b108ac622cd87e8746a2632b0",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.1.3": {
+    "file": "static/img/module56-visuals/figure-5-1-3.png",
+    "title": "A Hierarchy of Features",
+    "alt": "A Hierarchy of Features. A conceptual hierarchy from local edges to larger combinations.",
+    "caption": "A conceptual hierarchy from local edges to larger combinations. These are explanatory illustrations, not measured filters from the notebook experiment.",
+    "lesson": "5.1",
+    "section": 4,
+    "source_cell": 28,
+    "sha256": "76d9a293058908ed4ac21a3985baa9e664229c26cb71227b35763d50328688fc",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.1.4": {
+    "file": "static/img/module56-visuals/figure-5-1-4.png",
+    "title": "Three Routes to a Representation",
+    "alt": "Three Routes to a Representation. The reference run compares representations with the same kind of linear probe and 10,000 probe labels.",
+    "caption": "The reference run compares representations with the same kind of linear probe and 10,000 probe labels. The learned encoder had prior labelled training, so these results do not isolate representation choice at an equal total data budget.",
+    "lesson": "5.1",
+    "section": 5,
+    "source_cell": 34,
+    "sha256": "98c0a278b911a54662417600ab8ec1dd8932164578cef3f3301a1aa2071511ef",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.2.1": {
+    "file": "static/img/module56-visuals/figure-5-2-1.png",
+    "title": "A CNN at a Glance",
+    "alt": "A CNN at a Glance. The exact lesson architecture: 1×28×28 → 16×28×28 → 16×14×14 → 32×14×14 → 32×7×7 → 1,568 features → a classifier.",
+    "caption": "The exact lesson architecture: 1×28×28 → 16×28×28 → 16×14×14 → 32×14×14 → 32×7×7 → 1,568 features → a classifier. Batch dimension is omitted; feature-map appearance is schematic.",
+    "lesson": "5.2",
+    "section": 1,
+    "source_cell": 3,
+    "sha256": "bb41413c4d4b85fe650630821a8c53a2f90cf88bb55cb7be9ff637e74b7ccb1c",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.2.2": {
+    "file": "static/img/module56-visuals/figure-5-2-2.png",
+    "title": "Growing Receptive Fields",
+    "alt": "Growing Receptive Fields. For this model, receptive-field widths grow from 3 after conv1 to 4 after pool1, 8 after conv2, and 10 after pool2.",
+    "caption": "For this model, receptive-field widths grow from 3 after conv1 to 4 after pool1, 8 after conv2, and 10 after pool2. This describes theoretical input coverage, not a measured activation map.",
+    "lesson": "5.2",
+    "section": 7,
+    "source_cell": 42,
+    "sha256": "3a71a23d638ef246601bdc0803750e9fdd99f44be5e9ce4eaa6b96a1aca14794",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.2.3": {
+    "file": "static/img/module56-visuals/figure-5-2-3.png",
+    "title": "What Each Part of a CNN Contributes",
+    "alt": "What Each Part of a CNN Contributes. Convolution applies local shared weights; feature maps retain spatial organisation, pooling reduces resolution, and the head combines features into class scores.",
+    "caption": "Convolution applies local shared weights; feature maps retain spatial organisation, pooling reduces resolution, and the head combines features into class scores. The feature maps shown are conceptual.",
+    "lesson": "5.2",
+    "section": 9,
+    "source_cell": 61,
+    "sha256": "e09109efd19ca219cada070cede304bcfca485eaca76f1290bdaab10ce8a9b29",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.3.1": {
+    "file": "static/img/module56-visuals/figure-5-3-1.png",
+    "title": "From Text to Embeddings",
+    "alt": "From Text to Embeddings. Token IDs are arbitrary vocabulary indices.",
+    "caption": "Token IDs are arbitrary vocabulary indices. An embedding lookup turns each index into a learned vector. The displayed IDs are an example vocabulary, not the recorded IDs of this experiment.",
+    "lesson": "5.3",
+    "section": 1,
+    "source_cell": 3,
+    "sha256": "69e71abd22c4f60e1d9912af52a9c4842dfddf3abf6c6e09ec7360ee4d4f213c",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.3.2": {
+    "file": "static/img/module56-visuals/figure-5-3-2.png",
+    "title": "An Embedding Is a Lookup Table",
+    "alt": "An Embedding Is a Lookup Table. Selecting row 49 is equivalent to multiplying a one-hot vector by the table, without materialising that dense one-hot vector.",
+    "caption": "Selecting row 49 is equivalent to multiplying a one-hot vector by the table, without materialising that dense one-hot vector. Both table entries and the chosen row are illustrative.",
+    "lesson": "5.3",
+    "section": 5,
+    "source_cell": 24,
+    "sha256": "af437a3beca500ea651e9f518bc614daf49162e32ffba4d2f8e158873592b8b1",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.3.3": {
+    "file": "static/img/module56-visuals/figure-5-3-3.png",
+    "title": "Cosine Similarity Is About Angle",
+    "alt": "Cosine Similarity Is About Angle. Cosine similarity compares directions rather than lengths: 1 for the same direction, 0 for perpendicular vectors, and −1 for opposite directions.",
+    "caption": "Cosine similarity compares directions rather than lengths: 1 for the same direction, 0 for perpendicular vectors, and −1 for opposite directions. It is undefined for a zero vector without a numerical convention.",
+    "lesson": "5.3",
+    "section": 7,
+    "source_cell": 30,
+    "sha256": "7e53702d86e37e1e439eca7fe391546a2e43463459607755d66ee440bdd8592d",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.3.4": {
+    "file": "static/img/module56-visuals/figure-5-3-4.png",
+    "title": "Static vs. Contextual",
+    "alt": "Static vs. Contextual. A static table returns the same vector for a token type in every sentence.",
+    "caption": "A static table returns the same vector for a token type in every sentence. A contextual model produces different output vectors as surrounding tokens change; a static vector can still encode multiple usages.",
+    "lesson": "5.3",
+    "section": 8,
+    "source_cell": 35,
+    "sha256": "2147858500b7793603668b951ba28e08df2fe41f3519cddba14073a44ba9cc4e",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.3.5": {
+    "file": "static/img/module56-visuals/figure-5-3-5.png",
+    "title": "One Table, Two Objectives",
+    "alt": "One Table, Two Objectives. Illustrative geometry, not the experiment’s measured projection.",
+    "caption": "Illustrative geometry, not the experiment’s measured projection. Objectives, data, dimensions and training can all change an embedding space. Read the actual cosine tables and PCA plots above for evidence from this run.",
+    "lesson": "5.3",
+    "section": 9,
+    "source_cell": 55,
+    "sha256": "8050f2648056a715886fdfc144cd9d8507cdc374237516c86b686c7eca04278a",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.4.1": {
+    "file": "static/img/module56-visuals/figure-5-4-1.png",
+    "title": "An RNN Unrolled Over Time",
+    "alt": "An RNN Unrolled Over Time. One recurrent update with shared weights reads dog → bites → man.",
+    "caption": "One recurrent update with shared weights reads dog → bites → man. Each hidden state depends on the current token and previous state; the final state is a finite-dimensional sequence summary.",
+    "lesson": "5.4",
+    "section": 2,
+    "source_cell": 8,
+    "sha256": "64e1ae8bb5cb10d46d55635b90aa8a76ca9c0ed8cccfbecbc0db83ee7864c85d",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.4.2": {
+    "file": "static/img/module56-visuals/figure-5-4-2.png",
+    "title": "The LSTM's Memory Lane",
+    "alt": "The LSTM's Memory Lane. The forget gate retains old cell state, the input gate admits a candidate, and the output gate exposes tanh of the new state.",
+    "caption": "The forget gate retains old cell state, the input gate admits a candidate, and the output gate exposes tanh of the new state. A near-one forget gate helps preserve the direct memory path; it does not guarantee perfect long-range learning.",
+    "lesson": "5.4",
+    "section": 4,
+    "source_cell": 26,
+    "sha256": "a1445a5470a3a8a043c8476a90b755661b7e6d5e54bd95f1c4f123387cb57309",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.4.3": {
+    "file": "static/img/module56-visuals/figure-5-4-3.png",
+    "title": "Chain vs. Direct Access",
+    "alt": "Chain vs. Direct Access. Recurrent information follows sequential updates; attention can directly mix allowed context positions.",
+    "caption": "Recurrent information follows sequential updates; attention can directly mix allowed context positions. Connection strengths are illustrative. A causal model can consult only the current and earlier positions.",
+    "lesson": "5.4",
+    "section": 6,
+    "source_cell": 40,
+    "sha256": "cf2ae8902e0a8008aa2ba1da111ca958de27f06b94780707b26cc4ee23ba25f3",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.4.4": {
+    "file": "static/img/module56-visuals/figure-5-4-4.png",
+    "title": "The Road to Attention",
+    "alt": "The Road to Attention. Order-aware recurrence, gated memory and direct attention address different limitations.",
+    "caption": "Order-aware recurrence, gated memory and direct attention address different limitations. Attention supports parallel training, while autoregressive generation still proceeds one new token at a time.",
+    "lesson": "5.4",
+    "section": 6,
+    "source_cell": 45,
+    "sha256": "a00c73aa06535ebb529b933531b06def23fc54d222c13cdc92dd2d442f4f5250",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.5.1": {
+    "file": "static/img/module56-visuals/figure-5-5-1.png",
+    "title": "Two Separate Spaces vs. One Shared Space",
+    "alt": "Two Separate Spaces vs. One Shared Space. Separate encoders do not automatically align their coordinates.",
+    "caption": "Separate encoders do not automatically align their coordinates. Joint contrastive training can make projected image and text vectors comparable in a shared space. Cluster positions here are schematic.",
+    "lesson": "5.5",
+    "section": 1,
+    "source_cell": 3,
+    "sha256": "88a03d8beb7693eb375da1dd69bc7277b8978d1b09ba4af0b93844fea543dab8",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.5.2": {
+    "file": "static/img/module56-visuals/figure-5-5-2.png",
+    "title": "The Contrastive Similarity Matrix",
+    "alt": "The Contrastive Similarity Matrix. In this toy batch each image has one designated matching caption.",
+    "caption": "In this toy batch each image has one designated matching caption. Contrastive loss raises matched scores relative to other batch entries; semantically similar off-diagonal pairs can be false negatives.",
+    "lesson": "5.5",
+    "section": 3,
+    "source_cell": 12,
+    "sha256": "6deea59251973d31208bba5c5e7e4aea2a26852e92f0c737373f3eb15edef75b",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.5.3": {
+    "file": "static/img/module56-visuals/figure-5-5-3.png",
+    "title": "How CLIP Is Trained and Used",
+    "alt": "How CLIP Is Trained and Used. Training aligns image–caption pairs.",
+    "caption": "Training aligns image–caption pairs. At inference, compare a new image with candidate text descriptions. Bars are illustrative similarities, not measured confidence or calibrated probabilities.",
+    "lesson": "5.5",
+    "section": 4,
+    "source_cell": 27,
+    "sha256": "2dcfdba1987094a6a48cdbd2f0e65b95a45d8102c843ce6e4889ae5744e597a3",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.5.4": {
+    "file": "static/img/module56-visuals/figure-5-5-4.png",
+    "title": "Shared-Space Recipe",
+    "alt": "Shared-Space Recipe. Each encoder is projected into the same 32-dimensional, unit-length space.",
+    "caption": "Each encoder is projected into the same 32-dimensional, unit-length space. The contrastive objective trains the projections and encoders; image–text comparison then supports retrieval or classification. The clusters are schematic.",
+    "lesson": "5.5",
+    "section": 5,
+    "source_cell": 35,
+    "sha256": "38438dd8b951fe3cbda1b15a47d404e57862bff2e1a0a67d3b2491372d9535f1",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.6.1": {
+    "file": "static/img/module56-visuals/figure-5-6-1.png",
+    "title": "How to Read a 2D Picture of a Representation",
+    "alt": "How to Read a 2D Picture of a Representation. Conceptual projection analogy.",
+    "caption": "Conceptual projection analogy. PCA retains directions of greatest variance; t-SNE emphasises local neighbourhoods. Both can distort structure, so validate claims using appropriate measurements in the full representation space.",
+    "lesson": "5.6",
+    "section": 2,
+    "source_cell": 34,
+    "sha256": "720de333146f4f28ac281f6bf98e98081d254307d4f0c803c6602a3cd85a1211",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "5.6.2": {
+    "file": "static/img/module56-visuals/figure-5-6-2.png",
+    "title": "Module 5 at a Glance",
+    "alt": "Module 5 at a Glance. Module 5 connects representation learning for images, text and sequences with shared spaces and measurement.",
+    "caption": "Module 5 connects representation learning for images, text and sequences with shared spaces and measurement. A learned representation need not be compact or have individually interpretable coordinates.",
+    "lesson": "5.6",
+    "section": 3,
+    "source_cell": 35,
+    "sha256": "bdf283bdbca0d8c776abb295c3f59d8c050d72b84221f3b70857a1184c9b1207",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.1.1": {
+    "file": "static/img/module56-visuals/figure-6-1-1.png",
+    "title": "The Transformer at a Glance",
+    "alt": "The Transformer at a Glance. The lesson’s causal decoder-only Transformer adds token and position embeddings, applies three blocks, then normalises and predicts 65 next-character logits per position.",
+    "caption": "The lesson’s causal decoder-only Transformer adds token and position embeddings, applies three blocks, then normalises and predicts 65 next-character logits per position. The short row illustrates part of a 64-token context.",
+    "lesson": "6.1",
+    "section": 1,
+    "source_cell": 7,
+    "sha256": "35c49c1a458fe5ea80887aed3846713e2f5766b0db735935b6a838668085b0e4",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.1.2": {
+    "file": "static/img/module56-visuals/figure-6-1-2.png",
+    "title": "The Residual Stream",
+    "alt": "The Residual Stream. A schematic residual stream: the same character can acquire different context-dependent representations.",
+    "caption": "A schematic residual stream: the same character can acquire different context-dependent representations. The coloured updates are an analogy, not measured semantic coordinates or guaranteed attention behaviour.",
+    "lesson": "6.1",
+    "section": 6,
+    "source_cell": 28,
+    "sha256": "174bd54c69bb1097eb750e72dbd7799f5aa465be576a334809255b05b98c31a2",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.1.3": {
+    "file": "static/img/module56-visuals/figure-6-1-3.png",
+    "title": "Module 6 Roadmap",
+    "alt": "Module 6 Roadmap. Follow the same system from inputs (6.2), through attention (6.3), the block (6.4), the full architecture (6.5), and training and generation (6.6).",
+    "caption": "Follow the same system from inputs (6.2), through attention (6.3), the block (6.4), the full architecture (6.5), and training and generation (6.6). All Module 6 material is covered in class.",
+    "lesson": "6.1",
+    "section": 8,
+    "source_cell": 35,
+    "sha256": "034703de6b7a15857a2fa0f182179ab710a48d1278fc7a2841ee82f452a864bb",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.2.1": {
+    "file": "static/img/module56-visuals/figure-6-2-1.png",
+    "title": "From Text File to Training Batch",
+    "alt": "From Text File to Training Batch. Split the data without crossing the boundary, tokenise and encode, then sample windows.",
+    "caption": "Split the data without crossing the boundary, tokenise and encode, then sample windows. For next-token learning y is x shifted one position forward in the source stream. The real batch shape is (32, 64); the short example is illustrative.",
+    "lesson": "6.2",
+    "section": 1,
+    "source_cell": 5,
+    "sha256": "6b8ebe01b760dcadabd4aa22a80eb6dd684b2bc58355fc536ba45ee9fa844a8c",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.2.2": {
+    "file": "static/img/module56-visuals/figure-6-2-2.png",
+    "title": "Three Ways to Tokenise the Same Line",
+    "alt": "Three Ways to Tokenise the Same Line. This line has 18 characters including its three spaces.",
+    "caption": "This line has 18 characters including its three spaces. The lesson’s word tokenizer preserves spaces, and the illustrated BPE segmentation has 10 tokens. Vocabulary size and sequence length trade off; unknown handling depends on the tokenizer.",
+    "lesson": "6.2",
+    "section": 5,
+    "source_cell": 34,
+    "sha256": "8f6269b9d98c6b04d31357410164d940a3fc67ac3d1cb1c665d37c2c4293249a",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.3.1": {
+    "file": "static/img/module56-visuals/figure-6-3-1.png",
+    "title": "Attention as Focused Reading",
+    "alt": "Attention as Focused Reading. Bidirectional illustration with invented attention weights.",
+    "caption": "Bidirectional illustration with invented attention weights. Later tired or wide can affect an earlier position only when the mask permits it. A causal model at it cannot see those future words. Attention mixes projected values and is not a guaranteed explanation of a decision.",
+    "lesson": "6.3",
+    "section": 1,
+    "source_cell": 3,
+    "sha256": "f91859db6867a9b6fe780f77c3c193279b45fb1a8eed0a991514482c732c0f7d",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.3.2": {
+    "file": "static/img/module56-visuals/figure-6-3-2.png",
+    "title": "Self-Attention, Step by Step",
+    "alt": "Self-Attention, Step by Step. Project Q, K and V; compare queries with keys; scale by √dₖ; apply the mask before row-wise softmax; then mix values.",
+    "caption": "Project Q, K and V; compare queries with keys; scale by √dₖ; apply the mask before row-wise softmax; then mix values. Each output is a weighted sum of projected value vectors.",
+    "lesson": "6.3",
+    "section": 3,
+    "source_cell": 7,
+    "sha256": "6a0c57208800ea7b280d65795006498855d568693ce363461c21ecde3c373c0d",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.3.3": {
+    "file": "static/img/module56-visuals/figure-6-3-3.png",
+    "title": "Inside a Multi-Head Attention Layer",
+    "alt": "Inside a Multi-Head Attention Layer. Learn Q, K and V from the full 64-coordinate input, then reshape into four 16-coordinate heads.",
+    "caption": "Learn Q, K and V from the full 64-coordinate input, then reshape into four 16-coordinate heads. Concatenate their outputs and apply an output projection. Heads do not receive disjoint slices of the original unprojected input.",
+    "lesson": "6.3",
+    "section": 12,
+    "source_cell": 49,
+    "sha256": "36bbebb61d782b7b0e030ed8c2bcb82f0b563f1c569d9523182f3b73566c672c",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.4.1": {
+    "file": "static/img/module56-visuals/figure-6-4-1.png",
+    "title": "Anatomy of a Transformer Block",
+    "alt": "Anatomy of a Transformer Block. The pre-norm block adds attention and feed-forward updates to the residual stream, with LayerNorm on each branch.",
+    "caption": "The pre-norm block adds attention and feed-forward updates to the residual stream, with LayerNorm on each branch. Every stage preserves (B, T, 64). The feed-forward network is shared across positions.",
+    "lesson": "6.4",
+    "section": 1,
+    "source_cell": 3,
+    "sha256": "278b6988806bf7cd4a4e316808fc881de6994b71345e20f3cb7ebff238a3e3cf",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.4.2": {
+    "file": "static/img/module56-visuals/figure-6-4-2.png",
+    "title": "Post-Norm vs. Pre-Norm",
+    "alt": "Post-Norm vs. Pre-Norm. Post-norm puts normalisation on the residual path after each addition.",
+    "caption": "Post-norm puts normalisation on the residual path after each addition. Pre-norm puts it at each branch input, leaving an identity route within the block. A final model-level norm may still follow the stack; training behaviour depends on the full setup.",
+    "lesson": "6.4",
+    "section": 6,
+    "source_cell": 20,
+    "sha256": "b9340aa3848600b888da5d81fb04dffcd424599175c20ee89f111638b2ef7039",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.4.3": {
+    "file": "static/img/module56-visuals/figure-6-4-3.png",
+    "title": "Four Ingredients, Four Jobs",
+    "alt": "Four Ingredients, Four Jobs. Attention gathers across allowed positions, the feed-forward network transforms each position, residual addition preserves a direct path, and LayerNorm standardises coordinates within each token before learned scale and shift.",
+    "caption": "Attention gathers across allowed positions, the feed-forward network transforms each position, residual addition preserves a direct path, and LayerNorm standardises coordinates within each token before learned scale and shift. LayerNorm does not make coordinates equal.",
+    "lesson": "6.4",
+    "section": 7,
+    "source_cell": 33,
+    "sha256": "87af402bf53cd7c9eea8cc204d49a81f617078e0773316e84702f2fa480a9c28",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.5.1": {
+    "file": "static/img/module56-visuals/figure-6-5-1.png",
+    "title": "Our Decoder-Only Language Model",
+    "alt": "Our Decoder-Only Language Model. The untied reference model has 162,561 parameters.",
+    "caption": "The untied reference model has 162,561 parameters. A 64-token input produces logits of shape (B, 64, 65). Cross-entropy consumes raw logits during training; softmax converts them to probabilities for inspection or sampling.",
+    "lesson": "6.5",
+    "section": 1,
+    "source_cell": 7,
+    "sha256": "21fa0bffb0127d26d6f5f6ea81d0e36711860caa5f728640edca04048924e395",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.5.2": {
+    "file": "static/img/module56-visuals/figure-6-5-2.png",
+    "title": "Inside an Encoder–Decoder Block",
+    "alt": "Inside an Encoder–Decoder Block. Decoder queries attend to keys and values from encoded source tokens.",
+    "caption": "Decoder queries attend to keys and values from encoded source tokens. Target self-attention is causal; source self-attention is bidirectional apart from any padding mask. Residual connections and norms are omitted for clarity.",
+    "lesson": "6.5",
+    "section": 5,
+    "source_cell": 27,
+    "sha256": "aedb6c73a377e60a274ad91aa062958ee17f8275b3d8a73124311db6e78616f1",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.6.1": {
+    "file": "static/img/module56-visuals/figure-6-6-1.png",
+    "title": "Learning vs. Generating",
+    "alt": "Learning vs. Generating. Teacher forcing compares every position with its true next character in one masked pass.",
+    "caption": "Teacher forcing compares every position with its true next character in one masked pass. Generation samples from the last position, appends the choice, and repeats with fixed weights. ↵ denotes a newline; the sample text is illustrative.",
+    "lesson": "6.6",
+    "section": 1,
+    "source_cell": 3,
+    "sha256": "530de1679b2267059d77b40186ac1110aa2f6c0909ab49bcc4fdb27e92bbb1b8",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  },
+  "6.6.2": {
+    "file": "static/img/module56-visuals/figure-6-6-2.png",
+    "title": "Module 6 in One Picture",
+    "alt": "Module 6 in One Picture. The training loop predicts real next tokens, measures loss and updates model weights.",
+    "caption": "The training loop predicts real next tokens, measures loss and updates model weights. Generation branches from the trained model and feeds chosen tokens back into its context; it never runs the optimizer.",
+    "lesson": "6.6",
+    "section": 10,
+    "source_cell": 49,
+    "sha256": "01983032f9bd3f915c0cb64fded2cd2b925c679769a39e0730dab7217a2d9f97",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "built-in image_gen",
+    "reviewed": true
+  }
+}

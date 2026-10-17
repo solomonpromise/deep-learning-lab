@@ -1,4 +1,6 @@
-"""Verify real app downloads contain portable figures and preserve saved outputs.
+"""Verify Modules 1–4 app downloads and portable figures.
+
+Modules 5–8 are verified by scripts/authoring/verify_notes.py.
 
 Build and serve first, then run:
 python scripts/dev/notebook_images.py --base http://localhost:8794/ --compare-ref HEAD
@@ -26,11 +28,10 @@ def main():
     parser.add_argument('--compare-ref', help='Also verify code and outputs against this Git revision')
     args = parser.parse_args()
     manifest = json.loads((ROOT / 'static/img/course-figures/figures.json').read_text())
-    module5 = json.loads((ROOT / 'static/img/module-5/figures.json').read_text())
-    manifest += [dict(number=number, lesson='.'.join(number.split('.')[:2]), **row)
-                 for number, row in module5.items()]
     diagrams = outputs = lessons = 0
     for path in sorted((ROOT / 'notes').glob('module-*/*.ipynb')):
+        if int(path.parent.name.removeprefix('module-')) >= 5:
+            continue
         lid = path.stem.removeprefix('lesson-')
         if not lid[0].isdigit():
             continue
@@ -88,7 +89,7 @@ def main():
                 image.verify()
             diagrams += 1
         lessons += 1
-    assert diagrams == len(manifest) == 42
+    assert diagrams == len(manifest)
     print(f'{lessons} real notebook downloads: {diagrams} portable teaching diagrams; '
           f'{outputs} saved plot/photo outputs intact. All notebooks valid.')
 

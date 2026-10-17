@@ -1,0 +1,48 @@
+skill: Understanding Representation Learning
+sections:
+  1:
+    questions:
+    - q: What does a representation describe?
+      options:
+      - An example in features useful for a task.
+      - Only the example's class name.
+      - The optimizer's learning rate.
+      answer: 0
+      why: An example in features useful for a task.
+  2:
+    questions:
+    - q: Why split a network into an encoder and a head?
+      options:
+      - The encoder builds features and the head maps them to task outputs.
+      - Only the head receives gradients.
+      - The encoder always needs fewer layers than the head.
+      answer: 0
+      why: The encoder builds features and the head maps them to task outputs.
+  3:
+    questions:
+    - q: Why keep representation-learning images separate from validation images?
+      options:
+      - Validation must measure performance on examples unseen during fitting.
+      - The image dimensions differ between the sets.
+      - Only the classifier can leak validation information.
+      answer: 0
+      why: Validation must measure performance on examples unseen during fitting.
+  4:
+    questions:
+    - q: How does a hierarchy reuse features?
+      options:
+      - Later layers combine earlier features into more complex patterns.
+      - Every layer must rediscover all raw features independently.
+      - A deeper layer necessarily contains human-readable object labels.
+      answer: 0
+      why: Later layers combine earlier features into more complex patterns.
+  5:
+    questions:
+    - q: An encoder helps a probe with only 100 labels. What must we still report?
+      options:
+      - The data and labels used earlier to train the encoder.
+      - Only the 100 probe labels, since earlier training is free.
+      - Only the feature-vector length.
+      answer: 0
+      why: The data and labels used earlier to train the encoder.
+assessment_revision: day56-v3

@@ -1,0 +1,78 @@
+summary: How can we measure, rather than just eyeball, what a learned representation
+  has gained over raw data?
+answers:
+  2-1:
+  - Variance measures overall spread, which is dominated by the biggest differences
+    in the data, such as "footwear vs. trousers vs. tops". PCA keeps those large directions,
+    which accounts for most of the variance. But the finer distinctions that decide
+    which class a point's *nearest* neighbours belong to, such as shirt vs. pullover,
+    live in the many smaller directions that PCA throws away. So the picture keeps
+    the big shape while scrambling many local neighbourhoods.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts: []
+docstrings:
+  read_idx: "Read a cached gzip-compressed IDX array, skipping its binary header.\n\
+    \nArguments:\n    f: Cached gzip filename.\n    offset: Bytes to skip before reading\
+    \ array values."
+  MLPEncoder: Expose the MLP's 128-feature encoder separately from its classification
+    head.
+  MLPEncoder.__init__: Create the components of this model; the forward computation
+    is traced in the lesson.
+  MLPEncoder.forward: "Expose the MLP's 128-feature encoder separately from its classification\
+    \ head.\n\nArguments:\n    x: Floating-point tensor; image models use (B, C, H,\
+    \ W), token-vector models use (B, T, D)."
+  CNNEncoder: Expose the CNN's 64-feature encoder separately from its classification
+    head.
+  CNNEncoder.__init__: Create the components of this model; the forward computation
+    is traced in the lesson.
+  CNNEncoder.forward: "Expose the CNN's 64-feature encoder separately from its classification\
+    \ head.\n\nArguments:\n    x: Floating-point tensor; image models use (B, C, H,\
+    \ W), token-vector models use (B, T, D)."
+  train: "Train with the declared split, optimiser and budget; return the measurements\
+    \ described at the call site.\n\nArguments:\n    model: Model being trained, evaluated\
+    \ or inspected.\n    epochs: Number of complete training passes.\n    seed: Random\
+    \ seed for this experiment."
+  features: "Collect fixed encoder outputs in batches without tracking gradients.\n\
+    \nArguments:\n    model: Model being trained, evaluated or inspected.\n    X_:\
+    \ Input tensor to encode in batches.\n    bs: Number of examples per processing\
+    \ batch."
+  linear_probe: "Fit a standardised logistic regression on fixed features and evaluate\
+    \ held-out examples.\n\nArguments:\n    Fm: Matrix containing one feature vector\
+    \ per image.\n    train_idx: Indices used to fit the probe.\n    eval_idx: Indices\
+    \ used only to score the fitted probe."
+  sign_test: "Compare paired correctness disagreements with a two-sided binomial test\
+    \ under equal accuracy.\n\nArguments:\n    pa: First classifier's predicted class\
+    \ indices.\n    pb: Second classifier's predicted class indices."
+  nearest: "Return reference-image indices nearest to one query in squared feature\
+    \ distance.\n\nArguments:\n    Fm: Matrix containing one feature vector per image.\n\
+    \    qi: Index of the query image in the feature matrix.\n    k: Number of neighbours,\
+    \ or unit index in unit_summary."
+  neighbour_agreement: "Measure the fraction of retrieved neighbours sharing each\
+    \ query's label.\n\nArguments:\n    Fm: Matrix containing one feature vector per\
+    \ image.\n    queries: Query-image indices.\n    k: Number of neighbours, or unit\
+    \ index in unit_summary."
+quiz:
+- q: Why use the same downstream probe family across representations?
+  options:
+  - It helps compare how accessible task information is in each representation.
+  - It guarantees every encoder has equal training cost.
+  - It proves one representation is best for all tasks.
+  answer: 0
+  why: It helps compare how accessible task information is in each representation.
+- q: What does similar k-NN accuracy before and after t-SNE establish?
+  options:
+  - Some class information remains useful; individual neighbour preservation needs
+    a separate metric.
+  - Every pairwise distance is preserved.
+  - The t-SNE model can place unseen points without fitting again.
+  answer: 0
+  why: Some class information remains useful; individual neighbour preservation needs
+    a separate metric.
+- q: What determines whether a representation is useful?
+  options:
+  - The task, data, training objective, architecture and evaluation evidence.
+  - Its vector length alone.
+  - How neatly its 2D clusters are separated.
+  answer: 0
+  why: The task, data, training objective, architecture and evaluation evidence.

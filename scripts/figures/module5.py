@@ -363,6 +363,7 @@ def embed():
 
 
 if __name__=='__main__':
+    raise SystemExit('These diagrams describe superseded notes. Use scripts/authoring/build_notes.py for Modules 5–6.')
     OUT.mkdir(parents=True,exist_ok=True)
     for draw in [pipeline,convolution,hierarchy,roadmap,recurrence,closeness,pairs,similarity_matrix,clip,patches]:draw()
     embed()

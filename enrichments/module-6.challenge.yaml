@@ -1,0 +1,69 @@
+title: 'Module 6 challenge: Transformers and Attention Mechanisms'
+pass_mark: 0.75
+questions:
+- q: What does a Transformer block return for each input token?
+  options:
+  - A vector enriched by permitted context, with the same model width.
+  - A new vocabulary containing every sentence.
+  - Only one vector for the entire training dataset.
+  answer: 0
+  why: A vector enriched by permitted context, with the same model width. Reread Lesson
+    6.1, section 1.
+- q: Why split continuous text before sampling training windows?
+  options:
+  - It prevents overlapping windows from crossing the train-validation boundary.
+  - It guarantees validation loss will equal training loss.
+  - It removes the need for a causal mask.
+  answer: 0
+  why: It prevents overlapping windows from crossing the train-validation boundary.
+    Reread Lesson 6.2, section 1.
+- q: What does an attention weight express in this layer?
+  options:
+  - How much of a value vector is mixed into a query's output.
+  - Proof of a human-readable causal explanation.
+  - The probability that the whole sentence is factually true.
+  answer: 0
+  why: How much of a value vector is mixed into a query's output. Reread Lesson 6.3,
+    section 1.
+- q: Why keep a block's input and output shapes equal?
+  options:
+  - The residual additions and stacking need compatible vector shapes.
+  - It forces every token vector to remain unchanged.
+  - It makes attention weights independent of the input.
+  answer: 0
+  why: The residual additions and stacking need compatible vector shapes. Reread Lesson
+    6.4, section 1.
+- q: What completes the language model after the stack of pre-norm blocks?
+  options:
+  - A final norm and a projection to vocabulary logits.
+  - A label lookup that bypasses the blocks.
+  - A new tokenizer learned during each forward pass.
+  answer: 0
+  why: A final norm and a projection to vocabulary logits. Reread Lesson 6.5, section
+    1.
+- q: What differs between the training and generation loops?
+  options:
+  - Training uses known histories and updates weights; generation chooses tokens from
+    its evolving history.
+  - Generation updates weights after every output token.
+  - Training must sample its own history at every position.
+  answer: 0
+  why: Training uses known histories and updates weights; generation chooses tokens
+    from its evolving history. Reread Lesson 6.6, section 1.
+- q: Which computation can causal Transformer training parallelise?
+  options:
+  - Predictions at known input positions in a training window.
+  - Every future generated token before any is chosen.
+  - All training updates without waiting for earlier updates.
+  answer: 0
+  why: Predictions at known input positions in a training window. Reread Lesson 6.1,
+    section 2.
+- q: Can this character-based BPE encode an unseen character automatically?
+  options:
+  - No; fallback is limited to known characters unless another policy is provided.
+  - Yes; every character vocabulary contains all Unicode characters.
+  - Yes; merging creates any missing character at inference.
+  answer: 0
+  why: No; fallback is limited to known characters unless another policy is provided.
+    Reread Lesson 6.2, section 2.
+assessment_revision: day56-v3

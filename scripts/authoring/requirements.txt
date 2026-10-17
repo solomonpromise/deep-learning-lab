@@ -1,0 +1,6 @@
+-r ../../requirements.txt
+# Authoring and portable notebook verification; execution uses notebook_sources/requirements.txt.
+nbformat==5.10.4
+nbclient==0.10.2
+nbconvert>=7.16
+ipykernel>=6.29

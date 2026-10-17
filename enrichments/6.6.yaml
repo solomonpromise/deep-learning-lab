@@ -1,0 +1,119 @@
+summary: How does a Transformer learn from text, and how does it turn what it learned
+  into new text?
+answers:
+  4-1:
+  - −log(0.25) = log(4) ≈ 1.386.
+  9-1:
+  - 'Dividing the logits by 0.1 multiplies the differences between them by 10, so
+    the distribution becomes extremely sharp: almost all the probability would go
+    to `''t''`, and the result would be very close to greedy decoding.'
+  10-1:
+  - During training, the input at every position is real text that is known in advance,
+    so every position's prediction can be computed at once (with the causal mask keeping
+    each one honest). During generation, the input at the next position is the character
+    the model is about to choose, which does not exist until the current step has
+    finished, so each step must wait for the previous one.
+portable_notebook_checks: true
+assessment_revision: day56-v3
+inserts:
+- type: widget
+  name: concept-motion
+  section: 8
+  at: end
+  title: Follow the autoregressive loop
+  intro: Play or step through three character choices. Each chosen character becomes
+    part of the next input; model weights stay fixed.
+  props:
+    scene: generation
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. This
+    is a fixed worked example, not a live trained model.
+docstrings:
+  get_batch: "Sample input windows and their one-position-shifted targets; return\
+    \ two integer tensors.\n\nArguments:\n    split: Training or validation corpus\
+    \ selector.\n    generator: Seeded generator for sampling.\n    batch_size: Number\
+    \ of windows sampled per batch."
+  CausalSelfAttention: Projected multi-head self-attention with a causal mask and
+    output projection.
+  CausalSelfAttention.__init__: "Create the components of this model; the forward\
+    \ computation is traced in the lesson.\n\nArguments:\n    d_model: Feature width\
+    \ of each token vector.\n    n_heads: Number of attention heads; divides model\
+    \ width."
+  CausalSelfAttention.forward: "Projected multi-head self-attention with a causal\
+    \ mask and output projection.\n\nArguments:\n    x: Floating-point tensor; image\
+    \ models use (B, C, H, W), token-vector models use (B, T, D)."
+  Block: Attention and feed-forward sub-layers with normalisation and residual additions.
+  Block.__init__: "Create the components of this model; the forward computation is\
+    \ traced in the lesson.\n\nArguments:\n    d_model: Feature width of each token\
+    \ vector.\n    n_heads: Number of attention heads; divides model width."
+  Block.forward: "Attention and feed-forward sub-layers with normalisation and residual\
+    \ additions.\n\nArguments:\n    x: Floating-point tensor; image models use (B,\
+    \ C, H, W), token-vector models use (B, T, D)."
+  GPT: Character-level decoder-only Transformer returning vocabulary logits and optional
+    next-token loss.
+  GPT.__init__: "Create the components of this model; the forward computation is traced\
+    \ in the lesson.\n\nArguments:\n    vocab_size: Number of token IDs represented\
+    \ by the embedding table.\n    d_model: Feature width of each token vector.\n\
+    \    n_heads: Number of attention heads; divides model width.\n    n_layers: Number\
+    \ of Transformer blocks.\n    context: Maximum input-window length in tokens."
+  GPT.forward: "Character-level decoder-only Transformer returning vocabulary logits\
+    \ and optional next-token loss.\n\nArguments:\n    ids: Integer token IDs, usually\
+    \ shaped (batch, tokens).\n    targets: Optional next-token integer targets aligned\
+    \ with the input positions."
+  val_loss: "Average loss on the fixed validation batches without gradients, then\
+    \ restore training mode.\n\nArguments:\n    model: Model being trained, evaluated\
+    \ or inspected."
+  lr_at: "Compute the warmup/cosine learning rate at a zero-based training step.\n\
+    \nArguments:\n    step: Zero-based optimiser update index.\n    peak: Peak learning\
+    \ rate.\n    steps: Number of optimiser updates.\n    warmup: Number of initial\
+    \ learning-rate warmup steps."
+  train: "Train with the declared split, optimiser and budget; return the measurements\
+    \ described at the call site.\n\nArguments:\n    peak_lr: Peak learning rate.\n\
+    \    steps: Number of optimiser updates.\n    warmup: Number of initial learning-rate\
+    \ warmup steps.\n    schedule: Whether to use the warmup/cosine schedule rather\
+    \ than a constant rate.\n    clip: Threshold for the combined gradient norm.\n\
+    \    seed: Random seed for this experiment.\n    eval_every: Interval between\
+    \ validation measurements."
+  next_distribution: "Return last-position vocabulary logits for the prompt's retained\
+    \ context.\n\nArguments:\n    model: Model being trained, evaluated or inspected.\n\
+    \    prompt: Nonempty known-character text prefix."
+  loss_by_position: "Average validation cross-entropy by position; targets differ\
+    \ between positions, so this is not a controlled context ablation.\n\nArguments:\n\
+    \    m: Model being evaluated."
+  attention_weights: "Recompute causal attention weights for one selected block and\
+    \ input line.\n\nArguments:\n    model: Model being trained, evaluated or inspected.\n\
+    \    text_: Input line to inspect.\n    layer: Zero-based Transformer block index."
+  generate: "Generate additional characters autoregressively from the prompt; return\
+    \ the prompt and continuation.\n\nArguments:\n    model: Model being trained,\
+    \ evaluated or inspected.\n    prompt: Nonempty known-character text prefix.\n\
+    \    n_new: Number of new characters to append.\n    temperature: Positive logit\
+    \ divisor; zero selects greedy decoding in this implementation.\n    top_k: Optional\
+    \ number of highest-scoring candidate tokens to retain.\n    top_p: Optional cumulative-probability\
+    \ threshold for nucleus sampling.\n    seed: Random seed for this experiment."
+  quality: "Measure training-vocabulary word coverage and distinct 8-character spans;\
+    \ neither measures factuality.\n\nArguments:\n    sample: Generated text including\
+    \ its prompt.\n    prompt_len: Number of initial characters excluded from generation\
+    \ metrics."
+quiz:
+- q: What differs between the training and generation loops?
+  options:
+  - Training uses known histories and updates weights; generation chooses tokens from
+    its evolving history.
+  - Generation updates weights after every output token.
+  - Training must sample its own history at every position.
+  answer: 0
+  why: Training uses known histories and updates weights; generation chooses tokens
+    from its evolving history.
+- q: What does gradient clipping at norm 1 do?
+  options:
+  - Rescale gradients only when their combined norm exceeds 1.
+  - Force every gradient coordinate to be exactly 1.
+  - Guarantee that validation loss decreases at each step.
+  answer: 0
+  why: Rescale gradients only when their combined norm exceeds 1.
+- q: Why use both evaluation mode and no-grad inference?
+  options:
+  - Evaluation mode controls relevant layers; no-grad disables gradient tracking.
+  - They are two names for the same operation.
+  - Evaluation mode updates the model from generated text.
+  answer: 0
+  why: Evaluation mode controls relevant layers; no-grad disables gradient tracking.

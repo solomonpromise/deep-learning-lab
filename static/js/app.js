@@ -194,6 +194,8 @@
     var tocLinks = {};
     $$('[data-toc-link]').forEach(function (a) { tocLinks[a.getAttribute('data-toc-link')] = a; });
     var readSet = new Set((progress()[LID] || {}).read || []);
+    // A replacement lesson may retire section IDs. Keep the history, but count only current sections.
+    function currentReadCount() { return sections.filter(function (s) { return readSet.has(s.id); }).length; }
     sections.forEach(function (s) { if (readSet.has(s.id)) { s.classList.add('is-read'); if (tocLinks[s.id]) tocLinks[s.id].classList.add('is-read'); } });
     var bar = $('.read-progress span');
     var lp = $('[data-lesson-progress]');
@@ -250,16 +252,16 @@
     function saveRead() {
       clearTimeout(saveTimer);
       saveTimer = setTimeout(function () {
-        var pct = sections.length ? readSet.size / sections.length : 0;
+        var pct = sections.length ? currentReadCount() / sections.length : 0;
         setLesson(LID, { read: Array.from(readSet), pct: pct });
         paintLessonProgress();
       }, 300);
     }
     function paintLessonProgress() {
       if (!lp) return;
-      var pct = sections.length ? readSet.size / sections.length : 0;
+      var readCount = currentReadCount(), pct = sections.length ? readCount / sections.length : 0;
       $('.bar span', lp).style.width = Math.round(pct * 100) + '%';
-      $('.label', lp).textContent = Math.round(pct * 100) + '% read · ' + readSet.size + ' of ' + sections.length + ' sections';
+      $('.label', lp).textContent = Math.round(pct * 100) + '% read · ' + readCount + ' of ' + sections.length + ' sections';
     }
     document.addEventListener('dlp:section-read', function (e) {
       var section = sections.find(function (s) { return s.id === e.detail.id; });
@@ -644,11 +646,58 @@
 
   /* ------------------------------------------------------------ lightbox */
   var lb = $('[data-lightbox]');
+  var lbZoom = 1, lbOrigin = null, lbOverflow = '', lbFitWidth = 0;
+  function paintLightbox(reset) {
+    if (!lb || lb.hidden) return;
+    var view = $('[data-lb-view]', lb), picture = $('img', lb);
+    if (!picture.naturalWidth || !view.clientWidth) return;
+    var oldWidth = picture.width || 1, oldHeight = picture.height || 1;
+    var cx = (view.scrollLeft + view.clientWidth / 2) / oldWidth;
+    var cy = (view.scrollTop + view.clientHeight / 2) / oldHeight;
+    lbFitWidth = Math.min(picture.naturalWidth, view.clientWidth - 24, (view.clientHeight - 24) * picture.naturalWidth / picture.naturalHeight);
+    picture.style.width = Math.max(1, Math.round(lbFitWidth * lbZoom)) + 'px';
+    picture.style.marginTop = Math.max(0, (view.clientHeight - picture.height) / 2) + 'px';
+    $('[data-lb-scale]', lb).textContent = Math.round(lbZoom * 100) + '% of fit';
+    $('[data-lb-out]', lb).disabled = lbZoom <= 1;
+    $('[data-lb-in]', lb).disabled = lbZoom >= 6;
+    if (reset) { view.scrollLeft = 0; view.scrollTop = 0; }
+    else { view.scrollLeft = cx * picture.width - view.clientWidth / 2; view.scrollTop = cy * picture.height - view.clientHeight / 2; }
+  }
+  function closeLightbox() {
+    if (!lb || lb.hidden) return;
+    lb.hidden = true; document.body.style.overflow = lbOverflow;
+    if (lbOrigin && lbOrigin.isConnected) lbOrigin.focus({ preventScroll: true });
+  }
+  function openLightbox(img) {
+    if (!lb) return;
+    lbOrigin = img; lbZoom = 1; lbOverflow = document.body.style.overflow;
+    var picture = $('img', lb); picture.alt = img.alt; picture.onload = function () { paintLightbox(true); };
+    picture.style.width = ''; picture.style.marginTop = '';
+    picture.src = img.currentSrc || img.src; lb.hidden = false; document.body.style.overflow = 'hidden';
+    paintLightbox(true); $('[data-lb-close]', lb).focus();
+  }
+  $$('img.zoomable').forEach(function (img) {
+    img.tabIndex = 0; img.setAttribute('aria-haspopup', 'dialog');
+    img.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(img); } });
+  });
   document.addEventListener('click', function (e) {
     var img = e.target.closest && e.target.closest('img.zoomable');
-    if (img && lb) { $('img', lb).src = img.currentSrc || img.src; $('img', lb).alt = img.alt; lb.hidden = false; }
+    if (img && lb) openLightbox(img);
   });
-  if (lb) lb.addEventListener('click', function () { lb.hidden = true; });
+  if (lb) {
+    $('[data-lb-in]', lb).addEventListener('click', function () { lbZoom = Math.min(6, lbZoom + .5); paintLightbox(); });
+    $('[data-lb-out]', lb).addEventListener('click', function () { lbZoom = Math.max(1, lbZoom - .5); paintLightbox(); });
+    $('[data-lb-fit]', lb).addEventListener('click', function () { lbZoom = 1; paintLightbox(true); });
+    $('[data-lb-close]', lb).addEventListener('click', closeLightbox);
+    lb.addEventListener('click', function (e) { if (e.target === lb) closeLightbox(); });
+    lb.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var items = $$('button:not(:disabled), [tabindex="0"]', lb), first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    window.addEventListener('resize', function () { paintLightbox(true); });
+  }
 
   /* ------------------------------------------------------------ glossary popover */
   var pop = $('[data-term-pop]');
@@ -758,7 +807,7 @@
     var typing = /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '');
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); modal.hidden ? openSearch() : closeSearch(); }
     else if (e.key === '/' && !typing && modal && modal.hidden) { e.preventDefault(); openSearch(); }
-    else if (e.key === 'Escape') { if (modal) closeSearch(); if (lb) lb.hidden = true; if (pop) pop.hidden = true; document.body.classList.remove('nav-open'); syncNavToggle(); }
+    else if (e.key === 'Escape') { if (modal) closeSearch(); closeLightbox(); if (pop) pop.hidden = true; document.body.classList.remove('nav-open'); syncNavToggle(); }
   });
 
   /* ------------------------------------------------------------ math */

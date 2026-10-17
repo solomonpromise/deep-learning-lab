@@ -1,0 +1,50 @@
+skill: Building a Decoder-Only Transformer
+sections:
+  1:
+    questions:
+    - q: What completes the language model after the stack of pre-norm blocks?
+      options:
+      - A final norm and a projection to vocabulary logits.
+      - A label lookup that bypasses the blocks.
+      - A new tokenizer learned during each forward pass.
+      answer: 0
+      why: A final norm and a projection to vocabulary logits.
+  2:
+    questions:
+    - q: For input shape (4, 64), vocabulary 65, what is the output shape?
+      options:
+      - (4, 64, 65).
+      - (4, 65).
+      - (65, 64, 4).
+      answer: 0
+      why: (4, 64, 65).
+  3:
+    questions:
+    - q: Why is log(vocabulary size) a useful initial-loss reference?
+      options:
+      - It is the cross-entropy of uniform predictions, a diagnostic rather than an
+        exact requirement.
+      - Every random initialisation must produce exactly that loss.
+      - It is the minimum possible training loss.
+      answer: 0
+      why: It is the cross-entropy of uniform predictions, a diagnostic rather than
+        an exact requirement.
+  4:
+    questions:
+    - q: What should changing token 40 do in a correctly causal model?
+      options:
+      - Leave logits at positions 0 through 39 unchanged.
+      - Change all earlier logits because training is parallel.
+      - Leave the logits at every position unchanged.
+      answer: 0
+      why: Leave logits at positions 0 through 39 unchanged.
+  5:
+    questions:
+    - q: Where do cross-attention keys and values come from in an encoder-decoder?
+      options:
+      - The encoded source sequence; queries come from the decoder.
+      - Only future target tokens.
+      - The optimizer's state dictionary.
+      answer: 0
+      why: The encoded source sequence; queries come from the decoder.
+assessment_revision: day56-v3

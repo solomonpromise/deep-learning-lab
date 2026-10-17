@@ -1,0 +1,97 @@
+skill: How Transformers Learn and Generate Text
+sections:
+  1:
+    questions:
+    - q: What differs between the training and generation loops?
+      options:
+      - Training uses known histories and updates weights; generation chooses tokens
+        from its evolving history.
+      - Generation updates weights after every output token.
+      - Training must sample its own history at every position.
+      answer: 0
+      why: Training uses known histories and updates weights; generation chooses tokens
+        from its evolving history.
+  2:
+    questions:
+    - q: Why is next-token prediction self-supervised?
+      options:
+      - The text supplies the targets without separately annotated labels.
+      - The model never uses a loss.
+      - Validation data supplies every training target.
+      answer: 0
+      why: The text supplies the targets without separately annotated labels.
+  3:
+    questions:
+    - q: What happens if targets are accidentally identical to inputs?
+      options:
+      - A causally masked model can learn an easy copying task.
+      - The model necessarily learns better language modelling.
+      - The causal mask will automatically correct the targets.
+      answer: 0
+      why: A causally masked model can learn an easy copying task.
+  4:
+    questions:
+    - q: Why compare validation loss with a bigram baseline?
+      options:
+      - It checks whether a complex model adds value beyond one-token context.
+      - It proves generated statements are factual.
+      - It guarantees a human evaluator will prefer every sample.
+      answer: 0
+      why: It checks whether a complex model adds value beyond one-token context.
+  5:
+    questions:
+    - q: Why does teacher forcing permit parallel training predictions?
+      options:
+      - All input histories are known, with future visibility blocked by the causal
+        mask.
+      - The model has already generated every correct answer.
+      - Causal attention allows reading the next target token.
+      answer: 0
+      why: All input histories are known, with future visibility blocked by the causal
+        mask.
+  6:
+    questions:
+    - q: What does gradient clipping at norm 1 do?
+      options:
+      - Rescale gradients only when their combined norm exceeds 1.
+      - Force every gradient coordinate to be exactly 1.
+      - Guarantee that validation loss decreases at each step.
+      answer: 0
+      why: Rescale gradients only when their combined norm exceeds 1.
+  7:
+    questions:
+    - q: Does a flat loss-by-position curve prove that all longer context is ignored?
+      options:
+      - No; test the same target tokens under controlled history truncations.
+      - Yes; attention heads beyond that position must be inactive.
+      - Yes; it establishes a universal context limit for Transformers.
+      answer: 0
+      why: No; test the same target tokens under controlled history truncations.
+  8:
+    questions:
+    - q: Which prediction is used to append a new generated token?
+      options:
+      - The vocabulary distribution at the last input position.
+      - The highest score from every position concatenated together.
+      - The first position's token ID.
+      answer: 0
+      why: The vocabulary distribution at the last input position.
+  9:
+    questions:
+    - q: Does greedy decoding guarantee factual answers?
+      options:
+      - No; it picks the most likely next token and can still be wrong or repetitive.
+      - Yes; randomness is the only cause of false statements.
+      - Yes; a high training-vocabulary word score proves truth.
+      answer: 0
+      why: No; it picks the most likely next token and can still be wrong or repetitive.
+  10:
+    questions:
+    - q: Why use both evaluation mode and no-grad inference?
+      options:
+      - Evaluation mode controls relevant layers; no-grad disables gradient tracking.
+      - They are two names for the same operation.
+      - Evaluation mode updates the model from generated text.
+      answer: 0
+      why: Evaluation mode controls relevant layers; no-grad disables gradient tracking.
+assessment_revision: day56-v3

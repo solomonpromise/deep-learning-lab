@@ -1,0 +1,46 @@
+{
+  "6.1.1": {
+    "caption": "MiniLM produces one vector per token. Masked mean pooling and normalisation then produce the sentence vector.",
+    "alt": "The sentence my card was stolen becomes six tokens: CLS, my, card, was, stolen, SEP. Token IDs enter six MiniLM encoder layers. Six contextual vectors are pooled with the padding mask and normalised into one 384-number sentence vector."
+  },
+  "6.1.2": {
+    "caption": "Each token ID selects a 384-number row. The six rows are stacked in sentence order to form a (1, 6, 384) tensor.",
+    "alt": "CLS selects row 101, my 2026, card 4003, was 2001, stolen 7376 and SEP 102 from the 30,522 by 384 word table. Selected rows are copied into sentence order. Vector colours are schematic; no learned values are shown."
+  },
+  "6.2.1": {
+    "caption": "Attention uses query–key scores to choose how much of each value vector to mix into the output.",
+    "alt": "An illustrative query for bit assigns weights 0.05, 0.40, 0.10, 0.05 and 0.40 to the five tokens the, dog, bit, the, man. Thicker arrows indicate larger weights. The output is the weighted sum of value vectors, not a mixture of token IDs."
+  },
+  "6.2.2": {
+    "caption": "Separate learned projections turn the same input vector into a query, a key and a value.",
+    "alt": "The input vector for card branches into three linear projections, including biases as in MiniLM. Query and key vectors are compared to obtain attention weights. The value vector is the content passed into the weighted sum."
+  },
+  "6.2.3": {
+    "caption": "The padding mask blocks the PAD key column. It does not automatically zero the PAD query row.",
+    "alt": "A seven by seven attention matrix for CLS, my, card, was, stolen, SEP, PAD has a grey last column containing zeros. All other weights are illustrative. The mask is 1 1 1 1 1 1 0. Padding outputs must also be excluded from mean pooling."
+  },
+  "6.3.1": {
+    "caption": "MiniLM splits a width of 384 into 12 heads of width 32, preserving all seven token positions in every head.",
+    "alt": "A 384-dimensional query is divided into twelve segments of 32 and stacked as heads 0 through 11. Tensor shape changes from 1 by 7 by 384 to 1 by 12 by 7 by 32. Merging reverses the reshape; an output projection follows attention."
+  },
+  "6.3.2": {
+    "caption": "MiniLM repeats the same post-norm block six times. The lesson reconstructs its sentence embedding and checks it against sentence-transformers.",
+    "alt": "Embeddings combine word, position and type vectors followed by LayerNorm. Six encoder blocks each contain multi-head attention, residual addition and LayerNorm, then a feed-forward network, residual addition and LayerNorm. Masked mean pooling and normalisation produce the final 384-dimensional sentence embedding."
+  },
+  "6.4.1": {
+    "caption": "The reversal task routes position i to position 7 − i. The schematic anti-diagonal illustrates the measured preference for mirror positions.",
+    "alt": "An eight by eight grid highlights the anti-diagonal from query zero, key seven to query seven, key zero. Input 3 7 7 0 9 1 4 7 becomes 7 4 1 9 0 7 7 3. Saved first-block mean mirror weights are 0.961, 0.932, 0.971, 0.973; the grid is schematic, not an exact heatmap."
+  },
+  "6.5.1": {
+    "caption": "Encoders use bidirectional attention; decoders use causal attention. Encoder–decoders add cross-attention from output positions to encoded input.",
+    "alt": "Allowed-attention grids show all five by five pairs for an encoder and the lower triangle including the diagonal for a decoder. An encoder-decoder has a full four by four encoder grid, causal three by three decoder grid, and full three by four cross-attention grid. Padding masks are omitted for clarity."
+  },
+  "6.6.1": {
+    "caption": "Learned positions modify input vectors, relative bias modifies attention scores, and RoPE rotates queries and keys before scoring.",
+    "alt": "Three panels show adding a token vector to a position vector, adding a learned bias based on signed distance buckets to each attention score, and rotating a query or key dimension pair by position. For each RoPE frequency the angle difference is proportional to relative distance; different dimension pairs have different frequencies."
+  },
+  "6.6.2": {
+    "caption": "Qwen3-0.6B applies RMSNorm before attention and before its gated FFN, with a residual addition after each. MiniLM applies LayerNorm after each addition.",
+    "alt": "Read upward: input, RMSNorm, attention with sixteen query heads and eight shared key/value heads, per-head Q/K normalisation, RoPE, causal attention and output projection, residual addition, RMSNorm, gated SiLU feed-forward, residual addition, output. A side diagram shows MiniLM’s post-norm ordering. Dropout is omitted in both inference diagrams."
+  }
+}

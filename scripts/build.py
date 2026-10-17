@@ -229,6 +229,9 @@ class Builder:
                 idx = next(i for i, le in enumerate(flat) if le["id"] == l.id)
                 prev_l = flat[idx - 1] if idx > 0 else None
                 next_l = flat[idx + 1] if idx + 1 < len(flat) else None
+                class_ids = m.get("classroom_lessons") or []
+                remaining = flat[idx + 1:]
+                class_next_l = next((le for le in remaining if le["id"] in class_ids), None)
                 nb_name = f"Lesson_{l.id}_{re.sub(r'[^A-Za-z0-9]+', '_', l.title).strip('_')}.ipynb"
                 (self.dist / "notebooks").mkdir(exist_ok=True)
                 write_documented_notebook(l.source, self.dist / "notebooks" / nb_name,
@@ -249,7 +252,7 @@ class Builder:
                 meta_desc = summary if len(summary) <= 200 else summary[:197].rsplit(" ", 1)[0] + "…"
                 self._page("lesson.html", url, root="../", page="lesson", module=m, lesson=l,
                            og_image=f"assets/og/lesson-{l.id}.png", meta_desc=meta_desc,
-                           ex=extras[l.id], prev_l=prev_l, next_l=next_l, minutes=extras[l.id]["minutes"],
+                           ex=extras[l.id], prev_l=prev_l, next_l=next_l, class_next_l=class_next_l, minutes=extras[l.id]["minutes"],
                            notebook_url=f"../notebooks/{nb_name}", colab_url=colab,
                            widgets=sorted(extras[l.id]["widgets"]), gloss=True,
                            gloss_label=f"Lesson {l.id}", gloss_url=url, lesson_ctx=lesson_ctx, **common)
@@ -322,6 +325,10 @@ class Builder:
             "window.DLP_BANK=" + json.dumps(bank, ensure_ascii=False, separators=(",", ":")) + ";", encoding="utf-8")
         (self.dist / ".nojekyll").write_text("")
         self._page("404.html", "404.html", root="", page="404", **common)
+        for old_id, destination in (self.cfg.get("lesson_redirects") or {}).items():
+            module, number = str(old_id).split(".")
+            self._page("lesson-redirect.html", f"module-{module}/lesson-{module}-{number}.html",
+                       root="../", page="redirect", destination="../" + destination, **common)
 
         # prune stale lesson asset folders
         live = {lid for lid, _ in self.discover()}

@@ -53,6 +53,11 @@
     <a class="mono-label hero-mod" href="{{ root }}{{ module.url }}">Module {{ module.number }} · {{ module.title }}</a>
     <span class="mono-label rd-lesson-label">Lesson {{ lesson.id }}</span>
     <h1 class="lesson-title">{% if lesson.id == '1.1' %}Why Deep Learning?{% else %}{{ lesson.title_html | safe }}{% endif %}</h1>
+    {% if lesson.id in (module.further_learning_lessons or []) %}
+    <p class="mono-label lesson-route">Further learning · Complete notes beyond the classroom route</p>
+    {% elif module.classroom_lessons %}
+    <p class="mono-label lesson-route">Classroom material{% if class_next_l and next_l and class_next_l.id != next_l.id %} · <a href="{{ root }}{{ class_next_l.url }}">Next in class: Lesson {{ class_next_l.id }}</a>{% endif %}</p>
+    {% endif %}
     <p class="rd-lesson-meta">{% if lesson.id == '1.1' %}{{ lesson.title }} · {% endif %}{{ minutes }} min · {{ lesson.code_cells }} code cells · {{ widgets|length }} labs</p>
     <div class="hero-facts mnote">
       <div class="mnote-lbl mono-label" id="hero-facts-k">In this lesson</div>
