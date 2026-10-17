@@ -273,6 +273,7 @@
       'Learners already know Python, data science and classical machine learning; this course teaches deep learning engineering with PyTorch.',
       'How to teach: plain English first, then the precise term; short paragraphs; concrete numbers and tiny examples; PyTorch for code; LaTeX between $...$ for maths.',
       'Keep answers focused (usually under 250 words) unless the learner asks for more. Use markdown. End with a quick check question when it helps learning.',
+      'For comparisons, use a Markdown table when useful: include a header row and separator row, keep cells concise, and put a blank line before and after the table. Put multi-line code examples outside tables.',
       'Ground your answers in the lesson context below. Do not invent results that the lesson does not show; if something is uncertain, say so.',
       'You can also see an outline of the whole course, and notes on any other module or lesson the learner mentions. Use them for questions about other parts of the course: say which lesson covers the topic, summarise it from the notes, and link to it. Never tell the learner you cannot see other modules or lessons. If they need more detail than the notes give, say so and suggest opening that lesson, where you will see its full text. For a module marked as not published yet, say only what its title tells you.',
       'If asked something outside the course, answer briefly and connect it back to deep learning.',
@@ -393,13 +394,27 @@
     var safe = text.replace(/\$\$([\s\S]+?)\$\$/g, function (_, t) { maths.push([t, true]); return 'MATHQ' + (maths.length - 1) + 'Z'; })
       .replace(/\$([^\s$][^$\n]*?[^\s\\$])\$|\$([^\s$])\$/g, function (_, t, t2) { maths.push([t || t2, false]); return 'MATHQ' + (maths.length - 1) + 'Z'; });
     // Markdown only when the sanitiser loaded too; otherwise plain escaped text, never unsanitised HTML.
-    var html = window.marked && window.DOMPurify ? window.DOMPurify.sanitize(window.marked.parse(safe, { breaks: true }))
+    var html = window.marked && window.DOMPurify ? window.DOMPurify.sanitize(window.marked.parse(safe, { breaks: true, gfm: true }))
       : '<p>' + esc(safe).replace(/\n/g, '<br>') + '</p>';
-    return html.replace(/MATHQ(\d+)Z/g, function (_, i) {
+    html = html.replace(/MATHQ(\d+)Z/g, function (_, i) {
       var m = maths[+i];
       if (window.katex) { try { return window.katex.renderToString(m[0], { displayMode: m[1], throwOnError: false }); } catch (e) {} }
       return esc(m[0]);
     });
+    // Keep wide tables inside their own scroll area, including streamed replies.
+    var rendered = document.createElement('div');
+    rendered.innerHTML = html;
+    $$('table', rendered).forEach(function (table, i) {
+      var wrap = document.createElement('div');
+      wrap.className = 'tutor-table-wrap';
+      wrap.tabIndex = 0;
+      wrap.setAttribute('role', 'region');
+      wrap.setAttribute('aria-label', 'Response table ' + (i + 1) + '. Scroll horizontally to see all columns.');
+      $$('thead th', table).forEach(function (th) { th.setAttribute('scope', 'col'); });
+      table.parentNode.insertBefore(wrap, table);
+      wrap.appendChild(table);
+    });
+    return rendered.innerHTML;
   }
   function bubble(m, i) {
     var div = document.createElement('div');
