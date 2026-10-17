@@ -43,15 +43,18 @@
   var panel = document.createElement('aside');
   panel.className = 'tutor-panel'; panel.hidden = true; panel.setAttribute('aria-label', 'AI tutor');
   panel.innerHTML =
+    '<div class="tutor-resize" data-t-resize role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize tutor pane" aria-controls="tutor-content" aria-describedby="tutor-resize-help" title="Drag to resize. Arrow keys adjust width."></div>' +
+    '<span class="tutor-resize-help" id="tutor-resize-help">Drag left to widen. Use Left and Right arrow keys to adjust width, Home for narrowest, End for widest.</span>' +
     '<header class="tutor-head">' +
       '<span class="tutor-avatar">' + icon('sparkles') + '</span>' +
       '<div class="tutor-title"><strong>' + esc(CFG.name || 'AI Tutor') + '</strong><span class="tutor-sub" data-t-sub></span></div>' +
+      '<button type="button" class="icon-btn sm tutor-expand" data-t-expand aria-label="Expand tutor pane" title="Expand pane" aria-pressed="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path data-t-expand-path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5"/></svg></button>' +
       '<button class="icon-btn sm" data-t-settings aria-label="Tutor settings" title="Settings">' + icon('tune') + '</button>' +
       '<button class="icon-btn sm" data-t-clear aria-label="Clear conversation" title="Clear conversation">' + icon('refresh') + '</button>' +
       '<button class="icon-btn sm" data-t-close aria-label="Close tutor">' + icon('x') + '</button>' +
     '</header>' +
     '<div class="tutor-context" data-t-context></div>' +
-    '<div class="tutor-body" data-t-body></div>' +
+    '<div class="tutor-body" id="tutor-content" data-t-body></div>' +
     '<div class="tutor-quick" data-t-quick></div>' +
     '<form class="tutor-form" data-t-form>' +
       '<textarea rows="1" placeholder="Ask anything about this lesson…" data-t-input></textarea>' +
@@ -63,6 +66,76 @@
   if (!launchers.length) document.body.appendChild(fab);
   document.body.appendChild(panel);
   var body = $('[data-t-body]', panel), input = $('[data-t-input]', panel), ctxEl = $('[data-t-context]', panel);
+
+  // Keep the preferred desktop width across lessons, without saving a mobile clamp.
+  var savedWidth = Number(store.get('tutor:width', 430));
+  var preferredWidth = Number.isFinite(savedWidth) && savedWidth >= 360 ? Math.min(1100, savedWidth) : 430;
+  var restoreWidth = preferredWidth, expanded = store.get('tutor:expanded', false) === true, resizeDrag = null;
+  var resizeHandle = $('[data-t-resize]', panel), expandButton = $('[data-t-expand]', panel);
+  function maxTutorWidth() { return Math.min(1100, window.innerWidth - 40); }
+  function paintTutorWidth() {
+    var width = Math.round(Math.max(360, Math.min(maxTutorWidth(), expanded ? maxTutorWidth() : preferredWidth)));
+    panel.style.setProperty('--tutor-width', width + 'px');
+    resizeHandle.setAttribute('aria-valuemin', '360');
+    resizeHandle.setAttribute('aria-valuemax', String(Math.max(360, maxTutorWidth())));
+    resizeHandle.setAttribute('aria-valuenow', String(width));
+    resizeHandle.setAttribute('aria-valuetext', width + ' pixels wide');
+    expandButton.setAttribute('aria-pressed', String(expanded));
+    expandButton.setAttribute('aria-label', expanded ? 'Restore tutor pane width' : 'Expand tutor pane');
+    expandButton.title = expanded ? 'Restore width' : 'Expand pane';
+    $('[data-t-expand-path]', panel).setAttribute('d', expanded
+      ? 'M3 8h5V3M21 8h-5V3M16 21v-5h5M8 21v-5H3'
+      : 'M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5');
+  }
+  function setTutorWidth(width, save) {
+    expanded = false;
+    preferredWidth = Math.round(Math.max(360, Math.min(maxTutorWidth(), width)));
+    paintTutorWidth();
+    if (save) saveTutorSize();
+  }
+  function saveTutorSize() {
+    store.set('tutor:width', preferredWidth);
+    store.set('tutor:expanded', expanded);
+  }
+  expandButton.addEventListener('click', function () {
+    if (expanded) { preferredWidth = restoreWidth; expanded = false; }
+    else { restoreWidth = preferredWidth; expanded = true; }
+    paintTutorWidth();
+    saveTutorSize();
+  });
+  resizeHandle.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0 || window.innerWidth <= 720) return;
+    e.preventDefault();
+    resizeHandle.focus();
+    resizeDrag = { id: e.pointerId, x: e.clientX, width: panel.getBoundingClientRect().width };
+    resizeHandle.setPointerCapture(e.pointerId);
+    document.body.classList.add('tutor-resizing');
+  });
+  resizeHandle.addEventListener('pointermove', function (e) {
+    if (!resizeDrag || resizeDrag.id !== e.pointerId) return;
+    setTutorWidth(resizeDrag.width + resizeDrag.x - e.clientX, false);
+  });
+  function finishTutorResize() {
+    if (!resizeDrag) return;
+    resizeDrag = null;
+    document.body.classList.remove('tutor-resizing');
+    saveTutorSize();
+  }
+  resizeHandle.addEventListener('pointerup', finishTutorResize);
+  resizeHandle.addEventListener('pointercancel', finishTutorResize);
+  resizeHandle.addEventListener('lostpointercapture', finishTutorResize);
+  resizeHandle.addEventListener('keydown', function (e) {
+    var width = panel.getBoundingClientRect().width, step = e.shiftKey ? 80 : 20;
+    if (e.key === 'ArrowLeft') width += step;
+    else if (e.key === 'ArrowRight') width -= step;
+    else if (e.key === 'Home') width = 360;
+    else if (e.key === 'End') width = maxTutorWidth();
+    else return;
+    e.preventDefault();
+    setTutorWidth(width, true);
+  });
+  window.addEventListener('resize', function () { finishTutorResize(); paintTutorWidth(); });
+  paintTutorWidth();
 
   $('[data-t-sub]', panel).textContent = (CFG.model_label || CFG.model || '') + (CFG.provider ? ' · ' + CFG.provider : '');
   fab.addEventListener('click', function () { toggle(true); });
@@ -77,6 +150,7 @@
 
   function autosize() { input.style.height = 'auto'; input.style.height = Math.min(160, input.scrollHeight) + 'px'; }
   function toggle(open) {
+    if (!open) finishTutorResize();
     panel.hidden = !open; fab.hidden = open; document.body.classList.toggle('tutor-open', open);
     launchers.forEach(function (b) { b.setAttribute('aria-expanded', open ? 'true' : 'false'); b.classList.toggle('is-on', open); });
     if (!open && launchers[0] && panel.contains(document.activeElement)) launchers[0].focus();
