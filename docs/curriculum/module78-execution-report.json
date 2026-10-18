@@ -1,0 +1,100 @@
+{
+  "7.1": {
+    "status": "passed",
+    "code_cells": 29,
+    "seconds": 153.48,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "7.2": {
+    "status": "passed",
+    "code_cells": 26,
+    "seconds": 17.75,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "7.3": {
+    "status": "passed",
+    "code_cells": 18,
+    "seconds": 105.41,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "7.4": {
+    "status": "passed",
+    "code_cells": 21,
+    "seconds": 52.13,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "7.5": {
+    "status": "passed",
+    "code_cells": 23,
+    "seconds": 108.38,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "7.6": {
+    "status": "passed",
+    "code_cells": 21,
+    "seconds": 60.35,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "7.7": {
+    "status": "passed",
+    "code_cells": 21,
+    "seconds": 132.17,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "8.1": {
+    "status": "passed",
+    "code_cells": 12,
+    "seconds": 236.69,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "8.2": {
+    "status": "passed",
+    "code_cells": 19,
+    "seconds": 48.55,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "8.3": {
+    "status": "passed",
+    "code_cells": 13,
+    "seconds": 103.77,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "8.4": {
+    "status": "passed",
+    "code_cells": 21,
+    "seconds": 178.25,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "8.5": {
+    "status": "passed",
+    "code_cells": 20,
+    "seconds": 111.72,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "8.6": {
+    "status": "passed",
+    "code_cells": 15,
+    "seconds": 75.04,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "8.7": {
+    "status": "passed",
+    "code_cells": 19,
+    "seconds": 15.0,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  }
+}

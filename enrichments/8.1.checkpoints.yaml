@@ -1,0 +1,59 @@
+skill: Understanding Model Adaptation
+sections:
+  1:
+    questions:
+    - q: What is the goal of adaptation?
+      options:
+      - Improve task suitability while measuring costs and retained abilities.
+      - Change every parameter automatically.
+      - Avoid baselines.
+      answer: 0
+      why: Improve task suitability while measuring costs and retained abilities.
+  2:
+    questions:
+    - q: Which strategy leaves encoder weights fixed?
+      options:
+      - Feature extraction followed by a trained task head.
+      - Full fine-tuning.
+      - Updating LoRA matrices inside the encoder.
+      answer: 0
+      why: Feature extraction followed by a trained task head.
+  3:
+    questions:
+    - q: When should fine-tuning be considered?
+      options:
+      - When simpler measured approaches fail relevant requirements.
+      - Whenever a pretrained model exists.
+      - Before examining data quality.
+      answer: 0
+      why: When simpler measured approaches fail relevant requirements.
+  4:
+    questions:
+    - q: What is trainable in full fine-tuning?
+      options:
+      - All selected model parameters, including the task head.
+      - Only the tokenizer's vocabulary IDs.
+      - Only the final prediction value.
+      answer: 0
+      why: All selected model parameters, including the task head.
+  5:
+    questions:
+    - q: What distinguishes overfitting from forgetting?
+      options:
+      - New-task generalisation can worsen while earlier capabilities are a separate
+        concern.
+      - They are the same measurement.
+      - Forgetting is only a larger training loss.
+      answer: 0
+      why: New-task generalisation can worsen while earlier capabilities are a separate
+        concern.
+  6:
+    questions:
+    - q: How should an adaptation strategy be chosen?
+      options:
+      - By quality, data, compute and capability-retention requirements.
+      - By trainable parameter count alone.
+      - By assuming the newest method wins.
+      answer: 0
+      why: By quality, data, compute and capability-retention requirements.
+assessment_revision: day78-v1

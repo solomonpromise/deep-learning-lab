@@ -1,0 +1,17 @@
+{
+  "lesson": "8.7",
+  "initial_state": "empty working folder: no results files",
+  "result": {
+    "status": "passed",
+    "code_cells": 19,
+    "seconds": 14.98,
+    "python": "3.12.15",
+    "outputs": "independent run retained separately; canonical outputs are labelled author reference results"
+  },
+  "reference_files_restored": [
+    "8.3.json",
+    "8.4.json",
+    "8.5.json"
+  ],
+  "existing_learner_files_preserved": true
+}

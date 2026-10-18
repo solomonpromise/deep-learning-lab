@@ -1,0 +1,81 @@
+summary: How do we choose a pretrained model for a real task, and justify that choice
+  with evidence?
+answers:
+  2-1:
+  - Choosing among several checkpoints by their test accuracy means the chosen one
+    is partly the *luckiest* on that test set. Its test score includes some of that
+    luck, so a fresh test set would probably give a slightly lower number. The effect
+    is small with only 5 checkpoints to choose from, but it is the same mistake as
+    tuning settings on test, and it means no part of IMDb's official data gives a
+    perfectly clean estimate for this model.
+  3-1:
+  - Because if we chose the treatment of "neutral" after seeing the accuracies, we
+    could pick whichever option made the model look best, which is tuning on our evaluation
+    data. Deciding in advance, based on what the task needs (a positive-or-negative
+    answer), keeps the measurement honest.
+  4-1:
+  - 'The setting (`max_length` 512) was chosen because it did best on validation,
+    and part of that advantage is luck specific to those 300 reviews. On new reviews,
+    that luck doesn''t repeat, so a slightly lower score is expected. A *much* lower
+    test score would be a warning: it could mean the validation set is unrepresentative,
+    that something leaked, or that the setting was overfitted to validation, and you''d
+    investigate before deploying.'
+  5-1:
+  - 'Run it through the same process. Add it as a candidate, read its card and any
+    training records (especially: does its training data include IMDb, and which splits?),
+    check the licence and label mapping, test it on the same representative inputs,
+    measure it on the same validation reviews (same fingerprint) with the same latency
+    and memory checks, and only if it passes and wins, confirm once on the test set
+    and update the decision record. A claimed 0.95 on IMDb is exactly the kind of
+    number that should trigger a contamination check.'
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  p_positive: "Compute the candidate model score for positive under the explicitly\
+    \ declared label mapping.\n\nArguments:\n    r: Model repository ID or LoRA rank,\
+    \ as used at this call site.\n    texts: Text strings in the order expected by\
+    \ the caller.\n    max_length: Token budget including special tokens.\n    batch_size:\
+    \ Maximum examples processed together."
+  sign_test: "Test paired correctness disagreements under equal probability of either\
+    \ method alone being correct.\n\nArguments:\n    p_a: Positive-class scores from\
+    \ the first method.\n    p_b: Positive-class scores from the second method.\n\
+    \    labels: Integer targets aligned with the input examples."
+inserts: []
+quiz:
+- q: Why write requirements before comparing candidates?
+  options:
+  - To make acceptance criteria independent of attractive scores.
+  - To guarantee one candidate wins.
+  - To avoid evaluating representative inputs.
+  answer: 0
+  why: To make acceptance criteria independent of attractive scores.
+- q: Why verify label mappings?
+  options:
+  - Models can use different label names, orders or neutral classes.
+  - Every model uses index one identically.
+  - A model's largest logit names its own class.
+  answer: 0
+  why: Models can use different label names, orders or neutral classes.
+- q: Why keep a decision record?
+  options:
+  - To connect the choice to evidence, assumptions and failure cases.
+  - To hide rejected candidates.
+  - To guarantee future data never changes.
+  answer: 0
+  why: To connect the choice to evidence, assumptions and failure cases.

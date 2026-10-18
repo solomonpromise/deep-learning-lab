@@ -1,0 +1,38 @@
+{
+ "question": "Does adapting DistilBERT on 1,000 labelled IMDb reviews beat the alternatives?",
+ "data": {
+  "split_fingerprints": {
+   "train": "fb3a1229f951",
+   "val_eval": "9934ffeaac91",
+   "test_eval": "fc9fa98701bc"
+  },
+  "train_subset_fingerprint": "7b0ca50110ca",
+  "test_reviews": 1000
+ },
+ "results_test_accuracy": {
+  "majority class": 0.485,
+  "TF-IDF, 1,000 labels": 0.828,
+  "TF-IDF, all labels": 0.913,
+  "SST-2 model, off the shelf": 0.873,
+  "frozen DistilBERT + logistic regression": 0.837,
+  "full fine-tuning": 0.834,
+  "LoRA": 0.834
+ },
+ "decision": {
+  "full fine-tuning": "reject",
+  "LoRA": "reject",
+  "use instead (1,000-label budget)": "SST-2 model, off the shelf (no IMDb labels needed)",
+  "if all 22,404 labels can be used": "TF-IDF, all labels (best test accuracy, beats SST-2 with p = 0.0015)"
+ },
+ "limitations": [
+  "single training run per adapted model (no seed repeats)",
+  "1,000 training reviews, 1 epoch, 128 tokens (head+tail)",
+  "CPU-sized experiment; learning rates not tuned on validation"
+ ],
+ "next steps": [
+  "fine-tune with more labels (TF-IDF with all labels reached the best test accuracy)",
+  "longer inputs (Note 7.7 found 512 tokens better than 256 for the SST-2 model)",
+  "repeat training over several seeds before claiming small differences",
+  "confirm any new winner on a fresh test sample, since this one has now been used for the decision"
+ ]
+}

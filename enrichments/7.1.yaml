@@ -1,0 +1,116 @@
+summary: How can AI engineers leverage models that have already learned useful representations?
+answers:
+  1-1:
+  - Because the reviews are balanced. The random model called almost every review
+    negative (only 8.4% positive), and about half the reviews really are negative,
+    so it is right on those almost by default. A model that knows nothing about sentiment
+    lands near the share of the class it guesses, not near zero. That's why chance,
+    not zero, is the baseline to beat.
+  2-1:
+  - No. Identical size only means identical architecture; the numbers inside can differ.
+    To check, load both bodies and compare each tensor with the same name, for example
+    with `torch.equal` or by measuring the size of their difference. Section 7 did
+    this and found that every tensor had changed slightly.
+  3-1:
+  - 'Layer 0 is the input to the Transformer: each token''s vector is its row from
+    the embedding table plus a position vector. No attention has happened yet, so
+    no information from the other words has been mixed in. "Bank" therefore looks
+    almost the same in every sentence, exactly like a static embedding. Context only
+    enters through the attention layers.'
+  4-1:
+  - Essentially random. The MISSING note means the `classifier` layer was created
+    with random weights, so even though the body produces good contextual vectors,
+    the head turns them into labels by an untrained rule. The model must be fine-tuned
+    on labelled examples of the tagging task before its labels mean anything.
+  5-1:
+  - The pretrained model, measured against a simple baseline. With a few hundred labels,
+    the results here showed TF-IDF and a network trained from scratch to be weak and
+    unstable (TF-IDF averaged 0.627 with 100 labels, and the from-scratch network
+    managed 0.798 even with 1,000), while the pretrained model scored 0.874 with none.
+    Use the 300 labels to *evaluate* the pretrained model (and, as Module 8 shows,
+    possibly to adapt it). Emails are not film reviews, so measure before trusting
+    it.
+  6-1:
+  - About 110 million × 4 bytes = 440 MB. At 16 bits (2 bytes) per number it would
+    be about 220 MB. Note 7.6 explores what is lost and gained by storing numbers
+    with fewer bits.
+  7-1:
+  - The model could have changed (someone pushed new weights or a new tokeniser to
+    the repository), or the software could have changed (a new library version that
+    processes text or computes results slightly differently). Pinning the model with
+    `revision=` and its commit ID removes the first risk; pinning library versions
+    in `requirements.txt` handles the second.
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  pipeline_predict: "Run the sentiment pipeline and return binary predicted class\
+    \ indices in input order.\n\nArguments:\n    clf: Fitted classifier or pipeline.\n\
+    \    texts: Text strings in the order expected by the caller."
+  bank_vectors: "Extract the contextual vector for the token bank at the embedding\
+    \ stage and each encoder layer.\n\nArguments:\n    sentence: One sentence containing\
+    \ the target token."
+  mean_cos: "Average pairwise cosine similarity between the supplied sentence groups\
+    \ at one layer.\n\nArguments:\n    group_a: First collection of sentence keys.\n\
+    \    group_b: Second collection of sentence keys.\n    layer: Embedding-stage\
+    \ or encoder-layer index."
+  tfidf_predict: "Fit TF-IDF and logistic regression on the selected training reviews;\
+    \ predict the declared evaluation texts.\n\nArguments:\n    idx: Indices selecting\
+    \ examples from the declared collection."
+  BagOfEmbeddings: Classify a review by masked averaging of trainable token embeddings
+    followed by a linear head.
+  BagOfEmbeddings.__init__: "Initialise the components and settings used by this model\
+    \ or service.\n\nArguments:\n    vocab_size: Number of embedding-table rows.\n\
+    \    dim: Width of each token embedding."
+  BagOfEmbeddings.forward: "Compute this module's output from the input tensor without\
+    \ performing an optimiser update.\n\nArguments:\n    x: Input features or token\
+    \ IDs with the shape traced at the call site."
+  scratch_predict: "Train the small embedding model from scratch; select its epoch\
+    \ on the separate selection set.\n\nArguments:\n    idx: Indices selecting examples\
+    \ from the declared collection.\n    max_epochs: Maximum full passes over the\
+    \ training examples.\n    max_len: Maximum encoded sequence length."
+  scratch_predict.to_tensor: "Encode texts using the local training vocabulary, truncate\
+    \ and pad into integer rows.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller."
+  sign_test: "Test paired correctness disagreements under equal probability of either\
+    \ method alone being correct.\n\nArguments:\n    pred_a: Predicted labels from\
+    \ the first method.\n    pred_b: Predicted labels from the second method.\n  \
+    \  labels: Integer targets aligned with the input examples."
+inserts: []
+quiz:
+- q: What changes between the pretrained and random-weight twins?
+  options:
+  - Learned parameter values, with architecture and tokenizer fixed.
+  - The task labels.
+  - The number of input reviews.
+  answer: 0
+  why: Learned parameter values, with architecture and tokenizer fixed.
+- q: Can a newly attached random task head be trusted immediately?
+  options:
+  - No; the new head needs appropriate training.
+  - Yes; the body makes every head trained.
+  - Only if its logits are large.
+  answer: 0
+  why: No; the new head needs appropriate training.
+- q: Why pin a checkpoint revision?
+  options:
+  - To identify the exact artifact loaded.
+  - To guarantee identical results on every device.
+  - To avoid evaluating the model.
+  answer: 0
+  why: To identify the exact artifact loaded.

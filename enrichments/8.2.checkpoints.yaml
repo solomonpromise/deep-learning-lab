@@ -1,0 +1,93 @@
+skill: Preparing Data for Fine-Tuning
+sections:
+  1:
+    questions:
+    - q: What makes a dataset training-ready?
+      options:
+      - An explicit task, checked examples, honest splits and compatible preprocessing.
+      - A large row count alone.
+      - A public download link alone.
+      answer: 0
+      why: An explicit task, checked examples, honest splits and compatible preprocessing.
+  2:
+    questions:
+    - q: What do IMDb's polar labels mean?
+      options:
+      - Selection by low/high ratings; individual texts may mix opinions.
+      - Every sentence has one unambiguous emotion.
+      - All neutral language was removed.
+      answer: 0
+      why: Selection by low/high ratings; individual texts may mix opinions.
+  3:
+    questions:
+    - q: Why inspect raw examples as well as counts?
+      options:
+      - Aggregates can miss labelling or content problems.
+      - Counts are always wrong.
+      - Manual inspection replaces held-out evaluation.
+      answer: 0
+      why: Aggregates can miss labelling or content problems.
+  4:
+    questions:
+    - q: When should duplicate groups be handled?
+      options:
+      - Before splitting, with cross-split overlap checks.
+      - After measuring final test accuracy.
+      - Only after training.
+      answer: 0
+      why: Before splitting, with cross-split overlap checks.
+  5:
+    questions:
+    - q: How does classifier formatting differ from instruction formatting?
+      options:
+      - A class label versus a conversation with an answer target.
+      - They require identical token sequences.
+      - Instruction examples have no targets.
+      answer: 0
+      why: A class label versus a conversation with an answer target.
+  6:
+    questions:
+    - q: What should remain consistent across model comparisons?
+      options:
+      - The declared data protocol and ordered evaluation examples.
+      - Only total row counts.
+      - Different test reviews for every model.
+      answer: 0
+      why: The declared data protocol and ordered evaluation examples.
+  7:
+    questions:
+    - q: Can a public checkpoint contaminate your evaluation?
+      options:
+      - Yes; upstream training and selection history can expose it.
+      - No, if you personally held the data out.
+      - Only when its architecture is identical.
+      answer: 0
+      why: Yes; upstream training and selection history can expose it.
+  8:
+    questions:
+    - q: Why is accuracy insufficient on imbalanced data?
+      options:
+      - A majority-only predictor may ignore the class you need.
+      - Accuracy always equals positive recall.
+      - F1 ignores errors completely.
+      answer: 0
+      why: A majority-only predictor may ignore the class you need.
+  9:
+    questions:
+    - q: How should a truncation strategy be chosen?
+      options:
+      - On validation with its information loss and compute cost stated.
+      - By tuning on the final test.
+      - By assuming the beginning always contains the answer.
+      answer: 0
+      why: On validation with its information loss and compute cost stated.
+  10:
+    questions:
+    - q: What does a padding collator do?
+      options:
+      - Pads examples into compatible batch shapes and supplies masks.
+      - Creates new ground-truth labels.
+      - Deduplicates the dataset automatically.
+      answer: 0
+      why: Pads examples into compatible batch shapes and supplies masks.
+assessment_revision: day78-v1

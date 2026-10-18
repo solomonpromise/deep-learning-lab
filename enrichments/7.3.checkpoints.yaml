@@ -1,0 +1,48 @@
+skill: Finding and Selecting the Right Model
+sections:
+  1:
+    questions:
+    - q: Where should model selection start?
+      options:
+      - Task requirements and representative inputs.
+      - The largest parameter count.
+      - The most downloads alone.
+      answer: 0
+      why: Task requirements and representative inputs.
+  2:
+    questions:
+    - q: Which output supports semantic search directly?
+      options:
+      - Comparable document and query embedding vectors.
+      - Arbitrary integer token IDs.
+      - An unrelated classification label.
+      answer: 0
+      why: Comparable document and query embedding vectors.
+  3:
+    questions:
+    - q: Does parameter storage equal total runtime memory?
+      options:
+      - No; activations, caches and runtime allocations also matter.
+      - Yes, always.
+      - Only for large models.
+      answer: 0
+      why: No; activations, caches and runtime allocations also matter.
+  4:
+    questions:
+    - q: Why reproduce a card's benchmark then test your data?
+      options:
+      - To distinguish protocol differences from transfer to your task.
+      - To tune on the final test set.
+      - To make a card score universal.
+      answer: 0
+      why: To distinguish protocol differences from transfer to your task.
+  5:
+    questions:
+    - q: What helps compare hosted and local inference?
+      options:
+      - Your measured quality, workload, cost and operational constraints.
+      - Model size alone.
+      - Assuming local inference is always cheaper.
+      answer: 0
+      why: Your measured quality, workload, cost and operational constraints.
+assessment_revision: day78-v1

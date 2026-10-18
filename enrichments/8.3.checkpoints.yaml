@@ -1,0 +1,48 @@
+skill: Establishing Baselines
+sections:
+  1:
+    questions:
+    - q: Why establish a baseline before adaptation?
+      options:
+      - To know whether added training delivers useful improvement.
+      - To guarantee fine-tuning wins.
+      - To avoid reporting costs.
+      answer: 0
+      why: To know whether added training delivers useful improvement.
+  2:
+    questions:
+    - q: Where should TF-IDF vocabulary be fitted?
+      options:
+      - Training data only.
+      - Training plus test for more words.
+      - Validation only after scoring.
+      answer: 0
+      why: Training data only.
+  3:
+    questions:
+    - q: What does zero IMDb labels mean for the off-the-shelf baseline?
+      options:
+      - No IMDb adaptation labels used here; upstream training still occurred.
+      - The checkpoint was never trained.
+      - Its labels are inherently correct.
+      answer: 0
+      why: No IMDb adaptation labels used here; upstream training still occurred.
+  4:
+    questions:
+    - q: What learns in a frozen-encoder linear probe?
+      options:
+      - The small downstream classifier, not the encoder.
+      - Every pretrained weight.
+      - The validation labels at inference.
+      answer: 0
+      why: The small downstream classifier, not the encoder.
+  5:
+    questions:
+    - q: Why save per-example predictions and ordered IDs?
+      options:
+      - To support correctly aligned paired comparisons.
+      - To replace split checks.
+      - To make test tuning acceptable.
+      answer: 0
+      why: To support correctly aligned paired comparisons.
+assessment_revision: day78-v1

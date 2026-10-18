@@ -207,3 +207,717 @@ Top-p sampling:
 
 Exposure bias:
   home: '6.6'
+
+Pretrained model:
+  home: '7.1'
+
+Weights (parameters):
+  home: '7.1'
+
+Configuration:
+  home: '7.1'
+
+Pipeline:
+  home: '7.1'
+
+Hugging Face Hub:
+  home: '7.1'
+
+IMDb:
+  home: '7.1'
+
+Fingerprint:
+  home: '7.1'
+
+Masked language modelling:
+  home: '7.1'
+
+Base model:
+  home: '7.1'
+
+Downstream task:
+  home: '7.1'
+
+Fine-tuning:
+  home: '7.1'
+
+SST-2:
+  home: '7.1'
+
+Body (encoder):
+  home: '7.1'
+
+Head:
+  home: '7.1'
+
+Weight tying:
+  home: '7.1'
+
+Probing:
+  home: '7.1'
+
+Contextual representation:
+  home: '7.1'
+
+Hidden states:
+  home: '7.1'
+
+Foundation model:
+  home: '7.1'
+
+LOAD REPORT:
+  home: '7.1'
+
+TF-IDF:
+  home: '7.1'
+
+Training from scratch:
+  home: '7.1'
+
+Sign test:
+  home: '7.1'
+
+State dict:
+  home: '7.1'
+
+Safetensors:
+  home: '7.1'
+
+Repository:
+  home: '7.1'
+
+Commit / revision:
+  home: '7.1'
+
+Repository name:
+  home: '7.2'
+
+Model repository:
+  home: '7.2'
+
+Local cache:
+  home: '7.2'
+
+Transformers:
+  home: '7.2'
+
+Datasets:
+  home: '7.2'
+
+Tokenizers:
+  home: '7.2'
+
+huggingface_hub:
+  home: '7.2'
+
+Model card:
+  home: '7.2'
+
+Card metadata:
+  home: '7.2'
+
+ONNX:
+  home: '7.2'
+
+Auto classes:
+  home: '7.2'
+
+Dataset / DatasetDict:
+  home: '7.2'
+
+Features:
+  home: '7.2'
+
+Apache Arrow:
+  home: '7.2'
+
+Memory mapping:
+  home: '7.2'
+
+map / filter:
+  home: '7.2'
+
+Padding:
+  home: '7.2'
+
+Data collator:
+  home: '7.2'
+
+Fast tokeniser:
+  home: '7.2'
+
+WordPiece:
+  home: '7.2'
+
+BPE (byte-pair encoding):
+  home: '7.2'
+
+Normaliser:
+  home: '7.2'
+
+Offset mapping:
+  home: '7.2'
+
+Licence:
+  home: '7.2'
+
+Permissive licence:
+  home: '7.2'
+
+Custom licence:
+  home: '7.2'
+
+Gated model:
+  home: '7.2'
+
+Intended use:
+  home: '7.2'
+
+Pipeline tag:
+  home: '7.3'
+
+Text classification:
+  home: '7.3'
+
+Question answering:
+  home: '7.3'
+
+Summarisation:
+  home: '7.3'
+
+Text generation:
+  home: '7.3'
+
+Sentence embedding:
+  home: '7.3'
+
+Zero-shot image classification:
+  home: '7.3'
+
+Greedy decoding:
+  home: '7.3'
+
+Safetensors header:
+  home: '7.3'
+
+bfloat16 (BF16):
+  home: '7.3'
+
+Weight memory:
+  home: '7.3'
+
+Context length:
+  home: '7.3'
+
+Truncation:
+  home: '7.3'
+
+Benchmark:
+  home: '7.3'
+
+GLUE:
+  home: '7.3'
+
+Dev set:
+  home: '7.3'
+
+Domain shift:
+  home: '7.3'
+
+Contamination:
+  home: '7.3'
+
+Hosted API:
+  home: '7.3'
+
+Access token:
+  home: '7.3'
+
+Rate limit:
+  home: '7.3'
+
+'`top_k`':
+  home: '7.4'
+
+Batch size:
+  home: '7.4'
+
+'`AutoModelForSequenceClassification`':
+  home: '7.4'
+
+'`id2label`':
+  home: '7.4'
+
+Attention mask:
+  home: '7.4'
+
+'`max_length`':
+  home: '7.4'
+
+Logits:
+  home: '7.4'
+
+Softmax:
+  home: '7.4'
+
+Eval mode / train mode:
+  home: '7.4'
+
+'`torch.inference_mode()`':
+  home: '7.4'
+
+Inference tensor:
+  home: '7.4'
+
+Device placement:
+  home: '7.4'
+
+Padding waste:
+  home: '7.4'
+
+Length bucketing:
+  home: '7.4'
+
+'`save_pretrained`':
+  home: '7.4'
+
+Shard:
+  home: '7.4'
+
+Capability:
+  home: '7.5'
+
+Application layer:
+  home: '7.5'
+
+Out-of-distribution (OOD) input:
+  home: '7.5'
+
+Confidence:
+  home: '7.5'
+
+Temperature:
+  home: '7.5'
+
+Top-k sampling:
+  home: '7.5'
+
+Top-p (nucleus) sampling:
+  home: '7.5'
+
+Degenerate repetition:
+  home: '7.5'
+
+Sentence-embedding model:
+  home: '7.5'
+
+Mean pooling:
+  home: '7.5'
+
+Semantic search:
+  home: '7.5'
+
+Zero-shot classification:
+  home: '7.5'
+
+Prompt template:
+  home: '7.5'
+
+Text-to-image retrieval:
+  home: '7.5'
+
+Inference service:
+  home: '7.5'
+
+Abstention:
+  home: '7.5'
+
+Out-of-domain detection:
+  home: '7.5'
+
+Threshold:
+  home: '7.5'
+
+Coverage:
+  home: '7.5'
+
+Selective accuracy:
+  home: '7.5'
+
+Confusion matrix:
+  home: '7.5'
+
+Recall:
+  home: '7.5'
+
+Deployment constraint:
+  home: '7.6'
+
+Latency:
+  home: '7.6'
+
+Throughput:
+  home: '7.6'
+
+Percentile (p95):
+  home: '7.6'
+
+Dynamic batching:
+  home: '7.6'
+
+GPU:
+  home: '7.6'
+
+float32 / float16 / bfloat16:
+  home: '7.6'
+
+Precision:
+  home: '7.6'
+
+Range:
+  home: '7.6'
+
+Overflow:
+  home: '7.6'
+
+Quantisation:
+  home: '7.6'
+
+int8:
+  home: '7.6'
+
+Scale:
+  home: '7.6'
+
+Per-channel quantisation:
+  home: '7.6'
+
+Weight-only quantisation:
+  home: '7.6'
+
+torchao:
+  home: '7.6'
+
+Kernel:
+  home: '7.6'
+
+Response cache:
+  home: '7.6'
+
+Cache key:
+  home: '7.6'
+
+Cache hit rate:
+  home: '7.6'
+
+KV cache:
+  home: '7.6'
+
+Self-hosting:
+  home: '7.6'
+
+Break-even volume:
+  home: '7.6'
+
+Manifest:
+  home: '7.6'
+
+Deterministic inference:
+  home: '7.6'
+
+Tolerance:
+  home: '7.6'
+
+Requirement:
+  home: '7.7'
+
+Decision rule:
+  home: '7.7'
+
+Candidate:
+  home: '7.7'
+
+Label scheme:
+  home: '7.7'
+
+Training records:
+  home: '7.7'
+
+Evaluation leakage:
+  home: '7.7'
+
+Screening:
+  home: '7.7'
+
+Setting (hyperparameter) tuning:
+  home: '7.7'
+
+Confirmatory test:
+  home: '7.7'
+
+Failure analysis:
+  home: '7.7'
+
+Decision record:
+  home: '7.7'
+
+Adaptation:
+  home: '8.1'
+
+Adaptation spectrum:
+  home: '8.1'
+
+Prompting:
+  home: '8.1'
+
+Chat template:
+  home: '8.1'
+
+System message:
+  home: '8.1'
+
+Feature extraction:
+  home: '8.1'
+
+Frozen:
+  home: '8.1'
+
+Full fine-tuning:
+  home: '8.1'
+
+PEFT:
+  home: '8.1'
+
+LoRA:
+  home: '8.1'
+
+Classification head:
+  home: '8.1'
+
+Relative change:
+  home: '8.1'
+
+Catastrophic forgetting:
+  home: '8.1'
+
+Masked-word loss:
+  home: '8.1'
+
+Expected output (target):
+  home: '8.2'
+
+Labelling rule:
+  home: '8.2'
+
+Highly polar:
+  home: '8.2'
+
+Dataset card:
+  home: '8.2'
+
+Cleaning:
+  home: '8.2'
+
+Exact / near-duplicate:
+  home: '8.2'
+
+Instruction formatting:
+  home: '8.2'
+
+Train / validation / test split:
+  home: '8.2'
+
+Group split:
+  home: '8.2'
+
+Majority-class baseline:
+  home: '8.2'
+
+F1 score:
+  home: '8.2'
+
+Token budget:
+  home: '8.2'
+
+Head / tail / head+tail truncation:
+  home: '8.2'
+
+'`save_to_disk`':
+  home: '8.2'
+
+Baseline ladder:
+  home: '8.3'
+
+Majority-class floor:
+  home: '8.3'
+
+n-gram:
+  home: '8.3'
+
+Off-the-shelf model:
+  home: '8.3'
+
+Frozen encoder:
+  home: '8.3'
+
+Linear head (probe):
+  home: '8.3'
+
+Evaluation protocol:
+  home: '8.3'
+
+Paired comparison:
+  home: '8.3'
+
+Results file:
+  home: '8.3'
+
+'`num_labels` / `id2label` / `label2id`':
+  home: '8.4'
+
+Cross-entropy loss:
+  home: '8.4'
+
+Gradient norm:
+  home: '8.4'
+
+AdamW:
+  home: '8.4'
+
+Warmup:
+  home: '8.4'
+
+Linear decay:
+  home: '8.4'
+
+Learning-rate schedule:
+  home: '8.4'
+
+Step:
+  home: '8.4'
+
+Checkpoint selection:
+  home: '8.4'
+
+'`Trainer` / `TrainingArguments`':
+  home: '8.4'
+
+Optimiser state:
+  home: '8.5'
+
+Training memory:
+  home: '8.5'
+
+Freezing:
+  home: '8.5'
+
+Trainable parameters:
+  home: '8.5'
+
+Rank:
+  home: '8.5'
+
+Low-rank:
+  home: '8.5'
+
+Singular value decomposition:
+  home: '8.5'
+
+LoRA rank (r):
+  home: '8.5'
+
+LoRA alpha (α):
+  home: '8.5'
+
+Target modules:
+  home: '8.5'
+
+LoRA dropout:
+  home: '8.5'
+
+Bottleneck adapter:
+  home: '8.5'
+
+Prefix tuning:
+  home: '8.5'
+
+Adapter (PEFT):
+  home: '8.5'
+
+Merging:
+  home: '8.5'
+
+Instruction-tuned model:
+  home: '8.6'
+
+SFT:
+  home: '8.6'
+
+Preference tuning:
+  home: '8.6'
+
+Special tokens:
+  home: '8.6'
+
+Roles:
+  home: '8.6'
+
+Prompt masking:
+  home: '8.6'
+
+Label -100:
+  home: '8.6'
+
+Causal LM loss:
+  home: '8.6'
+
+Blockwise quantisation:
+  home: '8.6'
+
+NF4:
+  home: '8.6'
+
+Double quantisation:
+  home: '8.6'
+
+QLoRA:
+  home: '8.6'
+
+Dequantisation:
+  home: '8.6'
+
+Paged optimiser:
+  home: '8.6'
+
+Training loss:
+  home: '8.7'
+
+Validation loss / accuracy:
+  home: '8.7'
+
+Confidence interval:
+  home: '8.7'
+
+Wilson interval:
+  home: '8.7'
+
+Error analysis:
+  home: '8.7'
+
+Error overlap:
+  home: '8.7'
+
+Validation–test gap:
+  home: '8.7'
+
+Paired sign test:
+  home: '8.7'
+
+Run-to-run variation:
+  home: '8.7'
+
+Experiment tracking:
+  home: '8.7'
+
+Keep-or-reject rule:
+  home: '8.7'

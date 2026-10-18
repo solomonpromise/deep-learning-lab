@@ -1,0 +1,84 @@
+skill: The Fine-Tuning Workflow
+sections:
+  1:
+    questions:
+    - q: What makes fine-tuning familiar from earlier modules?
+      options:
+      - It uses a forward pass, task loss, backpropagation and optimiser updates.
+      - It eliminates gradients.
+      - It learns from final test labels.
+      answer: 0
+      why: It uses a forward pass, task loss, backpropagation and optimiser updates.
+  2:
+    questions:
+    - q: Why does a fresh task head need training?
+      options:
+      - Its newly initialised parameters are not task-trained.
+      - The pretrained body has no weights.
+      - A task head cannot receive gradients.
+      answer: 0
+      why: Its newly initialised parameters are not task-trained.
+  3:
+    questions:
+    - q: What must labels and masks agree with?
+      options:
+      - The task output contract and real input positions.
+      - The length of the model card.
+      - The largest training loss.
+      answer: 0
+      why: The task output contract and real input positions.
+  4:
+    questions:
+    - q: What does cross-entropy consume here?
+      options:
+      - Raw class logits and integer class targets.
+      - Already chosen labels alone.
+      - Token IDs as probabilities.
+      answer: 0
+      why: Raw class logits and integer class targets.
+  5:
+    questions:
+    - q: What does gradient clipping at norm one do?
+      options:
+      - Rescales gradients exceeding the declared combined norm.
+      - Sets every coordinate to one.
+      - Guarantees a lower validation loss.
+      answer: 0
+      why: Rescales gradients exceeding the declared combined norm.
+  6:
+    questions:
+    - q: Why use a cautious learning rate?
+      options:
+      - To adapt useful pretrained weights without uncontrolled changes.
+      - Small rates guarantee the best accuracy.
+      - A larger head removes the need for validation.
+      answer: 0
+      why: To adapt useful pretrained weights without uncontrolled changes.
+  7:
+    questions:
+    - q: How should a checkpoint be selected?
+      options:
+      - A declared validation criterion.
+      - The best final-test score after repeated trials.
+      - The smallest file alone.
+      answer: 0
+      why: A declared validation criterion.
+  8:
+    questions:
+    - q: Must Trainer and a custom loop give identical results?
+      options:
+      - No; ordering and implementation details can differ.
+      - Yes, because they use the same architecture.
+      - Only their model class matters.
+      answer: 0
+      why: No; ordering and implementation details can differ.
+  9:
+    questions:
+    - q: What should a reload check establish?
+      options:
+      - Matching preprocessing, configuration and expected outputs.
+      - That all future inputs will be correct.
+      - That training data can be deleted without records.
+      answer: 0
+      why: Matching preprocessing, configuration and expected outputs.
+assessment_revision: day78-v1

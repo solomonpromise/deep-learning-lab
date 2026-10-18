@@ -1,0 +1,98 @@
+summary: How do we turn raw data into a dataset that adaptation can learn from reliably,
+  and that gives honest evaluation numbers?
+answers:
+  4-1:
+  - 'For example: the same review with a few words changed or a sentence added, or
+    the same text posted with a different ending. Normalisation only removes trivial
+    formatting differences. To catch these you''d compare overlapping word sequences
+    (for example with a technique called MinHash), or compare sentence embeddings
+    (Note 7.5) and flag pairs with very high similarity for review.'
+  5-1:
+  - The model learns two answer forms, so at prediction time it may produce either,
+    and code that looks for exactly "negative" will miss "Negative.". The examples
+    also teach the model that the answer's form varies for no reason, which wastes
+    some of what it learns. Choose one format and apply it to every example.
+  7-1:
+  - 'It''s leakage through model selection: the test set has been used to make a choice.
+    Among several epochs, the one with the best test score is partly the luckiest
+    on that test set, so its reported score includes that luck and overstates performance
+    on new data. Choose the epoch on validation, then report test once.'
+  8-1:
+  - The recall on fraud (and the precision, or the F1 score for the fraud class).
+    A model that labels every transaction "not fraud" already scores 0.995 accuracy,
+    so accuracy says nothing about whether the model catches any fraud at all. Compare
+    with that majority-class baseline too.
+  9-1:
+  - 'Head truncation, because the request comes first and the tail is signature and
+    quoted history. Confirm it as in Section 9: run the options (head, tail, head+tail)
+    on the same validation emails, compare accuracy with a sign test, and choose on
+    validation, not on intuition alone.'
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  normalise: "Normalise case, punctuation and spacing for a duplicate audit; this\
+    \ is separate from the exact-dedup split policy.\n\nArguments:\n    t: One text\
+    \ from the duplicate audit."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  encode: "Keep the requested head, tail or head-and-tail tokens, add special tokens\
+    \ and pad the batch.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller.\n    max_length: Token budget including special tokens.\n   \
+    \ strategy: Explicit head, tail or head-and-tail truncation policy."
+  predict: "Run the declared model or service and return predictions in the original\
+    \ example order.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller.\n    **kw: Explicit settings forwarded to the operation described\
+    \ above."
+  report: "Print accuracy, per-class recall and positive-class F1 for the declared\
+    \ predictions.\n\nArguments:\n    name: Display label for the printed metric row.\n\
+    \    y: Targets aligned with the examples.\n    p: Predicted binary classes."
+  to_dataset: "Construct unpadded token-ID rows and integer labels for later dynamic\
+    \ batching.\n\nArguments:\n    x: Input features or token IDs with the shape traced\
+    \ at the call site.\n    y: Targets aligned with the examples."
+inserts:
+- type: widget
+  name: concept-motion
+  section: 4
+  at: end
+  title: Keep duplicate groups in one split
+  intro: Step through a fixed example; each stage explains its assumptions.
+  props:
+    scene: split78
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. No
+    model runs in this walkthrough.
+quiz:
+- q: What makes a dataset training-ready?
+  options:
+  - An explicit task, checked examples, honest splits and compatible preprocessing.
+  - A large row count alone.
+  - A public download link alone.
+  answer: 0
+  why: An explicit task, checked examples, honest splits and compatible preprocessing.
+- q: What should remain consistent across model comparisons?
+  options:
+  - The declared data protocol and ordered evaluation examples.
+  - Only total row counts.
+  - Different test reviews for every model.
+  answer: 0
+  why: The declared data protocol and ordered evaluation examples.
+- q: What does a padding collator do?
+  options:
+  - Pads examples into compatible batch shapes and supplies masks.
+  - Creates new ground-truth labels.
+  - Deduplicates the dataset automatically.
+  answer: 0
+  why: Pads examples into compatible batch shapes and supplies masks.

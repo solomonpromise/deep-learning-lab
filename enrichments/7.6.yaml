@@ -1,0 +1,104 @@
+summary: What does it take to run a pretrained model as a reliable, affordable feature,
+  and which levers do we have?
+answers:
+  2-1:
+  - No. With requests arriving a few per minute, a batching window would almost never
+    collect more than one request, so there's no throughput to gain, and every request
+    would wait for the window to close, adding latency for nothing. Dynamic batching
+    pays off when many requests arrive close together.
+  3-1:
+  - Try larger batch sizes, such as 32 or 64. A single request leaves most of a GPU's
+    parallel units idle, and the time to move data to and from the GPU dominates.
+    With a full batch, the GPU's advantage usually shows clearly. They should also
+    make sure they synchronise before stopping the timer, since GPU work runs in the
+    background.
+  4-1:
+  - 1.5 billion × 4 bytes = 6 GB in float32, and × 2 bytes = 3 GB in bfloat16. In
+    bfloat16 the weights alone would take most of a 4 GB GPU, leaving little room
+    for activations (and a KV cache, for generation), so it would be very tight. Int8
+    quantisation (about 1.5 GB of weights) would make it fit comfortably.
+  5-1:
+  - Because only the Linear layers were quantised. The embedding tables, 95.3 MB of
+    the original 267.8 MB, stayed in float32 at 4 bytes per number. To get closer
+    to a quarter, you would also have to quantise the embeddings (and any other large
+    float32 tensors); libraries offer this, with the usual need to check accuracy
+    afterwards.
+  6-1:
+  - Users will receive the *old* model's answers for every input that was cached before
+    the upgrade, while new inputs get the new model's answers. The service will behave
+    as a confusing mix of two models, until each cached entry expires or the cache
+    is cleared, which may be never if the cache has no expiry. The fix is to include
+    the model version in the key, so a new model starts with a fresh cache.
+  7-1:
+  - 'At launch, a hosted service: a few hundred requests a day cost little, and you
+    avoid running machines. Measure the monthly request volume and its growth, the
+    hosted cost per request, and the throughput a local machine achieves for your
+    model, as in Section 2. When the projected hosted bill exceeds the cost of machines
+    that could serve the traffic (plus the effort of running them), it''s time to
+    consider self-hosting. Privacy or version-control needs may also force the switch
+    earlier.'
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  logits_for: "Tokenise a text batch and return float32 CPU logits without tracking\
+    \ gradients.\n\nArguments:\n    m: Model or module being inspected or evaluated.\n\
+    \    texts: Text strings in the order expected by the caller.\n    max_length:\
+    \ Token budget including special tokens."
+  weight_bytes: "Count the storage occupied by tensors in this state dictionary under\
+    \ their actual dtypes.\n\nArguments:\n    m: Model or module being inspected or\
+    \ evaluated."
+  quantize_linear_weights: "Simulate per-row int8 rounding of linear weights and estimate\
+    \ the corresponding packed storage.\n\nArguments:\n    m: Model or module being\
+    \ inspected or evaluated."
+  p_positive: "Compute the candidate model score for positive under the explicitly\
+    \ declared label mapping.\n\nArguments:\n    m: Model or module being inspected\
+    \ or evaluated.\n    texts: Text strings in the order expected by the caller."
+inserts:
+- type: widget
+  name: concept-motion
+  section: 5
+  at: end
+  title: Round, reconstruct, measure error
+  intro: Step through a fixed example; each stage explains its assumptions.
+  props:
+    scene: quantize78
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. No
+    model runs in this walkthrough.
+quiz:
+- q: What matters beyond notebook accuracy at deployment?
+  options:
+  - Latency, throughput, memory, reliability and workload.
+  - Only the parameter count.
+  - Only training loss.
+  answer: 0
+  why: Latency, throughput, memory, reliability and workload.
+- q: What does quantisation introduce?
+  options:
+  - A storage/computation trade-off with reconstruction error to evaluate.
+  - Guaranteed faster inference.
+  - Perfectly unchanged predictions.
+  answer: 0
+  why: A storage/computation trade-off with reconstruction error to evaluate.
+- q: What belongs in a reproducibility record?
+  options:
+  - Artifact revisions, settings, ordered data identity and environment.
+  - The model name alone.
+  - A seed with no other information.
+  answer: 0
+  why: Artifact revisions, settings, ordered data identity and environment.

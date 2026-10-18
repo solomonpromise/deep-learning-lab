@@ -1,0 +1,75 @@
+skill: Fine-Tuning Large Language Models (Conceptual)
+sections:
+  1:
+    questions:
+    - q: What is the conceptual change in instruction tuning?
+      options:
+      - Train on task-oriented conversations and desired responses.
+      - Replace next-token loss with accuracy.
+      - Stop using causal prediction.
+      answer: 0
+      why: Train on task-oriented conversations and desired responses.
+  2:
+    questions:
+    - q: What does supervised fine-tuning use?
+      options:
+      - Examples with input instructions and desired responses.
+      - Unlabelled logits only.
+      - The final-test answers as training prompts.
+      answer: 0
+      why: Examples with input instructions and desired responses.
+  3:
+    questions:
+    - q: Why use the model's chat template?
+      options:
+      - Its role and boundary tokens define the expected conversation interface.
+      - Every model shares the same template.
+      - It replaces model weights.
+      answer: 0
+      why: Its role and boundary tokens define the expected conversation interface.
+  4:
+    questions:
+    - q: What does a target label of minus 100 do here?
+      options:
+      - Excludes that position from the loss.
+      - Blocks attention to the token.
+      - Deletes the token from input IDs.
+      answer: 0
+      why: Excludes that position from the loss.
+  5:
+    questions:
+    - q: Why shift logits and targets by one?
+      options:
+      - Position t predicts the next token.
+      - The model predicts the previous token.
+      - Padding needs a different class label.
+      answer: 0
+      why: Position t predicts the next token.
+  6:
+    questions:
+    - q: What is trained in this LLM LoRA example?
+      options:
+      - The selected low-rank adapter parameters.
+      - Every frozen base weight.
+      - The tokenizer's vocabulary.
+      answer: 0
+      why: The selected low-rank adapter parameters.
+  7:
+    questions:
+    - q: Is the uniform four-bit exercise an executed NF4 QLoRA run?
+      options:
+      - No; it illustrates quantisation arithmetic only.
+      - Yes, NF4 means uniform int4.
+      - Yes, because no gradients are stored.
+      answer: 0
+      why: No; it illustrates quantisation arithmetic only.
+  8:
+    questions:
+    - q: Does a weight subtotal guarantee a GPU training fit?
+      options:
+      - No; measure the complete workload and runtime allocations.
+      - Yes, with a fixed twenty-percent margin.
+      - Only parameter count matters.
+      answer: 0
+      why: No; measure the complete workload and runtime allocations.
+assessment_revision: day78-v1

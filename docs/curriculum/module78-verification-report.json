@@ -1,0 +1,114 @@
+{
+  "7.1": {
+    "numbered_sections": 7,
+    "code_cells": 29,
+    "worked_checks": 7,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "7.2": {
+    "numbered_sections": 4,
+    "code_cells": 26,
+    "worked_checks": 6,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "7.3": {
+    "numbered_sections": 5,
+    "code_cells": 18,
+    "worked_checks": 6,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "7.4": {
+    "numbered_sections": 7,
+    "code_cells": 21,
+    "worked_checks": 6,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "7.5": {
+    "numbered_sections": 7,
+    "code_cells": 23,
+    "worked_checks": 6,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "7.6": {
+    "numbered_sections": 8,
+    "code_cells": 21,
+    "worked_checks": 6,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "7.7": {
+    "numbered_sections": 5,
+    "code_cells": 21,
+    "worked_checks": 4,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "8.1": {
+    "numbered_sections": 6,
+    "code_cells": 12,
+    "worked_checks": 5,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "8.2": {
+    "numbered_sections": 10,
+    "code_cells": 19,
+    "worked_checks": 5,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "8.3": {
+    "numbered_sections": 5,
+    "code_cells": 13,
+    "worked_checks": 3,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "8.4": {
+    "numbered_sections": 9,
+    "code_cells": 21,
+    "worked_checks": 3,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "8.5": {
+    "numbered_sections": 9,
+    "code_cells": 20,
+    "worked_checks": 3,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "8.6": {
+    "numbered_sections": 8,
+    "code_cells": 15,
+    "worked_checks": 3,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  },
+  "8.7": {
+    "numbered_sections": 9,
+    "code_cells": 19,
+    "worked_checks": 3,
+    "source_unchanged": true,
+    "execution": "passed",
+    "download": "passed"
+  }
+}

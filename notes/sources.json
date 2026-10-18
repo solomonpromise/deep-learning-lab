@@ -172,5 +172,103 @@
     "curated": true,
     "snapshot": "scripts/authoring/notebook_sources/6.6.ipynb",
     "ignored_variants": []
+  },
+  "7.1": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 7/7.1 Understanding Pretrained Models.ipynb",
+    "sha256": "f12dddc22daf544f0ded22ec441cf72d2fc3ce26ed659347232ebde97cc08fbc",
+    "snapshot": "scripts/authoring/module78_sources/7.1.ipynb",
+    "sha": "f12dddc22daf544f",
+    "curated": true
+  },
+  "7.2": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 7/7.2 The Hugging Face Ecosystem (Essentials).ipynb",
+    "sha256": "25df98fa252b23895529ce25decee71e0a54f2967a36d9692f3f18720c3615f8",
+    "snapshot": "scripts/authoring/module78_sources/7.2.ipynb",
+    "sha": "25df98fa252b2389",
+    "curated": true
+  },
+  "7.3": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 7/7.3 Finding and Selecting the Right Model.ipynb",
+    "sha256": "6c7068c06fa3dcb1e4bbacdd6fe0694139b5fde52919216f627a8de5eb7cce88",
+    "snapshot": "scripts/authoring/module78_sources/7.3.ipynb",
+    "sha": "6c7068c06fa3dcb1",
+    "curated": true
+  },
+  "7.4": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 7/7.4 Loading and Using Pretrained Models.ipynb",
+    "sha256": "aac8131621567087d84d3d24168e9941a7c0af7558431c17f7d838cd59ab9366",
+    "snapshot": "scripts/authoring/module78_sources/7.4.ipynb",
+    "sha": "aac8131621567087",
+    "curated": true
+  },
+  "7.5": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 7/7.5 Building Applications with Pretrained Models.ipynb",
+    "sha256": "1205a5da70a7542367c1cfc8b095b69ac1d0280ee3ad53092023a28408846dec",
+    "snapshot": "scripts/authoring/module78_sources/7.5.ipynb",
+    "sha": "1205a5da70a75423",
+    "curated": true
+  },
+  "7.6": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 7/7.6 Inference and Deployment Constraints.ipynb",
+    "sha256": "8db78e44230c030e403f0e2acf41d010e2cb5e93b007d2c06f234631f628b228",
+    "snapshot": "scripts/authoring/module78_sources/7.6.ipynb",
+    "sha": "8db78e44230c030e",
+    "curated": true
+  },
+  "7.7": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 7/7.7 Practical Model Selection and Integration.ipynb",
+    "sha256": "d79f1ab2e826851efd5d452b607d8266925233abb36f7678a90f3257ef033735",
+    "snapshot": "scripts/authoring/module78_sources/7.7.ipynb",
+    "sha": "d79f1ab2e826851e",
+    "curated": true
+  },
+  "8.1": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 8/8.1 Understanding Model Adaptation.ipynb",
+    "sha256": "678e76d439b03301692df5da4b2cc146c2a9c0a51c18feb4b4aa9cd9a6b3c03b",
+    "snapshot": "scripts/authoring/module78_sources/8.1.ipynb",
+    "sha": "678e76d439b03301",
+    "curated": true
+  },
+  "8.2": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 8/8.2 Preparing Data for Fine-Tuning.ipynb",
+    "sha256": "ef7313ef8a3b6da46a3c9174c70afcbc1e05d1cadbe5aa8fd1d3815c767d5f4d",
+    "snapshot": "scripts/authoring/module78_sources/8.2.ipynb",
+    "sha": "ef7313ef8a3b6da4",
+    "curated": true
+  },
+  "8.3": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 8/8.3 Establishing Baselines.ipynb",
+    "sha256": "531a0936dcba53703f84e0fc439899b4e34c3bec6a03801cc64aa31ce4cb2876",
+    "snapshot": "scripts/authoring/module78_sources/8.3.ipynb",
+    "sha": "531a0936dcba5370",
+    "curated": true
+  },
+  "8.4": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 8/8.4 The Fine-Tuning Workflow.ipynb",
+    "sha256": "3fad4ef9c2a9b4b124e05dcf9f0df2fd90fd5c3d9391e41936e24f2bc667e648",
+    "snapshot": "scripts/authoring/module78_sources/8.4.ipynb",
+    "sha": "3fad4ef9c2a9b4b1",
+    "curated": true
+  },
+  "8.5": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 8/8.5 Parameter-Efficient Fine-Tuning (PEFT).ipynb",
+    "sha256": "e9166865bcd6111861c612b901d3bd51a43da0e484a1d00abf864a13518ee3ed",
+    "snapshot": "scripts/authoring/module78_sources/8.5.ipynb",
+    "sha": "e9166865bcd61118",
+    "curated": true
+  },
+  "8.6": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 8/8.6 Fine-Tuning Large Language Models (Conceptual).ipynb",
+    "sha256": "7ae9afc919bf8f7ce825e81d37e53dcd09c7c453725386dedb48479d376dae91",
+    "snapshot": "scripts/authoring/module78_sources/8.6.ipynb",
+    "sha": "7ae9afc919bf8f7c",
+    "curated": true
+  },
+  "8.7": {
+    "source": "/Users/solomonpromise/Documents/Simplilearn Classes/Deep Learning/Day 8/8.7 Evaluating Adapted Models.ipynb",
+    "sha256": "acd5036b7c69ab96ef17c70511da25367461e775dbf80af6a3cfb0ee665c5c72",
+    "snapshot": "scripts/authoring/module78_sources/8.7.ipynb",
+    "sha": "acd5036b7c69ab96",
+    "curated": true
   }
 }

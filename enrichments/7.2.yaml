@@ -1,0 +1,75 @@
+summary: What does the Hugging Face ecosystem give us, and what exactly are we downloading
+  when we load a model by name?
+answers:
+  2-1:
+  - Downloading all five would waste over a gigabyte of disk and bandwidth on formats
+    your framework can't use; each format exists so that users of different software
+    can get exactly one. Transformers prefers `model.safetensors` because it is safe
+    to load. Without it, a PyTorch user would get `pytorch_model.bin`, the older PyTorch
+    format, which works but, like any pickle file, could in principle run code when
+    loaded, so it should only come from sources you trust.
+  2-2:
+  - 'The validation figure, 0.9106. The training figure, 0.9886, measures the model
+    on sentences it learned from, so it mostly shows how well it memorised them. Even
+    the validation figure should come with a caveat: it is for short SST-2 sentences,
+    and your data may behave differently. Best of all is a figure measured on your
+    own data.'
+  3-1:
+  - Datasets stores data as memory-mapped Arrow files. The operating system reads
+    only the parts being used into memory, so opening and iterating over a dataset
+    much larger than RAM works, a batch at a time. It would still need 200 GB of disk
+    space, and operations like `map` write new files to disk.
+  3-2:
+  - 'It depends on the IDs. DistilBERT''s embedding table has 30,522 rows, so any
+    ID of 30,522 or more causes an index error. Our sample sentence''s distilgpt2
+    IDs include 30642 and 48943, so it would crash, which is at least a warning. If
+    every ID happens to be smaller, there is no error at all: the model looks the
+    IDs up, but each one means a different token to DistilBERT than it did to distilgpt2.
+    The model sees a meaningless jumble and its predictions are worthless, with nothing
+    to tell you so.'
+  4-1:
+  - Don't build on it yet. Look for a licence where the model was originally published,
+    such as the authors' paper or code repository, or contact the authors. If none
+    can be found, treat the model as not licensed for your use, get legal advice,
+    or choose a model with a clear licence. Note 7.7 includes this step in its selection
+    checklist.
+  4-2:
+  - 'For example: write a set of neutral and mildly positive review sentences that
+    differ only in the country, city or nationality mentioned (or in names typical
+    of different regions), run them through the model, and compare the positive probabilities.
+    Large differences for otherwise identical sentences, like the 0.965 and 0.165
+    measured here, would mean customers from some places get systematically harsher
+    judgements. You''d then decide whether to mitigate it, monitor it, or choose a
+    different model.'
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  tokenize: "Tokenise a text batch under the explicitly declared truncation policy.\n\
+    \nArguments:\n    batch: Dictionary or list of aligned batch fields."
+inserts: []
+quiz:
+- q: What connects a Hub name to a working model?
+  options:
+  - Repository files, a local cache, and compatible libraries.
+  - The model card alone.
+  - A dataset label column alone.
+  answer: 0
+  why: Repository files, a local cache, and compatible libraries.
+- q: Why keep a model with its matching tokenizer?
+  options:
+  - Token IDs and preprocessing must match the learned interface.
+  - All vocabularies assign identical IDs.
+  - The tokenizer supplies learned model weights.
+  answer: 0
+  why: Token IDs and preprocessing must match the learned interface.
+- q: What does missing licence metadata establish?
+  options:
+  - The inspected field supplies no licence evidence; check publisher terms.
+  - The model has no licence anywhere.
+  - Commercial reuse is automatically permitted.
+  answer: 0
+  why: The inspected field supplies no licence evidence; check publisher terms.

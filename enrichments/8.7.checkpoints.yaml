@@ -1,0 +1,84 @@
+skill: Evaluating Adapted Models
+sections:
+  1:
+    questions:
+    - q: What must be checked before combining result files?
+      options:
+      - Their provenance and aligned evaluation identities.
+      - Only their filenames.
+      - Only rounded accuracy values.
+      answer: 0
+      why: Their provenance and aligned evaluation identities.
+  2:
+    questions:
+    - q: Does a lower training loss establish a better deployed model?
+      options:
+      - No; held-out quality and application constraints still matter.
+      - Yes, for every task.
+      - Only the final training batch matters.
+      answer: 0
+      why: No; held-out quality and application constraints still matter.
+  3:
+    questions:
+    - q: What does an accuracy confidence interval describe?
+      options:
+      - Sampling uncertainty under its stated assumptions.
+      - All variation across training seeds and domains.
+      - A guaranteed bound for every future request.
+      answer: 0
+      why: Sampling uncertainty under its stated assumptions.
+  4:
+    questions:
+    - q: Why inspect error overlap?
+      options:
+      - Equal aggregate accuracy can hide different individual failures.
+      - To choose training labels from test errors repeatedly.
+      - To prove two models are equivalent.
+      answer: 0
+      why: Equal aggregate accuracy can hide different individual failures.
+  5:
+    questions:
+    - q: Does one retention probe measure every old capability?
+      options:
+      - No; it tests a specific setup and requires careful interpretation.
+      - Yes, if the loss rises.
+      - Only the adapter file size matters.
+      answer: 0
+      why: No; it tests a specific setup and requires careful interpretation.
+  6:
+    questions:
+    - q: What should a fair comparison disclose?
+      options:
+      - Data budgets, input policy, tuning budget, quality and costs.
+      - Only the largest accuracy.
+      - Only trainable parameter count.
+      answer: 0
+      why: Data budgets, input policy, tuning budget, quality and costs.
+  7:
+    questions:
+    - q: What does repeated TF-IDF training on different samples measure?
+      options:
+      - Variation from those data draws, not every neural seed effect.
+      - All possible deployment uncertainty.
+      - A guarantee the next draw matches.
+      answer: 0
+      why: Variation from those data draws, not every neural seed effect.
+  8:
+    questions:
+    - q: How should a keep-or-reject decision be made?
+      options:
+      - Using declared quality and operational requirements with uncertainty.
+      - A universal p-value rule divorced from the application.
+      - The model's novelty alone.
+      answer: 0
+      why: Using declared quality and operational requirements with uncertainty.
+  9:
+    questions:
+    - q: What follows further selection using the reported test data?
+      options:
+      - Evaluate the new choice on a fresh final test.
+      - Keep calling the same sample untouched.
+      - Replace uncertainty with more decimal places.
+      answer: 0
+      why: Evaluate the new choice on a fresh final test.
+assessment_revision: day78-v1

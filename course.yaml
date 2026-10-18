@@ -174,7 +174,7 @@ sources:
   #   Modules 5–6: imported from the author's replacement Day 5/6 notebooks; see scripts/authoring/notebook_sources/.
   #   Modules 1–4: redesigned teaching diagrams embedded in the downloadable notebooks.
   #   Authoring sources and execution reports are under scripts/authoring/ and docs/curriculum/.
-  locked: ["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "2.4", "3.1", "3.2", "3.3", "3.4", "4.1", "4.2", "4.3", "4.4", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6"]
+  locked: ["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "2.4", "3.1", "3.2", "3.3", "3.4", "4.1", "4.2", "4.3", "4.4", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7"]
 
 # Preserve bookmarks to the former standalone vision/multimodal lesson.
 lesson_redirects:
@@ -230,18 +230,26 @@ modules:
     teaching_note: "Lessons 6.1–6.6, including architecture history, vision and multimodal applications, and weight tying, are covered in class."
     icon: attention
   - number: 7
-    title: Pretrained Models & Hugging Face
+    title: Pretrained Models and the Hugging Face Ecosystem
     short: "Pretrained models"
-    question: How do engineers leverage models that are already trained?
-    topics: [Pretraining vs fine-tuning, Transfer learning, Hugging Face Hub, Transformers & Datasets, Tokenizers, PEFT, Model cards]
-    hands_on: Fine-tune a pretrained encoder end to end, from loading to inference.
+    question: How can AI engineers leverage models that have already learned useful representations?
+    topics: [Pretrained weights & checkpoints, Hugging Face Hub, Model cards & selection, Explicit inference, Semantic search, CLIP, Application validation, Deployment constraints]
+    hands_on: Build pretrained applications and make a requirement-driven model selection with measured evidence.
+    class_hours: 3.5
+    classroom_lessons: ["7.1", "7.2", "7.3", "7.4", "7.5"]
+    further_learning_lessons: ["7.6", "7.7"]
+    teaching_note: "Lessons 7.1–7.5 are classroom material. Lessons 7.6–7.7 are complete further-learning notes."
     icon: cloud
   - number: 8
-    title: Efficient Fine-Tuning & Data Engineering
+    title: Efficient Fine-Tuning and Data Engineering
     short: "Fine-tuning"
-    question: How do we adapt large models without updating every parameter?
-    topics: [Adapters, LoRA, QLoRA, SFT, Data quality, Contamination, Synthetic data, Catastrophic forgetting]
-    hands_on: LoRA / QLoRA adaptation, with a LoRA-only fallback for Mac.
+    question: How can we adapt pretrained models efficiently and evaluate whether adaptation is worthwhile?
+    topics: [Adaptation strategies, Data quality & splits, Baseline ladder, Full fine-tuning, PEFT & LoRA, SFT & QLoRA, Evaluation & decision records]
+    hands_on: Compare pretrained inference, frozen features, full fine-tuning and LoRA on a shared IMDb protocol.
+    class_hours: 3.5
+    classroom_lessons: ["8.1", "8.2", "8.3", "8.4", "8.5", "8.7"]
+    further_learning_lessons: ["8.6"]
+    teaching_note: "Lessons 8.1–8.5 and 8.7 are classroom material. Lesson 8.6 extends the workflow to LLM instruction tuning and QLoRA; section 7 of 8.5 is an extension on other PEFT methods."
     icon: tune
   - number: 9
     title: Evaluation, Inference & Model Economics
