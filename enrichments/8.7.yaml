@@ -1,0 +1,73 @@
+summary: How do we know whether adaptation worked, and how do we decide whether to
+  keep an adapted model?
+answers:
+  3-1:
+  - No. Overlapping 95% intervals are consistent with a real difference, because each
+    interval reflects the uncertainty of one model on its own, ignoring that both
+    were scored on the *same* reviews. A paired test, such as the sign test on the
+    reviews where exactly one model is right, uses that pairing and can detect differences
+    that overlapping intervals hide.
+  5-1:
+  - Choosing settings or checkpoints on validation picks whichever option was luckiest
+    there, so part of the validation score is that luck, and it doesn't carry over
+    to test. A small drop is therefore normal. A gap should worry you when it's much
+    larger than the run-to-run variation you'd expect (here about two points), or
+    when it's large for one method but not others evaluated the same way. That suggests
+    the method was tuned to quirks of the validation set, or that something leaked.
+  6-1:
+  - It generalises far beyond what was tested. We fine-tuned one small model, on only
+    1,000 labels, for one epoch, with 128 tokens of each review and untuned learning
+    rates, on a CPU. The comparison showed that, *in this setup*, fine-tuning didn't
+    beat a model already fine-tuned on much more sentiment data, or TF-IDF with all
+    labels. With more labels, longer inputs or a better-tuned recipe, the result could
+    change. The correct conclusion is limited to the conditions tested, which is exactly
+    what the decision record's limitations say.
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  ensure_comparison_results: "Restore missing author reference artifacts while preserving\
+    \ existing learner-generated results.\n\nArguments:\n    notes: Lesson IDs whose\
+    \ result files are required."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  wilson: "Calculate a Wilson confidence interval for a binomial proportion under\
+    \ the stated normal quantile.\n\nArguments:\n    k: Number of successful observations.\n\
+    \    n: Total number of binomial observations.\n    z: Normal quantile used for\
+    \ the Wilson interval."
+inserts: []
+quiz:
+- q: What must be checked before combining result files?
+  options:
+  - Their provenance and aligned evaluation identities.
+  - Only their filenames.
+  - Only rounded accuracy values.
+  answer: 0
+  why: Their provenance and aligned evaluation identities.
+- q: Does one retention probe measure every old capability?
+  options:
+  - No; it tests a specific setup and requires careful interpretation.
+  - Yes, if the loss rises.
+  - Only the adapter file size matters.
+  answer: 0
+  why: No; it tests a specific setup and requires careful interpretation.
+- q: What follows further selection using the reported test data?
+  options:
+  - Evaluate the new choice on a fresh final test.
+  - Keep calling the same sample untouched.
+  - Replace uncertainty with more decimal places.
+  answer: 0
+  why: Evaluate the new choice on a fresh final test.

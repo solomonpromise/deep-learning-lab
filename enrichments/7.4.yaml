@@ -1,0 +1,92 @@
+summary: What happens between loading a model by name and getting a trustworthy prediction,
+  and how do we control each step?
+answers:
+  3-1:
+  - 'For example: a different `max_length` (the model would see different amounts
+    of each long review), leaving out the attention mask in one of them (padded reviews
+    would change), running one in train mode (dropout would add noise), or pairing
+    the model with a different tokeniser. Any of these changes the model''s input
+    or behaviour, not just the arithmetic.'
+  4-1:
+  - 'The longer review is cut to 256 tokens, so the batch is padded to 256: `input_ids`
+    has shape `(2, 256)`. The first review has 40 real tokens (including `[CLS]` and
+    `[SEP]`), so its mask row has 40 ones and 256 − 40 = 216 zeros.'
+  4-2:
+  - 'The same, `[0.994, 0.006]`. Both logits were increased by 10, and softmax depends
+    only on the differences between logits: adding 10 multiplies every exponential
+    by the same factor, which cancels when dividing by the sum. The difference is
+    5.11 in both cases.'
+  5-1:
+  - The model is probably in train mode, so dropout makes every run slightly different.
+    Check with `model.training` (it should be `False`), or run the same input twice
+    and compare the outputs. If they differ, call `model.eval()` before evaluating.
+  6-1:
+  - Batch the reviews (for example 32 at a time) instead of processing them one by
+    one, and sort them by length so each batch has little padding. Truncating to a
+    sensible `max_length` also helps. If you sort, you must keep track of each review's
+    original position and put the predictions back in the original order; otherwise
+    predictions get attached to the wrong reviews.
+  7-1:
+  - 'You saved the model but not the tokeniser: also run `tokenizer.save_pretrained("my-model")`.
+    It matters because the model only understands token IDs from its own tokeniser.
+    If your colleague loads a tokeniser from somewhere else, the IDs may mean different
+    tokens (or come from a different vocabulary), and the model''s predictions would
+    be wrong, possibly without any error.'
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  padded_tokens: "Count processed tokens after padding each ordered batch to its longest\
+    \ example.\n\nArguments:\n    order: Permutation describing processing order.\n\
+    \    batch_size: Maximum examples processed together."
+  time_per_review: "Measure average elapsed time per review for the specified order\
+    \ and batching policy.\n\nArguments:\n    order: Permutation describing processing\
+    \ order.\n    batch_size: Maximum examples processed together."
+inserts:
+- type: widget
+  name: concept-motion
+  section: 4
+  at: end
+  title: Follow padding and attention masking
+  intro: Step through a fixed example; each stage explains its assumptions.
+  props:
+    scene: padding78
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. No
+    model runs in this walkthrough.
+quiz:
+- q: What connects raw text to a readable prediction?
+  options:
+  - Preprocessing, tokenization, model computation and output decoding.
+  - The optimizer at inference.
+  - A model card's prose alone.
+  answer: 0
+  why: Preprocessing, tokenization, model computation and output decoding.
+- q: What does a padding mask prevent?
+  options:
+  - Reading padded positions as usable keys in attention.
+  - All future access automatically in every model.
+  - Truncation of every input.
+  answer: 0
+  why: Reading padded positions as usable keys in attention.
+- q: What should be saved with the model?
+  options:
+  - Its tokenizer, configuration and relevant inference settings.
+  - Only a screenshot of predictions.
+  - Only the repository name with no revision.
+  answer: 0
+  why: Its tokenizer, configuration and relevant inference settings.

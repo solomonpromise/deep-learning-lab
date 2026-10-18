@@ -1,0 +1,60 @@
+title: 'Module 7 challenge: Pretrained Models and the Hugging Face Ecosystem'
+pass_mark: 0.75
+questions:
+- q: What changes between the pretrained and random-weight twins?
+  options:
+  - Learned parameter values, with architecture and tokenizer fixed.
+  - The task labels.
+  - The number of input reviews.
+  answer: 0
+  why: Learned parameter values, with architecture and tokenizer fixed.
+- q: What connects a Hub name to a working model?
+  options:
+  - Repository files, a local cache, and compatible libraries.
+  - The model card alone.
+  - A dataset label column alone.
+  answer: 0
+  why: Repository files, a local cache, and compatible libraries.
+- q: Where should model selection start?
+  options:
+  - Task requirements and representative inputs.
+  - The largest parameter count.
+  - The most downloads alone.
+  answer: 0
+  why: Task requirements and representative inputs.
+- q: What connects raw text to a readable prediction?
+  options:
+  - Preprocessing, tokenization, model computation and output decoding.
+  - The optimizer at inference.
+  - A model card's prose alone.
+  answer: 0
+  why: Preprocessing, tokenization, model computation and output decoding.
+- q: What turns a model capability into a usable feature?
+  options:
+  - Input validation, decision rules, failure handling and evaluation.
+  - A larger confidence score alone.
+  - Removing all uncertain inputs from reporting.
+  answer: 0
+  why: Input validation, decision rules, failure handling and evaluation.
+- q: What matters beyond notebook accuracy at deployment?
+  options:
+  - Latency, throughput, memory, reliability and workload.
+  - Only the parameter count.
+  - Only training loss.
+  answer: 0
+  why: Latency, throughput, memory, reliability and workload.
+- q: Why write requirements before comparing candidates?
+  options:
+  - To make acceptance criteria independent of attractive scores.
+  - To guarantee one candidate wins.
+  - To avoid evaluating representative inputs.
+  answer: 0
+  why: To make acceptance criteria independent of attractive scores.
+- q: Why keep a decision record?
+  options:
+  - To connect the choice to evidence, assumptions and failure cases.
+  - To hide rejected candidates.
+  - To guarantee future data never changes.
+  answer: 0
+  why: To connect the choice to evidence, assumptions and failure cases.
+assessment_revision: day78-v1

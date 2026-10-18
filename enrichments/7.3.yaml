@@ -1,0 +1,82 @@
+summary: Given a problem, how do we find a pretrained model that fits it, and how
+  do we tell whether its advertised performance will hold for us?
+answers:
+  2-1:
+  - '`sentence-similarity` (or `feature-extraction`): embed every past ticket once,
+    embed the new ticket, and return the past tickets whose vectors are closest. Text
+    classification needs a fixed set of labels decided in advance, but "the same problem
+    as this ticket" isn''t a fixed label: there could be thousands of distinct problems,
+    and new ones appear all the time.'
+  3-1:
+  - 3 billion × 2 bytes = about 6 GB for the weights alone. On an 8 GB laptop that
+    leaves very little room for the operating system, other programs and the computation
+    itself, so it would probably fail or be extremely slow. A smaller model, or a
+    more compressed format (Note 7.6), would be needed.
+  3-2:
+  - Because at these lengths most of the work is in the linear layers, whose cost
+    grows only in proportion to length. At 512 tokens, attention is just 10.0% of
+    DistilBERT's multiplications. Doubling the length doubles the linear work and
+    quadruples the small attention part, so the total roughly doubles. The quadratic
+    part dominates only for much longer inputs, beyond about 4608 tokens for this
+    layer size.
+  4-1:
+  - '0.8820, the number measured on IMDb validation, because it is measured on the
+    kind of data the model will actually see. The SST-2 figures describe a different
+    dataset. The 0.9106 we reproduced is still useful: it shows our pipeline runs
+    the model correctly. (Report the final figure on the test set, once settings have
+    been chosen on validation.)'
+  4-2:
+  - 'The two groups differ in more than truncation. Long reviews may be harder in
+    their own right: more mixed opinions, more plot summary, more sarcasm. Giving
+    the model 512 tokens might help, but there''s no reason to expect it to reach
+    the short-review accuracy, and some reviews are longer than 512 anyway. The way
+    to find out is an experiment that changes only the truncation length on the same
+    reviews, which Note 7.7 does.'
+  5-1:
+  - 'For example: Can patient data legally be sent to this provider at all, and what
+    do their terms say about storing or using it? Is the provider''s model version
+    pinned, or could it change without warning? What does it cost at the hospital''s
+    volume, and is the network delay acceptable for urgent cases? What happens to
+    the service if the provider has an outage or reaches a rate limit?'
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+inserts: []
+quiz:
+- q: Where should model selection start?
+  options:
+  - Task requirements and representative inputs.
+  - The largest parameter count.
+  - The most downloads alone.
+  answer: 0
+  why: Task requirements and representative inputs.
+- q: Does parameter storage equal total runtime memory?
+  options:
+  - No; activations, caches and runtime allocations also matter.
+  - Yes, always.
+  - Only for large models.
+  answer: 0
+  why: No; activations, caches and runtime allocations also matter.
+- q: What helps compare hosted and local inference?
+  options:
+  - Your measured quality, workload, cost and operational constraints.
+  - Model size alone.
+  - Assuming local inference is always cheaper.
+  answer: 0
+  why: Your measured quality, workload, cost and operational constraints.

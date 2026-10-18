@@ -1,0 +1,91 @@
+summary: How can we adapt pretrained models to specific tasks without updating every
+  parameter, and how do we prepare data for reliable adaptation?
+answers:
+  2-1:
+  - 'For example: cost and speed (the small classifier runs the much smaller DistilBERT
+    encoder once per review, while prompting runs a 360-million-parameter model over
+    a long prompt); stability (a trained classifier''s behaviour is fixed, while prompt
+    behaviour can change with small wording changes or a model update); calibrated
+    probabilities and easy thresholds (Note 7.5); and the ability to improve steadily
+    by adding labelled data, which prompting can''t use directly.'
+  3-1:
+  - 'No. Fine-tuning shapes how a model behaves, but it''s a poor and slow way to
+    store new facts: the model may recall them wrongly, and this week''s contracts
+    would need retraining every week. A better approach is to find the relevant contract
+    text and put it into the prompt, so the model answers from the document in front
+    of it. (That approach is called retrieval-augmented generation.)'
+  4-1:
+  - A random head produces arbitrary scores; with a slight bias towards one output,
+    every review falls on the same side. Ten small updates in epoch 1 weren't enough
+    to fix that. Predicting one class for everything scores the share of that class
+    in the data, and 0.525 of these 200 validation reviews happen to be positive.
+    That's chance level for this set, not real skill.
+  5-1:
+  - Validation accuracy measures only the task the model was fine-tuned for. Forgetting
+    is about *other* abilities, such as the pretrained word-guessing skill measured
+    in Section 5.2, which got worse even while the new task improved. To know whether
+    anything was forgotten, you have to test those other abilities directly.
+  6-1:
+  - The fine-tuning end. With 50,000 labelled examples there's plenty of data to fine-tune
+    safely, a GPU makes training practical, and a requirement for a small, fast model
+    rules out prompting a large one. You'd still set baselines first (Note 8.3), then
+    try PEFT and full fine-tuning of a small model, and keep the one that meets the
+    requirement on validation and test.
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  head_tail: "Fit each review into the declared token budget, retaining its first\
+    \ quarter and last three quarters.\n\nArguments:\n    texts: Text strings in the\
+    \ order expected by the caller.\n    max_length: Token budget including special\
+    \ tokens."
+  ask: "Format the truncated review as a sentiment question using the instruction\
+    \ model interface.\n\nArguments:\n    review: A movie review to classify or format.\n\
+    \    words: Maximum review words kept in the prompt."
+  features: "Extract masked mean-pooled features from the frozen encoder without parameter\
+    \ updates.\n\nArguments:\n    texts: Text strings in the order expected by the\
+    \ caller.\n    batch_size: Maximum examples processed together."
+  predict: "Run the declared model or service and return predictions in the original\
+    \ example order.\n\nArguments:\n    m: Model or module being inspected or evaluated.\n\
+    \    X: Input example matrix."
+  word_guessing_loss: "Measure masked-word loss after loading the body; the output\
+    \ projection remains tied to input embeddings.\n\nArguments:\n    body_state:\
+    \ Body state dictionary loaded for the tied-output retention probe."
+inserts: []
+quiz:
+- q: What is the goal of adaptation?
+  options:
+  - Improve task suitability while measuring costs and retained abilities.
+  - Change every parameter automatically.
+  - Avoid baselines.
+  answer: 0
+  why: Improve task suitability while measuring costs and retained abilities.
+- q: What is trainable in full fine-tuning?
+  options:
+  - All selected model parameters, including the task head.
+  - Only the tokenizer's vocabulary IDs.
+  - Only the final prediction value.
+  answer: 0
+  why: All selected model parameters, including the task head.
+- q: How should an adaptation strategy be chosen?
+  options:
+  - By quality, data, compute and capability-retention requirements.
+  - By trainable parameter count alone.
+  - By assuming the newest method wins.
+  answer: 0
+  why: By quality, data, compute and capability-retention requirements.

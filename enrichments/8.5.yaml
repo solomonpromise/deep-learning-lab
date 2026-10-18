@@ -1,0 +1,99 @@
+summary: Can we adapt a model just as well while training only a tiny fraction of
+  its parameters?
+answers:
+  2-1:
+  - 'Gradients and optimiser states shrink to cover only the trainable 1%, since frozen
+    parameters need neither. The weights themselves don''t shrink: the whole model
+    must still be in memory to run the forward and backward passes, and the activations
+    for each batch are about the same size as before. For a large model the weights
+    then dominate, which is why QLoRA (Note 8.6) also compresses them.'
+  4-1:
+  - The last layer sits right below the new classification head, so it is where the
+    representation most directly has to change for the new task, for example by emphasising
+    a few sentiment-related directions for the head to read. Changes concentrated
+    on a few task-specific features are naturally low-rank. Earlier layers build general
+    features used for many purposes, and fine-tuning nudges them in more varied, less
+    focused ways.
+  8-1:
+  - Because most of the training work isn't in the update itself. Every step still
+    runs the forward pass through the whole frozen model, and the backward pass still
+    has to send gradients back through all the frozen layers to reach the LoRA matrices
+    in every layer. What LoRA saves is computing and storing gradients *for* the frozen
+    weights, and the optimiser's work and memory for them. That's a real saving, but
+    much less than a factor of 100.
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  ensure_comparison_results: "Restore missing author reference artifacts while preserving\
+    \ existing learner-generated results.\n\nArguments:\n    notes: Lesson IDs whose\
+    \ result files are required."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  head_tail_ids: "Produce unpadded review token IDs with special tokens and the shared\
+    \ head-and-tail policy.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller.\n    max_length: Token budget including special tokens."
+  make_batch: "Use the padding collator to construct a device-ready input and optional-label\
+    \ batch.\n\nArguments:\n    ids_list: Unpadded integer token-ID sequences.\n \
+    \   labels: Integer targets aligned with the input examples."
+  predict: "Run the declared model or service and return predictions in the original\
+    \ example order.\n\nArguments:\n    m: Model or module being inspected or evaluated.\n\
+    \    ids_list: Unpadded integer token-ID sequences.\n    batch_size: Maximum examples\
+    \ processed together."
+  LoRALinear: Add a scaled trainable low-rank correction beside a frozen linear layer.
+  LoRALinear.__init__: "Initialise the components and settings used by this model\
+    \ or service.\n\nArguments:\n    base: Frozen base linear layer.\n    r: Inner\
+    \ rank of the trainable low-rank update.\n    alpha: Scale numerator for the LoRA\
+    \ update."
+  LoRALinear.forward: "Compute this module's output from the input tensor without\
+    \ performing an optimiser update.\n\nArguments:\n    x: Input features or token\
+    \ IDs with the shape traced at the call site."
+  word_guessing_loss: "Measure masked-word loss after loading the body; the output\
+    \ projection remains tied to input embeddings.\n\nArguments:\n    body_state:\
+    \ Body state dictionary loaded for the tied-output retention probe."
+inserts:
+- type: widget
+  name: concept-motion
+  section: 6
+  at: end
+  title: See why the initial adapter update is zero
+  intro: Step through a fixed example; each stage explains its assumptions.
+  props:
+    scene: lora78
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. No
+    model runs in this walkthrough.
+quiz:
+- q: What does parameter-efficient adaptation aim to reduce?
+  options:
+  - Trainable updates and their associated costs.
+  - All forward computation through frozen weights.
+  - The need to evaluate quality.
+  answer: 0
+  why: Trainable updates and their associated costs.
+- q: How does LoRA modify a linear computation?
+  options:
+  - A scaled low-rank update is added beside the frozen base.
+  - The base is deleted.
+  - The input mask becomes the weight matrix.
+  answer: 0
+  why: A scaled low-rank update is added beside the frozen base.
+- q: Does p equal one prove LoRA and full fine-tuning equivalent?
+  options:
+  - No; it does not establish equivalence or identical predictions.
+  - Yes, for every future dataset.
+  - It proves they share every mistake.
+  answer: 0
+  why: No; it does not establish equivalence or identical predictions.

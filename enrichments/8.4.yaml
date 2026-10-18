@@ -1,0 +1,90 @@
+summary: What exactly happens when we fine-tune a pretrained model, and how do we
+  do it reliably?
+answers:
+  6-1:
+  - At the start, the head's weights are random, so its outputs are meaningless and
+    the gradients flowing back from it can be large and erratic. With a full learning
+    rate from step one, those erratic gradients would push the carefully pretrained
+    body around before the head has learned anything sensible. Warmup keeps the early
+    steps tiny, so the head can settle first, then lets the learning rate rise once
+    the gradients carry real information.
+  8-1:
+  - 'Choosing among checkpoints is a form of tuning: the chosen one is partly the
+    luckiest on the data used to choose. If that data were the test set, the test
+    score would include that luck and overstate how the model will do on new reviews.
+    Choosing on validation keeps the test set untouched, so its single score stays
+    an honest estimate.'
+  9-1:
+  - Because 0.006 on 1,000 reviews is six reviews, easily within the variation you'd
+    see from a different test sample or a different training run. The paired sign
+    test on the same reviews showed 105 reviews where only fine-tuning was right and
+    99 where only TF-IDF was right (p = 0.73), so there's no evidence of a real difference.
+    Quote differences together with a test like this, not on their own.
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  ensure_comparison_results: "Restore missing author reference artifacts while preserving\
+    \ existing learner-generated results.\n\nArguments:\n    notes: Lesson IDs whose\
+    \ result files are required."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  head_tail_ids: "Produce unpadded review token IDs with special tokens and the shared\
+    \ head-and-tail policy.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller.\n    max_length: Token budget including special tokens."
+  make_batch: "Use the padding collator to construct a device-ready input and optional-label\
+    \ batch.\n\nArguments:\n    ids_list: Unpadded integer token-ID sequences.\n \
+    \   labels: Integer targets aligned with the input examples."
+  predict: "Run the declared model or service and return predictions in the original\
+    \ example order.\n\nArguments:\n    m: Model or module being inspected or evaluated.\n\
+    \    ids_list: Unpadded integer token-ID sequences.\n    batch_size: Maximum examples\
+    \ processed together."
+  word_guessing_loss: "Measure masked-word loss after loading the body; the output\
+    \ projection remains tied to input embeddings.\n\nArguments:\n    body_state:\
+    \ Body state dictionary loaded for the tied-output retention probe."
+inserts:
+- type: widget
+  name: concept-motion
+  section: 5
+  at: end
+  title: Separate learning from selection
+  intro: Step through a fixed example; each stage explains its assumptions.
+  props:
+    scene: finetune78
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. No
+    model runs in this walkthrough.
+quiz:
+- q: What makes fine-tuning familiar from earlier modules?
+  options:
+  - It uses a forward pass, task loss, backpropagation and optimiser updates.
+  - It eliminates gradients.
+  - It learns from final test labels.
+  answer: 0
+  why: It uses a forward pass, task loss, backpropagation and optimiser updates.
+- q: What does gradient clipping at norm one do?
+  options:
+  - Rescales gradients exceeding the declared combined norm.
+  - Sets every coordinate to one.
+  - Guarantees a lower validation loss.
+  answer: 0
+  why: Rescales gradients exceeding the declared combined norm.
+- q: What should a reload check establish?
+  options:
+  - Matching preprocessing, configuration and expected outputs.
+  - That all future inputs will be correct.
+  - That training data can be deleted without records.
+  answer: 0
+  why: Matching preprocessing, configuration and expected outputs.

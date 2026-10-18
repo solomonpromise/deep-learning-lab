@@ -1,0 +1,76 @@
+{
+  "notebooks": {
+    "Lesson_7.1_Understanding_Pretrained_Models.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 7,
+      "code_cells": 29
+    },
+    "Lesson_7.2_The_Hugging_Face_Ecosystem_Essentials.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 5,
+      "code_cells": 26
+    },
+    "Lesson_7.3_Finding_and_Selecting_the_Right_Model.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 4,
+      "code_cells": 18
+    },
+    "Lesson_7.4_Loading_and_Using_Pretrained_Models.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 4,
+      "code_cells": 21
+    },
+    "Lesson_7.5_Building_Applications_with_Pretrained_Models.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 6,
+      "code_cells": 23
+    },
+    "Lesson_7.6_Inference_and_Deployment_Constraints.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 5,
+      "code_cells": 21
+    },
+    "Lesson_7.7_Practical_Model_Selection_and_Integration.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 2,
+      "code_cells": 21
+    },
+    "Lesson_8.1_Understanding_Model_Adaptation.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 4,
+      "code_cells": 12
+    },
+    "Lesson_8.2_Preparing_Data_for_Fine_Tuning.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 3,
+      "code_cells": 19
+    },
+    "Lesson_8.3_Establishing_Baselines.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 3,
+      "code_cells": 13
+    },
+    "Lesson_8.4_The_Fine_Tuning_Workflow.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 5,
+      "code_cells": 21
+    },
+    "Lesson_8.5_Parameter_Efficient_Fine_Tuning_PEFT.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 4,
+      "code_cells": 20
+    },
+    "Lesson_8.6_Fine_Tuning_Large_Language_Models_Conceptual.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 3,
+      "code_cells": 15
+    },
+    "Lesson_8.7_Evaluating_Adapted_Models.ipynb": {
+      "offline_html": "passed",
+      "embedded_images": 4,
+      "code_cells": 19
+    }
+  },
+  "browser_download": "byte-identical to the generated 8.7 notebook",
+  "embedded_images": 59
+}

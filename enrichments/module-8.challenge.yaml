@@ -1,0 +1,60 @@
+title: 'Module 8 challenge: Efficient Fine-Tuning and Data Engineering'
+pass_mark: 0.75
+questions:
+- q: What is the goal of adaptation?
+  options:
+  - Improve task suitability while measuring costs and retained abilities.
+  - Change every parameter automatically.
+  - Avoid baselines.
+  answer: 0
+  why: Improve task suitability while measuring costs and retained abilities.
+- q: What makes a dataset training-ready?
+  options:
+  - An explicit task, checked examples, honest splits and compatible preprocessing.
+  - A large row count alone.
+  - A public download link alone.
+  answer: 0
+  why: An explicit task, checked examples, honest splits and compatible preprocessing.
+- q: Why establish a baseline before adaptation?
+  options:
+  - To know whether added training delivers useful improvement.
+  - To guarantee fine-tuning wins.
+  - To avoid reporting costs.
+  answer: 0
+  why: To know whether added training delivers useful improvement.
+- q: What makes fine-tuning familiar from earlier modules?
+  options:
+  - It uses a forward pass, task loss, backpropagation and optimiser updates.
+  - It eliminates gradients.
+  - It learns from final test labels.
+  answer: 0
+  why: It uses a forward pass, task loss, backpropagation and optimiser updates.
+- q: What does parameter-efficient adaptation aim to reduce?
+  options:
+  - Trainable updates and their associated costs.
+  - All forward computation through frozen weights.
+  - The need to evaluate quality.
+  answer: 0
+  why: Trainable updates and their associated costs.
+- q: What is the conceptual change in instruction tuning?
+  options:
+  - Train on task-oriented conversations and desired responses.
+  - Replace next-token loss with accuracy.
+  - Stop using causal prediction.
+  answer: 0
+  why: Train on task-oriented conversations and desired responses.
+- q: What must be checked before combining result files?
+  options:
+  - Their provenance and aligned evaluation identities.
+  - Only their filenames.
+  - Only rounded accuracy values.
+  answer: 0
+  why: Their provenance and aligned evaluation identities.
+- q: What follows further selection using the reported test data?
+  options:
+  - Evaluate the new choice on a fresh final test.
+  - Keep calling the same sample untouched.
+  - Replace uncertainty with more decimal places.
+  answer: 0
+  why: Evaluate the new choice on a fresh final test.
+assessment_revision: day78-v1

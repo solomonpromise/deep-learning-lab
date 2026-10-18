@@ -311,3 +311,495 @@
 - term: Exposure bias
   def: The mismatch between training on reference histories and generating from model-produced
     histories, where errors can affect subsequent inputs.
+
+# Replacement Modules 7–8: teaching terms.
+- term: Pretrained model
+  def: A model whose weights were learned by someone else on a large dataset and published
+    for reuse.
+- term: Weights (parameters)
+  def: The learned numbers inside a model.
+- term: Configuration
+  def: A file describing a model's architecture (and labels) so a library can rebuild
+    it.
+- term: Pipeline
+  def: A Hugging Face helper that runs tokenising, the model and output decoding in
+    one call.
+- term: Hugging Face Hub
+  def: A public website where models and datasets are shared.
+- term: IMDb
+  def: A dataset of movie reviews labelled positive or negative, used throughout Modules
+    7 and 8.
+- term: Fingerprint
+  def: A digest of sorted texts identifies membership under this implementation; a separate ordered text/label digest is needed to check paired prediction alignment.
+- term: Masked language modelling
+  def: 'A pretraining task: predict hidden words from the words on both sides.'
+- term: Base model
+  def: The model produced by pretraining, before adaptation to any task.
+- term: Downstream task
+  def: The task you actually want to solve with a pretrained model.
+- term: Fine-tuning
+  def: Further training of a pretrained model on labelled data for a downstream task.
+- term: SST-2
+  def: A dataset of short film-review sentences labelled positive or negative.
+- term: Body (encoder)
+  def: The shared part of a model that builds representations.
+- term: Head
+  def: A small task-specific layer on top of the body.
+- term: Weight tying
+  def: Using one weight matrix in two places, such as the input word table and the
+    word-prediction layer.
+- term: Probing
+  def: Testing what a model knows with inputs designed to need specific knowledge.
+- term: Contextual representation
+  def: A word vector that depends on the surrounding sentence.
+- term: Hidden states
+  def: The vectors produced after each layer of a Transformer.
+- term: Foundation model
+  def: A model pretrained on broad data, designed to be adapted to many tasks.
+- term: LOAD REPORT
+  def: Hugging Face's table of skipped (UNEXPECTED) and newly created (MISSING) weights
+    when loading.
+- term: TF-IDF
+  def: A word-count representation that down-weights words common to most documents.
+- term: Training from scratch
+  def: Training from random weights using only your own data.
+- term: Sign test
+  def: A paired test that counts the examples where exactly one of two models is right.
+- term: State dict
+  def: A dictionary from each weight's name to its tensor.
+- term: Safetensors
+  def: A safe file format for weights that cannot contain executable code.
+- term: Repository
+  def: A Hub storage space for one model, with its files and history.
+- term: Commit / revision
+  def: A recorded change to a repository / the version you ask for when loading.
+- term: Repository name
+  def: The `owner/name` identifier of a Hub repository.
+- term: Model repository
+  def: A Hub folder with a model's configuration, weights, tokeniser files and card,
+    plus history.
+- term: Local cache
+  def: The folder where downloaded Hub files are stored for reuse.
+- term: Transformers
+  def: Hugging Face's library of model architectures and loading code.
+- term: Datasets
+  def: Hugging Face's library for loading and processing datasets.
+- term: Tokenizers
+  def: Hugging Face's fast, compiled library for splitting text into tokens.
+- term: huggingface_hub
+  def: 'The helper library that talks to the Hub: listing, downloading, caching.'
+- term: Model card
+  def: A repository's `README.md` describing a model, its uses and limitations.
+- term: Card metadata
+  def: Machine-readable fields at the top of a model card, such as `license` and `model-index`.
+- term: ONNX
+  def: A file format for running models outside the framework that trained them.
+- term: Auto classes
+  def: Classes that read a configuration and build the matching architecture.
+- term: Dataset / DatasetDict
+  def: A table of examples / a dictionary of tables, one per split.
+- term: Features
+  def: The named, typed columns of a dataset.
+- term: Apache Arrow
+  def: A column-based file format for fast reading of large tables.
+- term: Memory mapping
+  def: Reading a file on disk as if it were in memory, fetching parts only when used.
+- term: map / filter
+  def: Datasets operations that transform every row / keep rows that pass a test.
+- term: Padding
+  def: Adding filler tokens so sequences in a batch have equal length.
+- term: Data collator
+  def: A function that combines examples into a batch, for example by padding them.
+- term: Fast tokeniser
+  def: A tokeniser backed by the compiled Tokenizers library.
+- term: WordPiece
+  def: A subword algorithm that marks continuation pieces with `##`; used by BERT
+    and DistilBERT.
+- term: BPE (byte-pair encoding)
+  def: A subword algorithm that merges frequent character pairs; used by GPT-2.
+- term: Normaliser
+  def: The tokeniser step that cleans text before splitting, such as lowercasing.
+- term: Offset mapping
+  def: The character positions in the original text that each token came from.
+- term: Licence
+  def: The legal terms for using, changing and sharing a model.
+- term: Permissive licence
+  def: A licence allowing broad use, including commercial, with few conditions.
+- term: Custom licence
+  def: Terms written by a model's publisher specifically for that model.
+- term: Gated model
+  def: A model whose files require signing in and accepting terms before download.
+- term: Intended use
+  def: What a model's creators designed it to be used for.
+- term: Pipeline tag
+  def: The Hub's label for the task a model performs, also used as the `pipeline`
+    task name.
+- term: Text classification
+  def: Assigning one label to a whole text.
+- term: Question answering
+  def: Finding the span of a passage that answers a question.
+- term: Summarisation
+  def: Producing a shorter version of a long text.
+- term: Text generation
+  def: Continuing a prompt with new text.
+- term: Sentence embedding
+  def: One vector for a whole sentence, placing similar meanings close together.
+- term: Zero-shot image classification
+  def: Classifying an image into labels given as words at run time.
+- term: Greedy decoding
+  def: Generating by always choosing the most likely next token.
+- term: Safetensors header
+  def: The start of a safetensors file, listing each tensor's name, shape and number
+    type.
+- term: bfloat16 (BF16)
+  def: A 16-bit number format, 2 bytes per number.
+- term: Weight memory
+  def: 'Memory needed to hold a model''s parameters: parameters × bytes per parameter.'
+- term: Context length
+  def: The maximum number of tokens a model accepts at once.
+- term: Truncation
+  def: Cutting an input down to a maximum number of tokens.
+- term: Benchmark
+  def: A fixed public dataset and scoring rule for comparing models.
+- term: GLUE
+  def: A collection of English language-understanding benchmarks, including SST-2.
+- term: Dev set
+  def: Another name for a validation set.
+- term: Domain shift
+  def: A difference between the data a model was built on and the data it meets in
+    use.
+- term: Contamination
+  def: Evaluation data appearing in a model's training data, inflating its scores.
+- term: Hosted API
+  def: A service that runs a model remotely and returns results over the internet.
+- term: Access token
+  def: A secret key that identifies you to a service.
+- term: Rate limit
+  def: A cap on how many requests a service accepts in a given time.
+- term: '`top_k`'
+  def: How many top labels a classification pipeline returns; `None` returns all.
+- term: Batch size
+  def: How many inputs are processed together in one forward pass.
+- term: '`AutoModelForSequenceClassification`'
+  def: The Auto class for a model with a whole-text classification head.
+- term: '`id2label`'
+  def: The configuration's map from output position to label name.
+- term: Attention mask
+  def: 1s for real tokens and 0s for padding, so attention ignores padding.
+- term: '`max_length`'
+  def: The maximum number of tokens kept when truncating.
+- term: Logits
+  def: A model's raw, unnormalised output scores.
+- term: Softmax
+  def: Exponentiate each logit, then divide by the sum, giving probabilities.
+- term: Eval mode / train mode
+  def: Model states that disable / enable training-only behaviour such as dropout.
+- term: '`torch.inference_mode()`'
+  def: A context manager that disables gradient recording for faster inference.
+- term: Inference tensor
+  def: A tensor created under `inference_mode`, excluded from gradient tracking.
+- term: Device placement
+  def: Putting model weights and inputs on the same device.
+- term: Padding waste
+  def: Computation spent on padding positions.
+- term: Length bucketing
+  def: Grouping inputs of similar length into batches to reduce padding.
+- term: '`save_pretrained`'
+  def: Saves a model or tokeniser to a folder in Hub format.
+- term: Shard
+  def: One of several files holding a large model's weights.
+- term: Capability
+  def: What a model computes from an input.
+- term: Application layer
+  def: 'The code around a model: input checks, fit checks, decision rules, error handling.'
+- term: Out-of-distribution (OOD) input
+  def: An input unlike the data a model was trained on.
+- term: Confidence
+  def: The probability a classifier gives to its chosen class.
+- term: Temperature
+  def: A divisor applied to logits before softmax, sharpening (below 1) or flattening
+    (above 1) the distribution.
+- term: Top-k sampling
+  def: Sampling from the k most likely tokens.
+- term: Top-p (nucleus) sampling
+  def: Sampling from the smallest set of tokens with total probability at least p.
+- term: Degenerate repetition
+  def: A generator getting stuck repeating words or tokens.
+- term: Sentence-embedding model
+  def: A model mapping a text to one vector so similar meanings are close.
+- term: Mean pooling
+  def: Averaging token vectors, ignoring padding, to get one vector per text.
+- term: Semantic search
+  def: Retrieving documents by similarity of meaning.
+- term: Zero-shot classification
+  def: Classifying into classes described in words, without training on them.
+- term: Prompt template
+  def: A sentence pattern used to describe each class, such as "a photo of a {}.".
+- term: Text-to-image retrieval
+  def: Finding images whose embeddings are closest to a text query's.
+- term: Inference service
+  def: A wrapper that turns a model into a dependable component with structured results.
+- term: Abstention
+  def: Declining to answer, usually because confidence is low.
+- term: Out-of-domain detection
+  def: Checking whether an input resembles the data a model was built for.
+- term: Threshold
+  def: The cut-off value in a decision rule, set on validation data.
+- term: Coverage
+  def: The share of inputs the system answers.
+- term: Selective accuracy
+  def: Accuracy on the answered inputs only.
+- term: Confusion matrix
+  def: A table counting each combination of true and predicted label.
+- term: Recall
+  def: The share of a class's real examples labelled correctly.
+- term: Deployment constraint
+  def: A practical limit a deployed model must meet, such as latency, memory or cost.
+- term: Latency
+  def: The time to serve one request.
+- term: Throughput
+  def: The number of requests served per second.
+- term: Percentile (p95)
+  def: The value below which 95% of measurements fall.
+- term: Dynamic batching
+  def: Grouping requests that arrive close together into one batch.
+- term: GPU
+  def: A processor with many parallel arithmetic units, well suited to neural networks.
+- term: float32 / float16 / bfloat16
+  def: 32- and 16-bit floating-point number formats.
+- term: Precision
+  def: The smallest relative difference a format can represent.
+- term: Range
+  def: The largest magnitude a format can store before overflowing.
+- term: Overflow
+  def: A value too large for its format, stored as infinity.
+- term: Quantisation
+  def: Storing numbers with fewer bits, such as int8 integers plus a scale.
+- term: int8
+  def: 8-bit integers, 1 byte each.
+- term: Scale
+  def: The factor converting between original values and quantised integers.
+- term: Per-channel quantisation
+  def: A separate scale for each row of a weight matrix.
+- term: Weight-only quantisation
+  def: Quantising stored weights while computing with higher-precision activations.
+- term: torchao
+  def: PyTorch's library for quantisation and related optimisations.
+- term: Kernel
+  def: A low-level routine performing an operation for specific hardware and number
+    format.
+- term: Response cache
+  def: Stored answers returned directly when the same request repeats.
+- term: Cache key
+  def: 'The information identifying a cached answer: input, model version, settings.'
+- term: Cache hit rate
+  def: The share of requests served from the cache.
+- term: KV cache
+  def: Stored attention keys and values for past tokens, reused during generation.
+- term: Self-hosting
+  def: Running a model on machines you control.
+- term: Break-even volume
+  def: The volume at which self-hosting and a hosted service cost the same.
+- term: Manifest
+  def: A record of the model version, settings, data and software behind a result.
+- term: Deterministic inference
+  def: Exactly the same output for the same input every time.
+- term: Tolerance
+  def: The allowed difference when comparing floating-point results.
+- term: Requirement
+  def: Concrete, checkable criteria a model must meet, written before measuring.
+- term: Decision rule
+  def: The procedure, fixed in advance, for choosing among candidates.
+- term: Candidate
+  def: A model shortlisted for testing.
+- term: Label scheme
+  def: The set of output classes and what each output position means.
+- term: Training records
+  def: 'Files documenting how a model was trained: arguments, logs, data splits.'
+- term: Evaluation leakage
+  def: Evaluation data seen during training or model selection, inflating scores.
+- term: Screening
+  def: Eliminating candidates on non-negotiable criteria before comparing performance.
+- term: Setting (hyperparameter) tuning
+  def: Choosing settings such as `max_length` by validation results.
+- term: Confirmatory test
+  def: A single use of the test set after all choices are made.
+- term: Failure analysis
+  def: Examining the inputs a model gets wrong to find patterns.
+- term: Decision record
+  def: A document of what was chosen, why, on what evidence, with which limitations.
+- term: Adaptation
+  def: Making a general pretrained model better at a specific task.
+- term: Adaptation spectrum
+  def: The range of adaptation methods, ordered by how much of the model they change.
+- term: Prompting
+  def: Adapting a model only through its input text; no weights change.
+- term: Chat template
+  def: The special-marker format an instruction-tuned model expects around messages.
+- term: System message
+  def: An instruction placed before the conversation that sets the assistant's role.
+- term: Feature extraction
+  def: Using a frozen model's outputs as features for a separate small model.
+- term: Frozen
+  def: Not updated during training.
+- term: Full fine-tuning
+  def: Fine-tuning that updates every weight.
+- term: PEFT
+  def: 'Parameter-efficient fine-tuning: training only a small set of new or selected
+    weights.'
+- term: LoRA
+  def: A PEFT method that adds small trainable low-rank matrices to some layers.
+- term: Classification head
+  def: The task-specific layer(s) on top of a pretrained body.
+- term: Relative change
+  def: The size of a weight change divided by the size of the original weights.
+- term: Catastrophic forgetting
+  def: Losing earlier abilities when trained on a new task.
+- term: Masked-word loss
+  def: Cross-entropy of a masked language model's guesses for hidden words.
+- term: Expected output (target)
+  def: What the model should produce for each input.
+- term: Labelling rule
+  def: How labels were decided.
+- term: Highly polar
+  def: Labels derived from extreme ratings; review prose may still contain mixed opinions.
+- term: Dataset card
+  def: The documentation page of a dataset on the Hub.
+- term: Cleaning
+  def: Removing content with no signal for the task.
+- term: Exact / near-duplicate
+  def: Identical examples / examples differing only trivially.
+- term: Instruction formatting
+  def: Rewriting a labelled example as an instruction and response for a chat model.
+- term: Train / validation / test split
+  def: Data for fitting / for choosing settings / for one final estimate.
+- term: Group split
+  def: Splitting so that related examples (same author, same item) stay on one side.
+- term: Majority-class baseline
+  def: Always predicting the most common label.
+- term: F1 score
+  def: A combined score of precision and recall for one class.
+- term: Token budget
+  def: The maximum number of tokens per example.
+- term: Head / tail / head+tail truncation
+  def: Keeping the start, the end, or both ends of a long text.
+- term: '`save_to_disk`'
+  def: Saves a Hugging Face dataset in Arrow format.
+- term: Baseline ladder
+  def: A set of baselines of increasing sophistication, measured identically.
+- term: Majority-class floor
+  def: A constant-label baseline selected from training data and evaluated under the same protocol; it is not a guaranteed lower bound.
+- term: n-gram
+  def: A sequence of n consecutive words.
+- term: Off-the-shelf model
+  def: A pretrained model used exactly as downloaded, with no further training.
+- term: Frozen encoder
+  def: A pretrained model whose parameters stay fixed during the current training stage.
+- term: Linear head (probe)
+  def: A single linear layer trained on frozen features.
+- term: Evaluation protocol
+  def: Fixed rules for how every method is measured and compared.
+- term: Paired comparison
+  def: Comparing two methods on the same examples, example by example.
+- term: Results file
+  def: A saved record of a method's settings, costs, metrics and predictions.
+- term: '`num_labels` / `id2label` / `label2id`'
+  def: Configuration settings for the number of classes and their names.
+- term: Cross-entropy loss
+  def: Minus the log-probability of the correct class, averaged over a batch.
+- term: Gradient norm
+  def: The overall size of all gradients, as one number.
+- term: AdamW
+  def: Adam with decoupled weight decay; the standard fine-tuning optimiser.
+- term: Warmup
+  def: Raising the learning rate gradually at the start of training.
+- term: Linear decay
+  def: Lowering the learning rate steadily to zero.
+- term: Learning-rate schedule
+  def: How the learning rate changes over training.
+- term: Step
+  def: One update, made from one batch.
+- term: Checkpoint selection
+  def: Keeping the checkpoint with the best validation score.
+- term: '`Trainer` / `TrainingArguments`'
+  def: Hugging Face's ready-made training loop and its settings.
+- term: Optimiser state
+  def: Extra per-weight numbers kept by an optimiser; AdamW keeps two.
+- term: Training memory
+  def: Weights + gradients + optimiser states + activations.
+- term: Freezing
+  def: Setting `requires_grad = False` so a parameter is not trained.
+- term: Trainable parameters
+  def: Parameters that receive gradients and updates.
+- term: Rank
+  def: The number of independent directions a matrix uses.
+- term: Low-rank
+  def: Representable with few directions.
+- term: Singular value decomposition
+  def: Splitting a matrix into ranked rank-1 pieces.
+- term: LoRA rank (r)
+  def: The inner dimension of B·A.
+- term: LoRA alpha (α)
+  def: A scaling constant; the update is multiplied by α / r.
+- term: Target modules
+  def: The weight matrices that receive LoRA updates.
+- term: LoRA dropout
+  def: Dropout applied to the LoRA input during training.
+- term: Bottleneck adapter
+  def: A small down/up projection inserted into each layer.
+- term: Prefix tuning
+  def: Learning extra key/value vectors that tokens can attend to.
+- term: Adapter (PEFT)
+  def: The saved set of trained PEFT weights for one task.
+- term: Merging
+  def: 'Folding a LoRA update into the frozen weights: W + (α / r)·B·A.'
+- term: Instruction-tuned model
+  def: A base model further trained to follow instructions.
+- term: SFT
+  def: Supervised fine-tuning on (instruction, response) examples.
+- term: Preference tuning
+  def: Training from judgements of which response is better (e.g. RLHF, DPO).
+- term: Special tokens
+  def: Tokens with reserved meanings, such as turn markers.
+- term: Roles
+  def: System, user and assistant parts of a conversation.
+- term: Prompt masking
+  def: Excluding prompt tokens from the loss.
+- term: Label -100
+  def: The label value ignored by Hugging Face loss functions.
+- term: Causal LM loss
+  def: Cross-entropy of predicting each token from those before it.
+- term: Blockwise quantisation
+  def: Quantising small blocks of numbers, each with its own scale.
+- term: NF4
+  def: A 4-bit format with levels matched to bell-shaped weight distributions.
+- term: Double quantisation
+  def: Quantising the quantisation scales themselves.
+- term: QLoRA
+  def: LoRA on top of a frozen 4-bit (NF4) model.
+- term: Dequantisation
+  def: Converting quantised values back to higher precision.
+- term: Paged optimiser
+  def: An optimiser that moves its state out of GPU memory when needed.
+- term: Training loss
+  def: Loss on the training batches.
+- term: Validation loss / accuracy
+  def: Loss or accuracy on held-out data, used to monitor generalisation.
+- term: Confidence interval
+  def: An interval from a method designed to cover the target quantity at a stated rate over repeated samples; this is not a probability assigned to the fixed unknown value.
+- term: Wilson interval
+  def: A standard confidence interval for a proportion.
+- term: Error analysis
+  def: Examining which examples a model gets wrong and why.
+- term: Error overlap
+  def: The number of errors two models share.
+- term: Validation–test gap
+  def: The drop from validation to test score, partly due to selecting on validation.
+- term: Paired sign test
+  def: Comparing two models on the same examples by counting where only one is right.
+- term: Run-to-run variation
+  def: Differences between runs caused by randomness.
+- term: Experiment tracking
+  def: Recording each run's settings, data, versions and results.
+- term: Keep-or-reject rule
+  def: A criterion, set in advance, for adopting a model.

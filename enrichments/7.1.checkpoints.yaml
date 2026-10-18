@@ -1,0 +1,66 @@
+skill: Understanding Pretrained Models
+sections:
+  1:
+    questions:
+    - q: What changes between the pretrained and random-weight twins?
+      options:
+      - Learned parameter values, with architecture and tokenizer fixed.
+      - The task labels.
+      - The number of input reviews.
+      answer: 0
+      why: Learned parameter values, with architecture and tokenizer fixed.
+  2:
+    questions:
+    - q: What is downstream adaptation?
+      options:
+      - Training for a target task after pretraining.
+      - Downloading configuration alone.
+      - Evaluating on training data only.
+      answer: 0
+      why: Training for a target task after pretraining.
+  3:
+    questions:
+    - q: What makes a representation contextual?
+      options:
+      - Its output depends on surrounding tokens.
+      - Every token gets a new vocabulary ID.
+      - Its coordinates have guaranteed named meanings.
+      answer: 0
+      why: Its output depends on surrounding tokens.
+  4:
+    questions:
+    - q: Can a newly attached random task head be trusted immediately?
+      options:
+      - No; the new head needs appropriate training.
+      - Yes; the body makes every head trained.
+      - Only if its logits are large.
+      answer: 0
+      why: No; the new head needs appropriate training.
+  5:
+    questions:
+    - q: What does the baseline comparison establish?
+      options:
+      - Results for these models, data budgets and settings.
+      - Pretrained models always win.
+      - Traditional ML is always better.
+      answer: 0
+      why: Results for these models, data budgets and settings.
+  6:
+    questions:
+    - q: What does configuration specify?
+      options:
+      - The architecture and relevant model settings.
+      - All learned parameter values.
+      - A guarantee of task accuracy.
+      answer: 0
+      why: The architecture and relevant model settings.
+  7:
+    questions:
+    - q: Why pin a checkpoint revision?
+      options:
+      - To identify the exact artifact loaded.
+      - To guarantee identical results on every device.
+      - To avoid evaluating the model.
+      answer: 0
+      why: To identify the exact artifact loaded.
+assessment_revision: day78-v1

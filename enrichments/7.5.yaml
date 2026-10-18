@@ -1,0 +1,133 @@
+summary: How do we turn a pretrained model's capability into a feature that behaves
+  sensibly on real, messy inputs?
+answers:
+  2-1:
+  - A two-class softmax always splits a probability of 1 between "positive" and "negative";
+    there's no third option for "neither". The output only compares the two classes
+    with each other, so any input, even gibberish, is pushed towards whichever class
+    its features resemble slightly more, and the softmax can make that look very confident.
+    Detecting that an input doesn't belong needs a separate signal, such as the review-likeness
+    check in Section 6.
+  3-1:
+  - 'Greedy decoding is deterministic: the same context always gives the same next
+    token. Once the text enters a pattern where the pattern itself makes the next
+    repeat most likely (as with the blank lines), greedy has no way out. Sampling
+    sometimes picks a less likely token, which changes the context and lets the text
+    move on.'
+  4-1:
+  - MiniLM similarity mostly measures topic. Reviews of the same film, or of similar
+    films, would score as similar whether they agree or disagree. Section 4.1's opposite-sentiment
+    sentence scored 0.737, as high as a true paraphrase. To find reviews that agree,
+    you'd need to combine similarity with a sentiment signal, or use a model trained
+    to compare stances.
+  5-1:
+  - When you have no labelled data for your classes, or the classes change often.
+    CLIP needs only a sentence per class, so a new category ("a photo of a raincoat")
+    can be added instantly, without collecting and labelling images or retraining.
+    It's also useful for searching images with free-text queries. If you have plenty
+    of labelled images for a fixed set of classes, a trained model will usually be
+    more accurate (Module 8 shows ways to adapt pretrained models).
+  6-1:
+  - 'Because the goal is to keep genuine reviews flowing: the threshold controls how
+    many real reviews are wrongly flagged (here about 1%), and we can only measure
+    that on genuine reviews. We didn''t have a representative collection of the non-reviews
+    users might send, and any such set we invented would bias the threshold towards
+    the examples we happened to think of. The cost is that we don''t know exactly
+    how many non-reviews would slip through, so that is worth monitoring once the
+    service is live.'
+  7-1:
+  - Answering everything gives 0.875, below the target. On the coverage–accuracy curve,
+    accuracy reaches 0.932 at 80% coverage and 0.984 at 50%, so 0.95 requires answering
+    somewhere between half and four-fifths of reviews. The manager has to decide whether
+    it's acceptable for people to handle the rest, and how many people that needs.
+    Alternatively, the model must be improved, for example by fine-tuning it on IMDb
+    data (Module 8).
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  positive_prob: "Return the sentiment model probability assigned to positive, restoring\
+    \ original input order.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller.\n    batch_size: Maximum examples processed together."
+  generate: "Generate continuation tokens under the declared decoding settings and\
+    \ return decoded new text.\n\nArguments:\n    prompt: Text context supplied to\
+    \ the generator.\n    seed: Seed controlling the local split or sampling generator.\n\
+    \    **settings: Explicit settings forwarded to the operation described above."
+  repeated_trigram_share: "Measure repeated three-word sequences in this generated\
+    \ sample; this is not a general quality metric.\n\nArguments:\n    text: One input\
+    \ text string."
+  embed: "Mean-pool nonpadding token vectors and return unit-length sentence vectors.\n\
+    \nArguments:\n    texts: Text strings in the order expected by the caller.\n \
+    \   batch_size: Maximum examples processed together.\n    max_length: Token budget\
+    \ including special tokens."
+  image_vectors: "Preprocess Fashion-MNIST images, apply the CLIP image encoder and\
+    \ normalise projected features.\n\nArguments:\n    idx: Indices selecting examples\
+    \ from the declared collection.\n    invert: Whether to reverse grayscale polarity\
+    \ before CLIP preprocessing."
+  text_vectors: "Encode candidate descriptions with CLIP and normalise the projected\
+    \ text features.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  review_likeness: "Return similarity to the nearest reference review; use this as\
+    \ a validated heuristic rather than a guarantee.\n\nArguments:\n    texts: Text\
+    \ strings in the order expected by the caller."
+  SentimentService: Wrap sentiment inference with per-input validation, an out-of-domain
+    heuristic and confidence abstention.
+  SentimentService.__init__: "Initialise the components and settings used by this\
+    \ model or service.\n\nArguments:\n    classify: Callable returning positive-class\
+    \ scores.\n    likeness: Callable returning review-likeness scores.\n    ood_threshold:\
+    \ Validation-selected cutoff for the review-likeness heuristic.\n    conf_threshold:\
+    \ Validation-selected cutoff for answering confidently.\n    max_chars: Maximum\
+    \ accepted input length in characters."
+  SentimentService.check: "Return a rejection reason for invalid input, or None for\
+    \ a permitted text.\n\nArguments:\n    text: One input text string."
+  SentimentService.predict: "Run the declared model or service and return predictions\
+    \ in the original example order.\n\nArguments:\n    texts: Text strings in the\
+    \ order expected by the caller."
+inserts:
+- type: widget
+  name: concept-motion
+  section: 6
+  at: end
+  title: Trace three service decisions
+  intro: Step through a fixed example; each stage explains its assumptions.
+  props:
+    scene: service78
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. No
+    model runs in this walkthrough.
+quiz:
+- q: What turns a model capability into a usable feature?
+  options:
+  - Input validation, decision rules, failure handling and evaluation.
+  - A larger confidence score alone.
+  - Removing all uncertain inputs from reporting.
+  answer: 0
+  why: Input validation, decision rules, failure handling and evaluation.
+- q: Does high semantic similarity guarantee matching sentiment?
+  options:
+  - No; validate which distinctions a space preserves.
+  - Yes, whenever cosine is positive.
+  - Yes, for all sentence models.
+  answer: 0
+  why: No; validate which distinctions a space preserves.
+- q: Why report coverage with answered-case accuracy?
+  options:
+  - A service can raise conditional accuracy by answering fewer cases.
+  - Coverage is the same as recall.
+  - Abstention makes every remaining answer correct.
+  answer: 0
+  why: A service can raise conditional accuracy by answering fewer cases.

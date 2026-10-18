@@ -1,0 +1,610 @@
+{
+  "7.1.1": {
+    "file": "static/img/module78-visuals/figure-7-1-1.png",
+    "lesson": "7.1",
+    "section": 1,
+    "source_cell": 14,
+    "title": "Same Architecture, Different Weights",
+    "alt": "Same Architecture, Different Weights. The architecture and tokenizer are held fixed. The saved CPU run scores 0.486 with random weights and 0.874 with pretrained/adapted weights on the same 500 validation reviews; this does not audit all upstream exposure.",
+    "caption": "The architecture and tokenizer are held fixed. The saved CPU run scores 0.486 with random weights and 0.874 with pretrained/adapted weights on the same 500 validation reviews; this does not audit all upstream exposure.",
+    "mode": "built-in image_gen",
+    "sha256": "b5cd88817ff001b035ce9aa9ba80d7e78222db9e1bf79d9f637599e530fd07c2",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.1.2": {
+    "file": "static/img/module78-visuals/figure-7-1-2.png",
+    "lesson": "7.1",
+    "section": 2,
+    "source_cell": 21,
+    "title": "The Lifecycle of a Pretrained Model",
+    "alt": "The Lifecycle of a Pretrained Model. Pretraining produces reusable weights. Inference can use a checkpoint directly; optional adaptation changes selected weights for a downstream objective.",
+    "caption": "Pretraining produces reusable weights. Inference can use a checkpoint directly; optional adaptation changes selected weights for a downstream objective.",
+    "mode": "built-in image_gen",
+    "sha256": "6975d8c8e2c06db08a78ea8df58f4bf97e26f43ea6374cdfebd7dad375de0a56",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "reviewed": true
+  },
+  "7.1.3": {
+    "file": "static/img/module78-visuals/figure-7-1-3.png",
+    "lesson": "7.1",
+    "section": 4,
+    "source_cell": 35,
+    "title": "One Body, Many Heads",
+    "alt": "One Body, Many Heads. A pretrained body can support different output interfaces. Newly initialised heads require training, and task adaptation can update the body as well as the head.",
+    "caption": "A pretrained body can support different output interfaces. Newly initialised heads require training, and task adaptation can update the body as well as the head.",
+    "mode": "built-in image_gen",
+    "sha256": "bb4583ae66c53f2a2f2d2790af6efece130bfba419ba270fc016660c6bd54b18",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.1.5": {
+    "file": "static/img/module78-visuals/figure-7-1-5.png",
+    "lesson": "7.1",
+    "section": 7,
+    "source_cell": 65,
+    "title": "The Pretrained-Model Picture",
+    "alt": "The Pretrained-Model Picture. Author CPU reference results on the same 500 validation reviews. Label budgets and prior training differ; these measurements do not establish a universal winner.",
+    "caption": "Author CPU reference results on the same 500 validation reviews. Label budgets and prior training differ; these measurements do not establish a universal winner.",
+    "mode": "code-rendered exact figure",
+    "sha256": "bcabccf1d533832b76cf85867667951fe5cbfcc41c94a261bc421ab1e966ec67",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "7.3.2": {
+    "file": "static/img/module78-visuals/figure-7-3-2.png",
+    "lesson": "7.3",
+    "section": 4,
+    "source_cell": 37,
+    "title": "Three Readings of One Model",
+    "alt": "Three Readings of One Model. The card text, structured metadata, and reproduced SST-2 score refer to a different evaluation context from the IMDb run. All displayed numbers come from the source reference results.",
+    "caption": "The card text, structured metadata, and reproduced SST-2 score refer to a different evaluation context from the IMDb run. All displayed numbers come from the source reference results.",
+    "mode": "code-rendered exact figure",
+    "sha256": "e600f8408e49fa56eb468da61a4fecd857798e76c16c71562971ee5b8355f9c7",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "7.5.2": {
+    "file": "static/img/module78-visuals/figure-7-5-2.png",
+    "lesson": "7.5",
+    "section": 7,
+    "source_cell": 49,
+    "title": "How the Service Handled 1,000 Test Reviews",
+    "alt": "How the Service Handled 1,000 Test Reviews. Of 1,000 source test reviews, 909 were answered, 79 received a confidence abstention and 12 were flagged out of domain. Held-back accuracy 0.637 applies to all 91 non-answered reviews.",
+    "caption": "Of 1,000 source test reviews, 909 were answered, 79 received a confidence abstention and 12 were flagged out of domain. Held-back accuracy 0.637 applies to all 91 non-answered reviews.",
+    "mode": "code-rendered exact figure",
+    "sha256": "c2936a01b2ed1ec8f88d585f386f1426842bfac73b9b8566b2ae4f4fea06ed03",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "7.6.1": {
+    "file": "static/img/module78-visuals/figure-7-6-1.png",
+    "lesson": "7.6",
+    "section": 1,
+    "source_cell": 2,
+    "title": "The Deployment Trade-offs",
+    "alt": "The Deployment Trade-offs. Deployment choices trade quality, latency, throughput and memory. The directions shown are engineering considerations to test on the target workload, not measured universal laws.",
+    "caption": "Deployment choices trade quality, latency, throughput and memory. The directions shown are engineering considerations to test on the target workload, not measured universal laws.",
+    "mode": "code-rendered exact figure",
+    "sha256": "feb9c8043ea941edffc35b83c14fc404bb59194f08a4cf2da7bac6cd14975776",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "7.6.2": {
+    "file": "static/img/module78-visuals/figure-7-6-2.png",
+    "lesson": "7.6",
+    "section": 5,
+    "source_cell": 34,
+    "title": "Quantisation in One Picture",
+    "alt": "Quantisation in One Picture. Illustrative symmetric rounding with scale 0.01. The exact reconstruction arithmetic is computed in the figure script; it is separate from the notebook's measured model experiment.",
+    "caption": "Illustrative symmetric rounding with scale 0.01. The exact reconstruction arithmetic is computed in the figure script; it is separate from the notebook's measured model experiment.",
+    "mode": "code-rendered exact figure",
+    "sha256": "0bdcdd51fffc4d7448cfccbd2c78b4bab5f166baf48a25b071e93391f3e5410e",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "7.6.3": {
+    "file": "static/img/module78-visuals/figure-7-6-3.png",
+    "lesson": "7.6",
+    "section": 8,
+    "source_cell": 48,
+    "title": "The Deployment Toolbox",
+    "alt": "The Deployment Toolbox. Source CPU reference measurements and counts. Weight storage is not peak runtime memory, and positions processed with a KV cache are not a direct FLOP or speedup ratio.",
+    "caption": "Source CPU reference measurements and counts. Weight storage is not peak runtime memory, and positions processed with a KV cache are not a direct FLOP or speedup ratio.",
+    "mode": "code-rendered exact figure",
+    "sha256": "7c6d6213fe93a6728f23a9a49081e4741d7e3668a8c864a5ab935c3e6d1282f1",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "7.7.1": {
+    "file": "static/img/module78-visuals/figure-7-7-1.png",
+    "lesson": "7.7",
+    "section": 4,
+    "source_cell": 40,
+    "title": "Three Candidates, Five Checks",
+    "alt": "Three Candidates, Five Checks. Source validation and CPU measurements under declared requirements. The IMDb-trained candidate has known evaluation exposure and missing licence evidence; other candidates are screened by documented information.",
+    "caption": "Source validation and CPU measurements under declared requirements. The IMDb-trained candidate has known evaluation exposure and missing licence evidence; other candidates are screened by documented information.",
+    "mode": "code-rendered exact figure",
+    "sha256": "644a77cedaf0c0cbe42355c52103a9ff360d805c2f8e0479e25d5c06dc7724c4",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "8.1.2": {
+    "file": "static/img/module78-visuals/figure-8-1-2.png",
+    "lesson": "8.1",
+    "section": 5,
+    "source_cell": 26,
+    "title": "Two Ways Fine-Tuning Goes Wrong",
+    "alt": "Two Ways Fine-Tuning Goes Wrong. Source small-run measurements illustrate an overfitting warning and degraded masked-word retention. The retention experiment uses a tied output projection and is not a complete capability audit.",
+    "caption": "Source small-run measurements illustrate an overfitting warning and degraded masked-word retention. The retention experiment uses a tied output projection and is not a complete capability audit.",
+    "mode": "code-rendered exact figure",
+    "sha256": "0c9a0f8b23a69b38d2f804957b29b9a1b49feb9fc2e40352b5b17fb466d31806",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "8.2.2": {
+    "file": "static/img/module78-visuals/figure-8-2-2.png",
+    "lesson": "8.2",
+    "section": 10,
+    "source_cell": 47,
+    "title": "What Each Preparation Step Changed",
+    "alt": "What Each Preparation Step Changed. Counts and token-budget comparisons from the supplied IMDb audit. Exact deduplication defines this course split; the separate normalised audit is not silently substituted for it.",
+    "caption": "Counts and token-budget comparisons from the supplied IMDb audit. Exact deduplication defines this course split; the separate normalised audit is not silently substituted for it.",
+    "mode": "code-rendered exact figure",
+    "sha256": "90b662f9fecd83536de82af99c7dbf390f00ccaf525baf64d884be77bf1f624d",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "8.3.2": {
+    "file": "static/img/module78-visuals/figure-8-3-2.png",
+    "lesson": "8.3",
+    "section": 5,
+    "source_cell": 28,
+    "title": "Where the Bar Is",
+    "alt": "Where the Bar Is. Source test accuracy on 1,000 reviews, with training-label budgets shown. All-label TF-IDF is a separate reference budget; it reads the full text rather than 128 Transformer tokens.",
+    "caption": "Source test accuracy on 1,000 reviews, with training-label budgets shown. All-label TF-IDF is a separate reference budget; it reads the full text rather than 128 Transformer tokens.",
+    "mode": "code-rendered exact figure",
+    "sha256": "04e8a55ab1ba489fc70ad9956fc10822120b3f8c822f7f082beaf60675a573cb",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "8.4.2": {
+    "file": "static/img/module78-visuals/figure-8-4-2.png",
+    "lesson": "8.4",
+    "section": 9,
+    "source_cell": 46,
+    "title": "Fine-Tuning, Measured",
+    "alt": "Fine-Tuning, Measured. Source CPU reference run: the custom-loop checkpoint was chosen on 200 validation reviews and then reported on 1,000 test reviews. The small experiment is not an optimised comparison of all training recipes.",
+    "caption": "Source CPU reference run: the custom-loop checkpoint was chosen on 200 validation reviews and then reported on 1,000 test reviews. The small experiment is not an optimised comparison of all training recipes.",
+    "mode": "code-rendered exact figure",
+    "sha256": "b8bf5b4e73d8f054f23dcc882457e83d134fdee0ab7ca5336cadfd3ca69a0896",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "8.5.2": {
+    "file": "static/img/module78-visuals/figure-8-5-2.png",
+    "lesson": "8.5",
+    "section": 9,
+    "source_cell": 46,
+    "title": "Same Accuracy, a Fraction of the Cost",
+    "alt": "Same Accuracy, a Fraction of the Cost. Both source runs achieved 0.834 test accuracy but disagreed on 108 of 1,000 predictions. Equal observed accuracy and p=1 do not prove equivalence. Memory estimates exclude activations.",
+    "caption": "Both source runs achieved 0.834 test accuracy but disagreed on 108 of 1,000 predictions. Equal observed accuracy and p=1 do not prove equivalence. Memory estimates exclude activations.",
+    "mode": "code-rendered exact figure",
+    "sha256": "8658cfb54c9e57fbcf9613e409b2d0bdf0d54f26ae263e7a0b87faa3519a6776",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "8.6.2": {
+    "file": "static/img/module78-visuals/figure-8-6-2.png",
+    "lesson": "8.6",
+    "section": 8,
+    "source_cell": 36,
+    "title": "What Fits Where (7B Model)",
+    "alt": "What Fits Where (7B Model). Simplified storage arithmetic, not measured peak training memory: float32 full-model Adam state, bfloat16 base weights, and an illustrative four-bit layout. No bar guarantees a GPU training fit or implements NF4.",
+    "caption": "Simplified storage arithmetic, not measured peak training memory: float32 full-model Adam state, bfloat16 base weights, and an illustrative four-bit layout. No bar guarantees a GPU training fit or implements NF4.",
+    "mode": "code-rendered exact figure",
+    "sha256": "d49ebb75dc3c68006c93a564d9da5d0cc6d64234c669a6ac7d697be11fae49ce",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "8.7.2": {
+    "file": "static/img/module78-visuals/figure-8-7-2.png",
+    "lesson": "8.7",
+    "section": 9,
+    "source_cell": 45,
+    "title": "The Verdict",
+    "alt": "The Verdict. Keep/reject conclusions apply to the supplied one-epoch, 1,000-label experiment and declared requirements. Future tuning needs new validation work and a fresh final test sample.",
+    "caption": "Keep/reject conclusions apply to the supplied one-epoch, 1,000-label experiment and declared requirements. Future tuning needs new validation work and a fresh final test sample.",
+    "mode": "code-rendered exact figure",
+    "sha256": "28b7330fa854b5d63a1e3a1105b0048a8f4a7d784c2160d9f3a98da136f22821",
+    "dimensions": [
+      2100,
+      1200
+    ],
+    "reviewed": true
+  },
+  "7.1.4": {
+    "file": "static/img/module78-visuals/figure-7-1-4.png",
+    "lesson": "7.1",
+    "section": 6,
+    "source_cell": 57,
+    "title": "What You Download",
+    "alt": "What You Download. Configuration describes the architecture, weights supply learned numbers, and the matching tokenizer defines the text interface. These schematic file objects are not a screenshot.",
+    "caption": "Configuration describes the architecture, weights supply learned numbers, and the matching tokenizer defines the text interface. These schematic file objects are not a screenshot.",
+    "mode": "built-in image_gen",
+    "sha256": "96f377c69950333d9334990dba192ce39a42dc1a965cd2f9df1a4f73a981b7be",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.2.1": {
+    "file": "static/img/module78-visuals/figure-7-2-1.png",
+    "lesson": "7.2",
+    "section": 1,
+    "source_cell": 8,
+    "title": "The Hugging Face Ecosystem",
+    "alt": "The Hugging Face Ecosystem. The Hub and local cache supply compatible artifacts. Tokenizers, Datasets and Transformers serve different stages of the application; cards supply evidence to inspect.",
+    "caption": "The Hub and local cache supply compatible artifacts. Tokenizers, Datasets and Transformers serve different stages of the application; cards supply evidence to inspect.",
+    "mode": "built-in image_gen",
+    "sha256": "a4b4135d04f7cd62f495f9b95a7b1a8e7eba573388f4179c605434baa71c7f0f",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.2.2": {
+    "file": "static/img/module78-visuals/figure-7-2-2.png",
+    "lesson": "7.2",
+    "section": 2,
+    "source_cell": 19,
+    "title": "Anatomy of a Model Repository",
+    "alt": "Anatomy of a Model Repository. A repository can contain documentation, configuration, weights and tokenizer artifacts in several formats. Download only the compatible files required by your framework.",
+    "caption": "A repository can contain documentation, configuration, weights and tokenizer artifacts in several formats. Download only the compatible files required by your framework.",
+    "mode": "built-in image_gen",
+    "sha256": "585634613e4b4923ebbc16af27e3d76fb036ca1fb483c24c1953dc06267a4458",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "reviewed": true
+  },
+  "7.2.3": {
+    "file": "static/img/module78-visuals/figure-7-2-3.png",
+    "lesson": "7.2",
+    "section": 3,
+    "source_cell": 38,
+    "title": "A Dataset Pipeline",
+    "alt": "A Dataset Pipeline. Inspect examples, transform them under a declared policy, then dynamically pad and mask each batch. Learned preprocessing must be fitted on training data only.",
+    "caption": "Inspect examples, transform them under a declared policy, then dynamically pad and mask each batch. Learned preprocessing must be fitted on training data only.",
+    "mode": "built-in image_gen",
+    "sha256": "d3c514d6c761ccdd8e04730e44ad4f2cddbc27bb4569d88717097262482bafac",
+    "dimensions": [
+      2073,
+      758
+    ],
+    "reviewed": true
+  },
+  "7.2.4": {
+    "file": "static/img/module78-visuals/figure-7-2-4.png",
+    "lesson": "7.2",
+    "section": 4,
+    "source_cell": 56,
+    "title": "From Name to Working Model",
+    "alt": "From Name to Working Model. The repository name resolves to artifacts; the tokenizer prepares IDs and masks, and compatible model code loads the architecture and weights before inference.",
+    "caption": "The repository name resolves to artifacts; the tokenizer prepares IDs and masks, and compatible model code loads the architecture and weights before inference.",
+    "mode": "built-in image_gen",
+    "sha256": "67d9524dcd6b6ddf712cdc9a41d61feda87c38e8ece52ad65639bb9b6f646a5c",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.3.1": {
+    "file": "static/img/module78-visuals/figure-7-3-1.png",
+    "lesson": "7.3",
+    "section": 1,
+    "source_cell": 2,
+    "title": "From Problem to Shortlist",
+    "alt": "From Problem to Shortlist. Requirements narrow a shortlist; documentation and representative evaluation determine whether a candidate actually fits. Popularity and parameter count alone do not decide.",
+    "caption": "Requirements narrow a shortlist; documentation and representative evaluation determine whether a candidate actually fits. Popularity and parameter count alone do not decide.",
+    "mode": "built-in image_gen",
+    "sha256": "4b613624c6e643dd1710cfa95bfa9380b6e71ce828039271a562c2c39be5d590",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.3.3": {
+    "file": "static/img/module78-visuals/figure-7-3-3.png",
+    "lesson": "7.3",
+    "section": 5,
+    "source_cell": 39,
+    "title": "The Model-Selection Checklist",
+    "alt": "The Model-Selection Checklist. Check interface, parameter storage versus runtime memory, context, benchmark protocol, training exposure and deployment terms before adopting a model.",
+    "caption": "Check interface, parameter storage versus runtime memory, context, benchmark protocol, training exposure and deployment terms before adopting a model.",
+    "mode": "built-in image_gen",
+    "sha256": "fd1b8ddc6a1ae51e35f03c33dfe653861e13953b14b70c191e4acadb2cb6d2c1",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.4.1": {
+    "file": "static/img/module78-visuals/figure-7-4-1.png",
+    "lesson": "7.4",
+    "section": 1,
+    "source_cell": 2,
+    "title": "From Text to Label in Five Steps",
+    "alt": "From Text to Label in Five Steps. Tokenization, model computation, logits, probabilities and label mapping are separate steps. Weights stay fixed during this inference flow.",
+    "caption": "Tokenization, model computation, logits, probabilities and label mapping are separate steps. Weights stay fixed during this inference flow.",
+    "mode": "built-in image_gen",
+    "sha256": "920b7066ff565778924421a37c53aef50ef5d27130d54e0245fde6b819b70085",
+    "dimensions": [
+      1983,
+      793
+    ],
+    "reviewed": true
+  },
+  "7.4.2": {
+    "file": "static/img/module78-visuals/figure-7-4-2.png",
+    "lesson": "7.4",
+    "section": 4,
+    "source_cell": 27,
+    "title": "Padding, Masks and Truncation",
+    "alt": "Padding, Masks and Truncation. Padding adds positions, an attention mask restricts access to padded positions, and truncation discards input. This illustration is not a causal future-token mask.",
+    "caption": "Padding adds positions, an attention mask restricts access to padded positions, and truncation discards input. This illustration is not a causal future-token mask.",
+    "mode": "built-in image_gen",
+    "sha256": "af7b67cb10cf6f1e5ba7235acaf3675ca32468c0dbd324a3de847afbd28ce6d6",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.4.3": {
+    "file": "static/img/module78-visuals/figure-7-4-3.png",
+    "lesson": "7.4",
+    "section": 7,
+    "source_cell": 47,
+    "title": "The Inference Checklist",
+    "alt": "The Inference Checklist. Evaluation mode controls layers such as dropout; no-gradient inference controls autograd. Model and inputs must use compatible devices. Save preprocessing and settings too.",
+    "caption": "Evaluation mode controls layers such as dropout; no-gradient inference controls autograd. Model and inputs must use compatible devices. Save preprocessing and settings too.",
+    "mode": "built-in image_gen",
+    "sha256": "def32e232b2e82603062fa5e88d5ccedd3c950911c70a94bb46f77e5ce48ebe8",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.5.1": {
+    "file": "static/img/module78-visuals/figure-7-5-1.png",
+    "lesson": "7.5",
+    "section": 1,
+    "source_cell": 2,
+    "title": "From Capability to Feature",
+    "alt": "From Capability to Feature. An application adds input validation, decision rules, error handling and measured quality to a pretrained capability. The OOD check is a heuristic to validate, not a guarantee.",
+    "caption": "An application adds input validation, decision rules, error handling and measured quality to a pretrained capability. The OOD check is a heuristic to validate, not a guarantee.",
+    "mode": "built-in image_gen",
+    "sha256": "daa25ab917ecd6ae294d731ad88cfa27cd0fd49c129776deccb3629e9a8e420b",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "reviewed": true
+  },
+  "7.5.3": {
+    "file": "static/img/module78-visuals/figure-7-5-3.png",
+    "lesson": "7.5",
+    "section": 7,
+    "source_cell": 50,
+    "title": "Four Capabilities, One Lesson",
+    "alt": "Four Capabilities, One Lesson. Each capability has failure modes. The notebook measures particular examples; similarity, confidence and fluent generation do not by themselves establish correctness.",
+    "caption": "Each capability has failure modes. The notebook measures particular examples; similarity, confidence and fluent generation do not by themselves establish correctness.",
+    "mode": "built-in image_gen",
+    "sha256": "cb9d071dbebfebab6caf96d56bbaa6e620658d2ae40a4af0e76de677668e3aa9",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "7.7.2": {
+    "file": "static/img/module78-visuals/figure-7-7-2.png",
+    "lesson": "7.7",
+    "section": 5,
+    "source_cell": 46,
+    "title": "The Model-Selection Workflow",
+    "alt": "The Model-Selection Workflow. Requirements, documentation, representative inputs, validation choices and final reporting belong in a recorded process. Repeated selection on a test sample requires a new final test.",
+    "caption": "Requirements, documentation, representative inputs, validation choices and final reporting belong in a recorded process. Repeated selection on a test sample requires a new final test.",
+    "mode": "built-in image_gen",
+    "sha256": "e14de7c2ba5f144b4f647c692064ccfc516ad9a9909c0755b1159a7122a0b1fe",
+    "dimensions": [
+      1916,
+      821
+    ],
+    "reviewed": true
+  },
+  "8.1.1": {
+    "file": "static/img/module78-visuals/figure-8-1-1.png",
+    "lesson": "8.1",
+    "section": 1,
+    "source_cell": 2,
+    "title": "The Adaptation Spectrum",
+    "alt": "The Adaptation Spectrum. Prompting changes the input; a frozen encoder supports a trained head; LoRA changes selected adapters; full fine-tuning makes the selected base parameters trainable. More complexity need not improve quality.",
+    "caption": "Prompting changes the input; a frozen encoder supports a trained head; LoRA changes selected adapters; full fine-tuning makes the selected base parameters trainable. More complexity need not improve quality.",
+    "mode": "built-in image_gen",
+    "sha256": "b6c1f241f721dbf71f38e0096b83a58a51af318ddb988d552cc5aa4a3be9762c",
+    "dimensions": [
+      1942,
+      809
+    ],
+    "reviewed": true
+  },
+  "8.1.3": {
+    "file": "static/img/module78-visuals/figure-8-1-3.png",
+    "lesson": "8.1",
+    "section": 6,
+    "source_cell": 28,
+    "title": "Choosing Where to Adapt",
+    "alt": "Choosing Where to Adapt. Measure simpler options before adding training cost. The order is a decision aid, not a guaranteed quality ranking or a claim that every task requires an LLM prompt.",
+    "caption": "Measure simpler options before adding training cost. The order is a decision aid, not a guaranteed quality ranking or a claim that every task requires an LLM prompt.",
+    "mode": "built-in image_gen",
+    "sha256": "24cdcbf79415921d8d4d4e6ef3a66238763620de4c72247699175b3465fe6890",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "8.2.1": {
+    "file": "static/img/module78-visuals/figure-8-2-1.png",
+    "lesson": "8.2",
+    "section": 1,
+    "source_cell": 2,
+    "title": "The Data Preparation Pipeline",
+    "alt": "The Data Preparation Pipeline. Group duplicate examples before splitting; keep validation and test out of training updates. Fit learned preprocessing on train, then apply the declared policy to held-out data.",
+    "caption": "Group duplicate examples before splitting; keep validation and test out of training updates. Fit learned preprocessing on train, then apply the declared policy to held-out data.",
+    "mode": "built-in image_gen",
+    "sha256": "112c0890a22a4411a84deb62e8e75739d004e5e6ea55a68686b221ed8f0b3c2c",
+    "dimensions": [
+      1937,
+      812
+    ],
+    "reviewed": true
+  },
+  "8.3.1": {
+    "file": "static/img/module78-visuals/figure-8-3-1.png",
+    "lesson": "8.3",
+    "section": 1,
+    "source_cell": 2,
+    "title": "The Baseline Ladder",
+    "alt": "The Baseline Ladder. Baselines share a declared evaluation protocol. Off-the-shelf, frozen-feature and trained alternatives use different upstream training and sometimes different input information; disclose those differences.",
+    "caption": "Baselines share a declared evaluation protocol. Off-the-shelf, frozen-feature and trained alternatives use different upstream training and sometimes different input information; disclose those differences.",
+    "mode": "built-in image_gen",
+    "sha256": "7a7d3eb3df43335f7e0446a48b197e74b956620f485a41fd24c910e8ad7f4c49",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "reviewed": true
+  },
+  "8.4.1": {
+    "file": "static/img/module78-visuals/figure-8-4-1.png",
+    "lesson": "8.4",
+    "section": 1,
+    "source_cell": 2,
+    "title": "The Fine-Tuning Loop",
+    "alt": "The Fine-Tuning Loop. Only training batches drive gradients and optimizer updates. Validation selects checkpoints; a declared final test reports the selected setup.",
+    "caption": "Only training batches drive gradients and optimizer updates. Validation selects checkpoints; a declared final test reports the selected setup.",
+    "mode": "built-in image_gen",
+    "sha256": "a9ef6925141f6ab369c862f5b4d04ad140e8d24ff9026c3cee5a132b9365ccbf",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  },
+  "8.5.1": {
+    "file": "static/img/module78-visuals/figure-8-5-1.png",
+    "lesson": "8.5",
+    "section": 1,
+    "source_cell": 2,
+    "title": "Full Fine-Tuning vs. LoRA",
+    "alt": "Full Fine-Tuning vs. LoRA. LoRA adds (alpha/r) BA beside a frozen weight matrix. A starts random and B starts at zero, so the initial adapter update is zero; the task head may also train.",
+    "caption": "LoRA adds (alpha/r) BA beside a frozen weight matrix. A starts random and B starts at zero, so the initial adapter update is zero; the task head may also train.",
+    "mode": "built-in image_gen",
+    "sha256": "c3e743841a3c9674cc112f552a7689f8f09a1dac3012ba160222612d98044288",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "reviewed": true
+  },
+  "8.6.1": {
+    "file": "static/img/module78-visuals/figure-8-6-1.png",
+    "lesson": "8.6",
+    "section": 1,
+    "source_cell": 4,
+    "title": "From Base Model to Assistant",
+    "alt": "From Base Model to Assistant. This assistant-only SFT setup keeps prompt tokens visible as context while masking their targets from loss. Causal prediction shifts targets by one; LoRA adapts selected parameters.",
+    "caption": "This assistant-only SFT setup keeps prompt tokens visible as context while masking their targets from loss. Causal prediction shifts targets by one; LoRA adapts selected parameters.",
+    "mode": "built-in image_gen",
+    "sha256": "4e3237cfd35f86eb3b7dc9f980cc4fe3a8300b98535b68a2daa3dc6c24a81478",
+    "dimensions": [
+      2036,
+      772
+    ],
+    "reviewed": true
+  },
+  "8.7.1": {
+    "file": "static/img/module78-visuals/figure-8-7-1.png",
+    "lesson": "8.7",
+    "section": 1,
+    "source_cell": 2,
+    "title": "Seven Questions Before Keeping a Model",
+    "alt": "Seven Questions Before Keeping a Model. Evaluation combines training behaviour, held-out metrics, errors, retention, costs, reproducibility and the application decision. A p-value alone does not settle suitability.",
+    "caption": "Evaluation combines training behaviour, held-out metrics, errors, retention, costs, reproducibility and the application decision. A p-value alone does not settle suitability.",
+    "mode": "built-in image_gen",
+    "sha256": "c47db28e549f2c58fcfd3803a2be5115bf6457b066e12b0ea91cb9801396d858",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "reviewed": true
+  }
+}

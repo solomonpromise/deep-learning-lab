@@ -1,0 +1,92 @@
+summary: How are large language models adapted to follow instructions, and what makes
+  that practical on real hardware?
+answers:
+  5-1:
+  - About 20 / 420, so under 5% of the loss would come from the answers (assuming
+    similar per-token losses), and over 95% from predicting the prompts. The model
+    would spend almost all of its learning on text it never needs to write. With masking,
+    100% of the loss comes from the answers.
+  6-1:
+  - It's overcorrecting. Before SFT it always said "negative"; now it says "positive"
+    much more often than the data warrants, so many of its errors are negative reviews
+    called positive. It has learned the format and part of the task, but not a balanced
+    decision. In a real run you'd use more (and balanced) training examples, check
+    the answer distribution and accuracy on a validation set during training, tune
+    the learning rate and number of steps on validation, and perhaps use a larger
+    base model.
+  8-1:
+  - 'QLoRA is a reasonable candidate to benchmark because quantizing the frozen base
+    can reduce storage substantially. The 15.23 GB bfloat16 base leaves insufficient
+    room on a nominal 16 GB device for ordinary training allocations. The illustrative
+    4.28 GB four-bit subtotal does not guarantee a fit: measure peak memory with the
+    intended sequence length, batch size, adapters, optimizer and implementation.
+    Try smaller batches, shorter inputs, checkpointing or a smaller model if necessary.
+    Compare held-out quality against prompting before deciding that adaptation is
+    worthwhile.'
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  generate: "Generate continuation tokens under the declared decoding settings and\
+    \ return decoded new text.\n\nArguments:\n    model: Model whose current parameters\
+    \ are used.\n    text: One input text string.\n    n: Maximum number of continuation\
+    \ tokens to generate."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  ask: "Format the truncated review as a sentiment question using the instruction\
+    \ model interface.\n\nArguments:\n    review: A movie review to classify or format.\n\
+    \    words: Maximum review words kept in the prompt."
+  evaluate: "Score the declared validation subset using the restricted positive-versus-negative\
+    \ next-token comparison.\n\nArguments:\n    model: Model whose current parameters\
+    \ are used.\n    n: Number of generated tokens or observations, as used by this\
+    \ helper."
+  blockwise: "Simulate uniform symmetric blockwise quantisation and estimate storage;\
+    \ this is not an NF4 execution.\n\nArguments:\n    W: Floating-point weight matrix\
+    \ to quantise.\n    bits: Number of storage bits in the illustrative quantiser.\n\
+    \    block: Number of weights sharing one quantisation scale."
+inserts:
+- type: widget
+  name: concept-motion
+  section: 4
+  at: end
+  title: Separate visible context from supervised targets
+  intro: Step through a fixed example; each stage explains its assumptions.
+  props:
+    scene: sft78
+  caption: Paused on arrival. Use Previous step, Play/Pause, Next step or Reset. No
+    model runs in this walkthrough.
+quiz:
+- q: What is the conceptual change in instruction tuning?
+  options:
+  - Train on task-oriented conversations and desired responses.
+  - Replace next-token loss with accuracy.
+  - Stop using causal prediction.
+  answer: 0
+  why: Train on task-oriented conversations and desired responses.
+- q: Why shift logits and targets by one?
+  options:
+  - Position t predicts the next token.
+  - The model predicts the previous token.
+  - Padding needs a different class label.
+  answer: 0
+  why: Position t predicts the next token.
+- q: Does a weight subtotal guarantee a GPU training fit?
+  options:
+  - No; measure the complete workload and runtime allocations.
+  - Yes, with a fixed twenty-percent margin.
+  - Only parameter count matters.
+  answer: 0
+  why: No; measure the complete workload and runtime allocations.

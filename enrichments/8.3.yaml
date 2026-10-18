@@ -1,0 +1,86 @@
+summary: What must an adapted model beat to be worth its cost, and how do we measure
+  that fairly?
+answers:
+  2-1:
+  - 'The vectoriser learns which terms exist and how common they are (the IDF weights).
+    Fitted on all reviews, it would learn from the test reviews: terms that appear
+    only in test reviews would get a place in the vocabulary, and the IDF weights
+    would reflect test-set frequencies. The model would then be built partly from
+    test data, so its test score would no longer be an honest estimate for unseen
+    reviews.'
+  4-1:
+  - That adapting the encoder's own weights matters for this task. Everything else
+    (encoder, inputs, labels) is the same as rung 3, so a clear gain must come from
+    letting the encoder change its representations to suit IMDb sentiment, rather
+    than reading a fixed representation with a linear head. A sign test on the same
+    test reviews would confirm whether the gain is real.
+  5-1:
+  - The two numbers come from different test reviews, so the difference could be due
+    entirely to which reviews landed in each test set, not to the methods. A fair
+    comparison needs both methods on the same test reviews (ideally with a paired
+    test), with the same training data and the same rules for choosing settings.
+portable_notebook_checks: true
+assessment_revision: day78-v1
+docstrings:
+  benchmark_clock: Read elapsed time after synchronising any queued CUDA work.
+  ordered_fingerprint: "Hash ordered text/label pairs to verify alignment for paired\
+    \ comparisons.\n\nArguments:\n    texts: Text strings in the order expected by\
+    \ the caller.\n    labels: Integer targets aligned with the input examples."
+  load_imdb_split: "Load the declared IMDb revision, remove exact duplicates and construct\
+    \ the seeded course splits.\n\nArguments:\n    seed: Seed controlling the local\
+    \ split or sampling generator.\n    n_val: Number of training-half reviews reserved\
+    \ for validation.\n    n_eval: Size of the reproducible evaluation subset.\n \
+    \   verbose: Whether to print dataset audit counts."
+  load_imdb_split.dedup: "Keep the first occurrence of each exact text not already\
+    \ in the supplied seen set.\n\nArguments:\n    texts: Text strings in the order\
+    \ expected by the caller.\n    labels: Integer targets aligned with the input\
+    \ examples.\n    seen: Set of exact texts already retained."
+  fingerprint: "Hash sorted texts to identify membership; this does not check row\
+    \ order or labels.\n\nArguments:\n    texts: Text strings in the order expected\
+    \ by the caller."
+  metrics: "Calculate accuracy, both recalls and positive-class F1 under the binary\
+    \ label convention.\n\nArguments:\n    y: Targets aligned with the examples.\n\
+    \    p: Predicted binary classes."
+  tfidf_rung: "Fit the declared TF-IDF representation and logistic regression; return\
+    \ fitted objects and elapsed time.\n\nArguments:\n    x: Input features or token\
+    \ IDs with the shape traced at the call site.\n    y: Targets aligned with the\
+    \ examples.\n    C: Inverse regularisation strength for logistic regression."
+  head_tail: "Fit each review into the declared token budget, retaining its first\
+    \ quarter and last three quarters.\n\nArguments:\n    texts: Text strings in the\
+    \ order expected by the caller.\n    max_length: Token budget including special\
+    \ tokens."
+  batches: "Group similarly sized examples and yield indices plus device-ready encoded\
+    \ batches.\n\nArguments:\n    texts: Text strings in the order expected by the\
+    \ caller.\n    size: Requested batch size."
+  sst2_predict: "Return SST-2 checkpoint class predictions in the original review\
+    \ order.\n\nArguments:\n    texts: Text strings in the order expected by the caller."
+  features: "Extract masked mean-pooled features from the frozen encoder without parameter\
+    \ updates.\n\nArguments:\n    texts: Text strings in the order expected by the\
+    \ caller."
+  sign_test: "Test paired correctness disagreements under equal probability of either\
+    \ method alone being correct.\n\nArguments:\n    a: First collection of paired\
+    \ predictions.\n    b: Second collection of paired predictions.\n    y: Targets\
+    \ aligned with the examples."
+inserts: []
+quiz:
+- q: Why establish a baseline before adaptation?
+  options:
+  - To know whether added training delivers useful improvement.
+  - To guarantee fine-tuning wins.
+  - To avoid reporting costs.
+  answer: 0
+  why: To know whether added training delivers useful improvement.
+- q: What does zero IMDb labels mean for the off-the-shelf baseline?
+  options:
+  - No IMDb adaptation labels used here; upstream training still occurred.
+  - The checkpoint was never trained.
+  - Its labels are inherently correct.
+  answer: 0
+  why: No IMDb adaptation labels used here; upstream training still occurred.
+- q: Why save per-example predictions and ordered IDs?
+  options:
+  - To support correctly aligned paired comparisons.
+  - To replace split checks.
+  - To make test tuning acceptable.
+  answer: 0
+  why: To support correctly aligned paired comparisons.

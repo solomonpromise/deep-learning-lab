@@ -1,0 +1,66 @@
+skill: Building Applications with Pretrained Models
+sections:
+  1:
+    questions:
+    - q: What turns a model capability into a usable feature?
+      options:
+      - Input validation, decision rules, failure handling and evaluation.
+      - A larger confidence score alone.
+      - Removing all uncertain inputs from reporting.
+      answer: 0
+      why: Input validation, decision rules, failure handling and evaluation.
+  2:
+    questions:
+    - q: Does high confidence establish that an input is meaningful?
+      options:
+      - No; a model can be confident on nonsense.
+      - Yes, above 0.99.
+      - Only for English sentences.
+      answer: 0
+      why: No; a model can be confident on nonsense.
+  3:
+    questions:
+    - q: What does temperature change?
+      options:
+      - The shape of the next-token probability distribution.
+      - The model's learned weights at inference.
+      - The input's ground-truth label.
+      answer: 0
+      why: The shape of the next-token probability distribution.
+  4:
+    questions:
+    - q: Does high semantic similarity guarantee matching sentiment?
+      options:
+      - No; validate which distinctions a space preserves.
+      - Yes, whenever cosine is positive.
+      - Yes, for all sentence models.
+      answer: 0
+      why: No; validate which distinctions a space preserves.
+  5:
+    questions:
+    - q: What does zero-shot CLIP classification compare?
+      options:
+      - An image embedding with candidate text embeddings.
+      - A generated caption's training loss.
+      - Untrained task-head weights only.
+      answer: 0
+      why: An image embedding with candidate text embeddings.
+  6:
+    questions:
+    - q: Where should service thresholds be chosen?
+      options:
+      - Validation data matching the intended decision problem.
+      - The final test after inspecting errors.
+      - Whatever produces the nicest example.
+      answer: 0
+      why: Validation data matching the intended decision problem.
+  7:
+    questions:
+    - q: Why report coverage with answered-case accuracy?
+      options:
+      - A service can raise conditional accuracy by answering fewer cases.
+      - Coverage is the same as recall.
+      - Abstention makes every remaining answer correct.
+      answer: 0
+      why: A service can raise conditional accuracy by answering fewer cases.
+assessment_revision: day78-v1

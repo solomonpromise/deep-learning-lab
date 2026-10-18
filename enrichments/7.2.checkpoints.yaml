@@ -1,0 +1,39 @@
+skill: The Hugging Face Ecosystem (Essentials)
+sections:
+  1:
+    questions:
+    - q: What connects a Hub name to a working model?
+      options:
+      - Repository files, a local cache, and compatible libraries.
+      - The model card alone.
+      - A dataset label column alone.
+      answer: 0
+      why: Repository files, a local cache, and compatible libraries.
+  2:
+    questions:
+    - q: What should a benchmark score on a card tell you?
+      options:
+      - Performance under its stated evaluation protocol.
+      - Guaranteed accuracy on your inputs.
+      - Permission to ignore limitations.
+      answer: 0
+      why: Performance under its stated evaluation protocol.
+  3:
+    questions:
+    - q: Why keep a model with its matching tokenizer?
+      options:
+      - Token IDs and preprocessing must match the learned interface.
+      - All vocabularies assign identical IDs.
+      - The tokenizer supplies learned model weights.
+      answer: 0
+      why: Token IDs and preprocessing must match the learned interface.
+  4:
+    questions:
+    - q: What does missing licence metadata establish?
+      options:
+      - The inspected field supplies no licence evidence; check publisher terms.
+      - The model has no licence anywhere.
+      - Commercial reuse is automatically permitted.
+      answer: 0
+      why: The inspected field supplies no licence evidence; check publisher terms.
+assessment_revision: day78-v1

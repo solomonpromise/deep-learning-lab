@@ -1,0 +1,66 @@
+skill: Loading and Using Pretrained Models
+sections:
+  1:
+    questions:
+    - q: What connects raw text to a readable prediction?
+      options:
+      - Preprocessing, tokenization, model computation and output decoding.
+      - The optimizer at inference.
+      - A model card's prose alone.
+      answer: 0
+      why: Preprocessing, tokenization, model computation and output decoding.
+  2:
+    questions:
+    - q: What does the pipeline API bundle?
+      options:
+      - Task-specific preprocessing, inference and postprocessing.
+      - Training on every request.
+      - A guarantee of correct labels.
+      answer: 0
+      why: Task-specific preprocessing, inference and postprocessing.
+  3:
+    questions:
+    - q: Why reproduce pipeline output explicitly?
+      options:
+      - To understand and control each inference stage.
+      - To replace model weights with token IDs.
+      - To avoid attention masks.
+      answer: 0
+      why: To understand and control each inference stage.
+  4:
+    questions:
+    - q: What does a padding mask prevent?
+      options:
+      - Reading padded positions as usable keys in attention.
+      - All future access automatically in every model.
+      - Truncation of every input.
+      answer: 0
+      why: Reading padded positions as usable keys in attention.
+  5:
+    questions:
+    - q: Why use both eval mode and inference mode?
+      options:
+      - They control layer behaviour and gradient tracking separately.
+      - They are interchangeable names.
+      - Both update weights.
+      answer: 0
+      why: They control layer behaviour and gradient tracking separately.
+  6:
+    questions:
+    - q: Why group similarly sized inputs?
+      options:
+      - To reduce padding work within batches.
+      - To change the true labels.
+      - To eliminate all batching latency.
+      answer: 0
+      why: To reduce padding work within batches.
+  7:
+    questions:
+    - q: What should be saved with the model?
+      options:
+      - Its tokenizer, configuration and relevant inference settings.
+      - Only a screenshot of predictions.
+      - Only the repository name with no revision.
+      answer: 0
+      why: Its tokenizer, configuration and relevant inference settings.
+assessment_revision: day78-v1

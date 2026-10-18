@@ -1,0 +1,84 @@
+skill: Parameter-Efficient Fine-Tuning (PEFT)
+sections:
+  1:
+    questions:
+    - q: What does parameter-efficient adaptation aim to reduce?
+      options:
+      - Trainable updates and their associated costs.
+      - All forward computation through frozen weights.
+      - The need to evaluate quality.
+      answer: 0
+      why: Trainable updates and their associated costs.
+  2:
+    questions:
+    - q: What contributes to Adam training-state memory?
+      options:
+      - Weights, gradients and optimiser moments under stated dtypes.
+      - Only saved adapter files.
+      - Only input token IDs.
+      answer: 0
+      why: Weights, gradients and optimiser moments under stated dtypes.
+  3:
+    questions:
+    - q: What does requires_grad false do?
+      options:
+      - Stops accumulating gradients for those parameters.
+      - Removes their forward pass.
+      - Makes them consume zero storage.
+      answer: 0
+      why: Stops accumulating gradients for those parameters.
+  4:
+    questions:
+    - q: Why can a compact update be useful?
+      options:
+      - Task-relevant changes can sometimes be represented with fewer parameters.
+      - Every real update is exactly rank one.
+      - All pretrained matrices are low rank.
+      answer: 0
+      why: Task-relevant changes can sometimes be represented with fewer parameters.
+  5:
+    questions:
+    - q: How does LoRA modify a linear computation?
+      options:
+      - A scaled low-rank update is added beside the frozen base.
+      - The base is deleted.
+      - The input mask becomes the weight matrix.
+      answer: 0
+      why: A scaled low-rank update is added beside the frozen base.
+  6:
+    questions:
+    - q: What are the usual initial LoRA factors?
+      options:
+      - A random A and zero B, giving a zero initial update.
+      - Both factors zero and permanently stuck.
+      - Both factors copied from the labels.
+      answer: 0
+      why: A random A and zero B, giving a zero initial update.
+  7:
+    questions:
+    - q: How do other PEFT methods differ?
+      options:
+      - They place small trainable components in different parts of the computation.
+      - They all have the same runtime structure.
+      - Every adapter can be merged identically.
+      answer: 0
+      why: They place small trainable components in different parts of the computation.
+  8:
+    questions:
+    - q: Why count the classification head too?
+      options:
+      - It is trainable and saved alongside the adapter for this task.
+      - It was trained automatically by the tokenizer.
+      - It consumes no memory.
+      answer: 0
+      why: It is trainable and saved alongside the adapter for this task.
+  9:
+    questions:
+    - q: Does p equal one prove LoRA and full fine-tuning equivalent?
+      options:
+      - No; it does not establish equivalence or identical predictions.
+      - Yes, for every future dataset.
+      - It proves they share every mistake.
+      answer: 0
+      why: No; it does not establish equivalence or identical predictions.
+assessment_revision: day78-v1

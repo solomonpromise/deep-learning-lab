@@ -1,0 +1,75 @@
+skill: Inference and Deployment Constraints
+sections:
+  1:
+    questions:
+    - q: What matters beyond notebook accuracy at deployment?
+      options:
+      - Latency, throughput, memory, reliability and workload.
+      - Only the parameter count.
+      - Only training loss.
+      answer: 0
+      why: Latency, throughput, memory, reliability and workload.
+  2:
+    questions:
+    - q: Why report latency percentiles?
+      options:
+      - They reveal slower requests hidden by an average.
+      - They remove queueing delays.
+      - They guarantee throughput.
+      answer: 0
+      why: They reveal slower requests hidden by an average.
+  3:
+    questions:
+    - q: How should CUDA inference be timed?
+      options:
+      - Warm up and synchronise measurement boundaries or use CUDA events.
+      - Time only the asynchronous launch.
+      - Assume CPU timings apply.
+      answer: 0
+      why: Warm up and synchronise measurement boundaries or use CUDA events.
+  4:
+    questions:
+    - q: What does parameters times bytes estimate?
+      options:
+      - Parameter storage under a declared dtype.
+      - Peak memory of every training run.
+      - GPU utilisation.
+      answer: 0
+      why: Parameter storage under a declared dtype.
+  5:
+    questions:
+    - q: What does quantisation introduce?
+      options:
+      - A storage/computation trade-off with reconstruction error to evaluate.
+      - Guaranteed faster inference.
+      - Perfectly unchanged predictions.
+      answer: 0
+      why: A storage/computation trade-off with reconstruction error to evaluate.
+  6:
+    questions:
+    - q: How do response and KV caches differ?
+      options:
+      - They reuse whole responses versus internal attention keys and values.
+      - They both update the weights.
+      - They are training data stores.
+      answer: 0
+      why: They reuse whole responses versus internal attention keys and values.
+  7:
+    questions:
+    - q: What determines hosted versus local suitability?
+      options:
+      - Measured workload and operational constraints.
+      - A universal rule that one is cheaper.
+      - Whether the model is a Transformer.
+      answer: 0
+      why: Measured workload and operational constraints.
+  8:
+    questions:
+    - q: What belongs in a reproducibility record?
+      options:
+      - Artifact revisions, settings, ordered data identity and environment.
+      - The model name alone.
+      - A seed with no other information.
+      answer: 0
+      why: Artifact revisions, settings, ordered data identity and environment.
+assessment_revision: day78-v1
