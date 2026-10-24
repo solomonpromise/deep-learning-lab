@@ -54,6 +54,26 @@
   </ol>
 </div>
 
+{% elif b.kind == 'video' %}
+<figure class="lesson-video no-gloss" id="video-{{ b.id }}" data-lesson-video>
+  <figcaption class="lesson-video-head"><span class="mono-label">Animated lesson · {{ b.duration }}</span><h3 id="video-title-{{ b.id }}">{{ b.title }}</h3></figcaption>
+  {% if b.intro_html %}<div class="prose lesson-video-intro">{{ b.intro_html | safe }}</div>{% endif %}
+  <div class="lesson-video-frame">
+    <video controls playsinline preload="none" poster="{{ b.poster }}" data-video-src="{{ b.url }}" aria-labelledby="video-title-{{ b.id }}" aria-describedby="video-watch-{{ b.id }}">
+      <track kind="{{ 'captions' if b.text_kind == 'speech' else 'subtitles' }}" data-caption-src="{{ b.captions }}" srclang="en" label="{{ 'English captions' if b.text_kind == 'speech' else 'English visual guide' }}">
+      Your browser cannot play this animation. Use the video download link below.
+    </video>
+    <button type="button" class="lesson-video-play" data-video-play hidden aria-label="Play animation: {{ b.title }}"><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg><span>Play animation</span></button>
+  </div>
+  <div class="lesson-video-toolbar"><label data-video-speed-label hidden>Playback speed <select data-video-speed aria-label="Playback speed: {{ b.title }}"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label><button type="button" class="chip-btn" data-video-captions data-caption-label="{{ 'captions' if b.text_kind == 'speech' else 'subtitles' }}" aria-pressed="false" hidden>Show {{ 'captions' if b.text_kind == 'speech' else 'subtitles' }}</button><a href="{{ b.url }}" target="_blank" rel="noopener">Open / download video</a><a href="{{ b.captions }}" download>{{ 'Download captions' if b.text_kind == 'speech' else 'Download visual guide' }}</a></div>
+  <p class="lesson-video-error" data-video-error role="status" hidden>The video could not load. Try again or use the video download link.</p>
+  {% if b.watch_html %}<div class="lesson-video-watch prose" id="video-watch-{{ b.id }}"><strong>Watch for</strong>{{ b.watch_html | safe }}</div>{% endif %}
+  {% if b.chapters %}<nav class="lesson-video-chapters" aria-label="Video chapters: {{ b.title }}"><span class="mono-label">Jump to a chapter</span><ol>{% for c in b.chapters %}<li><a href="{{ b.url }}#t={{ c.start }}" data-video-seek="{{ c.start }}"><time>{{ c.time }}</time> {{ c.title }}</a></li>{% endfor %}</ol></nav>{% endif %}
+  {% if b.note_html %}<aside class="lesson-video-note prose">{{ b.note_html | safe }}</aside>{% endif %}
+  <details class="lesson-video-transcript"><summary>{{ 'Read the transcript' if b.text_kind == 'speech' else 'Read the visual guide' }}</summary><div>{% if b.text_kind != 'speech' %}<p class="lesson-video-guide-label">This animation uses on-screen text and music. This guide describes its teaching sequence; it is not spoken narration.</p>{% endif %}{% for s in b.transcript %}<p><a href="{{ b.url }}#t={{ s.start }}" data-video-seek="{{ s.start }}" aria-label="Play from {{ s.time }}"><time>{{ s.time }}</time></a><span>{{ s.text }}</span></p>{% endfor %}</div></details>
+  <noscript><p>Use the video download link to watch the animation. The text alternative remains available here.</p></noscript>
+</figure>
+
 {% elif b.kind == 'widget' %}
 <figure class="widget reveal" data-widget="{{ b.name }}" data-props="{{ b.props }}"{% if b.height %} style="--wh: {{ b.height }}px"{% endif %}>
   <div class="widget-head">

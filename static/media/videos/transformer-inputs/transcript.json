@@ -1,0 +1,87 @@
+{
+  "reviewed": true,
+  "kind": "visual-guide",
+  "description": "Editorial description of the on-screen teaching sequence; not spoken narration. The soundtrack is music.",
+  "segments": [
+    {
+      "start": 0,
+      "end": 16,
+      "text": "Text preparation turns a sequence of symbols into vectors that the Transformer can process."
+    },
+    {
+      "start": 16,
+      "end": 30,
+      "text": "The teaching example uses Tiny Shakespeare and compares different choices of token unit."
+    },
+    {
+      "start": 30,
+      "end": 44,
+      "text": "Word tokenization uses whole words, but creates a larger vocabulary and needs a policy for unseen words."
+    },
+    {
+      "start": 44,
+      "end": 58,
+      "text": "Subword tokenization can represent words using reusable pieces."
+    },
+    {
+      "start": 58,
+      "end": 72,
+      "text": "Byte-pair encoding repeatedly merges frequent neighboring units, using rules learned from the training text."
+    },
+    {
+      "start": 72,
+      "end": 86,
+      "text": "The Shakespeare example illustrates a learned BPE vocabulary and its effect on sequence length."
+    },
+    {
+      "start": 86,
+      "end": 100,
+      "text": "The reference comparison uses 65 character tokens, 12,571 word entries or 265 BPE entries. Counts depend on the tokenizer and split."
+    },
+    {
+      "start": 100,
+      "end": 114,
+      "text": "Larger vocabularies increase the embedding table and output vocabulary projection. The character table here has 65×64 = 4,160 entries."
+    },
+    {
+      "start": 114,
+      "end": 128,
+      "text": "An ID selects one row from the embedding table. This converts each token into a 64-dimensional starting vector."
+    },
+    {
+      "start": 128,
+      "end": 142,
+      "text": "Position information distinguishes identical tokens at different locations. This model learns 64 position vectors of width 64."
+    },
+    {
+      "start": 142,
+      "end": 156,
+      "text": "Split training and validation text before making windows, preventing windows from crossing the split and leaking validation text."
+    },
+    {
+      "start": 156,
+      "end": 170,
+      "text": "The input is a text window. The target is the same stream shifted one token ahead, so each position predicts its successor."
+    },
+    {
+      "start": 170,
+      "end": 184,
+      "text": "A batch groups 32 windows of 64 token IDs. Input and target tensors have shape 32×64 before embedding."
+    },
+    {
+      "start": 184,
+      "end": 198,
+      "text": "Pause: why split before sampling windows? What grows when vocabulary size grows?"
+    },
+    {
+      "start": 198,
+      "end": 210,
+      "text": "Splitting first keeps validation content out of training. Both the embedding table and output projection grow with vocabulary size."
+    },
+    {
+      "start": 210,
+      "end": 214.08,
+      "text": "Recap: tokenize, look up vectors, include positions, split carefully, and create shifted input–target windows."
+    }
+  ]
+}

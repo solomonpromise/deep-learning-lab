@@ -14,3 +14,6 @@ docs/curriculum/modules-5-8-notebooks/
 
 # Local curriculum drafts excluded from publication.
 .local-drafts/
+
+# Local source/optimized video copies are published separately from code.
+.local-media/

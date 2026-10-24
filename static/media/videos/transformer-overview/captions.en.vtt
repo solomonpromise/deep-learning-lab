@@ -1,0 +1,84 @@
+WEBVTT
+
+NOTE English visual guide. Editorial descriptions of on-screen concepts; no spoken narration.
+
+00:00:00.000 --> 00:00:03.000
+A Transformer builds representations by allowing positions in a sequence to exchange information
+
+00:00:03.000 --> 00:00:06.000
+through attention.
+
+00:00:16.000 --> 00:00:19.600
+The sentence about a robot dropping a glass motivates the need to use context when interpreting a
+
+00:00:19.600 --> 00:00:23.200
+token.
+
+00:00:31.000 --> 00:00:34.000
+Tokens are converted to vectors, and information about their positions is added or otherwise
+
+00:00:34.000 --> 00:00:37.000
+supplied.
+
+00:00:46.000 --> 00:00:49.000
+Attention assigns weights to other positions and mixes their value vectors to form context-dependent
+
+00:00:49.000 --> 00:00:52.000
+representations.
+
+00:01:01.000 --> 00:01:04.800
+A bidirectional example can use words on both sides. Causal attention can use only the current and
+
+00:01:04.800 --> 00:01:08.600
+earlier positions.
+
+00:01:16.000 --> 00:01:19.600
+Multiple attention heads can learn different patterns of interaction.
+
+00:01:31.000 --> 00:01:34.000
+A Transformer block combines attention with a position-wise feed-forward network, normalization and
+
+00:01:34.000 --> 00:01:37.000
+residual connections.
+
+00:01:46.000 --> 00:01:49.000
+Stacking blocks repeatedly refines the token representations.
+
+00:02:01.000 --> 00:02:04.200
+An output head maps representations to task-specific predictions.
+
+00:02:16.000 --> 00:02:19.000
+Encoder-style models commonly use bidirectional context. Decoder-style language models commonly use
+
+00:02:19.000 --> 00:02:22.000
+causal attention.
+
+00:02:31.000 --> 00:02:34.000
+Encoder–decoder models add attention from decoder states to encoder outputs, supporting tasks such
+
+00:02:34.000 --> 00:02:37.000
+as translation.
+
+00:02:46.000 --> 00:02:50.400
+Known training positions can be processed in parallel with a mask. Autoregressive generation still
+
+00:02:50.400 --> 00:02:54.800
+extends the sequence one token at a time.
+
+00:03:01.000 --> 00:03:04.000
+The module develops a small character-level language model so that the full computation is
+
+00:03:04.000 --> 00:03:07.000
+inspectable.
+
+00:03:16.000 --> 00:03:20.800
+Modern language models may use variants such as rotary positions, RMSNorm or different feed-forward
+
+00:03:20.800 --> 00:03:25.600
+designs; they are not all present in this teaching model.
+
+00:03:31.000 --> 00:03:36.200
+Transformers can also operate on image patches and other kinds of tokenized input.
+
+00:03:46.000 --> 00:03:51.200
+The following lessons unpack input preparation, attention, blocks, assembly and training in detail.

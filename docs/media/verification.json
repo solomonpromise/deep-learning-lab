@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-23",
+  "videos": 11,
+  "total_seconds": 2216.22,
+  "source_bytes": 753862800,
+  "web_bytes": 181228306,
+  "source_hashes_unchanged": 11,
+  "web_files_fully_decoded": 11,
+  "faststart_verified": 11,
+  "release_asset_sha256_matches": 11,
+  "public_byte_range_checks": [
+    {
+      "id": "neural-network-learning",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/29085940",
+      "prefix_matches": true
+    },
+    {
+      "id": "cnn-learning",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/14917086",
+      "prefix_matches": true
+    },
+    {
+      "id": "rnn-learning",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/12336999",
+      "prefix_matches": true
+    },
+    {
+      "id": "text-representations",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/13033500",
+      "prefix_matches": true
+    },
+    {
+      "id": "transformer-overview",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/22295798",
+      "prefix_matches": true
+    },
+    {
+      "id": "transformer-inputs",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/19369054",
+      "prefix_matches": true
+    },
+    {
+      "id": "attention-step-by-step",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/15563621",
+      "prefix_matches": true
+    },
+    {
+      "id": "masks-heads-positions",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/15792918",
+      "prefix_matches": true
+    },
+    {
+      "id": "transformer-block",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/11590013",
+      "prefix_matches": true
+    },
+    {
+      "id": "assembling-language-model",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/13702263",
+      "prefix_matches": true
+    },
+    {
+      "id": "training-transformer",
+      "status": 206,
+      "content_type": "application/octet-stream",
+      "range": "bytes 0-1023/13541114",
+      "prefix_matches": true
+    }
+  ],
+  "focused_unit_tests_passed": 10,
+  "lessons_built": 41,
+  "build_modes_checked": [
+    "remote",
+    "auto"
+  ],
+  "browser_checks": [
+    "Public attention and CNN video playback and chapter seeking",
+    "Public narrated film playback with caption toggle",
+    "Desktop and 390-pixel phone layout; no horizontal overflow on checked phone page",
+    "Native rendering of optional guide subtitles",
+    "Speed control",
+    "Timestamped visual guide expansion",
+    "Leaving a section pauses its video",
+    "Starting another video pauses the previous video",
+    "Failed media request exposes a fallback link and Try again control",
+    "Light and dark player appearance"
+  ],
+  "scope": "Dedicated video integration PR. Public media release published with owner approval. No merge or application deployment performed; original source videos and notebooks preserved.",
+  "independent_branch_build": "41 lessons and all 11 video placements built against origin/main without the lab integration"
+}

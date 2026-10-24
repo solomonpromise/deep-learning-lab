@@ -1,0 +1,69 @@
+WEBVTT
+
+NOTE English visual guide. Editorial descriptions of on-screen concepts; no spoken narration.
+
+00:00:00.000 --> 00:00:04.800
+A complete language model connects the components built in the preceding lessons.
+
+00:00:12.000 --> 00:00:16.400
+Token IDs select token embeddings, which are combined with position embeddings.
+
+00:00:24.000 --> 00:00:28.800
+The resulting sequence passes through stacked Transformer blocks and a final normalization.
+
+00:00:36.000 --> 00:00:41.600
+A linear output head produces 65 logits for each position in the character vocabulary.
+
+00:00:48.000 --> 00:00:51.800
+Count parameters in embeddings, attention, feed-forward layers, normalization and the output head.
+
+00:00:51.800 --> 00:00:55.600
+The reference untied model has 162,561 parameters.
+
+00:01:00.000 --> 00:01:04.400
+Weight tying reuses the token embedding weights for the output projection. The shown tied
+
+00:01:04.400 --> 00:01:08.800
+configuration has 158,401 parameters; the difference is 4,160.
+
+00:01:12.000 --> 00:01:16.000
+Before training, compare the loss with ln(65), approximately 4.174, the uniform-prediction baseline.
+
+00:01:16.000 --> 00:01:20.000
+Random logits need not give exactly uniform probabilities.
+
+00:01:24.000 --> 00:01:28.800
+Try to overfit one small batch. A large drop in that batch’s loss indicates that the model and
+
+00:01:28.800 --> 00:01:33.600
+update path can learn those examples.
+
+00:01:36.000 --> 00:01:39.400
+Poor loss on a fresh batch after memorizing one batch demonstrates why training fit alone is
+
+00:01:39.400 --> 00:01:42.800
+insufficient.
+
+00:01:48.000 --> 00:01:51.600
+In an encoder–decoder model, cross-attention takes queries from the decoder and keys and values from
+
+00:01:51.600 --> 00:01:55.200
+the encoder output.
+
+00:02:00.000 --> 00:02:03.800
+The decoder’s causal self-attention and its cross-attention serve different purposes: reading its
+
+00:02:03.800 --> 00:02:07.600
+own history and consulting the encoded input.
+
+00:02:12.000 --> 00:02:18.000
+Pause: what determines the number of logits per position? What does the one-batch test establish?
+
+00:02:26.000 --> 00:02:30.200
+The vocabulary determines the number of logits. One-batch fitting is a debugging check, not evidence
+
+00:02:30.200 --> 00:02:34.400
+of good performance on unseen data.
+
+00:02:37.000 --> 00:02:41.070
+Recap the complete model and its sanity checks before training on the text corpus.

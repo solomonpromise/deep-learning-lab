@@ -1,0 +1,417 @@
+{
+  "reviewed": true,
+  "kind": "speech",
+  "description": "Reviewed narration transcript.",
+  "segments": [
+    {
+      "start": 0.14,
+      "end": 30.02,
+      "text": "Welcome back, everyone. Today we're going to open up a neural network and watch it learn step by step. We'll start with the forward pass, where inputs are multiplied by weights and pass through an activation function, like ReLU or sigmoid. Then we'll measure the loss, which tells us how wrong the prediction was. After that comes backpropagation, where we use the chain rule to work out how much each weight contributed to the error. Finally, we update the weights using gradient descent."
+    },
+    {
+      "start": 30.82,
+      "end": 33.82,
+      "text": "Repeat that thousands of times, and the network learns."
+    },
+    {
+      "start": 35.3,
+      "end": 38.06,
+      "text": "It's simpler than it sounds, so let's get into it."
+    },
+    {
+      "start": 39.68,
+      "end": 41.48,
+      "text": "Here's our network before any training."
+    },
+    {
+      "start": 42.28,
+      "end": 45.84,
+      "text": "Its job is to predict which of these 40 students will pass an exam."
+    },
+    {
+      "start": 46.9,
+      "end": 47.94,
+      "text": "Right now, it's guessing."
+    },
+    {
+      "start": 48.78,
+      "end": 51.86,
+      "text": "It gets about half of them right, which is no better than a coin toss."
+    },
+    {
+      "start": 52.62,
+      "end": 56.5,
+      "text": "Now, watch what 150 tiny corrections can do."
+    },
+    {
+      "start": 60.64,
+      "end": 66.24,
+      "text": "93%. Nobody told it the rule. It found the rule on its own. So how did it do that?"
+    },
+    {
+      "start": 66.8,
+      "end": 73.12,
+      "text": "Let's rewind, slow down and follow one student, one number at a time. Let's meet"
+    },
+    {
+      "start": 73.12,
+      "end": 76.88,
+      "text": "the network properly. It takes two numbers about a student and predicts"
+    },
+    {
+      "start": 76.88,
+      "end": 82.92,
+      "text": "whether they'll pass. Two inputs go in, hours studied and hours slept, both scaled"
+    },
+    {
+      "start": 82.92,
+      "end": 87.52,
+      "text": "to sit between zero and one. A hidden layer of two neurons uses"
+    },
+    {
+      "start": 87.52,
+      "end": 89.76,
+      "text": "ReLU, the rectified linear unit."
+    },
+    {
+      "start": 90.5,
+      "end": 92.86,
+      "text": "The single output neuron uses a sigmoid"
+    },
+    {
+      "start": 92.86,
+      "end": 94.1,
+      "text": "to produce a probability."
+    },
+    {
+      "start": 95.3,
+      "end": 96.74,
+      "text": "Every connection carries a weight."
+    },
+    {
+      "start": 97.36,
+      "end": 99.5,
+      "text": "Blue is positive, orange is negative,"
+    },
+    {
+      "start": 99.92,
+      "end": 100.88,
+      "text": "and thicker means stronger."
+    },
+    {
+      "start": 102.54,
+      "end": 105.44,
+      "text": "Let's zoom into the first hidden neuron, H1."
+    },
+    {
+      "start": 106.0,
+      "end": 108.8,
+      "text": "Every neuron does two things, a weighted sum,"
+    },
+    {
+      "start": 109.14,
+      "end": 109.6,
+      "text": "then an activation."
+    },
+    {
+      "start": 110.66,
+      "end": 112.72,
+      "text": "Each input travels along its connection"
+    },
+    {
+      "start": 113.26,
+      "end": 115.74,
+      "text": "and gets multiplied by that connection's weight."
+    },
+    {
+      "start": 115.74,
+      "end": 128.02,
+      "text": "So, 1 times 0.5 is 0.5, and 0.5 times minus 0.3 is minus 0.15. Then we add the neuron's"
+    },
+    {
+      "start": 128.02,
+      "end": 136.96,
+      "text": "bias, 0.1. The result is called Z, the linear combination. For neuron H1, Z1 equals 0.45."
+    },
+    {
+      "start": 139.04,
+      "end": 145.68,
+      "text": "Next, Z passes through an activation function. Our hidden layer uses ReLU. ReLU keeps positive"
+    },
+    {
+      "start": 145.68,
+      "end": 152.32,
+      "text": "values and turns negative values into zero. In symbols, it equals the maximum of zero and z."
+    },
+    {
+      "start": 153.08,
+      "end": 160.74,
+      "text": "Z1 is 0.45. That's positive, so neuron H1 outputs a 1 equals 0.45."
+    },
+    {
+      "start": 161.9,
+      "end": 170.46,
+      "text": "Neuron H2 does the same. Z2 is 0.5, so a 2 is 0.5. Why bother? Without activations,"
+    },
+    {
+      "start": 170.46,
+      "end": 173.78,
+      "text": "stacking layers would collapse into one straight line model."
+    },
+    {
+      "start": 175.68,
+      "end": 177.96,
+      "text": "The output neuron repeats the same pattern,"
+    },
+    {
+      "start": 178.42,
+      "end": 180.24,
+      "text": "using the hidden outputs as its inputs."
+    },
+    {
+      "start": 181.06,
+      "end": 187.78,
+      "text": "0.45 times 0.7, plus 0.5 times minus 0.4,"
+    },
+    {
+      "start": 188.08,
+      "end": 192.6,
+      "text": "plus the bias of 0.2, gives z equals 0.315."
+    },
+    {
+      "start": 193.86,
+      "end": 197.12,
+      "text": "The output uses sigmoid, which squashes any number"
+    },
+    {
+      "start": 197.12,
+      "end": 199.38,
+      "text": "into a probability between 0 and 1."
+    },
+    {
+      "start": 200.26,
+      "end": 204.34,
+      "text": "Sigmoid of 0.315 is 0.578."
+    },
+    {
+      "start": 204.34,
+      "end": 209.62,
+      "text": "The network says, a 57.8% chance that this student passes."
+    },
+    {
+      "start": 210.66,
+      "end": 214.62,
+      "text": "That whole journey from inputs to prediction is called forward propagation."
+    },
+    {
+      "start": 216.26,
+      "end": 220.34,
+      "text": "This student actually passed, so the true label Y equals 1."
+    },
+    {
+      "start": 221.0,
+      "end": 225.1,
+      "text": "To measure how wrong the prediction is, we use binary cross-entropy loss."
+    },
+    {
+      "start": 225.9,
+      "end": 229.7,
+      "text": "When Y equals 1, the loss becomes minus the log of Y hat,"
+    },
+    {
+      "start": 230.14,
+      "end": 232.62,
+      "text": "being confident and right costs very little,"
+    },
+    {
+      "start": 232.62,
+      "end": 235.3,
+      "text": "being confident and wrong costs a lot."
+    },
+    {
+      "start": 236.02,
+      "end": 240.52,
+      "text": "Minus the log of 0.578 is 0.548."
+    },
+    {
+      "start": 241.62,
+      "end": 244.1,
+      "text": "The whole goal of training is to push this number down."
+    },
+    {
+      "start": 245.0,
+      "end": 248.54,
+      "text": "In practice, frameworks like PyTorch fuse the sigmoid"
+    },
+    {
+      "start": 248.54,
+      "end": 250.64,
+      "text": "and the cross entropy into one function,"
+    },
+    {
+      "start": 251.16,
+      "end": 254.26,
+      "text": "BCEWithLogitsLoss, for numerical stability."
+    },
+    {
+      "start": 255.92,
+      "end": 258.74,
+      "text": "Now we work backwards to find how much each weight"
+    },
+    {
+      "start": 258.74,
+      "end": 259.98,
+      "text": "is to blame for the error."
+    },
+    {
+      "start": 259.98,
+      "end": 265.74,
+      "text": "This is backpropagation. Start at the output. For a sigmoid with cross-entropy,"
+    },
+    {
+      "start": 266.22,
+      "end": 273.62,
+      "text": "the gradient simplifies beautifully. It's just y hat minus y, 0.578 minus 1, which"
+    },
+    {
+      "start": 273.62,
+      "end": 280.88,
+      "text": "is minus 0.422. Each output weight’s gradient is that error times the activation flowing"
+    },
+    {
+      "start": 280.88,
+      "end": 291.44,
+      "text": "into it. Minus 0.422 times 0.45 gives minus 0.19. To go further back, we use the chain rule."
+    },
+    {
+      "start": 292.12,
+      "end": 297.76,
+      "text": "Multiply by the connecting weight, then by ReLU’s slope, which is one here because z is positive."
+    },
+    {
+      "start": 298.64,
+      "end": 304.74,
+      "text": "Then each input weights gradient is that error times its input. Now every weight knows which way to move."
+    },
+    {
+      "start": 306.1,
+      "end": 311.54,
+      "text": "Now the update, gradient descent nudges every weight a small step against its gradient."
+    },
+    {
+      "start": 312.52,
+      "end": 314.66,
+      "text": "The step size is the learning rate, eta."
+    },
+    {
+      "start": 315.16,
+      "end": 323.88,
+      "text": "With eta equal to 0.5, the weight V1 becomes 0.7 minus 0.5 times minus 0.19."
+    },
+    {
+      "start": 324.82,
+      "end": 329.38,
+      "text": "That's 0.795, a negative gradient pushes a weight up."
+    },
+    {
+      "start": 330.28,
+      "end": 331.82,
+      "text": "Same student, forward again."
+    },
+    {
+      "start": 331.82,
+      "end": 341.34,
+      "text": "The prediction rises to 0.719, and the loss falls to 0.329, one step, and the network has already improved."
+    },
+    {
+      "start": 342.94,
+      "end": 347.66,
+      "text": "That was one update from one student. Now let's go back to all 40 students."
+    },
+    {
+      "start": 348.66,
+      "end": 354.48,
+      "text": "The white line is the decision boundary. On one side, the network predicts pass. On the other side fail."
+    },
+    {
+      "start": 355.12,
+      "end": 361.2,
+      "text": "Now we repeat the same four steps over and over, forward pass, loss, back propagation update."
+    },
+    {
+      "start": 362.24,
+      "end": 366.46,
+      "text": "With every update, the loss falls and the boundary shifts to separate the two groups."
+    },
+    {
+      "start": 367.3,
+      "end": 372.96,
+      "text": "After 150 updates, we're back at 93%, the result you saw at the start."
+    },
+    {
+      "start": 373.72,
+      "end": 375.88,
+      "text": "And now, you know exactly how it got there."
+    },
+    {
+      "start": 377.78,
+      "end": 379.42,
+      "text": "Let's recap the whole process."
+    },
+    {
+      "start": 381.2,
+      "end": 386.62,
+      "text": "Forward pass, each neuron computes a weighted sum plus a bias, then applies an activation."
+    },
+    {
+      "start": 387.78,
+      "end": 391.44,
+      "text": "Loss, compare the prediction with the truth to measure how wrong it was."
+    },
+    {
+      "start": 392.64,
+      "end": 397.26,
+      "text": "Backpropagation, use the chain rule to find how much each weight contributed to the error."
+    },
+    {
+      "start": 398.52,
+      "end": 402.08,
+      "text": "Update, nudge every weight against its gradient, scaled by the learning rate."
+    },
+    {
+      "start": 403.72,
+      "end": 408.32,
+      "text": "Our little network had just nine numbers to learn, six weights and three biases."
+    },
+    {
+      "start": 410.48,
+      "end": 415.66,
+      "text": "Today's largest models have billions of them, yet they learn with these same four steps,"
+    },
+    {
+      "start": 415.96,
+      "end": 417.2,
+      "text": "repeated millions of times."
+    },
+    {
+      "start": 418.96,
+      "end": 420.2,
+      "text": "Now it's your turn."
+    },
+    {
+      "start": 421.02,
+      "end": 425.5,
+      "text": "Open the back prop playground, change the learning rate, the optimizer and the network shape,"
+    },
+    {
+      "start": 425.8,
+      "end": 426.7,
+      "text": "and watch what happens."
+    },
+    {
+      "start": 427.86,
+      "end": 428.72,
+      "text": "See you in the next class."
+    }
+  ]
+}

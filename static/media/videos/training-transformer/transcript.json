@@ -1,0 +1,82 @@
+{
+  "reviewed": true,
+  "kind": "visual-guide",
+  "description": "Editorial description of the on-screen teaching sequence; not spoken narration. The soundtrack is music.",
+  "segments": [
+    {
+      "start": 0,
+      "end": 13,
+      "text": "Training adjusts the Transformer to predict the next character from preceding context."
+    },
+    {
+      "start": 13,
+      "end": 24,
+      "text": "Targets are the input stream shifted by one character. A batch of 32 windows with 64 positions provides 2,048 target predictions."
+    },
+    {
+      "start": 24,
+      "end": 36,
+      "text": "Teacher forcing supplies known previous tokens during training. A causal mask allows all positions to be trained in parallel without revealing their future answers."
+    },
+    {
+      "start": 36,
+      "end": 47,
+      "text": "Cross-entropy is minus the natural logarithm of the probability assigned to the correct next token. Average it over the prediction positions."
+    },
+    {
+      "start": 47,
+      "end": 58,
+      "text": "Judge loss against baselines. In this reference run, uniform guessing scores 4.174; frequency-based and previous-letter baselines are stronger comparisons."
+    },
+    {
+      "start": 58,
+      "end": 70,
+      "text": "The training toolkit includes AdamW, learning-rate warmup, cosine decay and gradient clipping."
+    },
+    {
+      "start": 70,
+      "end": 81,
+      "text": "Warmup increases the learning rate initially; decay reduces it later. Clipping limits a gradient norm when it exceeds the selected threshold."
+    },
+    {
+      "start": 81,
+      "end": 92,
+      "text": "Short learning-rate trials compare validation loss. The chosen 0.01 is specific to this small model and experiment."
+    },
+    {
+      "start": 92,
+      "end": 104,
+      "text": "The main reference run improves validation loss to about 1.742 in 1,400 steps. Perplexity exp(1.742) is approximately 5.7, not an accuracy percentage."
+    },
+    {
+      "start": 104,
+      "end": 115,
+      "text": "Compare selected predictions before and after training to see how context can improve the probability of a plausible next character."
+    },
+    {
+      "start": 115,
+      "end": 126,
+      "text": "Changing the available context length tests how much the trained model benefits from preceding characters."
+    },
+    {
+      "start": 126,
+      "end": 138,
+      "text": "Average attention weights visualize where this model mixes information, but do not by themselves establish causal explanations."
+    },
+    {
+      "start": 138,
+      "end": 150,
+      "text": "Pause: is a validation loss of 2.5 impressive if the previous-letter baseline already scores 2.482? Why can training evaluate 64 positions together?"
+    },
+    {
+      "start": 150,
+      "end": 162,
+      "text": "A loss of 2.5 does not beat that baseline. Known targets plus causal masking make parallel teacher-forced training possible."
+    },
+    {
+      "start": 162,
+      "end": 174.08,
+      "text": "Recap training and evaluation. Continue to section 8 of this lesson to see how generation differs: predict a token, append it, and repeat."
+    }
+  ]
+}

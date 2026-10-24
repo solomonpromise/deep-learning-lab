@@ -1,0 +1,63 @@
+WEBVTT
+
+NOTE English visual guide. Editorial descriptions of on-screen concepts; no spoken narration.
+
+00:00:00.000 --> 00:00:05.600
+Attention creates a new representation for a position by mixing information from other positions.
+
+00:00:14.000 --> 00:00:17.000
+A context-sensitive pronoun motivates the operation. This introductory illustration allows
+
+00:00:17.000 --> 00:00:20.000
+bidirectional context.
+
+00:00:26.000 --> 00:00:29.600
+The worked example uses four token positions and small vectors so the calculation can be followed by
+
+00:00:29.600 --> 00:00:33.200
+hand.
+
+00:00:38.000 --> 00:00:42.800
+Learned linear projections produce queries, keys and values from the input representations.
+
+00:00:50.000 --> 00:00:53.800
+A query is compared with each key using a dot product. These comparisons form a row of attention
+
+00:00:53.800 --> 00:00:57.600
+scores.
+
+00:01:02.000 --> 00:01:06.400
+Matrix multiplication QKᵀ computes scores for every query against every key.
+
+00:01:14.000 --> 00:01:20.800
+Divide the scores by the square root of the key dimension to moderate their scale before softmax.
+
+00:01:26.000 --> 00:01:32.400
+Apply softmax separately to each score row. The resulting weights are nonnegative and sum to one.
+
+00:01:38.000 --> 00:01:44.000
+A larger score receives a larger weight relative to the other entries in that row.
+
+00:01:50.000 --> 00:01:56.400
+Multiply each value vector by its weight and add the results to produce one output vector.
+
+00:02:02.000 --> 00:02:06.400
+Repeating the operation for every query produces the output matrix: softmax(QKᵀ/√dₖ)V.
+
+00:02:14.000 --> 00:02:18.200
+The output depends on both the learned projections and the current context. It is not simply a
+
+00:02:18.200 --> 00:02:22.400
+lookup of one word.
+
+00:02:26.000 --> 00:02:29.200
+Causal masking will prevent a position from using future tokens when the task is next-token
+
+00:02:29.200 --> 00:02:32.400
+prediction.
+
+00:02:38.000 --> 00:02:44.000
+Pause and trace a single query: compare keys, scale scores, normalize weights and mix values.
+
+00:02:52.000 --> 00:02:56.800
+Recap the computation. The next animation adds masks, heads and position information.

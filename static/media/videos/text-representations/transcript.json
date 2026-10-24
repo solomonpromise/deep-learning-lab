@@ -1,0 +1,82 @@
+{
+  "reviewed": true,
+  "kind": "visual-guide",
+  "description": "Editorial description of the on-screen teaching sequence; not spoken narration. The soundtrack is music.",
+  "segments": [
+    {
+      "start": 0,
+      "end": 10,
+      "text": "Neural networks require numbers, so a text pipeline must turn symbols into usable numerical representations."
+    },
+    {
+      "start": 10,
+      "end": 20,
+      "text": "Tokenization divides text into units, such as words, subwords or characters."
+    },
+    {
+      "start": 20,
+      "end": 30,
+      "text": "A vocabulary assigns each token an integer ID. Larger IDs do not mean larger or more important meanings."
+    },
+    {
+      "start": 30,
+      "end": 40,
+      "text": "A one-hot vector marks one vocabulary position with one and all others with zero. It encodes identity but no built-in semantic similarity."
+    },
+    {
+      "start": 40,
+      "end": 50,
+      "text": "A large vocabulary makes these identity vectors wide and sparse."
+    },
+    {
+      "start": 50,
+      "end": 60,
+      "text": "An embedding table stores a shorter, dense vector for each token ID."
+    },
+    {
+      "start": 60,
+      "end": 70,
+      "text": "Looking up an ID selects its row. The embedding values are learned parameters that can receive gradients during training."
+    },
+    {
+      "start": 70,
+      "end": 80,
+      "text": "A prediction task supplies a learning signal. Tokens used in similar ways can develop useful relationships in the learned space."
+    },
+    {
+      "start": 80,
+      "end": 90,
+      "text": "A two-dimensional plot is a simplified view of vectors that usually have many more coordinates."
+    },
+    {
+      "start": 90,
+      "end": 100,
+      "text": "Nearby vectors may reflect useful similarities. Individual dimensions need not correspond to human-readable concepts."
+    },
+    {
+      "start": 100,
+      "end": 110,
+      "text": "Vector arithmetic can illustrate relationships, but analogy patterns depend on the training data and objective."
+    },
+    {
+      "start": 110,
+      "end": 120,
+      "text": "Cosine similarity compares directions: dot product divided by the product of vector lengths. Values range from minus one to one for nonzero vectors."
+    },
+    {
+      "start": 120,
+      "end": 130,
+      "text": "Aligned directions have cosine one; perpendicular directions have cosine zero. Opposite directions have cosine minus one, without guaranteeing opposite meanings."
+    },
+    {
+      "start": 130,
+      "end": 140,
+      "text": "Averaging token vectors produces a simple text representation but discards token order."
+    },
+    {
+      "start": 140,
+      "end": 151.08,
+      "text": "Static lookup gives a token the same starting vector in different sentences. Contextual models update its representation using surrounding information."
+    }
+  ]
+}

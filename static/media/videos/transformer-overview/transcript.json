@@ -1,0 +1,87 @@
+{
+  "reviewed": true,
+  "kind": "visual-guide",
+  "description": "Editorial description of the on-screen teaching sequence; not spoken narration. The soundtrack is music.",
+  "segments": [
+    {
+      "start": 0,
+      "end": 16,
+      "text": "A Transformer builds representations by allowing positions in a sequence to exchange information through attention."
+    },
+    {
+      "start": 16,
+      "end": 31,
+      "text": "The sentence about a robot dropping a glass motivates the need to use context when interpreting a token."
+    },
+    {
+      "start": 31,
+      "end": 46,
+      "text": "Tokens are converted to vectors, and information about their positions is added or otherwise supplied."
+    },
+    {
+      "start": 46,
+      "end": 61,
+      "text": "Attention assigns weights to other positions and mixes their value vectors to form context-dependent representations."
+    },
+    {
+      "start": 61,
+      "end": 76,
+      "text": "A bidirectional example can use words on both sides. Causal attention can use only the current and earlier positions."
+    },
+    {
+      "start": 76,
+      "end": 91,
+      "text": "Multiple attention heads can learn different patterns of interaction."
+    },
+    {
+      "start": 91,
+      "end": 106,
+      "text": "A Transformer block combines attention with a position-wise feed-forward network, normalization and residual connections."
+    },
+    {
+      "start": 106,
+      "end": 121,
+      "text": "Stacking blocks repeatedly refines the token representations."
+    },
+    {
+      "start": 121,
+      "end": 136,
+      "text": "An output head maps representations to task-specific predictions."
+    },
+    {
+      "start": 136,
+      "end": 151,
+      "text": "Encoder-style models commonly use bidirectional context. Decoder-style language models commonly use causal attention."
+    },
+    {
+      "start": 151,
+      "end": 166,
+      "text": "Encoder–decoder models add attention from decoder states to encoder outputs, supporting tasks such as translation."
+    },
+    {
+      "start": 166,
+      "end": 181,
+      "text": "Known training positions can be processed in parallel with a mask. Autoregressive generation still extends the sequence one token at a time."
+    },
+    {
+      "start": 181,
+      "end": 196,
+      "text": "The module develops a small character-level language model so that the full computation is inspectable."
+    },
+    {
+      "start": 196,
+      "end": 211,
+      "text": "Modern language models may use variants such as rotary positions, RMSNorm or different feed-forward designs; they are not all present in this teaching model."
+    },
+    {
+      "start": 211,
+      "end": 226,
+      "text": "Transformers can also operate on image patches and other kinds of tokenized input."
+    },
+    {
+      "start": 226,
+      "end": 238.08,
+      "text": "The following lessons unpack input preparation, attention, blocks, assembly and training in detail."
+    }
+  ]
+}

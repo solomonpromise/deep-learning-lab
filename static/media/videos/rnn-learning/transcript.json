@@ -1,0 +1,82 @@
+{
+  "reviewed": true,
+  "kind": "visual-guide",
+  "description": "Editorial description of the on-screen teaching sequence; not spoken narration. The soundtrack is music.",
+  "segments": [
+    {
+      "start": 0,
+      "end": 11,
+      "text": "A recurrent neural network processes a sequence one item at a time, carrying a hidden state forward."
+    },
+    {
+      "start": 11,
+      "end": 22,
+      "text": "Word order matters: “dog bites man” and “man bites dog” contain the same words but express different events."
+    },
+    {
+      "start": 22,
+      "end": 33,
+      "text": "Map each token to an embedding vector before passing it to the recurrent computation."
+    },
+    {
+      "start": 33,
+      "end": 44,
+      "text": "At each step, combine the current input with the previous hidden state using learned weights and an activation."
+    },
+    {
+      "start": 44,
+      "end": 55,
+      "text": "The updated hidden state carries information into the next step. The recurrent parameters are shared across time."
+    },
+    {
+      "start": 55,
+      "end": 66,
+      "text": "Unrolling draws the same computation repeatedly, making the sequence of dependencies visible."
+    },
+    {
+      "start": 66,
+      "end": 77,
+      "text": "A prediction head converts a hidden state into scores for the next token; softmax turns those scores into probabilities."
+    },
+    {
+      "start": 77,
+      "end": 88,
+      "text": "Compare the next-token prediction with the true next token using cross-entropy loss."
+    },
+    {
+      "start": 88,
+      "end": 99,
+      "text": "A later prediction may need information that appeared several steps earlier."
+    },
+    {
+      "start": 99,
+      "end": 110,
+      "text": "The fading memory bars illustrate a difficulty; they are not measurements of the contribution of each word."
+    },
+    {
+      "start": 110,
+      "end": 121,
+      "text": "Backpropagation through time follows the dependencies backward to compute gradients for the shared weights."
+    },
+    {
+      "start": 121,
+      "end": 132,
+      "text": "Repeated multiplication can shrink gradients. Multiplying by one half repeatedly is an illustrative example, not a law that every recurrent gradient follows."
+    },
+    {
+      "start": 132,
+      "end": 143,
+      "text": "Updates based on weak long-range gradients may struggle to teach the network which earlier information to retain."
+    },
+    {
+      "start": 143,
+      "end": 155,
+      "text": "LSTMs and GRUs introduce gates that regulate what to retain, overwrite or expose."
+    },
+    {
+      "start": 155,
+      "end": 168.07,
+      "text": "The next section examines these gated architectures. They improve the ability to learn longer dependencies, while retaining sequential computation."
+    }
+  ]
+}

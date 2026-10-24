@@ -1,0 +1,315 @@
+WEBVTT
+
+NOTE Reviewed speech captions.
+
+00:00:00.140 --> 00:00:04.580
+Welcome back, everyone. Today we're going to open up a neural network and
+
+00:00:04.580 --> 00:00:09.260
+watch it learn step by step. We'll start with the forward pass, where
+
+00:00:09.260 --> 00:00:13.060
+inputs are multiplied by weights and pass through an activation function,
+
+00:00:13.440 --> 00:00:18.380
+like ReLU or sigmoid. Then we'll measure the loss, which tells us how wrong
+
+00:00:18.380 --> 00:00:23.120
+the prediction was. After that comes backpropagation, where we use the
+
+00:00:23.120 --> 00:00:26.500
+chain rule to work out how much each weight contributed to the error.
+
+00:00:27.280 --> 00:00:30.020
+Finally, we update the weights using gradient descent.
+
+00:00:30.820 --> 00:00:33.820
+Repeat that thousands of times, and the network learns.
+
+00:00:35.300 --> 00:00:38.060
+It's simpler than it sounds, so let's get into it.
+
+00:00:39.680 --> 00:00:41.480
+Here's our network before any training.
+
+00:00:42.280 --> 00:00:45.840
+Its job is to predict which of these 40 students will pass an exam.
+
+00:00:46.900 --> 00:00:47.940
+Right now, it's guessing.
+
+00:00:48.780 --> 00:00:51.860
+It gets about half of them right, which is no better than a coin toss.
+
+00:00:52.620 --> 00:00:56.500
+Now, watch what 150 tiny corrections can do.
+
+00:01:00.640 --> 00:01:06.240
+93%. Nobody told it the rule. It found the rule on its own. So how did it do that?
+
+00:01:06.800 --> 00:01:10.760
+Let's rewind, slow down and follow one student, one number at a time.
+
+00:01:12.480 --> 00:01:13.120
+Let's meet
+
+00:01:13.120 --> 00:01:16.880
+the network properly. It takes two numbers about a student and predicts
+
+00:01:16.880 --> 00:01:22.920
+whether they'll pass. Two inputs go in, hours studied and hours slept, both scaled
+
+00:01:22.920 --> 00:01:27.520
+to sit between zero and one. A hidden layer of two neurons uses
+
+00:01:27.520 --> 00:01:29.760
+ReLU, the rectified linear unit.
+
+00:01:30.500 --> 00:01:32.860
+The single output neuron uses a sigmoid
+
+00:01:32.860 --> 00:01:34.100
+to produce a probability.
+
+00:01:35.300 --> 00:01:36.740
+Every connection carries a weight.
+
+00:01:37.360 --> 00:01:39.500
+Blue is positive, orange is negative,
+
+00:01:39.920 --> 00:01:40.880
+and thicker means stronger.
+
+00:01:42.540 --> 00:01:45.440
+Let's zoom into the first hidden neuron, H1.
+
+00:01:46.000 --> 00:01:48.800
+Every neuron does two things, a weighted sum,
+
+00:01:49.140 --> 00:01:49.600
+then an activation.
+
+00:01:50.660 --> 00:01:52.720
+Each input travels along its connection
+
+00:01:53.260 --> 00:01:55.740
+and gets multiplied by that connection's weight.
+
+00:01:55.740 --> 00:02:01.720
+So, 1 times 0 .5 is 0 .5, and 0 .5
+
+00:02:01.720 --> 00:02:08.020
+times minus 0 .3 is minus 0 .15. Then we add the neuron's
+
+00:02:08.020 --> 00:02:14.020
+bias, 0 .1. The result is called Z, the linear combination. For neuron
+
+00:02:14.020 --> 00:02:16.960
+H1, Z1 equals 0 .45.
+
+00:02:19.040 --> 00:02:23.720
+Next, Z passes through an activation function. Our hidden layer uses ReLU.
+
+00:02:24.160 --> 00:02:25.680
+ReLU keeps positive
+
+00:02:25.680 --> 00:02:30.860
+values and turns negative values into zero. In symbols, it equals the
+
+00:02:30.860 --> 00:02:32.320
+maximum of zero and z.
+
+00:02:33.080 --> 00:02:38.900
+Z1 is 0 .45. That's positive, so neuron H1 outputs
+
+00:02:38.900 --> 00:02:40.740
+a 1 equals 0 .45.
+
+00:02:41.900 --> 00:02:47.720
+Neuron H2 does the same. Z2 is 0 .5, so a 2 is 0 .5.
+
+00:02:48.380 --> 00:02:50.460
+Why bother? Without activations,
+
+00:02:50.460 --> 00:02:53.780
+stacking layers would collapse into one straight line model.
+
+00:02:55.680 --> 00:02:57.960
+The output neuron repeats the same pattern,
+
+00:02:58.420 --> 00:03:00.240
+using the hidden outputs as its inputs.
+
+00:03:01.060 --> 00:03:07.780
+0 .45 times 0 .7, plus 0 .5 times minus 0 .4,
+
+00:03:08.080 --> 00:03:12.600
+plus the bias of 0 .2, gives z equals 0 .315.
+
+00:03:13.860 --> 00:03:17.120
+The output uses sigmoid, which squashes any number
+
+00:03:17.120 --> 00:03:19.380
+into a probability between 0 and 1.
+
+00:03:20.260 --> 00:03:24.340
+Sigmoid of 0 .315 is 0 .578.
+
+00:03:24.340 --> 00:03:29.620
+The network says, a 57 .8 % chance that this student passes.
+
+00:03:30.660 --> 00:03:34.620
+That whole journey from inputs to prediction is called forward propagation.
+
+00:03:36.260 --> 00:03:40.340
+This student actually passed, so the true label Y equals 1.
+
+00:03:41.000 --> 00:03:45.100
+To measure how wrong the prediction is, we use binary cross -entropy loss.
+
+00:03:45.900 --> 00:03:49.700
+When Y equals 1, the loss becomes minus the log of Y hat,
+
+00:03:50.140 --> 00:03:52.620
+being confident and right costs very little,
+
+00:03:52.620 --> 00:03:55.300
+being confident and wrong costs a lot.
+
+00:03:56.020 --> 00:04:00.520
+Minus the log of 0 .578 is 0 .548.
+
+00:04:01.620 --> 00:04:04.100
+The whole goal of training is to push this number down.
+
+00:04:05.000 --> 00:04:08.540
+In practice, frameworks like PyTorch fuse the sigmoid
+
+00:04:08.540 --> 00:04:10.640
+and the cross entropy into one function,
+
+00:04:11.160 --> 00:04:14.260
+BCEWithLogitsLoss, for numerical stability.
+
+00:04:15.920 --> 00:04:18.740
+Now we work backwards to find how much each weight
+
+00:04:18.740 --> 00:04:19.980
+is to blame for the error.
+
+00:04:19.980 --> 00:04:25.740
+This is backpropagation. Start at the output. For a sigmoid with cross entropy,
+
+00:04:26.220 --> 00:04:32.120
+the gradient simplifies beautifully. It's just y hat minus y, 0 .578
+
+00:04:32.120 --> 00:04:33.620
+minus 1, which
+
+00:04:33.620 --> 00:04:39.020
+is minus 0 .422. Each output weights gradient is that error,
+
+00:04:39.520 --> 00:04:40.880
+times the activation flowing
+
+00:04:40.880 --> 00:04:46.780
+into it. Minus 0 .422 times 0 .45 gives
+
+00:04:46.780 --> 00:04:51.440
+minus 0 .19. To go further back, we use the chain rule.
+
+00:04:52.120 --> 00:04:56.300
+Multiply by the connecting weight, then by ReLU’s slope, which is one here,
+
+00:04:56.580 --> 00:04:57.760
+because z is positive.
+
+00:04:58.640 --> 00:05:03.480
+Then each input weights gradient is that error times its input. Now every
+
+00:05:03.480 --> 00:05:04.740
+weight knows which way to move.
+
+00:05:06.100 --> 00:05:11.540
+Now the update, gradient descent nudges every weight a small step against its gradient.
+
+00:05:12.520 --> 00:05:14.660
+The step size is the learning rate, eta.
+
+00:05:15.160 --> 00:05:20.680
+With eta equal to 0 .5, the weight V1 becomes 0 .7 minus
+
+00:05:20.680 --> 00:05:23.880
+0 .5 times minus 0 .19.
+
+00:05:24.820 --> 00:05:29.380
+That's 0 .795, a negative gradient pushes a weight up.
+
+00:05:30.280 --> 00:05:31.820
+Same student, forward again.
+
+00:05:31.820 --> 00:05:37.280
+The prediction rises to 0 .719, and the loss falls to 0
+
+00:05:37.280 --> 00:05:41.340
+.329, one step, and the network has already improved.
+
+00:05:42.940 --> 00:05:47.660
+That was one update from one student. Now let's go back to all 40 students.
+
+00:05:48.660 --> 00:05:52.420
+The white line is the decision boundary. On one side, the network predicts
+
+00:05:52.420 --> 00:05:54.480
+pass. On the other side fail.
+
+00:05:55.120 --> 00:06:01.200
+Now we repeat the same four steps over and over, forward pass, loss, back propagation update.
+
+00:06:02.240 --> 00:06:06.460
+With every update, the loss falls and the boundary shifts to separate the two groups.
+
+00:06:07.300 --> 00:06:12.960
+After 150 updates, we're back at 93%, the result you saw at the start.
+
+00:06:13.720 --> 00:06:15.880
+And now, you know exactly how it got there.
+
+00:06:17.780 --> 00:06:19.420
+Let's recap the whole process.
+
+00:06:21.200 --> 00:06:26.620
+Forward pass, each neuron computes a weighted sum plus a bias, then applies an activation.
+
+00:06:27.780 --> 00:06:31.440
+Loss, compare the prediction with the truth to measure how wrong it was.
+
+00:06:32.640 --> 00:06:36.140
+Backpropagation, use the chain rule to find how much each weight
+
+00:06:36.140 --> 00:06:37.260
+contributed to the error.
+
+00:06:38.520 --> 00:06:42.080
+Update, nudge every weight against its gradient, scaled by the learning rate.
+
+00:06:43.720 --> 00:06:48.320
+Our little network had just nine numbers to learn, six weights and three biases.
+
+00:06:50.480 --> 00:06:55.660
+Today's largest models have billions of them, yet they learn with these same four steps,
+
+00:06:55.960 --> 00:06:57.200
+repeated millions of times.
+
+00:06:58.960 --> 00:07:00.200
+Now it's your turn.
+
+00:07:01.020 --> 00:07:05.500
+Open the back prop playground, change the learning rate, the optimizer and the network shape,
+
+00:07:05.800 --> 00:07:06.700
+and watch what happens.
+
+00:07:07.860 --> 00:07:08.720
+See you in the next class.

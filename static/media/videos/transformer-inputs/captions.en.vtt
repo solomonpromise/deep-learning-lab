@@ -1,0 +1,84 @@
+WEBVTT
+
+NOTE English visual guide. Editorial descriptions of on-screen concepts; no spoken narration.
+
+00:00:00.000 --> 00:00:05.600
+Text preparation turns a sequence of symbols into vectors that the Transformer can process.
+
+00:00:16.000 --> 00:00:21.200
+The teaching example uses Tiny Shakespeare and compares different choices of token unit.
+
+00:00:30.000 --> 00:00:33.400
+Word tokenization uses whole words, but creates a larger vocabulary and needs a policy for unseen
+
+00:00:33.400 --> 00:00:36.800
+words.
+
+00:00:44.000 --> 00:00:47.200
+Subword tokenization can represent words using reusable pieces.
+
+00:00:58.000 --> 00:01:01.000
+Byte-pair encoding repeatedly merges frequent neighboring units, using rules learned from the
+
+00:01:01.000 --> 00:01:04.000
+training text.
+
+00:01:12.000 --> 00:01:17.600
+The Shakespeare example illustrates a learned BPE vocabulary and its effect on sequence length.
+
+00:01:26.000 --> 00:01:30.200
+The reference comparison uses 65 character tokens, 12,571 word entries or 265 BPE entries. Counts
+
+00:01:30.200 --> 00:01:34.400
+depend on the tokenizer and split.
+
+00:01:40.000 --> 00:01:43.800
+Larger vocabularies increase the embedding table and output vocabulary projection. The character
+
+00:01:43.800 --> 00:01:47.600
+table here has 65×64 = 4,160 entries.
+
+00:01:54.000 --> 00:01:57.600
+An ID selects one row from the embedding table. This converts each token into a 64-dimensional
+
+00:01:57.600 --> 00:02:01.200
+starting vector.
+
+00:02:08.000 --> 00:02:11.400
+Position information distinguishes identical tokens at different locations. This model learns 64
+
+00:02:11.400 --> 00:02:14.800
+position vectors of width 64.
+
+00:02:22.000 --> 00:02:25.600
+Split training and validation text before making windows, preventing windows from crossing the split
+
+00:02:25.600 --> 00:02:29.200
+and leaking validation text.
+
+00:02:36.000 --> 00:02:40.400
+The input is a text window. The target is the same stream shifted one token ahead, so each position
+
+00:02:40.400 --> 00:02:44.800
+predicts its successor.
+
+00:02:50.000 --> 00:02:53.600
+A batch groups 32 windows of 64 token IDs. Input and target tensors have shape 32×64 before
+
+00:02:53.600 --> 00:02:57.200
+embedding.
+
+00:03:04.000 --> 00:03:08.800
+Pause: why split before sampling windows? What grows when vocabulary size grows?
+
+00:03:18.000 --> 00:03:21.800
+Splitting first keeps validation content out of training. Both the embedding table and output
+
+00:03:21.800 --> 00:03:25.600
+projection grow with vocabulary size.
+
+00:03:30.000 --> 00:03:32.040
+Recap: tokenize, look up vectors, include positions, split carefully, and create shifted
+
+00:03:32.040 --> 00:03:34.080
+input–target windows.

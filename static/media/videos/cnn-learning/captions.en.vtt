@@ -1,0 +1,81 @@
+WEBVTT
+
+NOTE English visual guide. Editorial descriptions of on-screen concepts; no spoken narration.
+
+00:00:00.000 --> 00:00:04.600
+A CNN maps pixels to a prediction, measures its error and updates its weights. The animation follows
+
+00:00:04.600 --> 00:00:09.200
+an image of the digit seven.
+
+00:00:10.000 --> 00:00:13.800
+The input is a 12 by 12, single-channel grid. Pixel values describe brightness; intermediate values
+
+00:00:13.800 --> 00:00:17.600
+can represent softer edges.
+
+00:00:21.000 --> 00:00:25.200
+A 3 by 3 filter contains nine learned weights and a bias. It starts with initial values, which
+
+00:00:25.200 --> 00:00:29.400
+training can change.
+
+00:00:32.000 --> 00:00:37.400
+Convolution slides the same filter across the image. At each location, multiply corresponding pixels
+
+00:00:37.400 --> 00:00:42.800
+and weights, add the results and the bias, and write one output value.
+
+00:00:43.000 --> 00:00:46.000
+Several filters produce several feature maps. Different learned filters can respond to different
+
+00:00:46.000 --> 00:00:49.000
+patterns.
+
+00:00:54.000 --> 00:00:58.400
+ReLU replaces negative feature values with zero and keeps positive values.
+
+00:01:05.000 --> 00:01:10.200
+Max pooling keeps the largest value from each small region, reducing spatial dimensions.
+
+00:01:16.000 --> 00:01:20.000
+The illustrated path is 12×12×1 → 10×10×4 → 5×5×4 → 3×3×8. Deeper features combine information from
+
+00:01:20.000 --> 00:01:24.000
+a wider input region.
+
+00:01:27.000 --> 00:01:30.200
+Flattening rearranges the 3×3×8 feature tensor into 72 values, preserving the values in a fixed
+
+00:01:30.200 --> 00:01:33.400
+ordering.
+
+00:01:38.000 --> 00:01:42.800
+The dense classifier combines those features to produce scores for ten digits.
+
+00:01:49.000 --> 00:01:52.400
+Softmax converts scores into nonnegative probabilities that sum to one. The largest probability is
+
+00:01:52.400 --> 00:01:55.800
+the current prediction.
+
+00:02:00.000 --> 00:02:04.000
+Cross-entropy penalizes low probability for the true class. For a true-class probability of 0.205,
+
+00:02:04.000 --> 00:02:08.000
+the natural-log loss is approximately 1.585.
+
+00:02:11.000 --> 00:02:14.000
+Backpropagation applies the chain rule through the classifier and feature extractor to calculate
+
+00:02:14.000 --> 00:02:17.000
+parameter gradients.
+
+00:02:22.000 --> 00:02:26.000
+Gradient descent updates weights by subtracting learning rate times gradient.
+
+00:02:33.000 --> 00:02:36.800
+Repeating prediction, loss, backpropagation and update over training examples can improve
+
+00:02:36.800 --> 00:02:40.600
+predictions. Evaluate on held-out data to check generalization.

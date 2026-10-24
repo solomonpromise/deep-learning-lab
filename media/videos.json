@@ -1,0 +1,425 @@
+{
+  "version": 1,
+  "release": "curriculum-videos-v1",
+  "videos": [
+    {
+      "id": "neural-network-learning",
+      "title": "How a neural network learns",
+      "lesson": "1.2",
+      "section": 10,
+      "at": "end",
+      "duration_seconds": 432.47,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/neural-network-learning.mp4",
+      "poster_seconds": 75,
+      "intro": "Bring together the forward pass, loss, backpropagation and gradient descent you have just studied. Follow one student through a small network, then watch repeated updates change its predictions.",
+      "watch_for": "Pause at each calculation. Identify which quantities are inputs, learned parameters, activations and gradients. Notice that a negative gradient can increase a weight.",
+      "note": "**Keep the experiment in perspective.** This is a separate, illustrative 40-student example. The displayed 93% describes those training examples, not performance on unseen students. A falling training loss does not guarantee a falling validation loss. The closing invitation to a playground refers to experimenting with the lesson’s interactive labs.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "The learning loop"
+        },
+        {
+          "start": 73,
+          "title": "Meet the network"
+        },
+        {
+          "start": 102,
+          "title": "Weighted sums and ReLU"
+        },
+        {
+          "start": 175,
+          "title": "Prediction and loss"
+        },
+        {
+          "start": 255,
+          "title": "Backpropagation"
+        },
+        {
+          "start": 306,
+          "title": "Update and repeat"
+        }
+      ],
+      "text_kind": "speech"
+    },
+    {
+      "id": "cnn-learning",
+      "title": "How a CNN learns",
+      "lesson": "5.2",
+      "section": 7,
+      "at": "end",
+      "duration_seconds": 166.08,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/cnn-learning.mp4",
+      "poster_seconds": 78,
+      "intro": "Use this visual recap before building the CNN in the next section. It follows a small image through convolution, pooling, a classifier and a parameter update.",
+      "watch_for": "Track the height, width and channel count. Distinguish a filter’s learned weights from the feature map it produces, and see how deeper features draw on larger parts of the image.",
+      "note": "**Connect it to the notebook.** The animation uses an illustrative 12 × 12 digit image; the practical model uses its own dataset and dimensions. Flattening rearranges the features without discarding their values. A dense layer does not automatically preserve convolution’s local connections and shared weights. The loss uses the natural logarithm: −ln(0.205) ≈ 1.585. Animated counters settle on their final values after a short transition.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "The input and learned filters"
+        },
+        {
+          "start": 32,
+          "title": "Convolution and feature maps"
+        },
+        {
+          "start": 65,
+          "title": "Pooling and deeper features"
+        },
+        {
+          "start": 87,
+          "title": "Flatten and classify"
+        },
+        {
+          "start": 120,
+          "title": "Loss, gradients and updates"
+        }
+      ],
+      "text_kind": "visual-guide"
+    },
+    {
+      "id": "rnn-learning",
+      "title": "How an RNN learns",
+      "lesson": "5.4",
+      "section": 3,
+      "at": "end",
+      "duration_seconds": 168.07,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/rnn-learning.mp4",
+      "poster_seconds": 78,
+      "intro": "Revisit hidden states and the difficulty of carrying information over many time steps. The closing introduction to gates leads into LSTMs and GRUs in the next section.",
+      "watch_for": "Follow the same recurrent computation as each new token arrives. Compare the short path for a recent word with the longer gradient path back to an earlier word.",
+      "note": "**Read the memory illustration carefully.** The percentage bars are explanatory drawings, not measured contributions of individual words. Order is lost by order-insensitive averaging or bag-of-words representations; an ordered dense input can still retain order. RNNs explicitly process an ordered sequence. Gates help information and gradients persist, but do not guarantee perfect long-term memory.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "Order and sequence processing"
+        },
+        {
+          "start": 33,
+          "title": "The recurrent hidden state"
+        },
+        {
+          "start": 66,
+          "title": "Prediction and loss"
+        },
+        {
+          "start": 110,
+          "title": "Gradients through time"
+        },
+        {
+          "start": 143,
+          "title": "Why introduce gates?"
+        }
+      ],
+      "text_kind": "visual-guide"
+    },
+    {
+      "id": "text-representations",
+      "title": "How networks learn from text",
+      "lesson": "5.3",
+      "section": 7,
+      "at": "end",
+      "duration_seconds": 151.08,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/text-representations.mp4",
+      "poster_seconds": 110,
+      "intro": "Connect token IDs, one-hot vectors, embedding lookup and cosine similarity before moving on to contextual representations.",
+      "watch_for": "Separate a token’s arbitrary ID from its learned vector. Watch how training can arrange vectors so useful relationships become easier to express.",
+      "note": "**Geometry is not a dictionary.** Cosine similarity −1 means opposite vector directions; it does not necessarily mean opposite word meanings. Antonyms can occur in similar contexts and have nearby vectors. The positions, analogies and similarity values here illustrate ideas rather than guaranteeing what every trained embedding will learn.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "Tokens and IDs"
+        },
+        {
+          "start": 30,
+          "title": "One-hot and dense representations"
+        },
+        {
+          "start": 60,
+          "title": "Learning an embedding"
+        },
+        {
+          "start": 110,
+          "title": "Cosine similarity"
+        },
+        {
+          "start": 130,
+          "title": "From static to contextual meaning"
+        }
+      ],
+      "text_kind": "visual-guide"
+    },
+    {
+      "id": "transformer-overview",
+      "title": "What is a Transformer?",
+      "lesson": "6.1",
+      "section": 7,
+      "at": "end",
+      "duration_seconds": 238.08,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/transformer-overview.mp4",
+      "poster_seconds": 88,
+      "intro": "Review why attention is useful and how Transformer families organize it. This overview also previews vision applications and the modern variations discussed later.",
+      "watch_for": "Follow the path from tokens to contextual representations. Separate parallel processing of known training positions from generating new tokens one at a time.",
+      "note": "**Two distinctions matter.** The pronoun example uses bidirectional context; a causal decoder cannot look at words that occur after its current position. Encoder/decoder labels describe architectural patterns, not exclusive abilities. Modern components shown here are examples; our small teaching model has the precise configuration specified in the notebook.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "Why context matters"
+        },
+        {
+          "start": 46,
+          "title": "Attention and blocks"
+        },
+        {
+          "start": 121,
+          "title": "Outputs and Transformer families"
+        },
+        {
+          "start": 166,
+          "title": "Training versus generation"
+        },
+        {
+          "start": 196,
+          "title": "Modern and vision variations"
+        }
+      ],
+      "text_kind": "visual-guide"
+    },
+    {
+      "id": "transformer-inputs",
+      "title": "Getting text ready",
+      "lesson": "6.2",
+      "section": 5,
+      "at": "end",
+      "duration_seconds": 214.08,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/transformer-inputs.mp4",
+      "poster_seconds": 120,
+      "intro": "Recap the three decisions behind Transformer inputs: token units, token vectors and position information. Then connect them to shifted next-token targets and batches.",
+      "watch_for": "Notice the trade-off between vocabulary size and sequence length. Explain why the text split must happen before sampling training and validation windows.",
+      "note": "**Interpret the displayed numbers as a reference run.** Vocabulary sizes, token counts and similarities depend on the tokenizer, corpus split and settings. The animation uses the module’s character model with vocabulary 65, width 64 and context length 64; these are design choices, not Transformer requirements.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "Choose token units"
+        },
+        {
+          "start": 58,
+          "title": "Learn and compare BPE"
+        },
+        {
+          "start": 100,
+          "title": "Embedding size and positions"
+        },
+        {
+          "start": 142,
+          "title": "Split and shift targets"
+        },
+        {
+          "start": 184,
+          "title": "Check your understanding"
+        }
+      ],
+      "text_kind": "visual-guide"
+    },
+    {
+      "id": "attention-step-by-step",
+      "title": "Attention, step by step",
+      "lesson": "6.3",
+      "section": 7,
+      "at": "end",
+      "duration_seconds": 186.07,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/attention-step-by-step.mp4",
+      "poster_seconds": 105,
+      "intro": "Consolidate the hand calculation before studying masks and multiple heads. Follow one row from queries and keys through to its weighted combination of values.",
+      "watch_for": "Check the shapes, divide scores by the square root of the key dimension, and verify that each softmax row sums to one.",
+      "note": "**Separate the worked calculation from the illustration.** The small vectors are chosen to make the arithmetic visible. The pronoun illustration uses bidirectional context; causal masking comes next. Attention weights describe a mixing operation and are not, by themselves, a complete explanation of a model’s decision.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "Why attention?"
+        },
+        {
+          "start": 38,
+          "title": "Queries, keys and values"
+        },
+        {
+          "start": 62,
+          "title": "Score and scale"
+        },
+        {
+          "start": 86,
+          "title": "Softmax weights"
+        },
+        {
+          "start": 110,
+          "title": "The weighted value mixture"
+        },
+        {
+          "start": 146,
+          "title": "Preparing for causal masking"
+        }
+      ],
+      "text_kind": "visual-guide"
+    },
+    {
+      "id": "masks-heads-positions",
+      "title": "Masks, heads and positions",
+      "lesson": "6.3",
+      "section": 11,
+      "at": "end",
+      "duration_seconds": 179.07,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/masks-heads-positions.mp4",
+      "poster_seconds": 37,
+      "intro": "Connect causal masking, multiple heads, positions and attention cost before moving on to the implementation.",
+      "watch_for": "Locate the forbidden future entries, follow the head dimensions and explain why doubling sequence length quadruples a full score grid.",
+      "note": "**Read the diagrams as models of the computation.** Each head applies learned projections to the full input representation before reshaping into head dimensions. Illustrated head “jobs” are examples, not guaranteed specializations. The memory table assumes float32 scores for one head and uses binary-sized units. FlashAttention avoids storing the full grid; exact full-attention arithmetic still grows quadratically with length, with ordinary floating-point rounding differences.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "The causal mask"
+        },
+        {
+          "start": 48,
+          "title": "Multiple heads"
+        },
+        {
+          "start": 95,
+          "title": "Position information"
+        },
+        {
+          "start": 130,
+          "title": "Quadratic cost and tiling"
+        },
+        {
+          "start": 153,
+          "title": "Check your understanding"
+        }
+      ],
+      "text_kind": "visual-guide"
+    },
+    {
+      "id": "transformer-block",
+      "title": "The Transformer block",
+      "lesson": "6.4",
+      "section": 7,
+      "at": "end",
+      "duration_seconds": 146.07,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/transformer-block.mp4",
+      "poster_seconds": 65,
+      "intro": "Review how attention, normalization, residual connections and a feed-forward network form a reusable block.",
+      "watch_for": "Follow the residual stream through both sublayers. Notice that attention mixes positions, while the feed-forward network transforms each position separately.",
+      "note": "**Keep architecture comparisons conditional.** Layer normalization standardizes each token’s features before a learned scale and bias; the final output need not have zero mean and unit variance. The pre-norm/post-norm and warmup comparisons shown are small reference experiments, not a universal ranking for every architecture, depth or training setup.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "Residual paths"
+        },
+        {
+          "start": 36,
+          "title": "Layer normalization"
+        },
+        {
+          "start": 60,
+          "title": "The feed-forward network"
+        },
+        {
+          "start": 84,
+          "title": "Pre-norm and post-norm"
+        },
+        {
+          "start": 108,
+          "title": "Stacking blocks"
+        }
+      ],
+      "text_kind": "visual-guide"
+    },
+    {
+      "id": "assembling-language-model",
+      "title": "Assembling a language model",
+      "lesson": "6.5",
+      "section": 5,
+      "at": "end",
+      "duration_seconds": 161.07,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/assembling-language-model.mp4",
+      "poster_seconds": 67,
+      "intro": "Bring input embeddings, Transformer blocks, normalization and the output head together. Then revisit parameter counting, sanity checks and cross-attention.",
+      "watch_for": "Follow the tensor shape to one vocabulary-sized vector of logits per position. Explain why fitting one tiny batch tests implementation but does not establish generalization.",
+      "note": "**Use sanity checks as evidence, not proof.** Initial loss near ln(vocabulary size) is a useful check, not a guarantee that everything is correct. The tiny-batch and parameter counts belong to the specific reference configuration. Weight tying shares parameters; it is optional and must match the architecture.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "From token IDs to logits"
+        },
+        {
+          "start": 48,
+          "title": "Parameter counts and weight tying"
+        },
+        {
+          "start": 72,
+          "title": "Initial-loss and tiny-batch checks"
+        },
+        {
+          "start": 108,
+          "title": "Cross-attention"
+        },
+        {
+          "start": 132,
+          "title": "Check your understanding"
+        }
+      ],
+      "text_kind": "visual-guide"
+    },
+    {
+      "id": "training-transformer",
+      "title": "Training a Transformer",
+      "lesson": "6.6",
+      "section": 7,
+      "at": "end",
+      "duration_seconds": 174.08,
+      "reviewed": true,
+      "url": "https://github.com/solomonpromise/deep-learning-lab/releases/download/curriculum-videos-v1/training-transformer.mp4",
+      "poster_seconds": 95,
+      "intro": "Recap the training run and learn how to read its results. After this animation, continue to the next section for autoregressive generation.",
+      "watch_for": "Connect shifted targets to teacher forcing and causal masking. Judge validation loss against relevant baselines, then compare learning-rate trials and context lengths.",
+      "note": "**Treat results as experiment-specific.** The learning-rate choice and loss values describe the illustrated run, not defaults for every model. Perplexity exp(loss) is not an accuracy percentage. Attention patterns are descriptive, not proof of causal importance. The closing “Film 8” preview points ahead to generation; continue with section 8 of this lesson for that material.",
+      "chapters": [
+        {
+          "start": 0,
+          "title": "Shifted targets and teacher forcing"
+        },
+        {
+          "start": 36,
+          "title": "Loss and baselines"
+        },
+        {
+          "start": 58,
+          "title": "The training toolkit"
+        },
+        {
+          "start": 81,
+          "title": "Learning-rate trials and results"
+        },
+        {
+          "start": 115,
+          "title": "Context and attention"
+        },
+        {
+          "start": 138,
+          "title": "Check your understanding"
+        }
+      ],
+      "text_kind": "visual-guide"
+    }
+  ]
+}
