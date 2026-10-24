@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-24",
+  "projects": [
+    {
+      "id": "student-dropout",
+      "cells": 69,
+      "source_unchanged": true,
+      "notebook_schema": true,
+      "code_syntax": true,
+      "links_and_images": true,
+      "bundle_crc": true
+    },
+    {
+      "id": "waste-sorter",
+      "cells": 79,
+      "source_unchanged": true,
+      "notebook_schema": true,
+      "code_syntax": true,
+      "links_and_images": true,
+      "bundle_crc": true
+    },
+    {
+      "id": "activity-recognition",
+      "cells": 38,
+      "source_unchanged": true,
+      "notebook_schema": true,
+      "code_syntax": true,
+      "links_and_images": true,
+      "bundle_crc": true
+    }
+  ],
+  "course_lessons_built": 41,
+  "numerical_comparison": {
+    "mlp_cases": 32,
+    "recurrent_cases": 18,
+    "max_probability_error": 1.65e-07,
+    "tolerance": 1e-05
+  },
+  "cnn_reference_examples": 6,
+  "cnn_native_browser_prediction": "Cardboard (100%), 297 ms",
+  "python_apps_smoke_tested": [
+    "student-dropout",
+    "activity-recognition"
+  ],
+  "browser_checks": [
+    "MLP prediction, invalid unit-count feedback and reset",
+    "GRU sitting-to-standing error: 83.4% standing",
+    "LSTM on the same sitting recording: 89.0% standing",
+    "Uploaded valid 128\u00d79 CSV classified in browser",
+    "Embedded CNN loaded and classified an image with local runtime/model",
+    "All three project pages checked at 390px with no horizontal page overflow",
+    "Waste-sorter iframe follows dark theme"
+  ],
+  "application_publication": "Dedicated lab integration PR; no merge or new public application deployment performed",
+  "independent_branch_build": "41 lessons and three project pages built against origin/main without the video integration"
+}

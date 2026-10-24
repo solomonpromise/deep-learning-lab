@@ -1,0 +1,1 @@
+{"classes": ["cardboard", "glass", "metal", "paper", "plastic", "trash"], "mean": [0.485, 0.456, 0.406], "std": [0.229, 0.224, 0.225], "size": 224, "waste_threshold": 0.2902, "confidence_threshold": 0.6}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Project labs — {{ course.short_title }}{% endblock %}
+{% block main %}
+<div class="projects-page">
+  <header class="rd-page-head"><span class="mono-label">Three complete projects · Real data · Working apps</span><h1>From a model<br>to something you can use.</h1><p class="lead">Follow each project from the problem and data to evaluation and a working application. Try the app, then open the complete notebook to understand and reproduce it.</p></header>
+  <div class="project-cards">{% for p in projects %}
+    <article class="project-card"><span class="mono-label">Lab {{ p.number }} · {{ p.topic }}</span><h2><a href="{{ p.url }}">{{ p.title }}</a></h2><p>{{ p.summary }}</p><ul class="project-tags">{% for n in p.modules %}<li>Module {{ n }}</li>{% endfor %}</ul><div class="project-card-actions"><a class="btn" href="{{ p.url }}#try-app">Try the app</a><a href="{{ p.url }}#walkthrough">Study the lab</a></div></article>
+  {% endfor %}</div>
+  <section class="project-route"><h2>A shared engineering process</h2><ol><li>Frame the task and decide when a prediction would be used.</li><li>Prepare data and choose splits that reflect real use.</li><li>Establish baselines, train and compare fairly.</li><li>Investigate mistakes and limits before building the interface.</li><li>Use the app to test assumptions with new inputs.</li></ol><p>The notebooks contain saved reference results. Rerun them to produce your own measurements; example predictions are not a new evaluation.</p></section>
+</div>
+{% endblock %}

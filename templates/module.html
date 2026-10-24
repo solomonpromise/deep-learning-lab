@@ -56,6 +56,7 @@
     </ol>
   </section>
 
+  {% if module.projects %}<section class="m-row" aria-labelledby="module-projects"><h2 class="mono-label m-side" id="module-projects">Project labs</h2><div class="m-main">{% for p in module.projects %}<article class="module-project"><h3><a href="{{ root }}{{ p.url }}">Lab {{ p.number }} · {{ p.title }}</a></h3><p>{{ p.summary }}</p><a href="{{ root }}{{ p.url }}#try-app">Try the app →</a></article>{% endfor %}</div></section>{% endif %}
   {% if module.challenge %}
   <section class="m-row" aria-labelledby="m-challenge">
     <h2 class="mono-label m-side" id="m-challenge">Module challenge</h2>
