@@ -34,6 +34,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from dlp.docstrings import inject as inject_docstrings  # noqa: E402
 from dlp.enrich import Enricher, load as load_enrichment  # noqa: E402
 from dlp.glossary import Glossary  # noqa: E402
+from dlp.projects import load_projects, build_projects
 from dlp.notebook import Lesson, LessonParser  # noqa: E402
 from dlp.render import AssetStore, MarkdownRenderer  # noqa: E402
 from dlp.social import render_card  # noqa: E402
@@ -113,6 +114,7 @@ class Builder:
     # ------------------------------------------------------------------ build
     def build(self) -> int:
         t0 = time.time()
+        projects = load_projects(ROOT)
         if self.dist.exists():
             for child in self.dist.iterdir():
                 if child.name == "assets":
@@ -163,6 +165,7 @@ class Builder:
             mls = [l for l in lessons if l.module == n]
             nav.append({
                 **mcfg, "color": MODULE_COLORS[(n - 1) % len(MODULE_COLORS)],
+                "projects": [p for p in projects if n in p["modules"]],
                 "available": bool(mls), "url": f"module-{n}/index.html",
                 "lessons": [{"id": l.id, "title": l.title, "url": f"module-{n}/{l.slug}.html",
                              "minutes": extras[l.id]["minutes"], "sections": len(l.sections)} for l in mls],
@@ -185,7 +188,7 @@ class Builder:
         self._social_cards(nav, lessons, extras, stats)
         tutor = dict(self.cfg.get("tutor") or {})
         tutor["course"] = self.cfg["course"]["title"]
-        common = {"course": self.cfg["course"], "nav": nav, "stats": stats,
+        common = {"projects": projects, "course": self.cfg["course"], "nav": nav, "stats": stats,
                   "site_url": (self.cfg["course"].get("site_url") or "").rstrip("/") + "/",
                   "glossary_js": json.dumps(self.glossary.as_js()),
                   "tutor_js": json.dumps(tutor).replace("</", "<\\/"),
@@ -261,6 +264,7 @@ class Builder:
                                         "x": " ".join(s.plain)[:1400]})
                 search_docs.append({"l": l.id, "lt": l.title, "s": "Overview", "u": url,
                                     "x": re.sub(r"<[^>]+>", " ", " ".join(l.preamble["objectives"]))[:800]})
+        build_projects(self, common, flat, search_docs)
         # concept map: glossary terms, where each appears (known now that every lesson is annotated), how they connect
         self._concepts(nav, lessons, common)
         # glossary page again now that usage is known

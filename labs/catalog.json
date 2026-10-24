@@ -1,0 +1,66 @@
+{
+  "labs": [
+    {
+      "id": "student-dropout",
+      "number": 1,
+      "title": "Student dropout early warning",
+      "topic": "MLP · Tabular data",
+      "modules": [
+        2,
+        3,
+        4
+      ],
+      "lessons": [
+        "2.3",
+        "3.2",
+        "4.1",
+        "4.4"
+      ],
+      "summary": "Turn first-semester records into a support signal. Compare an MLP with simpler baselines, prevent time leakage, choose a threshold and inspect group-level results.",
+      "source_folder": "Lab 1 - Student Dropout Early Warning (MLP)",
+      "source_notebook_sha256": "1c7cfb2babb317b8fbab998c66147495da9985c64000a0c88a46107b09dcf4ce",
+      "source_app_sha256": "805d7e43b7cb05f680c52f6b5fe3f2b85ec5ce3d2d2aac4028a84041e71cc19d",
+      "notebook": "labs/student-dropout/lab.ipynb"
+    },
+    {
+      "id": "waste-sorter",
+      "number": 2,
+      "title": "Waste sorter",
+      "topic": "CNN · Transfer learning",
+      "modules": [
+        5,
+        7,
+        8
+      ],
+      "lessons": [
+        "5.2",
+        "7.4",
+        "8.4",
+        "8.7"
+      ],
+      "summary": "Build a small CNN, reuse ResNet18 features and fine-tune a block. Test on different photos, examine mistakes and teach the app when to abstain.",
+      "source_folder": "Lab 2 - Waste Sorter (CNN)",
+      "source_notebook_sha256": "7bf376b5401d9f7ca2872e5127424401b42fb64d3a47877ae6e5bc2be03aed45",
+      "source_app_sha256": "9ba5e76ab9f186b4f6bf6c1b258c4f1df84729f1b0441522f31a8184bcc0ffeb",
+      "notebook": "labs/waste-sorter/lab.ipynb"
+    },
+    {
+      "id": "activity-recognition",
+      "number": 3,
+      "title": "Activity recognition",
+      "topic": "RNN / LSTM / GRU · Sequences",
+      "modules": [
+        5
+      ],
+      "lessons": [
+        "5.4",
+        "4.1"
+      ],
+      "summary": "Read real phone-sensor windows with three recurrent networks. Split by person, compare models and investigate confident mistakes on people never seen in training.",
+      "source_folder": "Lab 3 - Activity Recognition (RNN, LSTM, GRU)",
+      "source_notebook_sha256": "826685995b2eb3bba8fd6058d394e3973a192d225deb1d170b09591360475671",
+      "source_app_sha256": "d093be73ca199674b1935fe94c3a0ca635d8d4e741ce53a06423b1c088ee707e",
+      "notebook": "labs/activity-recognition/lab.ipynb"
+    }
+  ]
+}

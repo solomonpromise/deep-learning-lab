@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waste Sorter</title>
+<meta name="description" content="Take a photo of an item and an AI model, running in your browser, suggests the recycling bin.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♻️</text></svg>">
+<script>
+(function(){var requested=new URLSearchParams(location.search).get('theme');document.documentElement.dataset.theme=requested||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');addEventListener('message',function(event){if(event.origin===location.origin&&event.source===parent&&event.data&&event.data.type==='dlp-project-theme')document.documentElement.dataset.theme=event.data.theme==='dark'?'dark':'light';});})();
+</script>
+<style>
+  :root {
+    --bg: #f6f8f6; --card: #ffffff; --text: #1d2a22; --muted: #5d6b62; --line: #dfe6e1;
+    --accent: #1f8a4c; --accent-soft: #e3f3e9; --warn: #a86400; --warn-soft: #fff2dc; --bar: #cfe8d8;
+  }
+  :root[data-theme="dark"] {
+      --bg: #101512; --card: #18201b; --text: #e7efe9; --muted: #9db0a4; --line: #2b362f;
+      --accent: #4cc27f; --accent-soft: #1c3226; --warn: #f0b04a; --warn-soft: #33281a; --bar: #285238;
+  }
+  :root[data-theme="dark"] .btn:not(.secondary) { color:#101512; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.8rem; margin: 0 0 4px; }
+  .lead { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn { appearance: none; border: 0; border-radius: 10px; padding: 12px 16px; font: inherit; font-weight: 600;
+         background: var(--accent); color: #fff; cursor: pointer; }
+  .btn.secondary { background: var(--accent-soft); color: var(--text); }
+  .btn:disabled { opacity: .5; cursor: progress; }
+  .webcam { margin-top: 14px; }
+  .webcam video { width: 100%; max-height: 360px; background: #000; border-radius: 10px; display: block; margin-bottom: 10px; object-fit: contain; }
+  .examples { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 14px; }
+  .examples button { border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 4px; cursor: pointer; color: var(--muted); font-size: .75rem; }
+  .examples img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; display: block; }
+  @media (max-width: 520px) { .examples { grid-template-columns: repeat(3, 1fr); } }
+  .result { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+  @media (max-width: 600px) { .result { grid-template-columns: 1fr; } }
+  #preview { width: 100%; border-radius: 10px; border: 1px solid var(--line); display: none; }
+  .placeholder { aspect-ratio: 4/3; border: 2px dashed var(--line); border-radius: 10px; display: grid; place-items: center; color: var(--muted); text-align: center; padding: 12px; }
+  .verdict { font-size: 1.4rem; font-weight: 700; margin: 0 0 4px; }
+  .advice { padding: 10px 12px; border-radius: 10px; background: var(--accent-soft); margin: 10px 0 14px; }
+  .advice.unsure { background: var(--warn-soft); color: var(--text); }
+  .check { font-size: .9rem; color: var(--muted); margin: 0 0 6px; }
+  .check .fill { background: var(--muted); }
+  .row { display: grid; grid-template-columns: 90px 1fr 52px; gap: 8px; align-items: center; margin: 6px 0; font-size: .95rem; }
+  .track { background: var(--line); border-radius: 6px; height: 12px; overflow: hidden; }
+  .fill { background: var(--accent); height: 100%; width: 0; transition: width .4s ease; }
+  .pct { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .status { color: var(--muted); font-size: .9rem; margin-top: 10px; min-height: 1.5em; }
+  details { color: var(--muted); }
+  details summary { cursor: pointer; color: var(--text); font-weight: 600; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>♻️ Waste Sorter</h1>
+  <p class="lead">Take or upload a photo of <strong>one item</strong>, and an AI model suggests which bin it belongs in.
+     The model runs <strong>entirely in your browser</strong>: your photo never leaves your device.</p>
+
+  <section class="card">
+    <div class="actions">
+      <button class="btn" id="cameraBtn">📷 Take a photo</button>
+      <button class="btn secondary" id="uploadBtn">⬆️ Upload a photo</button>
+    </div>
+    <input type="file" id="camera" accept="image/*" capture="environment" hidden>
+    <input type="file" id="upload" accept="image/*" hidden>
+    <div class="webcam" id="webcam" hidden>
+      <video id="video" autoplay playsinline muted></video>
+      <div class="actions">
+        <button class="btn" id="snapBtn">⏺ Capture</button>
+        <button class="btn secondary" id="switchBtn" hidden>🔄 Switch camera</button>
+        <button class="btn secondary" id="closeBtn">✕ Close camera</button>
+      </div>
+    </div>
+    <div class="examples" id="examples"></div>
+    <div class="status" id="status">Loading the model (about 40 MB, once)…</div>
+  </section>
+
+  <section class="card result">
+    <div>
+      <img id="preview" alt="The photo being classified">
+      <div class="placeholder" id="placeholder">Your photo will appear here</div>
+    </div>
+    <div>
+      <p class="verdict" id="verdict">Which bin?</p>
+      <div class="advice" id="advice" hidden></div>
+      <div id="check"></div>
+      <div id="bars"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>How it works, and its limits</summary>
+      <p>The model is a <strong>ResNet18</strong> convolutional neural network, pretrained on ImageNet and fine-tuned in
+         Lab 2 of our Deep Learning course on the <a href="https://github.com/garythung/trashnet">TrashNet</a> photos
+         (by Gary Thung and Mindy Yang, MIT licence) plus a small set of real-world web photos. It was exported to the
+         ONNX format and runs here with ONNX Runtime Web, so no server is involved.</p>
+      <p>It knows six classes: cardboard, glass, metal, paper, plastic and general trash. It works best with one item on a
+         plain background, and it can be wrong, especially between glass and plastic. When it is less than 60% sure, it
+         says so. Always check your local recycling rules.</p>
+      <p><strong>Is it waste at all?</strong> A six-bin classifier always picks a bin, even for a photo of a person or a
+         room. So a second, small model first checks whether the photo looks like a waste item. It reuses the network's
+         general ImageNet features and was trained on our waste photos against 1,000 everyday
+         <a href="https://cocodataset.org">COCO</a> photos (people, rooms, animals, streets). On photos it had never seen,
+         it flagged 97.5% of non-waste photos, while letting through 99.7% of TrashNet and 95.5% of real-world waste
+         photos. On close-up photos of single objects it flagged 77%; objects made of metal or plastic, such as a
+         French horn or a cassette player, got through about half the time, because the model judges what things look
+         like, not what they are for. Below the threshold, the app says the photo doesn't look like waste instead of
+         naming a bin.</p>
+    </details>
+  </section>
+</main>
+
+<script src="../../vendor/onnxruntime/ort.min.js"></script>
+<script>
+const ADVICE = {
+  cardboard: "Flatten it and put it in the paper & cardboard bin.",
+  paper: "Paper bin. Keep it dry and clean.",
+  glass: "Glass bin. Rinse it first; lids go separately.",
+  metal: "Metal & cans bin. Rinse it first.",
+  plastic: "Plastics bin. Rinse it and check the recycling number.",
+  trash: "General waste: this item probably can't be recycled."
+};
+const $ = (id) => document.getElementById(id);
+let session, config;
+
+async function init() {
+  ort.env.wasm.wasmPaths = new URL("../../vendor/onnxruntime/", location.href).href;
+  ort.env.wasm.numThreads = 1;
+  config = await (await fetch("config.json")).json();
+  for (const c of config.classes) {                       // example photo buttons
+    const b = document.createElement("button");
+    b.innerHTML = `<img src="examples/${c}.jpg" alt="example: ${c}">${c}`;
+    b.onclick = () => classifyUrl(`examples/${c}.jpg`);
+    $("examples").appendChild(b);
+  }
+  try {
+    session = await ort.InferenceSession.create("model.onnx", { executionProviders: ["wasm"] });
+    $("status").textContent = "Model ready. Take a photo, upload one, or try an example.";
+  } catch (e) {
+    $("status").textContent = "Could not load the model: " + e.message;
+  }
+}
+
+function toTensor(img) {
+  const s = config.size, canvas = document.createElement("canvas");
+  canvas.width = s; canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, s, s);                          // resize to 224 x 224, like the notebook
+  const px = ctx.getImageData(0, 0, s, s).data;            // RGBA bytes
+  const data = new Float32Array(3 * s * s);
+  for (let i = 0; i < s * s; i++) {
+    for (let c = 0; c < 3; c++) {
+      data[c * s * s + i] = (px[i * 4 + c] / 255 - config.mean[c]) / config.std[c];   // ImageNet normalisation
+    }
+  }
+  return new ort.Tensor("float32", data, [1, 3, s, s]);
+}
+
+async function classify(img) {
+  if (!session) { $("status").textContent = "The model is still loading, try again in a moment."; return; }
+  $("status").textContent = "Thinking…";
+  const t0 = performance.now();
+  const out = await session.run({ image: toTensor(img) });
+  const logits = Array.from(out.logits.data);
+  const waste = out.waste_score.data[0];                   // 0 to 1: does this look like a waste item at all?
+  const isWaste = waste >= config.waste_threshold;
+  const meter = (label, q) =>
+    `<div class="row"><span>${label}</span><div class="track"><div class="fill" style="width:${(q * 100).toFixed(1)}%"></div></div><span class="pct">${Math.round(q * 100)}%</span></div>`;
+  const m = Math.max(...logits), ex = logits.map((v) => Math.exp(v - m)), sum = ex.reduce((a, b) => a + b, 0);
+  const probs = ex.map((v) => v / sum);
+  const ranked = config.classes.map((c, i) => [c, probs[i]]).sort((a, b) => b[1] - a[1]);
+  const [best, p] = ranked[0], sure = p >= config.confidence_threshold;
+  const adv = $("advice");
+  adv.hidden = false;
+  $("check").innerHTML = `<p class="check">Waste check (needs ${Math.round(config.waste_threshold * 100)}%):</p>` + meter("waste?", waste);
+  if (!isWaste) {
+    $("verdict").textContent = "Not a waste item?";
+    adv.className = "advice unsure";
+    adv.textContent = "This doesn't look like a waste item, so the model won't pick a bin. It was trained on single items " +
+                      "such as bottles, cans, boxes and paper. Try one item on a plain background.";
+    $("bars").innerHTML = "";
+  } else {
+    $("verdict").textContent = sure ? `${best[0].toUpperCase() + best.slice(1)} (${Math.round(p * 100)}%)` : "Not sure";
+    adv.className = sure ? "advice" : "advice unsure";
+    adv.textContent = sure ? ADVICE[best] : `Best guess: ${best} (${Math.round(p * 100)}%). Check the label on the item, or try another photo.`;
+    $("bars").innerHTML = `<p class="check">Which bin:</p>` + ranked.slice(0, 3).map(([c, q]) => meter(c, q)).join("");
+  }
+  $("status").textContent = `Done in ${Math.round(performance.now() - t0)} ms, on your device.`;
+}
+
+function show(src) {
+  const img = $("preview");
+  img.onload = () => classify(img);
+  img.src = src;
+  img.style.display = "block";
+  $("placeholder").style.display = "none";
+}
+function classifyUrl(url) { show(url); }
+function onFile(e) { const f = e.target.files[0]; if (f) show(URL.createObjectURL(f)); e.target.value = ""; }
+// Phones and tablets: the native camera (via the file input). Laptops and desktops: a live webcam preview.
+const isPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));   // iPads report "Macintosh"
+let stream = null, cameras = [], camIndex = 0;
+
+async function openWebcam() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $("camera").click(); return; }
+  try {
+    stopWebcam();
+    const constraints = cameras.length ? { video: { deviceId: { exact: cameras[camIndex].deviceId } } } : { video: true };
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    $("video").srcObject = stream;
+    $("webcam").hidden = false;
+    cameras = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "videoinput");
+    $("switchBtn").hidden = cameras.length < 2;
+    $("status").textContent = "Point the camera at one item, then press Capture.";
+  } catch (e) {
+    $("status").textContent = "Couldn't open the camera (" + e.name + "). Allow camera access in your browser, or upload a photo instead.";
+  }
+}
+function stopWebcam() {
+  if (stream) { stream.getTracks().forEach((t) => t.stop()); stream = null; }
+  $("webcam").hidden = true;
+}
+function snap() {
+  const v = $("video");
+  if (!v.videoWidth) return;
+  const c = document.createElement("canvas");
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  c.getContext("2d").drawImage(v, 0, 0);
+  stopWebcam();
+  show(c.toDataURL("image/jpeg", 0.92));
+}
+$("cameraBtn").onclick = () => (isPhone ? $("camera").click() : openWebcam());
+$("snapBtn").onclick = snap;
+$("closeBtn").onclick = () => { stopWebcam(); $("status").textContent = "Camera closed."; };
+$("switchBtn").onclick = () => { camIndex = (camIndex + 1) % cameras.length; openWebcam(); };
+$("uploadBtn").onclick = () => $("upload").click();
+$("camera").onchange = onFile;
+$("upload").onchange = onFile;
+init();
+</script>
+<script>
+(function(){function report(){parent.postMessage({type:'dlp-project-height',height:Math.ceil(document.body.getBoundingClientRect().height)},location.origin);}new ResizeObserver(report).observe(document.body);addEventListener('load',report);})();
+</script>
+</body>
+</html>
