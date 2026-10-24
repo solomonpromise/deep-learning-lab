@@ -1,0 +1,78 @@
+WEBVTT
+
+NOTE English visual guide. Editorial descriptions of on-screen concepts; no spoken narration.
+
+00:00:00.000 --> 00:00:03.000
+Neural networks require numbers, so a text pipeline must turn symbols into usable numerical
+
+00:00:03.000 --> 00:00:06.000
+representations.
+
+00:00:10.000 --> 00:00:14.400
+Tokenization divides text into units, such as words, subwords or characters.
+
+00:00:20.000 --> 00:00:23.600
+A vocabulary assigns each token an integer ID. Larger IDs do not mean larger or more important
+
+00:00:23.600 --> 00:00:27.200
+meanings.
+
+00:00:30.000 --> 00:00:34.400
+A one-hot vector marks one vocabulary position with one and all others with zero. It encodes
+
+00:00:34.400 --> 00:00:38.800
+identity but no built-in semantic similarity.
+
+00:00:40.000 --> 00:00:44.000
+A large vocabulary makes these identity vectors wide and sparse.
+
+00:00:50.000 --> 00:00:54.800
+An embedding table stores a shorter, dense vector for each token ID.
+
+00:01:00.000 --> 00:01:03.800
+Looking up an ID selects its row. The embedding values are learned parameters that can receive
+
+00:01:03.800 --> 00:01:07.600
+gradients during training.
+
+00:01:10.000 --> 00:01:14.000
+A prediction task supplies a learning signal. Tokens used in similar ways can develop useful
+
+00:01:14.000 --> 00:01:18.000
+relationships in the learned space.
+
+00:01:20.000 --> 00:01:26.000
+A two-dimensional plot is a simplified view of vectors that usually have many more coordinates.
+
+00:01:30.000 --> 00:01:33.000
+Nearby vectors may reflect useful similarities. Individual dimensions need not correspond to
+
+00:01:33.000 --> 00:01:36.000
+human-readable concepts.
+
+00:01:40.000 --> 00:01:43.000
+Vector arithmetic can illustrate relationships, but analogy patterns depend on the training data and
+
+00:01:43.000 --> 00:01:46.000
+objective.
+
+00:01:50.000 --> 00:01:54.600
+Cosine similarity compares directions: dot product divided by the product of vector lengths. Values
+
+00:01:54.600 --> 00:01:59.200
+range from minus one to one for nonzero vectors.
+
+00:02:00.000 --> 00:02:04.000
+Aligned directions have cosine one; perpendicular directions have cosine zero. Opposite directions
+
+00:02:04.000 --> 00:02:08.000
+have cosine minus one, without guaranteeing opposite meanings.
+
+00:02:10.000 --> 00:02:14.800
+Averaging token vectors produces a simple text representation but discards token order.
+
+00:02:20.000 --> 00:02:24.000
+Static lookup gives a token the same starting vector in different sentences. Contextual models
+
+00:02:24.000 --> 00:02:28.000
+update its representation using surrounding information.

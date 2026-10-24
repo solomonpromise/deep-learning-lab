@@ -1,0 +1,82 @@
+{
+  "reviewed": true,
+  "kind": "visual-guide",
+  "description": "Editorial description of the on-screen teaching sequence; not spoken narration. The soundtrack is music.",
+  "segments": [
+    {
+      "start": 0,
+      "end": 14,
+      "text": "Attention creates a new representation for a position by mixing information from other positions."
+    },
+    {
+      "start": 14,
+      "end": 26,
+      "text": "A context-sensitive pronoun motivates the operation. This introductory illustration allows bidirectional context."
+    },
+    {
+      "start": 26,
+      "end": 38,
+      "text": "The worked example uses four token positions and small vectors so the calculation can be followed by hand."
+    },
+    {
+      "start": 38,
+      "end": 50,
+      "text": "Learned linear projections produce queries, keys and values from the input representations."
+    },
+    {
+      "start": 50,
+      "end": 62,
+      "text": "A query is compared with each key using a dot product. These comparisons form a row of attention scores."
+    },
+    {
+      "start": 62,
+      "end": 74,
+      "text": "Matrix multiplication QKᵀ computes scores for every query against every key."
+    },
+    {
+      "start": 74,
+      "end": 86,
+      "text": "Divide the scores by the square root of the key dimension to moderate their scale before softmax."
+    },
+    {
+      "start": 86,
+      "end": 98,
+      "text": "Apply softmax separately to each score row. The resulting weights are nonnegative and sum to one."
+    },
+    {
+      "start": 98,
+      "end": 110,
+      "text": "A larger score receives a larger weight relative to the other entries in that row."
+    },
+    {
+      "start": 110,
+      "end": 122,
+      "text": "Multiply each value vector by its weight and add the results to produce one output vector."
+    },
+    {
+      "start": 122,
+      "end": 134,
+      "text": "Repeating the operation for every query produces the output matrix: softmax(QKᵀ/√dₖ)V."
+    },
+    {
+      "start": 134,
+      "end": 146,
+      "text": "The output depends on both the learned projections and the current context. It is not simply a lookup of one word."
+    },
+    {
+      "start": 146,
+      "end": 158,
+      "text": "Causal masking will prevent a position from using future tokens when the task is next-token prediction."
+    },
+    {
+      "start": 158,
+      "end": 172,
+      "text": "Pause and trace a single query: compare keys, scale scores, normalize weights and mix values."
+    },
+    {
+      "start": 172,
+      "end": 186.07,
+      "text": "Recap the computation. The next animation adds masks, heads and position information."
+    }
+  ]
+}

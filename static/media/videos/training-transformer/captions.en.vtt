@@ -1,0 +1,87 @@
+WEBVTT
+
+NOTE English visual guide. Editorial descriptions of on-screen concepts; no spoken narration.
+
+00:00:00.000 --> 00:00:04.800
+Training adjusts the Transformer to predict the next character from preceding context.
+
+00:00:13.000 --> 00:00:17.200
+Targets are the input stream shifted by one character. A batch of 32 windows with 64 positions
+
+00:00:17.200 --> 00:00:21.400
+provides 2,048 target predictions.
+
+00:00:24.000 --> 00:00:28.800
+Teacher forcing supplies known previous tokens during training. A causal mask allows all positions
+
+00:00:28.800 --> 00:00:33.600
+to be trained in parallel without revealing their future answers.
+
+00:00:36.000 --> 00:00:40.200
+Cross-entropy is minus the natural logarithm of the probability assigned to the correct next token.
+
+00:00:40.200 --> 00:00:44.400
+Average it over the prediction positions.
+
+00:00:47.000 --> 00:00:50.800
+Judge loss against baselines. In this reference run, uniform guessing scores 4.174; frequency-based
+
+00:00:50.800 --> 00:00:54.600
+and previous-letter baselines are stronger comparisons.
+
+00:00:58.000 --> 00:01:02.800
+The training toolkit includes AdamW, learning-rate warmup, cosine decay and gradient clipping.
+
+00:01:10.000 --> 00:01:14.200
+Warmup increases the learning rate initially; decay reduces it later. Clipping limits a gradient
+
+00:01:14.200 --> 00:01:18.400
+norm when it exceeds the selected threshold.
+
+00:01:21.000 --> 00:01:24.400
+Short learning-rate trials compare validation loss. The chosen 0.01 is specific to this small model
+
+00:01:24.400 --> 00:01:27.800
+and experiment.
+
+00:01:32.000 --> 00:01:36.400
+The main reference run improves validation loss to about 1.742 in 1,400 steps. Perplexity exp(1.742)
+
+00:01:36.400 --> 00:01:40.800
+is approximately 5.7, not an accuracy percentage.
+
+00:01:44.000 --> 00:01:48.000
+Compare selected predictions before and after training to see how context can improve the
+
+00:01:48.000 --> 00:01:52.000
+probability of a plausible next character.
+
+00:01:55.000 --> 00:01:58.000
+Changing the available context length tests how much the trained model benefits from preceding
+
+00:01:58.000 --> 00:02:01.000
+characters.
+
+00:02:06.000 --> 00:02:09.400
+Average attention weights visualize where this model mixes information, but do not by themselves
+
+00:02:09.400 --> 00:02:12.800
+establish causal explanations.
+
+00:02:18.000 --> 00:02:22.400
+Pause: is a validation loss of 2.5 impressive if the previous-letter baseline already scores 2.482?
+
+00:02:22.400 --> 00:02:26.800
+Why can training evaluate 64 positions together?
+
+00:02:30.000 --> 00:02:33.800
+A loss of 2.5 does not beat that baseline. Known targets plus causal masking make parallel
+
+00:02:33.800 --> 00:02:37.600
+teacher-forced training possible.
+
+00:02:42.000 --> 00:02:46.600
+Recap training and evaluation. Continue to section 8 of this lesson to see how generation differs:
+
+00:02:46.600 --> 00:02:51.200
+predict a token, append it, and repeat.

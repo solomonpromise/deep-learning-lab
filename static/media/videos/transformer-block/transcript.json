@@ -1,0 +1,67 @@
+{
+  "reviewed": true,
+  "kind": "visual-guide",
+  "description": "Editorial description of the on-screen teaching sequence; not spoken narration. The soundtrack is music.",
+  "segments": [
+    {
+      "start": 0,
+      "end": 12,
+      "text": "A Transformer block is a repeatable unit combining attention with a feed-forward network."
+    },
+    {
+      "start": 12,
+      "end": 24,
+      "text": "Attention mixes information across positions, giving each position a context-dependent representation."
+    },
+    {
+      "start": 24,
+      "end": 36,
+      "text": "A residual connection adds a sublayer’s output to its input, preserving a direct path through the block."
+    },
+    {
+      "start": 36,
+      "end": 48,
+      "text": "Layer normalization computes statistics over the feature coordinates of each token independently."
+    },
+    {
+      "start": 48,
+      "end": 60,
+      "text": "For the example [2, −1, 4, 3], mean is 2 and variance is 3.5. Standardization is followed by a learned scale and bias."
+    },
+    {
+      "start": 60,
+      "end": 72,
+      "text": "The feed-forward network transforms each token separately. This example expands width 64 to 256, applies GELU and projects back to 64."
+    },
+    {
+      "start": 72,
+      "end": 84,
+      "text": "The second residual connection adds the feed-forward result back to the residual stream."
+    },
+    {
+      "start": 84,
+      "end": 96,
+      "text": "Pre-norm places normalization before the sublayer; post-norm places it after the residual addition."
+    },
+    {
+      "start": 96,
+      "end": 108,
+      "text": "Small training comparisons illustrate how normalization placement and warmup can affect optimization. Their outcomes depend on experimental conditions."
+    },
+    {
+      "start": 108,
+      "end": 120,
+      "text": "Stacking blocks lets later layers build on contextual features produced by earlier layers."
+    },
+    {
+      "start": 120,
+      "end": 132,
+      "text": "Pause and distinguish operations that mix positions from those that mix feature coordinates within a position."
+    },
+    {
+      "start": 132,
+      "end": 146.07,
+      "text": "Recap: attention, residual paths, normalization and the feed-forward network work together. The next lesson assembles complete blocks into a language model."
+    }
+  ]
+}

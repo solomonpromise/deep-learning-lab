@@ -209,6 +209,12 @@ class Enricher:
 
     def _insert_block(self, item: dict) -> dict:
         t = item.get("type", "explainer")
+        if t == "video":
+            return {"kind": "video", "id": item["id"], "title": item["title"],
+                    "intro_html": self.md(item.get("intro")), "watch_html": self.md(item.get("watch_for")),
+                    "note_html": self.md(item.get("note")), "url": item["url"], "poster": item["poster"],
+                    "captions": item["captions"], "duration": item["duration"], "text_kind": item["text_kind"],
+                    "chapters": item["chapters"], "transcript": item["transcript"], "src": item["title"]}
         if t == "widget":
             ch = item.get("challenge")
             challenge = None

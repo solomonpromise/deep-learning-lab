@@ -19,7 +19,6 @@ import json
 import os
 import re
 import shutil
-import socketserver
 import subprocess
 import sys
 import time
@@ -37,6 +36,8 @@ from dlp.glossary import Glossary  # noqa: E402
 from dlp.notebook import Lesson, LessonParser  # noqa: E402
 from dlp.render import AssetStore, MarkdownRenderer  # noqa: E402
 from dlp.social import render_card  # noqa: E402
+from dlp.videos import VideoLibrary
+from dlp.media_server import MediaRequestHandler
 from dlp.text import Terminology, inline_md  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -83,7 +84,7 @@ def lesson_minutes(lesson: Lesson, ex: dict) -> int:
     explains = sum(1 for c in ex["checkpoints"] if c["explain"])
     quiz = len(ex["quiz"]["questions"]) if ex["quiz"] else 0
     words = lesson.word_count + teaching_words(lesson, ex)
-    return max(5, round(words / 200 + lesson.code_cells * 0.6 + labs * 3 + cps * 0.75 + explains * 1.5 + quiz * 0.5))
+    return max(5, round(sum(v["duration_seconds"] for v in ex.get("videos", [])) / 60 + words / 200 + lesson.code_cells * 0.6 + labs * 3 + cps * 0.75 + explains * 1.5 + quiz * 0.5))
 
 
 class Builder:
@@ -121,6 +122,7 @@ class Builder:
         self.dist.mkdir(parents=True, exist_ok=True)
         shutil.copytree(ROOT / "static", self.dist / "static", dirs_exist_ok=True)
 
+        videos = VideoLibrary(ROOT, self.dist)
         modules_cfg = {m["number"]: m for m in self.cfg["modules"]}
         lessons: list[Lesson] = []
         extras: dict[str, dict] = {}
@@ -136,6 +138,7 @@ class Builder:
             for cell, qual in dict.fromkeys(lesson.doc_thin):
                 self.enricher.warnings.append(f"[{lid}] one-line docstring for `{qual}` (code cell {cell}); document its arguments under `docstrings:`")
             extras[lid] = self.enricher.apply(lesson, data)
+            extras[lid]["videos"] = videos.attach(lesson, self.enricher)
             extras[lid]["enriched"] = bool(data)
             cp_data = load_enrichment(ENRICH / f"{lid}.checkpoints.yaml")
             extras[lid]["checkpoints"] = self.enricher.checkpoints(lesson, cp_data)
@@ -151,6 +154,8 @@ class Builder:
                   f"{len(store.files)} images"
                   + (f", {len(lesson.image_prompts)} image prompt(s) hidden" if lesson.image_prompts else "")
                   + f"{', enriched' if data else ''})")
+
+        videos.verify_placements()
 
         # ---- module challenges (enrichments/module-N.challenge.yaml)
         challenges = {m["number"]: self.enricher.module_challenge(m["number"], load_enrichment(ENRICH / f"module-{m['number']}.challenge.yaml"))
@@ -508,9 +513,9 @@ def write_documented_notebook(src: Path, dest: Path, docmap: dict | None) -> Non
 
 
 def serve(port: int) -> None:
-    handler = partial(http.server.SimpleHTTPRequestHandler, directory=str(DIST))
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", port), handler) as httpd:
+    handler = partial(MediaRequestHandler, directory=str(DIST))
+    http.server.ThreadingHTTPServer.allow_reuse_address = True
+    with http.server.ThreadingHTTPServer(("", port), handler) as httpd:
         print(f"Serving http://localhost:{port}  (Ctrl+C to stop)")
         httpd.serve_forever()
 

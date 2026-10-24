@@ -1,0 +1,90 @@
+WEBVTT
+
+NOTE English visual guide. Editorial descriptions of on-screen concepts; no spoken narration.
+
+00:00:00.000 --> 00:00:03.200
+Three additions make attention useful for ordered text: a causal mask, multiple heads and position
+
+00:00:03.200 --> 00:00:06.400
+information.
+
+00:00:13.000 --> 00:00:17.200
+During next-token training the whole input window is known, but each position must be prevented from
+
+00:00:17.200 --> 00:00:21.400
+looking at its future answer.
+
+00:00:25.000 --> 00:00:28.600
+Before softmax, put minus infinity above the diagonal of the score matrix. Future positions then
+
+00:00:28.600 --> 00:00:32.200
+receive zero weight.
+
+00:00:37.000 --> 00:00:40.600
+Bidirectional attention can use the whole input sequence. Causal attention can use the current and
+
+00:00:40.600 --> 00:00:44.200
+preceding positions only.
+
+00:00:48.000 --> 00:00:52.400
+Multiple heads allow several learned attention patterns to operate in parallel.
+
+00:01:00.000 --> 00:01:04.000
+With model width 64 and four heads, each head has width 16. Each head’s projections can use all
+
+00:01:04.000 --> 00:01:08.000
+input coordinates.
+
+00:01:12.000 --> 00:01:16.800
+Two hand-designed heads illustrate different patterns: attending to a previous token or another
+
+00:01:16.800 --> 00:01:21.600
+selected position. Real learned heads need not have these exact roles.
+
+00:01:23.000 --> 00:01:29.000
+Concatenate the head outputs and apply an output projection to return to the model width.
+
+00:01:35.000 --> 00:01:38.800
+Without positional information, unrestricted self-attention is permutation equivariant: reordering
+
+00:01:38.800 --> 00:01:42.600
+input tokens reorders their outputs rather than encoding sequence order.
+
+00:01:47.000 --> 00:01:50.000
+Give positions distinct vectors. Learned positions, sinusoidal positions and rotary methods are
+
+00:01:50.000 --> 00:01:53.000
+alternative designs.
+
+00:01:59.000 --> 00:02:02.200
+Nearby sinusoidal position vectors can be more similar. The teaching model uses learned position
+
+00:02:02.200 --> 00:02:05.400
+embeddings instead.
+
+00:02:10.000 --> 00:02:13.800
+A full attention score grid has T×T entries per head. Doubling sequence length makes four times as
+
+00:02:13.800 --> 00:02:17.600
+many scores.
+
+00:02:22.000 --> 00:02:27.400
+Tiled algorithms such as FlashAttention avoid materializing the full score matrix, reducing memory
+
+00:02:27.400 --> 00:02:32.800
+traffic and storage. They do not remove the quadratic arithmetic of exact full attention.
+
+00:02:33.000 --> 00:02:37.600
+Pause: width 512 divided among eight heads gives what head width? How much does a score grid grow
+
+00:02:37.600 --> 00:02:42.200
+from 1,000 to 4,000 tokens?
+
+00:02:45.000 --> 00:02:50.200
+The answers are 64 coordinates per head and sixteen times as many scores.
+
+00:02:56.000 --> 00:02:57.535
+Recap: mask future positions, combine multiple heads, encode position and account for attention’s
+
+00:02:57.535 --> 00:02:59.070
+memory and compute cost.

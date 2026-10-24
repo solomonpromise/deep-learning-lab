@@ -1,0 +1,87 @@
+{
+  "reviewed": true,
+  "kind": "visual-guide",
+  "description": "Editorial description of the on-screen teaching sequence; not spoken narration. The soundtrack is music.",
+  "segments": [
+    {
+      "start": 0,
+      "end": 13,
+      "text": "Three additions make attention useful for ordered text: a causal mask, multiple heads and position information."
+    },
+    {
+      "start": 13,
+      "end": 25,
+      "text": "During next-token training the whole input window is known, but each position must be prevented from looking at its future answer."
+    },
+    {
+      "start": 25,
+      "end": 37,
+      "text": "Before softmax, put minus infinity above the diagonal of the score matrix. Future positions then receive zero weight."
+    },
+    {
+      "start": 37,
+      "end": 48,
+      "text": "Bidirectional attention can use the whole input sequence. Causal attention can use the current and preceding positions only."
+    },
+    {
+      "start": 48,
+      "end": 60,
+      "text": "Multiple heads allow several learned attention patterns to operate in parallel."
+    },
+    {
+      "start": 60,
+      "end": 72,
+      "text": "With model width 64 and four heads, each head has width 16. Each head’s projections can use all input coordinates."
+    },
+    {
+      "start": 72,
+      "end": 83,
+      "text": "Two hand-designed heads illustrate different patterns: attending to a previous token or another selected position. Real learned heads need not have these exact roles."
+    },
+    {
+      "start": 83,
+      "end": 95,
+      "text": "Concatenate the head outputs and apply an output projection to return to the model width."
+    },
+    {
+      "start": 95,
+      "end": 107,
+      "text": "Without positional information, unrestricted self-attention is permutation equivariant: reordering input tokens reorders their outputs rather than encoding sequence order."
+    },
+    {
+      "start": 107,
+      "end": 119,
+      "text": "Give positions distinct vectors. Learned positions, sinusoidal positions and rotary methods are alternative designs."
+    },
+    {
+      "start": 119,
+      "end": 130,
+      "text": "Nearby sinusoidal position vectors can be more similar. The teaching model uses learned position embeddings instead."
+    },
+    {
+      "start": 130,
+      "end": 142,
+      "text": "A full attention score grid has T×T entries per head. Doubling sequence length makes four times as many scores."
+    },
+    {
+      "start": 142,
+      "end": 153,
+      "text": "Tiled algorithms such as FlashAttention avoid materializing the full score matrix, reducing memory traffic and storage. They do not remove the quadratic arithmetic of exact full attention."
+    },
+    {
+      "start": 153,
+      "end": 165,
+      "text": "Pause: width 512 divided among eight heads gives what head width? How much does a score grid grow from 1,000 to 4,000 tokens?"
+    },
+    {
+      "start": 165,
+      "end": 176,
+      "text": "The answers are 64 coordinates per head and sixteen times as many scores."
+    },
+    {
+      "start": 176,
+      "end": 179.07,
+      "text": "Recap: mask future positions, combine multiple heads, encode position and account for attention’s memory and compute cost."
+    }
+  ]
+}

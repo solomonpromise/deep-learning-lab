@@ -1,0 +1,77 @@
+{
+  "reviewed": true,
+  "kind": "visual-guide",
+  "description": "Editorial description of the on-screen teaching sequence; not spoken narration. The soundtrack is music.",
+  "segments": [
+    {
+      "start": 0,
+      "end": 12,
+      "text": "A complete language model connects the components built in the preceding lessons."
+    },
+    {
+      "start": 12,
+      "end": 24,
+      "text": "Token IDs select token embeddings, which are combined with position embeddings."
+    },
+    {
+      "start": 24,
+      "end": 36,
+      "text": "The resulting sequence passes through stacked Transformer blocks and a final normalization."
+    },
+    {
+      "start": 36,
+      "end": 48,
+      "text": "A linear output head produces 65 logits for each position in the character vocabulary."
+    },
+    {
+      "start": 48,
+      "end": 60,
+      "text": "Count parameters in embeddings, attention, feed-forward layers, normalization and the output head. The reference untied model has 162,561 parameters."
+    },
+    {
+      "start": 60,
+      "end": 72,
+      "text": "Weight tying reuses the token embedding weights for the output projection. The shown tied configuration has 158,401 parameters; the difference is 4,160."
+    },
+    {
+      "start": 72,
+      "end": 84,
+      "text": "Before training, compare the loss with ln(65), approximately 4.174, the uniform-prediction baseline. Random logits need not give exactly uniform probabilities."
+    },
+    {
+      "start": 84,
+      "end": 96,
+      "text": "Try to overfit one small batch. A large drop in that batch’s loss indicates that the model and update path can learn those examples."
+    },
+    {
+      "start": 96,
+      "end": 108,
+      "text": "Poor loss on a fresh batch after memorizing one batch demonstrates why training fit alone is insufficient."
+    },
+    {
+      "start": 108,
+      "end": 120,
+      "text": "In an encoder–decoder model, cross-attention takes queries from the decoder and keys and values from the encoder output."
+    },
+    {
+      "start": 120,
+      "end": 132,
+      "text": "The decoder’s causal self-attention and its cross-attention serve different purposes: reading its own history and consulting the encoded input."
+    },
+    {
+      "start": 132,
+      "end": 146,
+      "text": "Pause: what determines the number of logits per position? What does the one-batch test establish?"
+    },
+    {
+      "start": 146,
+      "end": 157,
+      "text": "The vocabulary determines the number of logits. One-batch fitting is a debugging check, not evidence of good performance on unseen data."
+    },
+    {
+      "start": 157,
+      "end": 161.07,
+      "text": "Recap the complete model and its sanity checks before training on the text corpus."
+    }
+  ]
+}

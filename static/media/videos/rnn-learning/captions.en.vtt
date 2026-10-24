@@ -1,0 +1,75 @@
+WEBVTT
+
+NOTE English visual guide. Editorial descriptions of on-screen concepts; no spoken narration.
+
+00:00:00.000 --> 00:00:06.800
+A recurrent neural network processes a sequence one item at a time, carrying a hidden state forward.
+
+00:00:11.000 --> 00:00:14.600
+Word order matters: “dog bites man” and “man bites dog” contain the same words but express different
+
+00:00:14.600 --> 00:00:18.200
+events.
+
+00:00:22.000 --> 00:00:27.600
+Map each token to an embedding vector before passing it to the recurrent computation.
+
+00:00:33.000 --> 00:00:36.600
+At each step, combine the current input with the previous hidden state using learned weights and an
+
+00:00:36.600 --> 00:00:40.200
+activation.
+
+00:00:44.000 --> 00:00:47.400
+The updated hidden state carries information into the next step. The recurrent parameters are shared
+
+00:00:47.400 --> 00:00:50.800
+across time.
+
+00:00:55.000 --> 00:00:59.800
+Unrolling draws the same computation repeatedly, making the sequence of dependencies visible.
+
+00:01:06.000 --> 00:01:09.800
+A prediction head converts a hidden state into scores for the next token; softmax turns those scores
+
+00:01:09.800 --> 00:01:13.600
+into probabilities.
+
+00:01:17.000 --> 00:01:21.800
+Compare the next-token prediction with the true next token using cross-entropy loss.
+
+00:01:28.000 --> 00:01:32.400
+A later prediction may need information that appeared several steps earlier.
+
+00:01:39.000 --> 00:01:42.400
+The fading memory bars illustrate a difficulty; they are not measurements of the contribution of
+
+00:01:42.400 --> 00:01:45.800
+each word.
+
+00:01:50.000 --> 00:01:53.000
+Backpropagation through time follows the dependencies backward to compute gradients for the shared
+
+00:01:53.000 --> 00:01:56.000
+weights.
+
+00:02:01.000 --> 00:02:05.400
+Repeated multiplication can shrink gradients. Multiplying by one half repeatedly is an illustrative
+
+00:02:05.400 --> 00:02:09.800
+example, not a law that every recurrent gradient follows.
+
+00:02:12.000 --> 00:02:15.400
+Updates based on weak long-range gradients may struggle to teach the network which earlier
+
+00:02:15.400 --> 00:02:18.800
+information to retain.
+
+00:02:23.000 --> 00:02:28.200
+LSTMs and GRUs introduce gates that regulate what to retain, overwrite or expose.
+
+00:02:35.000 --> 00:02:38.800
+The next section examines these gated architectures. They improve the ability to learn longer
+
+00:02:38.800 --> 00:02:42.600
+dependencies, while retaining sequential computation.
